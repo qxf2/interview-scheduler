@@ -1,0 +1,51 @@
+<html>
+
+<head>
+    <title>
+        Welcome to Interview Scheduler Application
+    </title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link href="CSS/Master.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div class='container'>
+        <div class='row'>
+            <form>
+                <div class='form-group'>
+                <label for='Candidates email'>Enter your email address: </label>
+                <input type='text' id="emaifield" onblur="validateEmail(this);"/> 
+                <!---------<input type="email" pattern=".+.com" /> ---->
+                </div>
+            </form>            
+            <div id="holder"></div>
+            <div id="datepicker1"></div>
+            <label for='Date'>Choose the interview date:</label>
+            <input type='date' id='datepicker'>
+        </div>
+    </div>
+
+</body>
+<script>
+    function validateEmail(emailfield){
+        var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+
+        if (reg.test(emailfield.value) == false) 
+        {
+            alert('Invalid Email Address');
+            return false;
+        }
+
+        return true;
+
+}
+$(function() {
+        $("#Datepicker1").datepicker({
+         numberOfMonths: 3
+        }); 
+      });
+</script>
+
+</html>

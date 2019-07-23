@@ -22,6 +22,7 @@ __a) Python__
 
 This project uses Python 3.7.4 or higher.
 
+
 __b)Setup your virtualenv__
 
 1. Install virtualenv
@@ -39,7 +40,7 @@ __b)Setup your virtualenv__
 
       E.g.: virtualenv -p /usr/local/bin/python3.7 name of the virtualenv
 
-4.Now it's time to activate your virtualenv. To do that type the below command in the terminal
+4. Now it's time to activate your virtualenv. To do that type the below command in the terminal
 
       (Unix) source name of your virtualenv/bin/activate
 
@@ -51,11 +52,13 @@ __b)Setup your virtualenv__
 
 6. From next time onwards you can don't need to repeat steps 1 to 4.You can directly goto step 4 and work on your project and to stop you can do step 5
 
+
 __c) Install the required Python modules:__
 
 With your virtualenv activated, run the following command:
 
 		pip install -r requirements.txt
+
 
 __d) Google calendar setup__
 
@@ -65,6 +68,7 @@ Place the token.pickle file in the root directory of this project (same director
 
 
 If you are from Qxf2, please ask a colleague for the token.pickle file
+
 
 __e) Verify Google calendar setup__
 

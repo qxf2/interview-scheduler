@@ -3,7 +3,7 @@ This repo contains code needed for the Qxf2 interview scheduler application. Ple
 
 ----
 
-#### 1. MOTIVATION 
+### 1. MOTIVATION 
 
 
 a. Allow Qxf2 to handle a large volume of interview candidates without having to bother about scheduling
@@ -16,7 +16,7 @@ d. Reduce (almost eliminate) exchange of emails between candidate and interviewe
 
 The interview scheduler application should replace the scheduling work Gracy and Smitha did when we hired Rohini. 
 
-#### 2. Setup
+### 2. Setup
 
 __a) Python__
 

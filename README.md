@@ -27,24 +27,24 @@ __b)Setup your virtualenv__
 
 1. Install virtualenv
 
-      pip install virtualenv
+            pip install virtualenv
 
 2. After installing virtualenv open the terminal and go to the directory of your project or the repository exists
 
 3. In the terminal now type the below command
 
 
-      virtualenv -p <full path to the Python executable> <name of the virtual env>
+            virtualenv -p <full path to the Python executable> <name of the virtual env>
 
-      E.g.: virtualenv -p /c/Python37/bin/python.exe name of the virtualenv
+            E.g.: virtualenv -p /c/Python37/bin/python.exe name of the virtualenv
 
-      E.g.: virtualenv -p /usr/local/bin/python3.7 name of the virtualenv
+            E.g.: virtualenv -p /usr/local/bin/python3.7 name of the virtualenv
 
 4. Now it's time to activate your virtualenv. To do that type the below command in the terminal
 
-      (Unix) source name of your virtualenv/bin/activate
+            (Unix) source name of your virtualenv/bin/activate
 
-      (Windows)source name of your virtualenv/scripts/activate
+            (Windows)source name of your virtualenv/scripts/activate
 
 5. You can see your virtualenv name in the terminal. Once you have finished your work you can do the deactivation by typing the below command in the terminal
       
@@ -57,7 +57,7 @@ __c) Install the required Python modules:__
 
 With your virtualenv activated, run the following command:
 
-		pip install -r requirements.txt
+            pip install -r requirements.txt
 
 
 __d) Google calendar setup__
@@ -74,6 +74,6 @@ __e) Verify Google calendar setup__
 
 To verify your Google calendar setup, try the following command
 
-	python utils/verify_gcal_setup.py <your_email_id> 
+            python utils/verify_gcal_setup.py <your_email_id> 
 
 If all went well, you should see 10 upcoming events for the email id you provided.

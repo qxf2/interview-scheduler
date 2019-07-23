@@ -16,7 +16,7 @@ d. Reduce (almost eliminate) exchange of emails between candidate and interviewe
 
 The interview scheduler application should replace the scheduling work Gracy and Smitha did when we hired Rohini. 
 
-### 2. Setup
+### 2. SETUP
 
 __a) Python__
 

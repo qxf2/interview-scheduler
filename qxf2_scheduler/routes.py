@@ -4,7 +4,7 @@ This file contains all the endpoints exposed by the interview scheduler applicat
 
 from flask import render_template, url_for, flash, redirect, jsonify, request, Response
 from qxf2_scheduler import app
-import utils.verify_gcal_setup as gcal 
+import qxf2_scheduler.base_gcal as gcal 
 
 @app.route("/get-schedule",methods=['GET','POST'])
 def date_picker():

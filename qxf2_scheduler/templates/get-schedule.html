@@ -8,70 +8,69 @@
     <script src="//code.jquery.com/jquery-1.12.4.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link href="/static/css/google_calendar.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <!------<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> ---->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div class="col-md-6" style="margin-top:20px; width:30%; height:50%; max-height:50%;">
-        <form>
-            <div class='form-group'>
-                <label for='candidatesemail'>Enter your email address: </label>
-                <input name='emailfield' type='text' class='form-group' id="emaifield" onblur="validateEmail(this);" />
-            </div>
-            <div class='form-group'>
-                <div id="holder" class='form-group'></div>
-                <div id="datepicker1"></div>
-                <label for='Date'>Choose the interview date:</label>
-                <input type='date' name='datefield' id='datepicker'>
-            </div>
-            <div class='form-group'>
-                <input type='button' id='submit' onclick="redirect()" value='Submit'>
-            </div>
-        </form>
-    </div>
+    <div class="container col-md-offset-1">
+        <div class="row" style="margin-top:20px; width:30%; height:50%; max-height:50%;">
+            <form>
+                <div class='form-group'>
+                    <label for='candidatesemail'>Enter your email address: </label>
+                    <input name='emailfield' type='text' class='form-group' id="emailfield"
+                        onblur="validateEmail(this);" />
+                </div>
+                <div class='form-group'>
+                    <div id="holder" class='form-group'></div>
+                    <div id="datepicker1"></div>
+                    <label for='Date'>Choose the interview date:</label>
+                    <input type='date' name='datefield' id='datepicker'>
+                </div>
+                <div class='form-group'>
+                    <input type='button' id='submit' onclick="displayValues()" value='Submit'>
+                </div>
+            </form>
+        </div>
+        <div class="row" id="resultDiv">
+        </div>
     </div>
 
-</body>
-<script>
-    function validateEmail(emailfield) {
-        var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-
-        if (reg.test(emailfield.value) == false) {
-            alert('Invalid Email Address');
-            return false;
+    <script>
+        function validateEmail(emailfield) {
+            var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+            $('#emailfield').css('border', 'solid 2px rgb(238,238,238)');
+            $('#resultDiv').css('color', 'black');
+            $('#resultDiv').text('');
+            if (reg.test(emailfield.value) == false) {
+                $('#emailfield').css('border', 'solid 2px red');
+                $('#resultDiv').css('color', 'red');
+                $('#resultDiv').text('Invalid Email Address')
+                return false;
+            }
+            return true;
         }
-
-        return true;
-
-    }
-    $(function () {
-        $("#Datepicker1").datepicker({
-            numberOfMonths: 3
+    </script>
+    <script>
+        $("document").ready(function () {
+            $('#submit').click(function () {
+                var email = $('#emailfield').val();
+                var date = $('#datepicker').val();
+                $("#resultDiv").css('color', 'black');
+                $("#resultDiv").text('The given email is ' + email + ' and the given date is: ' + date);
+            });
         });
-    });
-    
-    $(document).ready(function()
-    {
-        $("#submit").click(function()
-    {
-     var email = $('#emailfield').val()
-     var date = $('#datefield').val()
-     var submitdetails=
-     {
-         type:'POST',
-         url:'/free-available-slot'
-     }
-    });   
-
-    })    
-    
-    
-    
-
-</script>
+    </script>
+</body>
 
 </html>

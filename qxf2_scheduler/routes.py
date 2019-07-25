@@ -6,17 +6,21 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.base_gcal as gcal
 import datetime,sys
+from datetime import timedelta
 
 
 def get_all_events(email_id,fetch_date):
     "Get all the events for a fetched date" 
-    service = gcal.base_gcal()
-    fetch_date = datetime.datetime.strptime(fetch_date,'%Y-%m-%d')
-    fetch_date = fetch_date.isoformat() + 'Z'
+    service = gcal.base_gcal()    
+    start_date = datetime.datetime.strptime(fetch_date,'%Y-%m-%d')
+    end_date = start_date + timedelta(days=1)
+    start_date = start_date.isoformat() + 'Z'
+    end_date = end_date.isoformat() + 'Z'
+    
     #now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     print('Getting the upcoming 10 events')
-    events_result = service.events().list(calendarId=email_id, timeMin=fetch_date,
-                                        maxResults=10, singleEvents=True,
+    events_result = service.events().list(calendarId=email_id, timeMin=start_date,
+                                        maxResults=10, timeMax=end_date,singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
 
@@ -36,8 +40,7 @@ def date_picker():
             return render_template('get-schedule.html')
     if request.method == 'POST':         
         email=request.form.get('email')
-        date=request.form.get('date') 
-        #events = gcal.base_gcal(email)
+        date=request.form.get('date')        
         all_events = get_all_events(email,date)       
         api_response = {"events":all_events,"email":email}
         return jsonify(api_response)

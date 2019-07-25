@@ -14,7 +14,7 @@ from google.auth.transport.requests import Request
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
-def main(email_id):
+def base_gcal():
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -33,26 +33,5 @@ def main(email_id):
             print("Your credentials to access Google Calendar are not setup correctly")
     service = build('calendar', 'v3', credentials=creds)
 
-    # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print('Getting the upcoming 10 events')
-    events_result = service.events().list(calendarId=email_id, timeMin=now,
-                                        maxResults=10, singleEvents=True,
-                                        orderBy='startTime').execute()
-    events = events_result.get('items', [])
-
-    if not events:
-        print('No upcoming events found.')
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
-
-    return events
-
-if __name__ == '__main__':
-    if len(sys.argv)>1:
-        email_id = sys.argv[1]
-        main(email_id)
-    else:
-        print("USAGE: %s your@domain.com\nEXAMPLE: %s test@qxf2.com\n"%(__file__,__file__))
-
+    return service
+    

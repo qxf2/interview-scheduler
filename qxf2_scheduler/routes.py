@@ -14,9 +14,8 @@ def date_picker():
     if request.method == 'POST':
         email = request.form.get('email')
         date = request.form.get('date')
-        all_events = my_scheduler.get_all_events(email, date)
-        free_events = my_scheduler.get_free_events(email, date)
-        api_response = {"events": free_events, "email": email}
+        free_slots = my_scheduler.get_free_slots_for_date(email, date)
+        api_response = {"free_slots": free_slots, "email": email, "date": date}
         return jsonify(api_response)
 
 

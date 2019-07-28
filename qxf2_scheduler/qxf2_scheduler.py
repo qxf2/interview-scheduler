@@ -3,7 +3,7 @@ This module contains business logic that wraps around the Google calendar module
 We use this extensively in the routes.py of the qxf2_scheduler application
 """
 
-import base_gcal as gcal
+import qxf2_scheduler.base_gcal as gcal
 import datetime
 from datetime import timedelta
 import pytz
@@ -66,6 +66,18 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
 
     return busy_slots
 
+def get_free_slots_for_date(email_id,fetch_date,debug=False):
+    "Return a list of free slots for a given date and email"
+    service = gcal.base_gcal()
+    busy_slots = get_busy_slots_for_date(email_id,fetch_date,debug=debug)
+    day_start = process_time_to_gcal(fetch_date,DAY_START_HOUR)
+    day_end = process_time_to_gcal(fetch_date,DAY_END_HOUR)
+    free_slots = get_free_slots(busy_slots,day_start,day_end)
+    processed_free_slots = []
+    for i in range(0,len(free_slots),2):
+        processed_free_slots.append({'start':process_only_time_from_str(free_slots[i]),'end':process_only_time_from_str(free_slots[i+1])})
+        
+    return processed_free_slots
 
 def get_events_for_date(email_id, fetch_date, maxResults=240,debug=False):
     "Get all the events for a fetched date"
@@ -84,19 +96,24 @@ def process_time_to_gcal(given_date,hour_offset=None):
 
     return processed_date
 
+def process_only_time_from_str(date):
+    "Process and return only the time stamp from a given string"
+    #Typical date string: 2019-07-29T15:30:00+05:30
+    #Replace this with strptime
+    timestamp = datetime.datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+05:30')
+    return timestamp.strftime('%H') + ':' + timestamp.strftime('%M')
+
 
 #----START OF SCRIPT
 if __name__ == '__main__':
     email = 'mak@qxf2.com'
     date = '2019-07-29'
-    print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
-    get_events_for_date(email, date, debug=True)
-    print("\n=====HOW TO GET BUSY SLOTS=====")
-    busy_slots = get_busy_slots_for_date(email,date,debug=True)
+    #print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
+    #get_events_for_date(email, date, debug=True)
+    #print("\n=====HOW TO GET BUSY SLOTS=====")
+    #busy_slots = get_busy_slots_for_date(email,date,debug=True)
     print("\n=====HOW TO GET FREE SLOTS=====")
-    day_start = process_time_to_gcal(date,DAY_START_HOUR)
-    day_end = process_time_to_gcal(date,DAY_END_HOUR)
-    free_slots = get_free_slots(busy_slots,day_start,day_end)
+    free_slots = get_free_slots_for_date(email,date)
     print("Free slots for {email} on {date} are:".format(email=email, date=date))
     for i in range(0,len(free_slots),2):
         print(free_slots[i],'-',free_slots[i+1])

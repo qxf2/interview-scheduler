@@ -16,10 +16,11 @@ from google.auth.transport.requests import Request
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 TIMEZONE = 'UTC+5:30'
+DATETIME_FORMAT = '%Y-%m-%d'
 
-def process_date_string(date,format='%Y-%m-%d'):
+def process_date_string(date,format=DATETIME_FORMAT):
     "Return a date time object we want for a given date string format"
-    return datetime.datetime.strptime(date, '%Y-%m-%d')
+    return datetime.datetime.strptime(date,DATETIME_FORMAT)
 
 def process_date_isoformat(date,format='Z'):
     "Convert the date to isoformat"

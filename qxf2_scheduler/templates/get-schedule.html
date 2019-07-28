@@ -89,7 +89,13 @@
                         $('#datepicker').css('border', 'solid 2px rgb(238,238,238)');
                         $("#resultDiv").css('color', 'black');
                         console.log(result);
-                        $("#resultDiv").text('The given email is ' + result.email + ' and the free slots are: ' + result.events);
+                        freeSlots = result.free_slots;
+                        //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
+                        var msg = '<br>';
+                        for(index in freeSlots){
+                            msg += freeSlots[index].start + ' - ' + freeSlots[index].end + '<br>' ;
+                        }
+                        $("#resultDiv").html('The free slots for ' + result.email + ' on ' + result.date + ' are: ' + msg);
                     });
 
                 }

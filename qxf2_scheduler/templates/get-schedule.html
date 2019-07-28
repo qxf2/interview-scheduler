@@ -92,10 +92,15 @@
                         freeSlots = result.free_slots;
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';
-                        for(index in freeSlots){
-                            msg += freeSlots[index].start + ' - ' + freeSlots[index].end + '<br>' ;
+                        if(freeSlots.length == 0){
+                            msg += 'There were no free slots for ' + result.email + ' on ' + result.date
+                        }else{
+                            msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: '
+                            for(index in freeSlots){
+                                msg += freeSlots[index].start + ' - ' + freeSlots[index].end + '<br>' ;
+                            }
                         }
-                        $("#resultDiv").html('The free slots for ' + result.email + ' on ' + result.date + ' are: ' + msg);
+                        $("#resultDiv").html(msg);
                     });
 
                 }

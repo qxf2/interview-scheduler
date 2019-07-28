@@ -33,6 +33,12 @@ def is_qxf2_holiday(date):
 
     return result_flag
 
+def is_weekend(date):
+    "Is this a weekend?"
+    date = gcal.process_date_string(date)
+    day = date.weekday()
+    print('~~~~',day)
+    return True if day==5 or day==6 else False 
 
 def get_free_slots(busy_slots, day_start, day_end):
     "Return the free slots"

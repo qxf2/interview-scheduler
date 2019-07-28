@@ -61,8 +61,17 @@
         }
     </script>
     <script>
+        //Src for holidays: https://stackoverflow.com/questions/15400775/jquery-ui-datepicker-disable-array-of-dates
         $(function () {
-                $("#datepicker").datepicker({ minDate: 0 });
+                //holidays in yyyy-mm-dd format
+                var holidays = ['2019-01-01','2019-01-15','2019-03-04','2019-05-01','2019-08-15','2019-09-02','2019-10-02','2019-10-08','2019-11-01'];
+                $("#datepicker").datepicker({ 
+                    minDate: 0,
+                    beforeShowDay: function(date){
+                        var string = jQuery.datepicker.formatDate('yy-mm-dd', date);
+                        return [ holidays.indexOf(string) == -1 ]
+                    } 
+                });
             });
     </script>
     <script>

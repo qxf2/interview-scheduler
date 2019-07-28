@@ -120,7 +120,7 @@ def process_only_time_from_str(date):
 #----START OF SCRIPT
 if __name__ == '__main__':
     email = 'mak@qxf2.com'
-    date = '2019-07-29'
+    date = '07/29/2019'
     #print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
     #get_events_for_date(email, date, debug=True)
     #print("\n=====HOW TO GET BUSY SLOTS=====")
@@ -128,5 +128,5 @@ if __name__ == '__main__':
     print("\n=====HOW TO GET FREE SLOTS=====")
     free_slots = get_free_slots_for_date(email,date)
     print("Free slots for {email} on {date} are:".format(email=email, date=date))
-    for i in range(0,len(free_slots),2):
-        print(free_slots[i],'-',free_slots[i+1])
+    for slot in free_slots:
+        print(slot['start'],'-',slot['end'])

@@ -6,7 +6,6 @@ We use this extensively in the routes.py of the qxf2_scheduler application
 import qxf2_scheduler.base_gcal as gcal
 import datetime
 from datetime import timedelta
-import pytz
 
 TIMEZONE_STRING = '+05:30'
 DAY_START_HOUR = 9
@@ -16,7 +15,9 @@ def get_free_slots(busy_slots, day_start, day_end):
     "Return the free slots"
     """
     Logic:
-    There are 6 types of use cases for us:
+    1. If busy slots are empty ... set (day_start, day_end) as the interval
+
+    2. There are 6 types of busy slots for us:
     a) A busy slot that ends before day start
         - we ignore
     b) A busy slot that starts after the day end
@@ -31,6 +32,8 @@ def get_free_slots(busy_slots, day_start, day_end):
         - we accept both ends points of this slot
     """
     free_slots = []
+    if len(busy_slots) == 0:
+        free_slots.append(day_start)
     for busy_slot in busy_slots:
         if busy_slot['end'] < day_start:
             continue 

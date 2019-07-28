@@ -33,9 +33,8 @@
                 </div>
                 <div class='form-group'>
                     <div id="holder" class='form-group'></div>
-                    <div id="datepicker1"></div>
                     <label for='Date'>Choose the interview date:</label>
-                    <input type='date' name='datefield' id='datepicker'>
+                    <input type='text' name='datefield' id='datepicker'>
                 </div>
                 <div class='form-group'>
                     <input class="btn btn-success" type='button' id='submit' value='Submit'>
@@ -60,6 +59,11 @@
             }
             return true;
         }
+    </script>
+    <script>
+        $(function () {
+                $("#datepicker").datepicker({ minDate: 0 });
+            });
     </script>
     <script>
         $("document").ready(function () {
@@ -92,14 +96,19 @@
                         freeSlots = result.free_slots;
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';
-                        if(freeSlots.length == 0){
-                            msg += 'There were no free slots for ' + result.email + ' on ' + result.date
-                        }else{
-                            msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: '
-                            for(index in freeSlots){
-                                msg += freeSlots[index].start + ' - ' + freeSlots[index].end + '<br>' ;
-                            }
+                        if (result.hasOwnProperty('error')) {
+                            msg += result.error;
                         }
+                        else {
+                            if (freeSlots.length == 0) {
+                                msg += 'There were no free slots for ' + result.email + ' on ' + result.date
+                            } else {
+                                msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: '
+                                for (index in freeSlots) {
+                                    msg += freeSlots[index].start + ' - ' + freeSlots[index].end + '<br>';
+                                }
+                            }//end of if freeSlots is empty
+                        }//end of no error key found
                         $("#resultDiv").html(msg);
                     });
 

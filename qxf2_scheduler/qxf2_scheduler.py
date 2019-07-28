@@ -11,6 +11,16 @@ TIMEZONE_STRING = '+05:30'
 DAY_START_HOUR = 9
 DAY_END_HOUR = 17
 
+def is_past_date(date):
+    "Is this date in the past?"
+    result_flag = True
+    date = gcal.process_date_string(date)
+    today = gcal.get_today()
+    if date >= today:
+        result_flag = False
+    
+    return result_flag
+
 def get_free_slots(busy_slots, day_start, day_end):
     "Return the free slots"
     """

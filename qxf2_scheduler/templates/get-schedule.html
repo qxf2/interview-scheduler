@@ -103,7 +103,7 @@
                             if (freeSlots.length == 0) {
                                 msg += 'There were no free slots for ' + result.email + ' on ' + result.date
                             } else {
-                                msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: '
+                                msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>'
                                 for (index in freeSlots) {
                                     msg += freeSlots[index].start + ' - ' + freeSlots[index].end + '<br>';
                                 }

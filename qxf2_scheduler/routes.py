@@ -15,11 +15,14 @@ def date_picker():
     if request.method == 'POST':
         email = request.form.get('email')
         date = request.form.get('date')
-        if '@' + DOMAIN == email[-9:]:
+        if '@' + DOMAIN != email[-9:]:
+            api_response = {'error':'This application will only work for emails ending in @{domain}'.format(domain=DOMAIN)}
+        elif my_scheduler.is_past_date(date):
+            api_response = {'error':'You can only get schedules for today or later'}
+        else:
             free_slots = my_scheduler.get_free_slots_for_date(email, date)
             api_response = {'free_slots': free_slots, 'email': email, 'date': date}
-        else:
-            api_response = {'error':'This application will only work for emails ending in @{domain}'.format(domain=DOMAIN)}
+
         return jsonify(api_response)
 
 

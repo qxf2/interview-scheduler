@@ -14,7 +14,17 @@ from google.auth.transport.requests import Request
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 TIMEZONE = 'UTC+5:30'
-DATETIME_FORMAT = '%Y-%m-%d'
+DATETIME_FORMAT = '%m/%d/%Y'
+
+
+def get_today():
+    "Return today in a datetime format consistent with DATETIME_FORMAT"
+    today = datetime.datetime.now()
+    today = today.strftime(DATETIME_FORMAT)
+    today = datetime.datetime.strptime(today,DATETIME_FORMAT)
+
+    return today
+
 
 def process_date_string(date,format=DATETIME_FORMAT):
     "Return a date time object we want for a given date string format"

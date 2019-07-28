@@ -13,9 +13,9 @@ from google.auth.transport.requests import Request
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-TIMEZONE = 'UTC+5:30'
+TIMEAHEAD = '+05:30'
+TIMEZONE = 'UTC'+TIMEAHEAD
 DATETIME_FORMAT = '%m/%d/%Y'
-
 
 def get_today():
     "Return today in a datetime format consistent with DATETIME_FORMAT"
@@ -25,12 +25,11 @@ def get_today():
 
     return today
 
-
 def process_date_string(date,format=DATETIME_FORMAT):
     "Return a date time object we want for a given date string format"
     return datetime.datetime.strptime(date,DATETIME_FORMAT)
 
-def process_date_isoformat(date,format='Z'):
+def process_date_isoformat(date,format=TIMEAHEAD):
     "Convert the date to isoformat"
     return date.isoformat() + format 
 
@@ -58,10 +57,9 @@ def base_gcal():
 def get_events_for_date(service,email_id,fetch_date,maxResults=240,debug=False):
     "Return up to a maximum of maxResults events for a given date and email id"
     start_date = process_date_string(fetch_date)
-    end_date = start_date + timedelta(days=1)
+    end_date = start_date.replace(hour=23,minute=59)
     start_date = process_date_isoformat(start_date)
     end_date = process_date_isoformat(end_date)
-
     if debug:
         print('Getting the upto a maximum of {maxResults} upcoming events'.format(maxResults=maxResults))
     events_result = service.events().list(calendarId=email_id, timeMin=start_date,
@@ -81,7 +79,7 @@ def get_events_for_date(service,email_id,fetch_date,maxResults=240,debug=False):
 def get_busy_slots_for_date(service,email_id,fetch_date,timeZone=TIMEZONE,debug=False):
     "Return free/busy for a given date"
     start_date = process_date_string(fetch_date) 
-    end_date = start_date + timedelta(days=1)
+    end_date = start_date.replace(hour=23,minute=59)
     start_date = process_date_isoformat(start_date)
     end_date = process_date_isoformat(end_date)
     body = {
@@ -98,3 +96,13 @@ def get_busy_slots_for_date(service,email_id,fetch_date,timeZone=TIMEZONE,debug=
             print(slot['start'],' - ', slot['end'])
 
     return busy_slots
+
+def make_day_busy(fetch_date):
+    "Return the entire day as busy"
+    start_date = process_date_string(fetch_date)
+    end_date = start_date.replace(hour=23,minute=59)
+    start_date = process_date_isoformat(start_date)
+    end_date = process_date_isoformat(end_date)
+    busy_slots=[{'start':start_date,'end':end_date}]
+
+    return busy_slots    

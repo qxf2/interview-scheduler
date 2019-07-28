@@ -73,9 +73,19 @@ def get_free_slots(busy_slots, day_start, day_end):
     return free_slots
 
 def get_busy_slots_for_date(email_id,fetch_date,debug=False):
-    "Get the free events for a given date"
+    "Get the busy slots for a given date"
     service = gcal.base_gcal()
-    busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
+    all_events = gcal.get_events_for_date(service,email_id,fetch_date)
+    pto_flag = False
+    for event in all_events:
+        if 'summary' in event.keys():
+            if 'PTO' in event['summary']:
+                pto_flag = True 
+                break
+    if pto_flag:
+        busy_slots = gcal.make_day_busy(fetch_date)
+    else:
+        busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
 
     return busy_slots
 
@@ -112,19 +122,18 @@ def process_time_to_gcal(given_date,hour_offset=None):
 def process_only_time_from_str(date):
     "Process and return only the time stamp from a given string"
     #Typical date string: 2019-07-29T15:30:00+05:30
-    #Replace this with strptime
     timestamp = datetime.datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+05:30')
     return timestamp.strftime('%H') + ':' + timestamp.strftime('%M')
 
 
 #----START OF SCRIPT
 if __name__ == '__main__':
-    email = 'mak@qxf2.com'
+    email = 'indira@qxf2.com'
     date = '07/29/2019'
-    #print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
-    #get_events_for_date(email, date, debug=True)
-    #print("\n=====HOW TO GET BUSY SLOTS=====")
-    #busy_slots = get_busy_slots_for_date(email,date,debug=True)
+    print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
+    get_events_for_date(email, date, debug=True)
+    print("\n=====HOW TO GET BUSY SLOTS=====")
+    busy_slots = get_busy_slots_for_date(email,date,debug=True)
     print("\n=====HOW TO GET FREE SLOTS=====")
     free_slots = get_free_slots_for_date(email,date)
     print("Free slots for {email} on {date} are:".format(email=email, date=date))

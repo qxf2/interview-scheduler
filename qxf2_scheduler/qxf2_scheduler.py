@@ -51,7 +51,7 @@ def get_free_slots(busy_slots, day_start, day_end):
             continue 
         elif busy_slot['start'] <= day_start and busy_slot['end'] >= day_end:
             break 
-        elif busy_slot['start'] < day_start and busy_slot['end'] < day_end:
+        elif busy_slot['start'] <= day_start and busy_slot['end'] < day_end:
             free_slots.append(busy_slot['end'])
         elif busy_slot['start'] > day_start and busy_slot['end'] > day_end:
             free_slots.append(busy_slot['start'])

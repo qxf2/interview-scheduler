@@ -46,14 +46,22 @@ def get_free_slots(busy_slots, day_start, day_end):
         free_slots.append(day_start)
     for busy_slot in busy_slots:
         if busy_slot['end'] < day_start:
-            continue 
+            if busy_slots[-1]==busy_slot:
+                if len(free_slots) == 0:
+                    free_slots.append(day_start)
+            else:
+                continue
         elif busy_slot['start'] > day_end:
-            continue 
+            if len(free_slots) == 0:
+                free_slots.append(day_start)
         elif busy_slot['start'] <= day_start and busy_slot['end'] >= day_end:
             break 
         elif busy_slot['start'] <= day_start and busy_slot['end'] < day_end:
             free_slots.append(busy_slot['end'])
         elif busy_slot['start'] > day_start and busy_slot['end'] > day_end:
+            #At this point the day has started
+            if len(free_slots) == 0:
+                free_slots.append(day_start)
             free_slots.append(busy_slot['start'])
         else:
             #If we make it this far and free_slots is still empty

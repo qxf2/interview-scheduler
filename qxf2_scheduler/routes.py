@@ -5,6 +5,7 @@ This file contains all the endpoints exposed by the interview scheduler applicat
 from flask import render_template, url_for, flash, redirect, jsonify, request, Response
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
+import sys
 DOMAIN = 'qxf2.com'
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
@@ -24,8 +25,10 @@ def date_picker():
         elif my_scheduler.is_weekend(date):
             api_response = {'error':'Qxf2 does not work on weekends. Please pick another day.'}
         else:
-            free_slots = my_scheduler.get_free_slots_for_date(email, date)
-            api_response = {'free_slots': free_slots, 'email': email, 'date': date}
+            free_slots = my_scheduler.get_free_slots_for_date(email, date)            
+            free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(free_slots)            
+            api_response = {'free_slots_in_chunks':free_slots_in_chunks,'email': email, 'date': date}
+            
 
         return jsonify(api_response)
 

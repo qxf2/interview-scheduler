@@ -47,6 +47,8 @@ def main(email_id):
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
 
+    return events
+
 if __name__ == '__main__':
     if len(sys.argv)>1:
         email_id = sys.argv[1]

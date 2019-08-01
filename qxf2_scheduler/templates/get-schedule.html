@@ -1,0 +1,121 @@
+<html>
+
+<head>
+    <title>
+        Welcome to Interview Scheduler Application
+    </title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="container col-md-offset-1">
+        <div class="row top-space-30">
+            <form>
+                <div class='form-group'>
+                    <label for='candidatesemail'>Your email: </label>
+                    <input name='emailfield' type='text' class='form-group' id="emailfield"
+                        onblur="validateEmail(this);" />
+                </div>
+                <div class='form-group'>
+                    <div id="holder" class='form-group'></div>
+                    <label for='Date'>Choose the interview date:</label>
+                    <input type='text' name='datefield' id='datepicker'>
+                </div>
+                <div class='form-group'>
+                    <input class="btn btn-success" type='button' id='submit' value='Submit'>
+                </div>
+            </form>
+        </div>
+        <div class="row top-space-30" id="resultDiv">
+        </div>
+    </div>
+
+    <script>
+        function validateEmail(emailfield) {
+            var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+            $('#emailfield').css('border', 'solid 2px rgb(238,238,238)');
+            $('#resultDiv').css('color', 'black');
+            $('#resultDiv').text('');
+            if (reg.test(emailfield.value) == false) {
+                $('#emailfield').css('border', 'solid 2px red');
+                $('#resultDiv').css('color', 'red');
+                $('#resultDiv').text('Invalid Email Address')
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <script>
+        $(function () {
+                $("#datepicker").datepicker({ minDate: 0 });
+            });
+    </script>
+    <script>
+        $("document").ready(function () {
+            $('#submit').click(function () {
+                var email = $('#emailfield').val();
+                var date = $('#datepicker').val();
+                if (email == "") {
+                    $('#emailfield').css('border', 'solid 2px red');
+                    $('#resultDiv').css('color', 'red');
+                    $('#resultDiv').text('Invalid Email Address')
+                } else if (date == "") {
+                    $('#datepicker').css('border', 'solid 2px red');
+                    $('#resultDiv').css('color', 'red');
+                    $('#resultDiv').text('Invalid date')
+                }
+                else {
+                    var callDetails = {
+                        type: 'POST',
+                        url: '/get-schedule',
+                        data: {
+                            'email': email,
+                            'date': date
+                        }
+                    };
+                    $.ajax(callDetails).done(function (result) {
+                        $('#emailfield').css('border', 'solid 2px rgb(238,238,238)');
+                        $('#datepicker').css('border', 'solid 2px rgb(238,238,238)');
+                        $("#resultDiv").css('color', 'black');
+                        console.log(result);
+                        freeSlots = result.free_slots;
+                        //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
+                        var msg = '<br>';
+                        if (result.hasOwnProperty('error')) {
+                            msg += result.error;
+                        }
+                        else {
+                            if (freeSlots.length == 0) {
+                                msg += 'There were no free slots for ' + result.email + ' on ' + result.date
+                            } else {
+                                msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>'
+                                for (index in freeSlots) {
+                                    msg += freeSlots[index].start + ' - ' + freeSlots[index].end + '<br>';
+                                }
+                            }//end of if freeSlots is empty
+                        }//end of no error key found
+                        $("#resultDiv").html(msg);
+                    });
+
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

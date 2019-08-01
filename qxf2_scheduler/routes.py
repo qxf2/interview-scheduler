@@ -18,7 +18,11 @@ def date_picker():
         if '@' + DOMAIN != email[-9:]:
             api_response = {'error':'This application will only work for emails ending in @{domain}'.format(domain=DOMAIN)}
         elif my_scheduler.is_past_date(date):
-            api_response = {'error':'You can only get schedules for today or later'}
+            api_response = {'error':'You can only get schedules for today or later.'}
+        elif my_scheduler.is_qxf2_holiday(date):
+            api_response = {'error':'The date you have provided is a Qxf2 holiday. Please pick another day.'}
+        elif my_scheduler.is_weekend(date):
+            api_response = {'error':'Qxf2 does not work on weekends. Please pick another day.'}
         else:
             free_slots = my_scheduler.get_free_slots_for_date(email, date)
             api_response = {'free_slots': free_slots, 'email': email, 'date': date}

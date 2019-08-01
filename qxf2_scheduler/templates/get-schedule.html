@@ -34,7 +34,8 @@
                 <div class='form-group'>
                     <div id="holder" class='form-group'></div>
                     <label for='Date'>Choose the interview date:</label>
-                    <input type='text' name='datefield' id='datepicker'>
+                    <!--Src for disable keyboard: https://stackoverflow.com/questions/153759/jquery-datepicker-with-text-input-that-doesnt-allow-user-input-->
+                    <input type='text' name='datefield' id='datepicker' readonly='true'>
                 </div>
                 <div class='form-group'>
                     <input class="btn btn-success" type='button' id='submit' value='Submit'>
@@ -61,8 +62,27 @@
         }
     </script>
     <script>
+        
         $(function () {
-                $("#datepicker").datepicker({ minDate: 0 });
+                //holidays in yyyy-mm-dd format
+                var holidays = ['2019-01-01','2019-01-15','2019-03-04','2019-05-01','2019-08-15','2019-09-02','2019-10-02','2019-10-08','2019-11-01'];
+                $("#datepicker").datepicker({ 
+                    minDate: 0,
+                    beforeShowDay: isHoliday
+                });
+                function isHoliday (date) {
+                    //Src: https://stackoverflow.com/questions/501943/can-the-jquery-ui-datepicker-be-made-to-disable-saturdays-and-sundays-and-holid
+                    var day = date.getDay(), Sunday = 0, Monday = 1, Tuesday = 2, Wednesday = 3, Thursday = 4, Friday = 5, Saturday = 6;
+                    var closedDays = [[Saturday], [Sunday]];
+                    for (var i = 0; i < closedDays.length; i++) {
+                        if (day == closedDays[i][0]) {
+                            return [false];
+                        }
+                    }
+                    //Src: //Src for holidays: https://stackoverflow.com/questions/15400775/jquery-ui-datepicker-disable-array-of-dates
+                    var string = jQuery.datepicker.formatDate('yy-mm-dd', date);
+                    return [ holidays.indexOf(string) == -1 ]   
+                }
             });
     </script>
     <script>

@@ -21,6 +21,25 @@ def is_past_date(date):
     
     return result_flag
 
+def is_qxf2_holiday(date):
+    "Is this date a Qxf2 holiday?"
+    holidays = ['2019-01-01','2019-01-15','2019-03-04','2019-05-01','2019-08-15','2019-09-02','2019-10-02','2019-10-08','2019-11-01']
+    #Holiday date format is different to keep it consistent with the JavaScript
+    #That way, you can copy paste the same array between the html and here
+    holiday_format = '%Y-%m-%d'
+    date = gcal.process_date_string(date,holiday_format)
+    date = date.strftime(holiday_format)
+    result_flag = True if date in holidays else False
+
+    return result_flag
+
+def is_weekend(date):
+    "Is this a weekend?"
+    date = gcal.process_date_string(date)
+    day = date.weekday()
+    print('~~~~',day)
+    return True if day==5 or day==6 else False 
+
 def get_free_slots(busy_slots, day_start, day_end):
     "Return the free slots"
     """

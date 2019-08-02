@@ -12,7 +12,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
 # If modifying these scopes, delete the file token.pickle.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar','https://www.googleapis.com/auth/calendar.events']
 TIMEAHEAD = '+05:30'
 TIMEZONE = 'UTC'+TIMEAHEAD
 DATETIME_FORMAT = '%m/%d/%Y'
@@ -105,4 +105,36 @@ def make_day_busy(fetch_date):
     end_date = process_date_isoformat(end_date)
     busy_slots=[{'start':start_date,'end':end_date}]
 
-    return busy_slots    
+    return busy_slots
+
+
+def create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time):
+    "Create an event for a particular date and time"
+    event = {
+            'summary': 'Scheduling an Interview',
+            'location': 'Google Hangout or Office',
+            'description': 'Scheduling an interview',
+            'start': {
+                'dateTime': create_event_start_time,
+                'timeZone': TIMEZONE,
+            },
+            'end': {
+                'dateTime': create_event_end_time,
+                'timeZone': TIMEZONE,
+            },            
+            'attendees': [
+                {'email': 'annapoorani@qxf2.com'},
+                
+            ],
+            'reminders': {
+                'useDefault': False,
+                'overrides': [
+                {'method': 'email', 'minutes': 24 * 60},
+                {'method': 'popup', 'minutes': 10},
+                ],
+            },
+            }
+
+    event = service.events().insert(calendarId=email, body=event).execute()
+    print ('Event created: %s' % (event.get('htmlLink')))
+    return event 

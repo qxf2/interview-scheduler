@@ -4,7 +4,6 @@ We use this extensively in the routes.py of the qxf2_scheduler application
 """
 
 import qxf2_scheduler.base_gcal as gcal
-#import base_gcal as gcal
 import datetime
 from datetime import timedelta
 

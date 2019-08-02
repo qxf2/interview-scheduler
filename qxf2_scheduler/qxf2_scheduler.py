@@ -3,7 +3,8 @@ This module contains business logic that wraps around the Google calendar module
 We use this extensively in the routes.py of the qxf2_scheduler application
 """
 
-import qxf2_scheduler.base_gcal as gcal
+#import qxf2_scheduler.base_gcal as gcal
+import base_gcal as gcal
 import datetime
 from datetime import timedelta
 
@@ -11,6 +12,7 @@ TIMEZONE_STRING = '+05:30'
 DAY_START_HOUR = 9
 DAY_END_HOUR = 17
 FMT='%H:%M'
+CHUNK_DURATION = '30'
 
 def convert_string_into_time(alloted_slots):
     "Converting the given string into time"
@@ -96,7 +98,7 @@ def get_free_slots_in_chunks(free_slots):
             #Find the difference between start and end slot
             diff_between_slots = convert_string_into_time(free_slot_end) - convert_string_into_time(free_slot_start)
             
-            if diff_between_slots >= timedelta(minutes=30):
+            if diff_between_slots >= timedelta(minutes=int(CHUNK_DURATION)):
                 modified_free_slot_start = get_modified_free_slot_start(free_slot_start,marker='30')
                 modified_free_slot_end = get_modified_free_slot_end(free_slot_end,marker='30')
                 chunk_slots = modified_free_slot_start               

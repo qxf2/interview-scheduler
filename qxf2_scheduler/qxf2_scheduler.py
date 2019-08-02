@@ -3,7 +3,8 @@ This module contains business logic that wraps around the Google calendar module
 We use this extensively in the routes.py of the qxf2_scheduler application
 """
 
-import qxf2_scheduler.base_gcal as gcal
+#import qxf2_scheduler.base_gcal as gcal
+import base_gcal as gcal
 import datetime
 from datetime import timedelta
 
@@ -52,6 +53,22 @@ def is_weekend(date):
     day = date.weekday()
     print('~~~~',day)
     return True if day==5 or day==6 else False
+
+def convert_combined_string_into_isoformat(create_event_timings_and_date):
+    "Converting the string into iso format"
+    converted_create_event_date_and_time = datetime.datetime.strptime(create_event_timings_and_date,"%m/%d/%Y%H:%M").isoformat()
+
+    return converted_create_event_date_and_time
+
+def create_event_for_fetched_date_and_time(email,date,selected_slot):
+    "Create an event for fetched date and time"
+    service = gcal.base_gcal()
+    start_time = selected_slot['start']
+    end_time = selected_slot['end']
+    create_event_start_time =  convert_combined_string_into_isoformat((date + start_time)) 
+    create_event_end_time = convert_combined_string_into_isoformat((date + end_time))    
+    create_event = gcal.create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time)
+    print(create_event)
 
 
 def get_modified_free_slot_start(free_slot_start,marker):
@@ -253,7 +270,7 @@ def process_only_time_from_str(date):
 
 #----START OF SCRIPT
 if __name__ == '__main__':
-    email = 'mak@qxf2.com'
+    email = 'test@qxf2.com'
     date = '08/2/2019'
     print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
     get_events_for_date(email, date, debug=True)
@@ -268,4 +285,7 @@ if __name__ == '__main__':
     print("\n=====HOW TO GET FREE SLOTS IN CHUNKS=====")
     #free_slots = [{'start': '09:00', 'end': '12:35'}, {'start': '13:00', 'end': '13:30'},{'start': '15:00', 'end': '16:30'}]
     free_slots_in_chunks = get_free_slots_in_chunks(free_slots)
-    print(free_slots_in_chunks)    
+    print(free_slots_in_chunks) 
+    print(date,type(date))    
+    print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
+    event_created_slot = create_event_for_fetched_date_and_time(email,date,selected_slot=free_slots_in_chunks[2])   

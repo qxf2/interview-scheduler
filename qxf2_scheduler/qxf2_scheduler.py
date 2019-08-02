@@ -52,6 +52,34 @@ def is_weekend(date):
     return True if day==5 or day==6 else False
 
 
+def get_modified_free_slot_start(free_slot_start,marker='30'):
+    "Modifiying the free slot start to 00 or 30"
+    if free_slot_start[-2:]=='00':
+        modified_free_slot_start = free_slot_start
+    elif free_slot_start[-2:] <= '30':
+        modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '30')
+        
+    elif free_slot_start[-2:] > '30':
+        free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
+        modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
+        modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)   
+
+    return modified_free_slot_start
+
+def get_modified_free_slot_end(free_slot_end,marker='30'):
+    "Modifiying the free slot start to 00 or 30"
+    if free_slot_end[-2:]=='00' or free_slot_end[-2:]=='30' :
+        modified_free_slot_end = free_slot_end                    
+
+    elif free_slot_end[-2:] <'30':                    
+        modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
+        
+    elif free_slot_end[-2:] > '30':
+        modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '30')
+
+    return modified_free_slot_end 
+
+
 def get_free_slots_in_chunks(free_slots):
     "Return the free slots in 30 minutes interval"
     #Appending the 30 minutes slot into list
@@ -68,29 +96,10 @@ def get_free_slots_in_chunks(free_slots):
             #Find the difference between start and end slot
             diff_between_slots = convert_string_into_time(free_slot_end) - convert_string_into_time(free_slot_start)
             
-            if diff_between_slots >= timedelta(minutes=30):                
-                if free_slot_start[-2:]=='00':
-                    modified_free_slot_start = free_slot_start                    
-
-                elif free_slot_start[-2:] <= '30':
-                    modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '30')
-                    
-                elif free_slot_start[-2:] > '30':
-                    free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
-                    modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
-                    modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
-                    
-                chunk_slots = modified_free_slot_start
-
-                if free_slot_end[-2:]=='00' or free_slot_end[-2:]=='30' :
-                    modified_free_slot_end = free_slot_end                    
-
-                elif free_slot_end[-2:] <'30':                    
-                    modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
-                    
-                elif free_slot_end[-2:] > '30':
-                    modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '30')                    
-                
+            if diff_between_slots >= timedelta(minutes=30):
+                modified_free_slot_start = get_modified_free_slot_start(free_slot_start,marker='30')
+                modified_free_slot_end = get_modified_free_slot_end(free_slot_end,marker='30')
+                chunk_slots = modified_free_slot_start               
                 result_flag = True
                 idx=0 
                 chunk_slot_list = []                 
@@ -236,7 +245,7 @@ def process_only_time_from_str(date):
 #----START OF SCRIPT
 if __name__ == '__main__':
     email = 'mak@qxf2.com'
-    date = '08/1/2019'
+    date = '08/2/2019'
     print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
     get_events_for_date(email, date, debug=True)
     print("\n=====HOW TO GET BUSY SLOTS=====")

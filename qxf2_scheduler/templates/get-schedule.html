@@ -113,9 +113,7 @@
                     $.ajax(callDetails).done(function (result) {
                         $('#emailfield').css('border', 'solid 2px rgb(238,238,238)');
                         $('#datepicker').css('border', 'solid 2px rgb(238,238,238)');
-                        $("#resultDiv").css('color', 'black');
-                        console.log(result);
-                        freeSlots = result.free_slots;
+                        $("#resultDiv").css('color', 'black');                        
                         freeChunkSlots = result.free_slots_in_chunks
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';

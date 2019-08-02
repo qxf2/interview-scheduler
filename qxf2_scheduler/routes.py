@@ -5,7 +5,6 @@ This file contains all the endpoints exposed by the interview scheduler applicat
 from flask import render_template, url_for, flash, redirect, jsonify, request, Response
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
-import sys
 DOMAIN = 'qxf2.com'
 
 @app.route("/get-schedule", methods=['GET', 'POST'])

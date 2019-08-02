@@ -86,12 +86,12 @@ def get_free_slots_in_chunks(free_slots):
     if free_slots == None:
         print("There are no more free slots available for this user")    
     else:        
-        chunk_time_interval = []        
-        for i in  range(0,len(free_slots)):
-            #Initializing the free slot end            
-            free_slot_start = free_slots[i]['start']
-            #Intializing the next free slot start        
-            free_slot_end = free_slots[i]['end']
+        chunk_time_interval = []                
+        for free_slot in  free_slots:
+            #Initializing the free slot start            
+            free_slot_start = free_slot['start']
+            #Intializing the next free slot end        
+            free_slot_end = free_slot['end']
             
             #Find the difference between start and end slot
             diff_between_slots = convert_string_into_time(free_slot_end) - convert_string_into_time(free_slot_start)

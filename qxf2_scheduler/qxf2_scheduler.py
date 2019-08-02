@@ -68,6 +68,7 @@ def get_modified_free_slot_start(free_slot_start,marker):
 
     return modified_free_slot_start
 
+
 def get_modified_free_slot_end(free_slot_end,marker):
     "Modifiying the free slot start to 00 or 30"
     if free_slot_end[-2:]=='00' or free_slot_end[-2:]==marker :
@@ -80,6 +81,7 @@ def get_modified_free_slot_end(free_slot_end,marker):
         modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], marker)
 
     return modified_free_slot_end
+    
 
 def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_between_slots_after_modified):
     "Divides the free slots into chunks"    
@@ -168,22 +170,14 @@ def get_free_slots(busy_slots, day_start, day_end):
         free_slots.append(day_start)
     for busy_slot in busy_slots:
         if busy_slot['end'] < day_start:
-            if busy_slots[-1]==busy_slot:
-                if len(free_slots) == 0:
-                    free_slots.append(day_start)
-            else:
-                continue
+            continue 
         elif busy_slot['start'] > day_end:
-            if len(free_slots) == 0:
-                free_slots.append(day_start)
-        elif busy_slot['start'] <= day_start and busy_slot['end'] >= day_end:
+            continue 
+        elif busy_slot['start'] < day_start and busy_slot['end'] > day_end:
             break 
-        elif busy_slot['start'] <= day_start and busy_slot['end'] < day_end:
+        elif busy_slot['start'] < day_start and busy_slot['end'] < day_end:
             free_slots.append(busy_slot['end'])
         elif busy_slot['start'] > day_start and busy_slot['end'] > day_end:
-            #At this point the day has started
-            if len(free_slots) == 0:
-                free_slots.append(day_start)
             free_slots.append(busy_slot['start'])
             
         else:
@@ -210,9 +204,7 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     pto_flag = False
     for event in all_events:
         if 'summary' in event.keys():
-            event_name = event['summary'].split(':')[-1].strip()
-            event_name = event_name.split()[0]
-            if 'PTO'.lower() == event_name.lower():
+            if 'PTO' in event['summary']:
                 pto_flag = True 
                 break
     if pto_flag:

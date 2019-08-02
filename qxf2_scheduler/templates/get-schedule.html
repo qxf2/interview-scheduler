@@ -20,6 +20,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+    
 </head>
 
 <body>
@@ -43,6 +44,7 @@
         </div>
         <div class="row top-space-30" id="resultDiv">
         </div>
+        <div class="row top-space-30" id="chosenSlot"></div>
     </div>
 
     <script>
@@ -121,26 +123,34 @@
                         }
                         else {
                             if (freeChunkSlots.length == 0) {
-                                msg += 'There were no free slots for ' + result.email + ' on ' + result.date
+                                msg += 'There were no free slots for ' + result.email + ' on ' + result.date;
                             } else {
-                                msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>'
+                                msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>';
                                 var elements = [];
                                 for (index in freeChunkSlots) {
-                                    var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" class="btn" value="' + freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end +'"></div>');
-                                    elements.push(timeSlotButton);                                                                              
-                                }                                
+                                    slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;
+                                    var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" onclick="displayChosenSlot(\'' + slot + '\')" id="timeSlot" class="btn" value="' + slot + '"></div>');
+                                    elements.push(timeSlotButton);
+                                }
                             }//end of if freeSlots is empty
-                        }//end of no error key found                                            
+                        }//end of no error key found                        
                         $("#resultDiv").html(msg);
-                        if (elements.length > 0){
+                        if (elements.length > 0) {
                             $("#resultDiv").append(elements);
                         }
-                    });
 
+                    });
                 }
             });
         });
     </script>
+    <script>
+        function displayChosenSlot(slot){
+            console.log('In displayChosenSlot()');
+            document.getElementById("chosenSlot").innerHTML=slot;
+        }
+    </script>
+
 </body>
 
 </html>

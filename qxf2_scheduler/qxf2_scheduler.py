@@ -60,16 +60,18 @@ def convert_combined_string_into_isoformat(create_event_timings_and_date):
 
     return converted_create_event_date_and_time
 
-def create_event_for_fetched_date_and_time(email,date,selected_slot):
-    "Create an event for fetched date and time"
-    created_event_info = []
-    service = gcal.base_gcal()
+def combine_date_and_time(date,selected_slot):
+    "Combine the date and selected slot into isoformat"
     start_time = selected_slot['start']
     end_time = selected_slot['end']
     create_event_start_time =  convert_combined_string_into_isoformat((date + start_time)) 
-    create_event_end_time = convert_combined_string_into_isoformat((date + end_time))    
-    create_event = gcal.create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time)
-    #print(create_event)
+    create_event_end_time = convert_combined_string_into_isoformat((date + end_time))
+
+    return create_event_start_time,create_event_end_time
+
+def append_the_create_event_info(create_event):
+    "Appends the created event information into list"
+    created_event_info = []
     event_summary = create_event['summary']
     created_event_info.append(event_summary)
     event_description = create_event['description']
@@ -82,6 +84,16 @@ def create_event_for_fetched_date_and_time(email,date,selected_slot):
     created_event_info.append(event_link)
     
     return created_event_info
+
+
+def create_event_for_fetched_date_and_time(email,date,selected_slot):
+    "Create an event for fetched date and time"    
+    service = gcal.base_gcal()
+    create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
+    create_event = gcal.create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time)
+    created_event_info = append_the_create_event_info(create_event)
+
+    return created_event_info    
 
 
 def get_modified_free_slot_start(free_slot_start,marker):

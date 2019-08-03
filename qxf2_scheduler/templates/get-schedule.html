@@ -38,6 +38,7 @@
                     <input type='text' name='datefield' id='datepicker' readonly='true'>
                 </div>
                 <div class='form-group'>
+                    <input type="hidden" id='valuecheck'>
                     <input class="btn btn-success" type='button' id='submit' value='Submit'>
                 </div>
             </form>
@@ -87,9 +88,10 @@
     </script>
     <script>
         $("document").ready(function () {
-            $('#submit').click(function () {
+            $('#submit').click(function (event) {
+                event.preventDefault();
                 var email = $('#emailfield').val();
-                var date = $('#datepicker').val();
+                var date = $('#datepicker').val();                
                 if (email == "") {
                     $('#emailfield').css('border', 'solid 2px red');
                     $('#resultDiv').css('color', 'red');
@@ -109,6 +111,7 @@
                         }
                     };
                     $.ajax(callDetails).done(function (result) {
+                        localStorage.clear();
                         $('#emailfield').css('border', 'solid 2px rgb(238,238,238)');
                         $('#datepicker').css('border', 'solid 2px rgb(238,238,238)');
                         $("#resultDiv").css('color', 'black');                        
@@ -124,16 +127,30 @@
                             } else {
                                 msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>'
                                 var elements = [];
+                                console.log("Before value check adding 1 wiht the value" + $('#valuecheck').val());
+                                if(($('#valuecheck').val())!="1")
+                                {
                                 for (index in freeChunkSlots) {
                                     var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" class="btn" value="' + freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end +'"></div>');
                                     elements.push(timeSlotButton);                                                                              
-                                }                                
+                                }
+                                
+                                console.log("value check adding 1 wiht the value" + $('#valuecheck').val());
+                                }
+
+                                console.log("Elements length" + elements.length);                                
                             }//end of if freeSlots is empty
-                        }//end of no error key found                                            
+                        }//end of no error key found 
+                        if(($('#valuecheck').val())!="1")
+                            {                                           
                         $("#resultDiv").html(msg);
-                        if (elements.length > 0){
+                        if (elements!="" &&  elements.length > 0){
+                            
                             $("#resultDiv").append(elements);
+                            $('#valuecheck').val("1");
+                            
                         }
+                            }
                     });
 
                 }

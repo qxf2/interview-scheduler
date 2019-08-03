@@ -62,13 +62,26 @@ def convert_combined_string_into_isoformat(create_event_timings_and_date):
 
 def create_event_for_fetched_date_and_time(email,date,selected_slot):
     "Create an event for fetched date and time"
+    created_event_info = []
     service = gcal.base_gcal()
     start_time = selected_slot['start']
     end_time = selected_slot['end']
     create_event_start_time =  convert_combined_string_into_isoformat((date + start_time)) 
     create_event_end_time = convert_combined_string_into_isoformat((date + end_time))    
     create_event = gcal.create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time)
-    print(create_event)
+    #print(create_event)
+    event_summary = create_event['summary']
+    created_event_info.append(event_summary)
+    event_description = create_event['description']
+    created_event_info.append(event_description)
+    event_start = create_event['start']
+    created_event_info.append(event_start)
+    event_end = create_event['end']
+    created_event_info.append(event_end)
+    event_link = create_event['hangoutLink']
+    created_event_info.append(event_link)
+    
+    return created_event_info
 
 
 def get_modified_free_slot_start(free_slot_start,marker):
@@ -271,7 +284,7 @@ def process_only_time_from_str(date):
 #----START OF SCRIPT
 if __name__ == '__main__':
     email = 'test@qxf2.com'
-    date = '08/2/2019'
+    date = '8/13/2019'
     print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
     get_events_for_date(email, date, debug=True)
     print("\n=====HOW TO GET BUSY SLOTS=====")
@@ -288,4 +301,5 @@ if __name__ == '__main__':
     print(free_slots_in_chunks) 
     print(date,type(date))    
     print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
-    event_created_slot = create_event_for_fetched_date_and_time(email,date,selected_slot=free_slots_in_chunks[2])   
+    event_created_slot = create_event_for_fetched_date_and_time(email,date,selected_slot=free_slots_in_chunks[2])
+    print("The event created,The details are",event_created_slot)   

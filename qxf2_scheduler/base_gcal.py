@@ -133,8 +133,19 @@ def create_event_for_fetched_date_and_time(service,email,create_event_start_time
                 {'method': 'popup', 'minutes': 10},
                 ],
             },
+            "conferenceData": 
+            {
+                "createRequest": 
+                {
+                    "conferenceSolutionKey": 
+                    {
+                    "type": "hangoutsMeet"
+                    },
+                "requestId": "kdb-atdx-exx"
+                }
             }
-
+            }
     event = service.events().insert(calendarId=email, body=event).execute()
     print ('Event created: %s' % (event.get('htmlLink')))
+
     return event 

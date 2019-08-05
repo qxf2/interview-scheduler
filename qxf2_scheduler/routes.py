@@ -6,6 +6,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 DOMAIN = 'qxf2.com'
+import sys
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
@@ -25,12 +26,19 @@ def date_picker():
             api_response = {'error':'Qxf2 does not work on weekends. Please pick another day.'}
         else:
             free_slots = my_scheduler.get_free_slots_for_date(email, date)            
-            free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(free_slots)            
+            free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(free_slots)                 
             api_response = {'free_slots_in_chunks':free_slots_in_chunks,'email': email, 'date': date}
+        picked_slot = request.args.get('pickedSlot')
+        print(picked_slot,file=sys.stderr)     
+            #if request.method == 'POST':
+            #return redirect('/picked-slot')
             
+    return jsonify(api_response)
 
-        return jsonify(api_response)
-
+@app.route("/confirmation",methods=['Post'])
+def scehdule_and_confirm():
+    "Schedule an event and display confirmation"
+    return jsonify({'slot':request.form.get('slot')})
 
 @app.route("/")
 def index():

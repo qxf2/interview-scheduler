@@ -20,7 +20,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-    
+
 </head>
 
 <body>
@@ -92,6 +92,8 @@
             $('#submit').click(function () {
                 var email = $('#emailfield').val();
                 var date = $('#datepicker').val();
+                var elements = [];
+                $("#resultDiv").empty();
                 if (email == "") {
                     $('#emailfield').css('border', 'solid 2px red');
                     $('#resultDiv').css('color', 'red');
@@ -113,7 +115,7 @@
                     $.ajax(callDetails).done(function (result) {
                         $('#emailfield').css('border', 'solid 2px rgb(238,238,238)');
                         $('#datepicker').css('border', 'solid 2px rgb(238,238,238)');
-                        $("#resultDiv").css('color', 'black');                        
+                        $("#resultDiv").css('color', 'black');
                         freeChunkSlots = result.free_slots_in_chunks
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';
@@ -125,28 +127,40 @@
                                 msg += 'There were no free slots for ' + result.email + ' on ' + result.date;
                             } else {
                                 msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>';
-                                var elements = [];
                                 for (index in freeChunkSlots) {
                                     slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;
                                     var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" onclick="displayChosenSlot(\'' + slot + '\')" id="timeSlot" class="btn" value="' + slot + '"></div>');
                                     elements.push(timeSlotButton);
                                 }
                             }//end of if freeSlots is empty
-                        }//end of no error key found                        
+                        }//end of no error key found
                         $("#resultDiv").html(msg);
                         if (elements.length > 0) {
                             $("#resultDiv").append(elements);
                         }
-
                     });
                 }
             });
         });
     </script>
+
     <script>
-        function displayChosenSlot(slot){            
-            document.getElementById("chosenSlot").innerHTML=slot;
-        }
+        function displayChosenSlot(slot) {                     
+                
+                form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/confirmation";               
+                
+                const hiddenField = document.createElement("input");
+                hiddenField.type = 'hidden';
+                hiddenField.name = "slot";
+                hiddenField.value = slot;
+
+                form.appendChild(hiddenField);
+
+                document.body.appendChild(form);
+                form.submit();                        
+            } 
     </script>
 
 </body>

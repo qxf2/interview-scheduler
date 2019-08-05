@@ -3,8 +3,7 @@ This module contains business logic that wraps around the Google calendar module
 We use this extensively in the routes.py of the qxf2_scheduler application
 """
 
-#import qxf2_scheduler.base_gcal as gcal
-import base_gcal as gcal
+import qxf2_scheduler.base_gcal as gcal
 import datetime
 from datetime import timedelta
 
@@ -13,7 +12,6 @@ DAY_START_HOUR = 9
 DAY_END_HOUR = 17
 FMT='%H:%M'
 CHUNK_DURATION = '30'
-chunk_time_interval = []
 
 def convert_string_into_time(alloted_slots):
     "Converting the given string into time"
@@ -51,7 +49,7 @@ def is_weekend(date):
     "Is this a weekend?"
     date = gcal.process_date_string(date)
     day = date.weekday()
-    print('~~~~',day)
+    
     return True if day==5 or day==6 else False
 
 def convert_combined_string_into_isoformat(create_event_timings_and_date):
@@ -131,6 +129,7 @@ def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_betw
     result_flag = True
     idx=0 
     chunk_slot_list = [] 
+    chunk_time_interval = []
     if diff_between_slots_after_modified <= timedelta(minutes=int(CHUNK_DURATION)):
                     chunk_slot_list.append(modified_free_slot_start)
                     chunk_slot_list.append(modified_free_slot_end)
@@ -166,6 +165,7 @@ def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_betw
 def get_free_slots_in_chunks(free_slots):
     "Return the free slots in 30 minutes interval"
     #Appending the 30 minutes slot into list
+    divided_chunk_slots = []
     if free_slots == None:
         print("There are no more free slots available for this user")    
     else:                        
@@ -182,7 +182,7 @@ def get_free_slots_in_chunks(free_slots):
                 modified_free_slot_start = get_modified_free_slot_start(free_slot_start,marker=CHUNK_DURATION)
                 modified_free_slot_end = get_modified_free_slot_end(free_slot_end,marker=CHUNK_DURATION)                                
                 diff_between_slots_after_modified =  convert_string_into_time(modified_free_slot_end) - convert_string_into_time(modified_free_slot_start)
-                divided_chunk_slots = get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_between_slots_after_modified)                
+                divided_chunk_slots += get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_between_slots_after_modified)                
 
     return divided_chunk_slots               
 
@@ -258,7 +258,6 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
 
 def get_free_slots_for_date(email_id,fetch_date,debug=False):
     "Return a list of free slots for a given date and email"
-    service = gcal.base_gcal()
     busy_slots = get_busy_slots_for_date(email_id,fetch_date,debug=debug)
     day_start = process_time_to_gcal(fetch_date,DAY_START_HOUR)
     day_end = process_time_to_gcal(fetch_date,DAY_END_HOUR)
@@ -312,6 +311,6 @@ if __name__ == '__main__':
     free_slots_in_chunks = get_free_slots_in_chunks(free_slots)
     print(free_slots_in_chunks) 
     print(date,type(date))    
-    print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
+    """print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
     event_created_slot = create_event_for_fetched_date_and_time(email,date,selected_slot=free_slots_in_chunks[2])
-    print("The event created,The details are",event_created_slot)   
+    print("The event created,The details are",event_created_slot)  """ 

@@ -77,8 +77,6 @@ To verify your Google calendar setup, try the following command
             python utils/verify_gcal_setup.py <your_email_id> 
 
 If all went well, you should see 10 upcoming events for the email id you provided.
-<<<<<<< HEAD
-=======
 
 __f) Start the application__
 
@@ -87,4 +85,3 @@ To start the application, run
       python run.py
 
 The command should be run from the root directory (same as the directory of this readme). If all goes well, when you visit http://localhost:6464 on your browser, you should see the homepage of the application.
->>>>>>> CAL-192-pto

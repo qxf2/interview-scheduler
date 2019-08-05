@@ -126,33 +126,16 @@
                                 msg += 'There were no free slots for ' + result.email + ' on ' + result.date
                             } else {
                                 msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>'
-                                var elements = [];
-                                console.log("Before value check adding 1 wiht the value" + $('#valuecheck').val());
-                                if(($('#valuecheck').val())!="1")
-                                {
+                                var elements = [];                                
                                 for (index in freeChunkSlots) {
                                     var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" class="btn" value="' + freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end +'"></div>');
                                     elements.push(timeSlotButton);                                                                              
-                                }
-                                
-                                console.log("value check adding 1 wiht the value" + $('#valuecheck').val());
-                                }
-
-                                console.log("Elements length" + elements.length);                                
+                                }        
                             }//end of if freeSlots is empty
-                        }//end of no error key found 
-                        if(($('#valuecheck').val())!="1")
-                            {                                           
+                        }//end of no error key found                                                                  
                         $("#resultDiv").html(msg);
-                        if (elements!="" &&  elements.length > 0){
-                            
-                            $("#resultDiv").append(elements);
-                            $('#valuecheck').val("1");
-                            
-                        }
-                            }
+                        $("#resultDiv").append(elements);
                     });
-
                 }
             });
         });

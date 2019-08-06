@@ -18,10 +18,12 @@ def convert_string_into_time(alloted_slots):
     alloted_slots = datetime.datetime.strptime(alloted_slots,FMT)
     return alloted_slots
 
+
 def get_datetime_in_time_format(time_frame_slots):
     "Split the time into hours and minutes"
     time_frame_slots = time_frame_slots.strftime("%H") + ":" + time_frame_slots.strftime("%M")
     return time_frame_slots
+
 
 def is_past_date(date):
     "Is this date in the past?"
@@ -32,6 +34,7 @@ def is_past_date(date):
         result_flag = False
     
     return result_flag
+
 
 def is_qxf2_holiday(date):
     "Is this date a Qxf2 holiday?"
@@ -45,6 +48,7 @@ def is_qxf2_holiday(date):
 
     return result_flag
 
+
 def is_weekend(date):
     "Is this a weekend?"
     date = gcal.process_date_string(date)
@@ -52,34 +56,30 @@ def is_weekend(date):
     
     return True if day==5 or day==6 else False
 
+
 def convert_combined_string_into_isoformat(create_event_timings_and_date):
     "Converting the string into iso format"
     converted_create_event_date_and_time = datetime.datetime.strptime(create_event_timings_and_date,"%m/%d/%Y%H:%M").isoformat()
 
     return converted_create_event_date_and_time
 
+
 def combine_date_and_time(date,selected_slot):
-    "Combine the date and selected slot into isoformat"
-    start_time = selected_slot['start']
-    end_time = selected_slot['end']
+    "Combine the date and selected slot into isoformat"    
+    start_time = selected_slot.split('-')[0].rstrip()    
+    end_time = selected_slot.split('-')[-1].lstrip()    
     create_event_start_time =  convert_combined_string_into_isoformat((date + start_time)) 
     create_event_end_time = convert_combined_string_into_isoformat((date + end_time))
 
     return create_event_start_time,create_event_end_time
 
+
 def append_the_create_event_info(create_event):
     "Appends the created event information into list"
-    created_event_info = []
-    event_summary = create_event['summary']
-    created_event_info.append(event_summary)
-    event_description = create_event['description']
-    created_event_info.append(event_description)
-    event_start = create_event['start']
-    created_event_info.append(event_start)
-    event_end = create_event['end']
-    created_event_info.append(event_end)
-    event_link = create_event['hangoutLink']
-    created_event_info.append(event_link)
+    created_event_info = []      
+    created_event_info.append({'start':create_event['start']})    
+    created_event_info.append({'end':create_event['end']})     
+    created_event_info.append({'Link':create_event['hangoutLink']})
     
     return created_event_info
 
@@ -131,9 +131,9 @@ def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_betw
     chunk_slot_list = [] 
     chunk_time_interval = []
     if diff_between_slots_after_modified <= timedelta(minutes=int(CHUNK_DURATION)):
-                    chunk_slot_list.append(modified_free_slot_start)
-                    chunk_slot_list.append(modified_free_slot_end)
-                    chunk_time_interval.append({'start':modified_free_slot_start,'end':modified_free_slot_end}) 
+        chunk_slot_list.append(modified_free_slot_start)
+        chunk_slot_list.append(modified_free_slot_end)
+        chunk_time_interval.append({'start':modified_free_slot_start,'end':modified_free_slot_end}) 
     else:          
         while result_flag:                        
             chunk_slots = convert_string_into_time(chunk_slots)
@@ -239,6 +239,7 @@ def get_free_slots(busy_slots, day_start, day_end):
     
     return free_slots
 
+
 def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     "Get the busy slots for a given date"
     service = gcal.base_gcal()
@@ -256,6 +257,7 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
 
     return busy_slots
 
+
 def get_free_slots_for_date(email_id,fetch_date,debug=False):
     "Return a list of free slots for a given date and email"
     busy_slots = get_busy_slots_for_date(email_id,fetch_date,debug=debug)
@@ -268,12 +270,14 @@ def get_free_slots_for_date(email_id,fetch_date,debug=False):
         
     return processed_free_slots
 
+
 def get_events_for_date(email_id, fetch_date, maxResults=240,debug=False):
     "Get all the events for a fetched date"
     service = gcal.base_gcal()
     events = gcal.get_events_for_date(service,email_id,fetch_date,debug=debug)
 
     return events
+
 
 def process_time_to_gcal(given_date,hour_offset=None):
     "Process a given string to a gcal like datetime format"
@@ -284,6 +288,7 @@ def process_time_to_gcal(given_date,hour_offset=None):
     processed_date = str(processed_date).replace('Z',TIMEZONE_STRING)
 
     return processed_date
+    
 
 def process_only_time_from_str(date):
     "Process and return only the time stamp from a given string"
@@ -296,6 +301,7 @@ def process_only_time_from_str(date):
 if __name__ == '__main__':
     email = 'test@qxf2.com'
     date = '8/13/2019'
+    selected_slot = '9:30-10:00'
     print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
     get_events_for_date(email, date, debug=True)
     print("\n=====HOW TO GET BUSY SLOTS=====")
@@ -308,9 +314,7 @@ if __name__ == '__main__':
         print(slot['start'],'-',slot['end'])
     print("\n=====HOW TO GET FREE SLOTS IN CHUNKS=====")
     #free_slots = [{'start': '09:00', 'end': '12:35'}, {'start': '13:00', 'end': '13:30'},{'start': '15:00', 'end': '16:30'}]
-    free_slots_in_chunks = get_free_slots_in_chunks(free_slots)
-    print(free_slots_in_chunks) 
-    print(date,type(date))    
-    """print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
-    event_created_slot = create_event_for_fetched_date_and_time(email,date,selected_slot=free_slots_in_chunks[2])
-    print("The event created,The details are",event_created_slot)  """ 
+    free_slots_in_chunks = get_free_slots_in_chunks(free_slots)      
+    print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
+    event_created_slot = create_event_for_fetched_date_and_time(email,date,selected_slot)
+    print("The event created,The details are",event_created_slot)  

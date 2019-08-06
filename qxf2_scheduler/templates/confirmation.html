@@ -1,0 +1,29 @@
+<html>
+
+<head>
+    <title>
+        Interview Confirmation
+    </title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container col-md-offset-1">
+
+        <div class="row top-space-30" id="resultDiv">
+
+            {% if value != "" %}
+            <p>You have scheduled an interview,Please check the below details</p>            
+            Your time slot is between {{value['schedule_event'][0]['start']['dateTime']}} and {{value['schedule_event'][1]['end']['dateTime']}}
+            on {{value['date']}} with {{value['email']}}. Please use this link to join the link {{value['schedule_event'][2]['Link']}}
+            
+            {% else %}
+            <p>Something went wrong please check it</p>
+            {% endif %}
+        </div>
+
+    </div>
+</body>
+</html>

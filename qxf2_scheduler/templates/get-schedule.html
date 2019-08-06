@@ -46,6 +46,7 @@
         <div class="row top-space-30" id="resultDiv">
         </div>
         <div class="row top-space-30" id="chosenSlot"></div>
+        <div class="row top-space-30" id="scheduledEvent"></div>
     </div>
 
     <script>
@@ -129,7 +130,7 @@
                                 msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>';
                                 for (index in freeChunkSlots) {
                                     slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;
-                                    var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" onclick="displayChosenSlot(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" id="timeSlot" class="btn" value="' + slot + '"></div>');
+                                    var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" onclick="displayChosenSlot(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
                                     elements.push(timeSlotButton);
                                 }
                             }//end of if freeSlots is empty
@@ -145,30 +146,36 @@
     </script>
 
     <script>
-        function displayChosenSlot(email,date,slot) {
-            var msg = "The chosen slot for the interviewer " + email + " on " + date + " is: " + slot ;
+        function displayChosenSlot(email, date, slot) {
+            var msg = "The chosen slot for the interviewer " + email + " on " + date + " is: " + slot;
             var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" onclick="scheduleEvent(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');
+            $("#chosenSlot").css('text-align','left');
             $("#chosenSlot").html(msg);
             $("#chosenSlot").append(timeSlotButton);
-            } 
+        } 
     </script>
     <script>
-        function scheduleEvent(slot){
+        function addHidden(form,name,value)
+        { 
+            var hiddenField = document.createElement("input");
+            hiddenField.type = 'hidden';
+            hiddenField.name = name;
+            hiddenField.value = value;
+            form.appendChild(hiddenField)
+            document.body.appendChild(form);
+
+        }
+    </script>
+    <script>
+        function scheduleEvent(email, date, slot) {
             form = document.createElement("form");
             form.method = "POST";
-            form.action = "/confirmation";               
-            
-            const hiddenField = document.createElement("input");
-            hiddenField.type = 'hidden';
-            hiddenField.name = "slot";
-            hiddenField.value = slot;
-
-            form.appendChild(hiddenField);
-
-            document.body.appendChild(form);
+            form.action = "/confirmation";
+            addHidden(form,'email',email);
+            addHidden(form,'date',date);
+            addHidden(form,'slot',slot);            
             form.submit();
         }
     </script>
 </body>
-
 </html>

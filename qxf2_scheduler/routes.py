@@ -7,7 +7,6 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 DOMAIN = 'qxf2.com'
 
-
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
     "Dummy page to let you see a schedule"
@@ -26,23 +25,12 @@ def date_picker():
             api_response = {'error':'Qxf2 does not work on weekends. Please pick another day.'}
         else:
             free_slots = my_scheduler.get_free_slots_for_date(email, date)            
-            free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(free_slots)                 
+            free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(free_slots)            
             api_response = {'free_slots_in_chunks':free_slots_in_chunks,'email': email, 'date': date}
             
-    return jsonify(api_response)
 
+        return jsonify(api_response)
 
-@app.route("/confirmation",methods=['Post'])
-def scehdule_and_confirm():
-    "Schedule an event and display confirmation"       
-    slot = request.form.get('slot')      
-    email = request.form.get('email')    
-    date = request.form.get('date')     
-    schedule_event = my_scheduler.create_event_for_fetched_date_and_time(email,date,slot)
-    api_response = {'schedule_event':schedule_event,'email':email,'date':date}    
-    
-    return render_template('confirmation.html',value=api_response)
-    
 
 @app.route("/")
 def index():

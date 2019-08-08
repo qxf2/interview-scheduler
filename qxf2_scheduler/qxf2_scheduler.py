@@ -16,6 +16,7 @@ SUMMARY = 'Interview Scheduler'
 LOCATION =  'Google Hangout or Office',
 DESCRIPTION = 'Scheduling an interview',
 ATTENDEE = 'annapoorani@qxf2.com'
+DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
 
 def convert_string_into_time(alloted_slots):
     "Converting the given string into time"
@@ -63,7 +64,7 @@ def is_weekend(date):
 
 def convert_combined_string_into_isoformat(create_event_timings_and_date):
     "Converting the string into iso format"
-    converted_create_event_date_and_time = datetime.datetime.strptime(create_event_timings_and_date,"%m/%d/%Y%H:%M").isoformat()
+    converted_create_event_date_and_time = datetime.datetime.strptime(create_event_timings_and_date,DATE_TIME_FORMAT).isoformat()
 
     return converted_create_event_date_and_time
 

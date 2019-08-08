@@ -1,9 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import qxf2_scheduler.db_config as conf 
+import qxf2_scheduler.db_config as conf
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://%s:%s@%s/%s'%(conf.USERNAME,conf.PASSWORD,conf.SERVER,conf.DATABASE)
+db_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/interviewscheduler.db'))
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///%s"%db_file
 db = SQLAlchemy(app)
 
 from qxf2_scheduler import routes

@@ -1,4 +1,4 @@
-from interview_scheduler_database import db
+from qxf2_scheduler import db
 
 class Addinterviewer(db.Model):
     "Adding the interviewer"    

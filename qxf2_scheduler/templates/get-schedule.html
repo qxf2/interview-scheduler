@@ -148,7 +148,7 @@
     <script>
         function displayChosenSlot(email, date, slot) {
             var msg = "The chosen slot for the interviewer " + email + " on " + date + " is: " + slot;
-            var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" onclick="scheduleEvent(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');
+            var timeSlotButton = $('<div class="col-md-2 top-space-20"><input class="btn btn-info" type="button" onclick="scheduleEvent(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');
             $("#chosenSlot").css('text-align','left');
             $("#chosenSlot").html(msg);
             $("#chosenSlot").append(timeSlotButton);

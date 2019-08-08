@@ -9,3 +9,9 @@ class Addinterviewer(db.Model):
     
     def __repr__(self):
         return f"Addinterviewer('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}'')"
+
+
+class Intervieweravailability(db.model):
+    "Adding the interviewer availability"
+    person_id = db.Column(db.Integer(10), db.ForeignKey('Addinterviewer.interviewer_id'),nullable=False)
+    time_availability = db.Column(db.Integer(10),nullable=False)

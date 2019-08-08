@@ -12,6 +12,10 @@ DAY_START_HOUR = 9
 DAY_END_HOUR = 17
 FMT='%H:%M'
 CHUNK_DURATION = '30'
+SUMMARY = 'Interview Scheduler'
+LOCATION =  'Google Hangout or Office',
+DESCRIPTION = 'Scheduling an interview',
+ATTENDEE = 'annapoorani@qxf2.com'
 
 def convert_string_into_time(alloted_slots):
     "Converting the given string into time"
@@ -88,7 +92,8 @@ def create_event_for_fetched_date_and_time(email,date,selected_slot):
     "Create an event for fetched date and time"    
     service = gcal.base_gcal()
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
-    create_event = gcal.create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time)
+    create_event = gcal.create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time,
+    SUMMARY,LOCATION,DESCRIPTION,ATTENDEE)
     created_event_info = append_the_create_event_info(create_event)
 
     return created_event_info    

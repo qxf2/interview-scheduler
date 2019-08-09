@@ -114,22 +114,22 @@ def make_day_busy(fetch_date):
     return busy_slots
 
 
-def create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time):
+def create_event_for_fetched_date_and_time(service,email,event_start_time,event_end_time,summary,location,description,attendee):
     "Create an event for a particular date and time"
     event = {
-            'summary': 'Interview Scheduler',
-            'location': 'Google Hangout or Office',
-            'description': 'Scheduling an interview',
+            'summary': summary,
+            'location': location,
+            'description': description,
             'start': {
-                'dateTime': create_event_start_time,
+                'dateTime': event_start_time,
                 'timeZone': TIMEZONE,
             },
             'end': {
-                'dateTime': create_event_end_time,
+                'dateTime': event_end_time,
                 'timeZone': TIMEZONE,
             },            
             'attendees': [
-                {'email': 'annapoorani@qxf2.com'},
+                {'email': attendee},
                 
             ],
             'reminders': {

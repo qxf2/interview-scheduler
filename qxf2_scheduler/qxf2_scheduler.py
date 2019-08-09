@@ -12,6 +12,11 @@ DAY_START_HOUR = 9
 DAY_END_HOUR = 17
 FMT='%H:%M'
 CHUNK_DURATION = '30'
+SUMMARY = 'Interview Scheduler'
+LOCATION =  'Google Hangout or Office',
+DESCRIPTION = 'Scheduling an interview',
+ATTENDEE = 'annapoorani@qxf2.com'
+DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
 
 def convert_string_into_time(alloted_slots):
     "Converting the given string into time"
@@ -59,15 +64,15 @@ def is_weekend(date):
 
 def convert_combined_string_into_isoformat(create_event_timings_and_date):
     "Converting the string into iso format"
-    converted_create_event_date_and_time = datetime.datetime.strptime(create_event_timings_and_date,"%m/%d/%Y%H:%M").isoformat()
+    converted_create_event_date_and_time = datetime.datetime.strptime(create_event_timings_and_date,DATE_TIME_FORMAT).isoformat()
 
     return converted_create_event_date_and_time
 
 
 def combine_date_and_time(date,selected_slot):
     "Combine the date and selected slot into isoformat"    
-    start_time = selected_slot.split('-')[0].rstrip()    
-    end_time = selected_slot.split('-')[-1].lstrip()    
+    start_time = selected_slot.split('-')[0].strip()    
+    end_time = selected_slot.split('-')[-1].strip()    
     create_event_start_time =  convert_combined_string_into_isoformat((date + start_time)) 
     create_event_end_time = convert_combined_string_into_isoformat((date + end_time))
 
@@ -88,7 +93,8 @@ def create_event_for_fetched_date_and_time(email,date,selected_slot):
     "Create an event for fetched date and time"    
     service = gcal.base_gcal()
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
-    create_event = gcal.create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time)
+    create_event = gcal.create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time,
+    SUMMARY,LOCATION,DESCRIPTION,ATTENDEE)
     created_event_info = append_the_create_event_info(create_event)
 
     return created_event_info    

@@ -130,7 +130,7 @@
                                 msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>';
                                 for (index in freeChunkSlots) {
                                     slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;
-                                    var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" onclick="displayChosenSlot(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
+                                    var timeSlotButton = $('<div class="col-md-2 top-space-20 text-align:left"><input type="button" onclick="displayChosenSlot(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
                                     elements.push(timeSlotButton);
                                 }
                             }//end of if freeSlots is empty
@@ -148,8 +148,7 @@
     <script>
         function displayChosenSlot(email, date, slot) {
             var msg = "The chosen slot for the interviewer " + email + " on " + date + " is: " + slot;
-            var timeSlotButton = $('<div class="col-md-2 top-space-20"><input type="button" onclick="scheduleEvent(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');
-            $("#chosenSlot").css('text-align','left');
+            var timeSlotButton = $('<div class="top-space-20"><input class="btn btn-info" type="button" onclick="scheduleEvent(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');        
             $("#chosenSlot").html(msg);
             $("#chosenSlot").append(timeSlotButton);
         } 

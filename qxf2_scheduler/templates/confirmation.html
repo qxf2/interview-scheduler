@@ -21,7 +21,7 @@
             {% if value != "" %}
             <p>You have scheduled an interview,Please check the below details</p>            
             Your time slot is between {{value['schedule_event'][0]['start']['dateTime']}} and {{value['schedule_event'][1]['end']['dateTime']}}
-            on {{value['date']}} with {{value['email']}}. Please use this link to join the link {{value['schedule_event'][2]['Link']}}
+            on {{value['date']}} with {{value['email']}}. Please use this link to join the interview{{value['schedule_event'][2]['Link']}}
             
             {% else %}
             <p>Something went wrong please check it</p>

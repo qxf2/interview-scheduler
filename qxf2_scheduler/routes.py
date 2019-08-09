@@ -5,6 +5,9 @@ This file contains all the endpoints exposed by the interview scheduler applicat
 from flask import render_template, url_for, flash, redirect, jsonify, request, Response
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
+from qxf2_scheduler import db
+
+from qxf2_scheduler.models import Addinterviewer
 DOMAIN = 'qxf2.com'
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
@@ -36,3 +39,11 @@ def date_picker():
 def index():
     "The index page"
     return "The page is not ready yet!"
+
+
+@app.route("/listinterviewer")
+def listinterviewer():
+    "List the interviewer names,designation"
+    interviewers_list = Addinterviewer.query.all()    
+    return render_template("list-interviewer.html",result=interviewers_list)
+

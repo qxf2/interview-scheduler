@@ -11,7 +11,9 @@ class Addinterviewer(db.Model):
         return f"Addinterviewer('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}'')"
 
 
-class Intervieweravailability(db.model):
+class Intervieweravailability(db.Model):
     "Adding the interviewer availability"
-    person_id = db.Column(db.Integer(10), db.ForeignKey('Addinterviewer.interviewer_id'),nullable=False)
-    time_availability = db.Column(db.Integer(10),nullable=False)
+    interviewer_id = db.Column(db.Integer,db.FOREIGNKEY(Addinterviewer.interviewer_id),nullable=False)
+    interviewer_start_time = db.Column(db.Text,nullable=False)
+    interviewer_end_time = db.Column(db.TEXT,nullable=False)
+    

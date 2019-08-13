@@ -7,7 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 
-from qxf2_scheduler.models import Addinterviewer
+from qxf2_scheduler.models import Interviewers
 DOMAIN = 'qxf2.com'
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
@@ -41,9 +41,9 @@ def index():
     return "The page is not ready yet!"
 
 
-@app.route("/listinterviewer")
+@app.route("/interviewers")
 def listinterviewer():
     "List the interviewer names,designation"
-    interviewers_list = Addinterviewer.query.all()    
+    interviewers_list = Interviewers.query.all()    
     return render_template("list-interviewer.html",result=interviewers_list)
 

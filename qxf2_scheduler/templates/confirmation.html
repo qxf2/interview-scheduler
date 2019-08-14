@@ -1,0 +1,33 @@
+<html>
+
+<head>
+    <title>
+        Interview Confirmation
+    </title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container col-md-offset-1">
+
+        <div class="row top-space-30" id="resultDiv">
+
+            {% if value != "" %}
+            <p>You have scheduled an interview,Please check the below details</p>            
+            Your time slot is between {{value['schedule_event'][0]['start']['dateTime']}} and {{value['schedule_event'][1]['end']['dateTime']}}
+            on {{value['date']}} with {{value['email']}}.<br> Please use the below link to join the interview <br> {{value['schedule_event'][2]['Link']}}
+            
+            {% else %}
+            <p>Something went wrong please check it</p>
+            {% endif %}
+        </div>
+
+    </div>
+</body>
+</html>

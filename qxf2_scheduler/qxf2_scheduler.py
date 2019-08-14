@@ -8,8 +8,6 @@ import datetime
 from datetime import timedelta
 
 TIMEZONE_STRING = '+05:30'
-DAY_START_HOUR = 9
-DAY_END_HOUR = 17
 FMT='%H:%M'
 CHUNK_DURATION = '30'
 SUMMARY = 'Interview Scheduler'
@@ -271,15 +269,18 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     return busy_slots
 
 
-def get_free_slots_for_date(email_id,fetch_date,debug=False):
+def get_free_slots_for_date(email_id,fetch_date,interviewer_work_time_slots,debug=False):
     "Return a list of free slots for a given date and email"
     busy_slots = get_busy_slots_for_date(email_id,fetch_date,debug=debug)
-    day_start = process_time_to_gcal(fetch_date,DAY_START_HOUR)
-    day_end = process_time_to_gcal(fetch_date,DAY_END_HOUR)
-    free_slots = get_free_slots(busy_slots,day_start,day_end)    
     processed_free_slots = []
-    for i in range(0,len(free_slots),2):
-        processed_free_slots.append({'start':process_only_time_from_str(free_slots[i]),'end':process_only_time_from_str(free_slots[i+1])})
+    for each_slot in interviewer_work_time_slots:
+        day_start_hour = each_slot['interviewer_start_time']
+        day_end_hour = each_slot['interviewer_end_time']
+        day_start = process_time_to_gcal(fetch_date,day_start_hour)
+        day_end = process_time_to_gcal(fetch_date,day_end_hour)
+        free_slots = get_free_slots(busy_slots,day_start,day_end)        
+        for i in range(0,len(free_slots),2):
+            processed_free_slots.append({'start':process_only_time_from_str(free_slots[i]),'end':process_only_time_from_str(free_slots[i+1])})
         
     return processed_free_slots
 
@@ -296,7 +297,7 @@ def process_time_to_gcal(given_date,hour_offset=None):
     "Process a given string to a gcal like datetime format"
     processed_date = gcal.process_date_string(given_date)
     if hour_offset is not None:
-        processed_date = processed_date.replace(hour=hour_offset)
+        processed_date = processed_date.replace(hour=int(hour_offset))        
     processed_date = gcal.process_date_isoformat(processed_date)
     processed_date = str(processed_date).replace('Z',TIMEZONE_STRING)
 
@@ -315,12 +316,14 @@ if __name__ == '__main__':
     email = 'test@qxf2.com'
     date = '8/13/2019'
     selected_slot = '9:30-10:00'
+    interviewer_work_time_slots = [{'interviewer_start_time': '14:00', 'interviewer_end_time': '20:00'}, 
+    {'interviewer_start_time': '21:00', 'interviewer_end_time': '23:00'}]
     print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
     get_events_for_date(email, date, debug=True)
     print("\n=====HOW TO GET BUSY SLOTS=====")
     busy_slots = get_busy_slots_for_date(email,date,debug=True)
     print("\n=====HOW TO GET FREE SLOTS=====")
-    free_slots = get_free_slots_for_date(email,date)    
+    free_slots = get_free_slots_for_date(email,date,interviewer_work_time_slots)    
     print("Free slots for {email} on {date} are:".format(email=email, date=date)) 
     print(free_slots)      
     for slot in free_slots:

@@ -7,7 +7,7 @@ from page_objects.PageFactory import PageFactory
 from utils.Option_Parser import Option_Parser
 #import conf.data as conf
 
-def test_e2e_scheduler_application(base_url,browser,browser_version,os_version,os_name,remote_flag,testrail_flag,tesults_flag,test_run_id,remote_project_name,remote_build_name):
+def test_e2e_scheduler_application(base_url,browser,browser_version,os_version,os_name,remote_flag):
 
     "Run the test"
     try:
@@ -20,7 +20,7 @@ def test_e2e_scheduler_application(base_url,browser,browser_version,os_version,o
 
         #Setup and register a driver
         start_time = int(time.time())	#Set start_time with current time
-        test_obj.register_driver(remote_flag,os_name,os_version,browser,browser_version,remote_project_name,remote_build_name)  
+        test_obj.register_driver(remote_flag,os_name,os_version,browser,browser_version)  
         
         
         
@@ -56,12 +56,7 @@ if __name__=='__main__':
                         browser_version=options.browser_version,
                         os_version=options.os_version,
                         os_name=options.os_name,
-                        remote_flag=options.remote_flag,
-                        testrail_flag=options.testrail_flag,
-                        tesults_flag=options.tesults_flag,
-                        test_run_id=options.test_run_id,
-                        remote_project_name=options.remote_project_name,
-                        remote_build_name=options.remote_build_name) 
+                        remote_flag=options.remote_flag                        ) 
     else:
         print('ERROR: Received incorrect comand line input arguments')
         print(options_obj.print_usage())

@@ -24,7 +24,7 @@ class DriverFactory():
         self.os_name=os_name
 
         
-    def get_web_driver(self,remote_flag,os_name,os_version,browser,browser_version,remote_project_name,remote_build_name):
+    def get_web_driver(self,remote_flag,os_name,os_version,browser,browser_version):
         "Return the appropriate driver"
         if (remote_flag.lower() == 'y'):
             try:

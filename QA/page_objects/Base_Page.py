@@ -10,16 +10,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains 
-import unittest,time,logging,os,inspect,utils.Test_Rail
+import unittest,time,logging,os,inspect
 from utils.Base_Logging import Base_Logging
 from inspect import getargspec
-from utils.BrowserStack_Library import BrowserStack_Library
+#from utils.BrowserStack_Library import BrowserStack_Library
 from .DriverFactory import DriverFactory
 from page_objects import PageFactory
 from utils.Custom_Exceptions import Stop_Test_Exception
-from utils.Test_Rail import Test_Rail
-from utils import Tesults
-from conf import remote_credentials as Conf
+#from utils.Test_Rail import Test_Rail
+#from utils import Tesults
+#from conf import remote_credentials as Conf
 
 
 class Borg:
@@ -89,43 +89,21 @@ class Base_Page(Borg,unittest.TestCase):
         self.__class__ = PageFactory.PageFactory.get_page_object(page_name,base_url=self.base_url).__class__
        
 
-    def register_driver(self,remote_flag,os_name,os_version,browser,browser_version,remote_project_name,remote_build_name):
+    def register_driver(self,remote_flag,os_name,os_version,browser,browser_version):
         "Register the driver with Page"      
         self.set_screenshot_dir(os_name,os_version,browser,browser_version) # Create screenshot directory
         self.set_log_file()
-        self.driver = self.driver_obj.get_web_driver(remote_flag,os_name,os_version,browser,browser_version,remote_project_name,remote_build_name)
+        self.driver = self.driver_obj.get_web_driver(remote_flag,os_name,os_version,browser,browser_version)
         self.driver.implicitly_wait(5) 
         self.driver.maximize_window()
         
-        if Conf.REMOTE_BROWSER_PLATFORM == 'BS' and remote_flag.lower() == 'y':
-            self.register_browserstack()
-            self.session_url = self.browserstack_obj.get_session_url()
-            self.browserstack_msg = 'BrowserStack session URL:'
-            self.write( self.browserstack_msg + '\n' + str(self.session_url))
-    
+        
         self.start()
 
 
     def get_current_driver(self):
         "Return current driver"        
         return self.driver
-        
-
-    def register_testrail(self):
-        "Register TestRail with Page"
-        self.testrail_flag = True
-        self.tr_obj = Test_Rail()
-
-
-    def register_tesults(self):
-        "Register Tesults with Page"
-        self.tesults_flag = True
-
-
-    def register_browserstack(self):
-        "Register Browser Stack with Page"
-        self.browserstack_flag = True
-        self.browserstack_obj = BrowserStack_Library()
         
 
     def get_calling_module(self):

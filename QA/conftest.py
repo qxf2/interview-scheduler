@@ -1,8 +1,6 @@
 import os,pytest
 from conf import browser_os_name_conf
-from utils import post_test_reports_to_slack
-from utils.email_pytest_report import Email_Pytest_Report
-from utils import Tesults
+
 
 
 @pytest.fixture
@@ -137,18 +135,6 @@ def app_path(request):
     return request.config.getoption("-N")    
 
 
-def pytest_terminal_summary(terminalreporter, exitstatus):
-    "add additional section in terminal summary reporting."
-    if  terminalreporter.config.getoption("-S").lower() == 'y':
-        post_test_reports_to_slack.post_reports_to_slack()
-    elif terminalreporter.config.getoption("--email_pytest_report").lower() == 'y':
-        #Initialize the Email_Pytest_Report object
-        email_obj = Email_Pytest_Report()
-        # Send html formatted email body message with pytest report as an attachment
-        email_obj.send_test_report_email(html_body_flag=True,attachment_flag=True,report_file_path= 'default')
-
-    if  terminalreporter.config.getoption("--tesults").lower() == 'y':
-        Tesults.post_results_to_tesults()
         
 def pytest_generate_tests(metafunc):
     "test generator function to run tests across different parameters"

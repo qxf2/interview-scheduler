@@ -10,7 +10,7 @@ from page_objects.main_page import main_page
 #from page_objects.Cart_Page import Cart_Page
 class PageFactory():
     "PageFactory uses the factory design pattern."
-    def get_page_object(page_name,base_url=' http://127.0.0.1:6464/',trailing_slash_flag=True):
+    def get_page_object(page_name,base_url='http://3.219.215.68/',trailing_slash_flag=True):
         "Return the appropriate page object based on page_name"
         test_obj = None
         page_name = page_name.lower()

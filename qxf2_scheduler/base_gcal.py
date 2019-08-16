@@ -12,7 +12,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
 # If modifying these scopes, delete the file token.pickle.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar','https://www.googleapis.com/auth/calendar.events']
 TIMEAHEAD = '+05:30'
 TIMEZONE = 'UTC'+TIMEAHEAD
 DATETIME_FORMAT = '%m/%d/%Y'
@@ -25,13 +25,16 @@ def get_today():
 
     return today
 
+
 def process_date_string(date,format=DATETIME_FORMAT):
     "Return a date time object we want for a given date string format"
     return datetime.datetime.strptime(date,DATETIME_FORMAT)
 
+
 def process_date_isoformat(date,format=TIMEAHEAD):
     "Convert the date to isoformat"
-    return date.isoformat() + format 
+    return date.isoformat() + format
+
 
 def base_gcal():
     """Shows basic usage of the Google Calendar API.
@@ -53,6 +56,7 @@ def base_gcal():
     service = build('calendar', 'v3', credentials=creds)
 
     return service
+
 
 def get_events_for_date(service,email_id,fetch_date,maxResults=240,debug=False):
     "Return up to a maximum of maxResults events for a given date and email id"
@@ -76,6 +80,7 @@ def get_events_for_date(service,email_id,fetch_date,maxResults=240,debug=False):
 
     return events
 
+
 def get_busy_slots_for_date(service,email_id,fetch_date,timeZone=TIMEZONE,debug=False):
     "Return free/busy for a given date"
     start_date = process_date_string(fetch_date) 
@@ -97,6 +102,7 @@ def get_busy_slots_for_date(service,email_id,fetch_date,timeZone=TIMEZONE,debug=
 
     return busy_slots
 
+
 def make_day_busy(fetch_date):
     "Return the entire day as busy"
     start_date = process_date_string(fetch_date)
@@ -105,4 +111,46 @@ def make_day_busy(fetch_date):
     end_date = process_date_isoformat(end_date)
     busy_slots=[{'start':start_date,'end':end_date}]
 
-    return busy_slots    
+    return busy_slots
+
+
+def create_event_for_fetched_date_and_time(service,email,event_start_time,event_end_time,summary,location,description,attendee):
+    "Create an event for a particular date and time"
+    event = {
+            'summary': summary,
+            'location': location,
+            'description': description,
+            'start': {
+                'dateTime': event_start_time,
+                'timeZone': TIMEZONE,
+            },
+            'end': {
+                'dateTime': event_end_time,
+                'timeZone': TIMEZONE,
+            },            
+            'attendees': [
+                {'email': attendee},
+                
+            ],
+            'reminders': {
+                'useDefault': False,
+                'overrides': [
+                {'method': 'email', 'minutes': 24 * 60},
+                {'method': 'popup', 'minutes': 10},
+                ],
+            },
+            "conferenceData": 
+            {
+                "createRequest": 
+                {
+                    "conferenceSolutionKey": 
+                    {
+                    "type": "hangoutsMeet"
+                    },
+                "requestId": "kdb-atdx-exx"
+                }
+            }
+            }
+    event = service.events().insert(calendarId=email, body=event).execute()
+    
+    return event 

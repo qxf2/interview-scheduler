@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>
+        List of interviewer details
+    </title>
+    
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="container col-md-offset-1">
+            <h1>Interviewer List</h1>                        
+            <table id="test-table" border="4" cellspacing="0" width="100%">
+                <thead>
+                    <tr>                        
+                        <th>Interviewer Name</th>
+                        <th>Interviewer email</th>
+                        <th>Interviewer Designation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        {% for each_interviewer in result %}                        
+                        <tr>
+                            <td>{{ each_interviewer.interviewer_name }}</td>
+                            <td>{{ each_interviewer.interviewer_email }}</td>
+                            <td>{{ each_interviewer.interviewer_designation }}</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+            
+
+
+</body>
+
+</html>

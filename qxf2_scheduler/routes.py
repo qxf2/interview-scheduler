@@ -45,7 +45,7 @@ def scehdule_and_confirm():
     "Schedule an event and display confirmation"
     if request.method == 'GET':
         return render_template("get-schedule.html")
-    else:
+    if request.method == 'POST':
         slot = request.form.get('slot')
         email = request.form.get('email')
         date = request.form.get('date')

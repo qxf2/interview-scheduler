@@ -5,9 +5,6 @@ Add elif clauses as and when you implement new pages.
 """
 
 from page_objects.main_page import main_page
-#from page_objects.Sunscreens_Page import Sunscreens_Page
-#from page_objects.Moisturizers_Page import Moisturizers_Page
-#from page_objects.Cart_Page import Cart_Page
 class PageFactory():
     "PageFactory uses the factory design pattern."
     def get_page_object(page_name,base_url='http://3.219.215.68/',trailing_slash_flag=True):

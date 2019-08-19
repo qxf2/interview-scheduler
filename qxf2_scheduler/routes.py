@@ -7,7 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 
-from qxf2_scheduler.models import Interviewers
+from qxf2_scheduler.models import Interviewers,Interviewertimeslots
 DOMAIN = 'qxf2.com'
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
@@ -44,6 +44,13 @@ def index():
 @app.route("/interviewers")
 def listinterviewer():
     "List the interviewer names,designation"
-    interviewers_list = Interviewers.query.all()    
-    return render_template("list-interviewer.html",result=interviewers_list)
+    #interviewers_list = Interviewers.query.all()
+    new_slot = Interviewers.query.join(Interviewertimeslots,Interviewers.interviewer_id==Interviewertimeslots.interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_email,Interviewertimeslots.interviewer_start_time,Interviewertimeslots.interviewer_end_time)
+    interviewer_work_time_slots = []
+    for interviewer_id,interviewer_email,interviewer_start_time,interviewer_end_time in new_slot:
+        interviewer_work_time_slots.append({'interviewer_id':interviewer_id,'interviewer_email':interviewer_email,'interviewer_start_time':interviewer_start_time,
+        'interviewer_end_time':interviewer_end_time,})    
+    #interviewers_list = Interviewers.query.all()
+    return render_template("list-interviewer.html", result=interviewer_work_time_slots)    
+    
 

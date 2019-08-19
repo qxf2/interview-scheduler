@@ -11,7 +11,7 @@ class Interviewers(db.Model):
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}'')"
 
-class InterviewerAvailability(db.Model):
+class Interviewertimeslots(db.Model):
     "Adding the timing for interviewer"    
     interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id),nullable=False)
     time_id = db.Column(db.Integer,primary_key=True)
@@ -19,4 +19,4 @@ class InterviewerAvailability(db.Model):
     interviewer_end_time = db.Column(db.String,nullable=False)
 
     def __repr__(self):
-        return f"InterviewerAvailability('{self.interviewer_id}', '{self.interviewer_start_time}','{self.interviewer_end_time}','{self.time_id}'')"
+        return f"Interviewertimeslots('{self.interviewer_id}', '{self.interviewer_start_time}','{self.interviewer_end_time}','{self.time_id}'')"

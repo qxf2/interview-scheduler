@@ -236,7 +236,7 @@ class Base_Page(Borg,unittest.TestCase):
     def get_window_by_name(self,window_name):
         "Return window handle id based on name"
         window_handle_id = None
-        for id,name in self.window_structure.iteritems():
+        for id,name in self.window_structure.items():
             if name == window_name:
                 window_handle_id = id
                 break

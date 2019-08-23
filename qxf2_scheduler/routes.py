@@ -48,27 +48,30 @@ def listinterviewer():
     interviewer_work_time_slots = []
     new_slot = Interviewers.query.join(Interviewertimeslots,Interviewers.interviewer_id==Interviewertimeslots.interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_email,Interviewertimeslots.interviewer_start_time,Interviewertimeslots.interviewer_end_time)
     
-    for interviewer_id,interviewer_email,interviewer_start_time,interviewer_end_time in new_slot:
-        print('i am coming inside for',file=sys.stderr)
+    for interviewer_id,interviewer_email,interviewer_start_time,interviewer_end_time in new_slot:        
         interviewer_details = {'interviewer_id':interviewer_id,'interviewer_email':interviewer_email,'interviewer_start_time':interviewer_start_time,
-        'interviewer_end_time':interviewer_end_time}
-        print(interviewer_details,file=sys.stderr)
-        if not interviewer_work_time_slots:
-            print('I am coming inside if',file=sys.stderr)
+        'interviewer_end_time':interviewer_end_time}        
+        if not interviewer_work_time_slots:            
             interviewer_work_time_slots.append(interviewer_details)
-            print('iam inside not if',interviewer_work_time_slots,file=sys.stderr)
         else:
-            print('i am coming inside else',file=sys.stderr)
-            for each_interviewer in interviewer_work_time_slots:
-                print('I am each_interviewer',each_interviewer,interviewer_details['interviewer_email'])
-                if interviewer_details['interviewer_email'] in each_interviewer['interviewer_email']:
-                    each_interviewer['interviewer_start_time'].append(interviewer_details['interviewer_start_time'])
-                    print(each_interviewer,file=sys.stderr)
-
-            
-        
-    print(interviewer_work_time_slots,file=sys.stderr)
-           
+            append_flag = True
+            for each_interviewer in interviewer_work_time_slots:                
+                if interviewer_details['interviewer_email'] in each_interviewer.values():
+                    append_flag = False
+                    if type(each_interviewer['interviewer_start_time'])==list:
+                        each_interviewer['interviewer_start_time'].append(interviewer_details['interviewer_start_time'])  
+                    else:
+                        each_interviewer['interviewer_start_time'] = [each_interviewer['interviewer_start_time'], interviewer_details['interviewer_start_time']]                   
+                    if type(each_interviewer['interviewer_end_time'])==list:
+                        each_interviewer['interviewer_end_time'].append(interviewer_details['interviewer_end_time'])  
+                    else:
+                        each_interviewer['interviewer_end_time'] = [each_interviewer['interviewer_end_time'], interviewer_details['interviewer_end_time']]
+                     
+                    break
+             
+            if append_flag == True:                
+                interviewer_work_time_slots.append(interviewer_details)
+               
     return render_template("list-interviewer.html", result=interviewer_work_time_slots)    
     
 

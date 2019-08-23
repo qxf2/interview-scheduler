@@ -6,6 +6,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
+import sys
 
 from qxf2_scheduler.models import Interviewers,Interviewertimeslots
 DOMAIN = 'qxf2.com'
@@ -44,13 +45,30 @@ def index():
 @app.route("/interviewers")
 def listinterviewer():
     "List the interviewer names,designation"
-    #interviewers_list = Interviewers.query.all()
-    new_slot = Interviewers.query.join(Interviewertimeslots,Interviewers.interviewer_id==Interviewertimeslots.interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_email,Interviewertimeslots.interviewer_start_time,Interviewertimeslots.interviewer_end_time)
     interviewer_work_time_slots = []
+    new_slot = Interviewers.query.join(Interviewertimeslots,Interviewers.interviewer_id==Interviewertimeslots.interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_email,Interviewertimeslots.interviewer_start_time,Interviewertimeslots.interviewer_end_time)
+    
     for interviewer_id,interviewer_email,interviewer_start_time,interviewer_end_time in new_slot:
-        interviewer_work_time_slots.append({'interviewer_id':interviewer_id,'interviewer_email':interviewer_email,'interviewer_start_time':interviewer_start_time,
-        'interviewer_end_time':interviewer_end_time,})    
-    #interviewers_list = Interviewers.query.all()
+        print('i am coming inside for',file=sys.stderr)
+        interviewer_details = {'interviewer_id':interviewer_id,'interviewer_email':interviewer_email,'interviewer_start_time':interviewer_start_time,
+        'interviewer_end_time':interviewer_end_time}
+        print(interviewer_details,file=sys.stderr)
+        if not interviewer_work_time_slots:
+            print('I am coming inside if',file=sys.stderr)
+            interviewer_work_time_slots.append(interviewer_details)
+            print('iam inside not if',interviewer_work_time_slots,file=sys.stderr)
+        else:
+            print('i am coming inside else',file=sys.stderr)
+            for each_interviewer in interviewer_work_time_slots:
+                print('I am each_interviewer',each_interviewer,interviewer_details['interviewer_email'])
+                if interviewer_details['interviewer_email'] in each_interviewer['interviewer_email']:
+                    each_interviewer['interviewer_start_time'].append(interviewer_details['interviewer_start_time'])
+                    print(each_interviewer,file=sys.stderr)
+
+            
+        
+    print(interviewer_work_time_slots,file=sys.stderr)
+           
     return render_template("list-interviewer.html", result=interviewer_work_time_slots)    
     
 

@@ -51,7 +51,6 @@ def test_e2e_scheduler_application(base_url,browser,browser_version,os_version,o
         level='critical')
        
 
-
         #Print out the results
         test_obj.write_test_summary()
 

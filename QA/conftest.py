@@ -169,20 +169,12 @@ def pytest_addoption(parser):
                       help="Browser. Valid options are firefox, ie and chrome")                      
     parser.addoption("-U","--app_url",
                       dest="url",
-                      default="http://127.0.0.1:6464",
+                      default="http://3.219.215.68",
                       help="The url of the application")
     parser.addoption("-A","--api_url",
                       dest="url",
                       default="http://35.167.62.251",
                       help="The url of the api")
-    parser.addoption("-X","--testrail_flag",
-                      dest="testrail_flag",
-                      default='N',
-                      help="Y or N. 'Y' if you want to report to TestRail")
-    parser.addoption("-R","--test_run_id",
-                      dest="test_run_id",
-                      default=None,
-                      help="The test run id in TestRail")
     parser.addoption("-M","--remote_flag",
                       dest="remote_flag",
                       default="N",

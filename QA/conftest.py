@@ -169,7 +169,7 @@ def pytest_addoption(parser):
                       help="Browser. Valid options are firefox, ie and chrome")                      
     parser.addoption("-U","--app_url",
                       dest="url",
-                      default="http://3.219.215.68",
+                      default="http://127.0.0.1:6464",
                       help="The url of the application")
     parser.addoption("-A","--api_url",
                       dest="url",

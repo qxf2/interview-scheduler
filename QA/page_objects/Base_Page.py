@@ -91,7 +91,7 @@ class Base_Page(Borg,unittest.TestCase):
         self.set_log_file()
         self.driver = self.driver_obj.get_web_driver(remote_flag,os_name,os_version,browser,browser_version)
         self.driver.implicitly_wait(5) 
-        self.driver.maximize_window()
+        #self.driver.maximize_window()
         
         
         self.start()

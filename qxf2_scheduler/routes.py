@@ -6,6 +6,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
+import sys
 
 from qxf2_scheduler.models import Interviewers,Interviewertimeslots
 DOMAIN = 'qxf2.com'
@@ -35,19 +36,15 @@ def date_picker():
 
 @app.route("/confirmation", methods=['GET','POST'])
 def scehdule_and_confirm():
-    "Schedule an event and display confirmation"
+    "Schedule an event and display confirmation"    
     if request.method == 'GET':
         return render_template("get-schedule.html")
-    else:
-        new_slot = Interviewers.query.join(Interviewertimeslots,Interviewers.interviewer_id==Interviewertimeslots.interviewer_id).values(Interviewers.interviewer_email,Interviewertimeslots.interviewer_start_time,Interviewertimeslots.interviewer_end_time)
-        interviewer_work_time_slots = []
-        for interviewer_email,interviewer_start_time,interviewer_end_time in new_slot:
-            interviewer_work_time_slots.append({'interviewer_email':interviewer_email,'interviewer_start_time':interviewer_start_time,
-            'interviewer_end_time':interviewer_end_time})
+    else:        
         slot = request.form.get('slot')        
+        email = request.form.get('emails')                   
         date = request.form.get('date')
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
-            date, slot,interviewer_work_time_slots)
+            date, slot,email)
         api_response = {'schedule_event': schedule_event,
                         'date': date}
 

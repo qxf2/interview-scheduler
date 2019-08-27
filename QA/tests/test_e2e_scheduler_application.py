@@ -19,12 +19,8 @@ def test_e2e_scheduler_application(base_url,browser,browser_version,os_version,o
         test_obj = PageFactory.get_page_object("main page",base_url=base_url)
 
         #Setup and register a driver
-        test_obj.register_driver(remote_flag,os_name,os_version,browser,browser_version)  
+        test_obj.register_driver(remote_flag,os_name,os_version,browser,browser_version)
         
-        
-        
-
-
         #Print out the results
         test_obj.write_test_summary()
 

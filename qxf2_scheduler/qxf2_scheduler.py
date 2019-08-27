@@ -7,6 +7,7 @@ import qxf2_scheduler.base_gcal as gcal
 #import base_gcal as gcal
 import datetime
 from datetime import timedelta
+import random
 
 TIMEZONE_STRING = '+05:30'
 FMT='%H:%M'
@@ -94,29 +95,15 @@ def convert_interviewer_time_into_string(interviewer_time):
     interviewer_actual_time = interviewer_actual_time.strftime("%H") + ":" + interviewer_actual_time.strftime("%M")
     return interviewer_actual_time
 
-def get_time_start_end_for_interviewers(start_end_time,selected_slot):
-    "Fetch the start and end time from the database and compare it with selected slot"    
-    interviewer_actual_start_time = start_end_time['interviewer_start_time']
-    interviewer_actual_start_time = convert_interviewer_time_into_string(interviewer_actual_start_time)
-    interviewer_actual_end_time = start_end_time['interviewer_end_time']
-    interviewer_actual_end_time = convert_interviewer_time_into_string(interviewer_actual_end_time)       
-    selected_slot_start_time = selected_slot.split('-')[0] 
-    selected_slot_end_time = selected_slot.split('-')[-1]
-    if interviewer_actual_start_time<=selected_slot_start_time and interviewer_actual_end_time>=selected_slot_end_time:         
-        flag = 1
-    else:
-        flag = 0
-    
-    return flag
-        
-def create_event_for_fetched_date_and_time(date,selected_slot,interviewer_work_time_slots):
+   
+def create_event_for_fetched_date_and_time(date,selected_slot,emails):
     "Create an event for fetched date and time"    
-    service = gcal.base_gcal()
-    for start_end_time in interviewer_work_time_slots:
-        flag_value = get_time_start_end_for_interviewers(start_end_time,selected_slot)
-        if flag_value == 1:
-            attendee_email_id = start_end_time['interviewer_email']
-            break
+    service = gcal.base_gcal()    
+    if ',' in emails:        
+        attendee_email_id = emails.split(',')       
+        attendee_email_id = random.choice(attendee_email_id)        
+    else:
+        attendee_email_id = emails    
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
     SUMMARY,LOCATION,DESCRIPTION,attendee_email_id)
@@ -160,8 +147,7 @@ def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_betw
     result_flag = True
     idx=0 
     chunk_slot_list = [] 
-    chunk_time_interval = []
-    #chunks = []
+    chunk_time_interval = []   
     if diff_between_slots_after_modified <= timedelta(minutes=int(CHUNK_DURATION)):
         chunk_slot_list.append(modified_free_slot_start)
         chunk_slot_list.append(modified_free_slot_end)
@@ -375,6 +361,7 @@ if __name__ == '__main__':
     selected_slot = '9:30-10:00'
     interviewer_work_time_slots = [{'interviewer_start_time': '14:00', 'interviewer_end_time': '20:00'}, 
     {'interviewer_start_time': '21:00', 'interviewer_end_time': '23:00'}]
+    emails='test@qxf2.com'
     print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
     get_events_for_date(email, date, debug=True)
     print("\n=====HOW TO GET BUSY SLOTS=====")
@@ -385,9 +372,8 @@ if __name__ == '__main__':
     print(free_slots)      
     for slot in free_slots:
         print(slot['start'],'-',slot['end'])
-    print("\n=====HOW TO GET FREE SLOTS IN CHUNKS=====")
-    """free_slots = [{'start': '08:00', 'end': '08:30', 'email_id': 'raji@qxf2.com'}, {'start': '08:00', 'end': '08:30', 'email_id': 'avinash@qxf2.com'}, {'start': '08:00', 'end': '08:30', 'email_id': 'shiva@qxf2.com'}, {'start': '08:30', 'end': '09:00', 'email_id': 'raji@qxf2.com'}, {'start': '08:30', 'end': '09:00', 'email_id': 'avinash@qxf2.com'}, {'start': '08:30', 'end': '09:00', 'email_id': 'shiva@qxf2.com'}, {'start': '09:00','end': '09:30', 'email_id': 'raji@qxf2.com'}, {'start': '09:00', 'end': '09:30', 'email_id': 'avinash@qxf2.com'}, {'start': '09:00', 'end': '09:30', 'email_id': 'shiva@qxf2.com'}, {'start': '09:30', 'end': '10:00', 'email_id': 'raji@qxf2.com'}, {'start': '09:30', 'end': '10:00', 'email_id': 'avinash@qxf2.com'}, {'start': '09:30', 'end': '10:00', 'email_id': 'shiva@qxf2.com'}, {'start': '10:00', 'end': '10:30', 'email_id': 'raji@qxf2.com'}, {'start': '10:00', 'end': '10:30', 'email_id': 'avinash@qxf2.com'}, {'start': '10:00', 'end': '10:30', 'email_id': 'shiva@qxf2.com'}, {'start':'10:30', 'end': '11:00', 'email_id': 'raji@qxf2.com'}, {'start': '10:30', 'end': '11:00', 'email_id': 'avinash@qxf2.com'}, {'start': '10:30', 'end': '11:00', 'email_id': 'shiva@qxf2.com'}, {'start': '11:00', 'end': '11:30', 'email_id': 'raji@qxf2.com'}, {'start': '11:00', 'end': '11:30', 'email_id': 'avinash@qxf2.com'}]"""
+    print("\n=====HOW TO GET FREE SLOTS IN CHUNKS=====")    
     free_slots_in_chunks = get_free_slots_in_chunks(free_slots)      
     print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
-    event_created_slot = create_event_for_fetched_date_and_time(date,selected_slot,interviewer_work_time_slots)
+    event_created_slot = create_event_for_fetched_date_and_time(date,selected_slot,emails)
     print("The event created,The details are",event_created_slot)  

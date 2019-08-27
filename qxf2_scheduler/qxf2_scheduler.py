@@ -70,7 +70,8 @@ def convert_combined_string_into_isoformat(create_event_timings_and_date):
 
 
 def combine_date_and_time(date,selected_slot):
-    "Combine the date and selected slot into isoformat"    
+    "Combine the date and selected slot into isoformat" 
+    print("I am date",date)   
     start_time = selected_slot.split('-')[0].strip()    
     end_time = selected_slot.split('-')[-1].strip()    
     create_event_start_time =  convert_combined_string_into_isoformat((date + start_time)) 
@@ -96,7 +97,7 @@ def convert_interviewer_time_into_string(interviewer_time):
     return interviewer_actual_time
 
    
-def create_event_for_fetched_date_and_time(date,selected_slot,emails):
+def create_event_for_fetched_date_and_time(date,emails,selected_slot):
     "Create an event for fetched date and time"    
     service = gcal.base_gcal()    
     if ',' in emails:        
@@ -375,5 +376,5 @@ if __name__ == '__main__':
     print("\n=====HOW TO GET FREE SLOTS IN CHUNKS=====")    
     free_slots_in_chunks = get_free_slots_in_chunks(free_slots)      
     print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
-    event_created_slot = create_event_for_fetched_date_and_time(date,selected_slot,emails)
+    event_created_slot = create_event_for_fetched_date_and_time(date,emails,selected_slot)
     print("The event created,The details are",event_created_slot)  

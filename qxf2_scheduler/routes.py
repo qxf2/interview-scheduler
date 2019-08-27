@@ -47,12 +47,11 @@ def scehdule_and_confirm():
        return render_template("get-schedule.html")
     if request.method == 'POST':
         slot = request.form.get('slot')
-        email = request.form.get('email')
+        email = request.form.get('emails')
         date = request.form.get('date')
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
-            email, date, slot)
-        value = {'schedule_event': schedule_event,
-                        'email': email, 'date': date}
+            date, email,slot)
+        value = {'schedule_event': schedule_event,'date': date}
         value = json.dumps(value)
 
     return redirect(url_for('.confirmation', value=value)) 

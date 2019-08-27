@@ -87,9 +87,13 @@
                 return [holidays.indexOf(string) == -1]
             }
         });
-    </script>
-    <script>
+    </script>    
+    <script>       
         $("document").ready(function () {
+            $(window).bind("pageshow", function() {
+            $("#emailfield").val('');
+            $("#datepicker").val('');
+        });
             $('#submit').click(function () {
                 var email = $('#emailfield').val();
                 var date = $('#datepicker').val();

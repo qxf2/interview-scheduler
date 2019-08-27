@@ -90,6 +90,7 @@
                         $('#datepicker').css('border', 'solid 2px rgb(238,238,238)');
                         $("#resultDiv").css('color', 'black');
                         freeChunkSlots = result.free_slots_in_chunks
+                        console.log(freeChunkSlots)
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';
                         if (result.hasOwnProperty('error')) {
@@ -99,10 +100,10 @@
                             if (freeChunkSlots.length == 0) {
                                 msg += 'There were no free slots for  on ' + result.date;
                             } else {
-                                msg = 'The free slots for  on ' + result.date + ' are: <br>';
+                                msg = 'The free slots on ' + result.date + ' are: <br>';
                                 for (index in freeChunkSlots) {
-                                    slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;
-                                    var timeSlotButton = $('<div class="col-md-2 top-space-20 text-align:left"><input type="button" onclick="displayChosenSlot(\'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
+                                    slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;                                    
+                                    var timeSlotButton = $('<div class="col-md-2 top-space-20 text-align:left"><input type="button" onclick="displayChosenSlot(\'' + freeChunkSlots[index].email +'\', \'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
                                     elements.push(timeSlotButton);
                                 }
                             }//end of if freeSlots is empty
@@ -118,9 +119,10 @@
     </script>
 
     <script>
-        function displayChosenSlot(date, slot) {
+        function displayChosenSlot(emails,date, slot) {
+            console.log(emails)
             var msg = "The chosen slot for the interviewer   on " + date + " is: " + slot;
-            var timeSlotButton = $('<div class="top-space-20"><input class="btn btn-info" type="button" onclick="scheduleEvent(\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');        
+            var timeSlotButton = $('<div class="top-space-20"><input class="btn btn-info" type="button" onclick="scheduleEvent(\''+ emails + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');        
             $("#chosenSlot").html(msg);
             $("#chosenSlot").append(timeSlotButton);
         } 
@@ -138,10 +140,11 @@
         }
     </script>
     <script>
-        function scheduleEvent(date, slot) {
+        function scheduleEvent(emails,date, slot) {
             form = document.createElement("form");
             form.method = "POST";
-            form.action = "/confirmation";            
+            form.action = "/confirmation"; 
+            addHidden(form,'emails',emails)           
             addHidden(form,'date',date);
             addHidden(form,'slot',slot);            
             form.submit();

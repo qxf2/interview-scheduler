@@ -15,9 +15,7 @@
 
 <body>
     <div class="container col-md-offset-1">
-
         <div class="row top-space-30" id="resultDiv">
-
             {% if value != "" %}
             <p>You have scheduled an interview,Please check the below details</p>            
             Your time slot is between {{value['schedule_event'][0]['start']['dateTime']}} and {{value['schedule_event'][1]['end']['dateTime']}}
@@ -26,8 +24,7 @@
             {% else %}
             <p>Something went wrong please check it</p>
             {% endif %}
-        </div>
-
+        </div>        
     </div>
 </body>
 </html>

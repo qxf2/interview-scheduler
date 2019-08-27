@@ -6,11 +6,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-<<<<<<< HEAD
-import sys
-=======
 import json
->>>>>>> master
 
 from qxf2_scheduler.models import Interviewers,Interviewertimeslots
 DOMAIN = 'qxf2.com'

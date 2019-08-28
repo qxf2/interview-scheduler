@@ -8,8 +8,6 @@ import datetime
 from datetime import timedelta
 
 TIMEZONE_STRING = '+05:30'
-DAY_START_HOUR = 9
-DAY_END_HOUR = 17
 FMT='%H:%M'
 CHUNK_DURATION = '30'
 SUMMARY = 'Interview Scheduler'
@@ -89,12 +87,40 @@ def append_the_create_event_info(create_event):
     return created_event_info
 
 
-def create_event_for_fetched_date_and_time(email,date,selected_slot):
+def convert_interviewer_time_into_string(interviewer_time):
+    "Convert the integer into string format"
+    interviewer_actual_time = datetime.datetime.strptime(str(interviewer_time),"%H")
+    interviewer_actual_time = interviewer_actual_time.strftime("%H") + ":" + interviewer_actual_time.strftime("%M")
+    return interviewer_actual_time
+
+def get_time_start_end_for_interviewers(start_end_time,selected_slot):
+    "Fetch the start and end time from the database and compare it with selected slot"    
+    interviewer_actual_start_time = start_end_time['interviewer_start_time']
+    interviewer_actual_start_time = convert_interviewer_time_into_string(interviewer_actual_start_time)
+    interviewer_actual_end_time = start_end_time['interviewer_end_time']
+    interviewer_actual_end_time = convert_interviewer_time_into_string(interviewer_actual_end_time)       
+    
+    selected_slot_start_time = selected_slot.split('-')[0]    
+    selected_slot_end_time = selected_slot.split('-')[-1]
+    
+    if interviewer_actual_start_time<=selected_slot_start_time and interviewer_actual_end_time>=selected_slot_end_time:         
+        flag = 1
+    else:
+        flag = 0
+    
+    return flag
+        
+def create_event_for_fetched_date_and_time(date,selected_slot,interviewer_work_time_slots):
     "Create an event for fetched date and time"    
     service = gcal.base_gcal()
+    for start_end_time in interviewer_work_time_slots:
+        flag_value = get_time_start_end_for_interviewers(start_end_time,selected_slot)
+        if flag_value == 1:
+            attendee_email_id = start_end_time['interviewer_email']
+            break
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
-    create_event = gcal.create_event_for_fetched_date_and_time(service,email,create_event_start_time,create_event_end_time,
-    SUMMARY,LOCATION,DESCRIPTION,ATTENDEE)
+    create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
+    SUMMARY,LOCATION,DESCRIPTION,attendee_email_id)
     created_event_info = append_the_create_event_info(create_event)
 
     return created_event_info    
@@ -189,7 +215,8 @@ def get_free_slots_in_chunks(free_slots):
                 modified_free_slot_end = get_modified_free_slot_end(free_slot_end,marker=CHUNK_DURATION)                                
                 diff_between_slots_after_modified =  convert_string_into_time(modified_free_slot_end) - convert_string_into_time(modified_free_slot_start)
                 divided_chunk_slots += get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_between_slots_after_modified)                
-
+                divided_chunk_slots = sorted(divided_chunk_slots, key=lambda k: k['start'])
+        
     return divided_chunk_slots               
 
 
@@ -271,16 +298,30 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     return busy_slots
 
 
-def get_free_slots_for_date(email_id,fetch_date,debug=False):
-    "Return a list of free slots for a given date and email"
-    busy_slots = get_busy_slots_for_date(email_id,fetch_date,debug=debug)
-    day_start = process_time_to_gcal(fetch_date,DAY_START_HOUR)
-    day_end = process_time_to_gcal(fetch_date,DAY_END_HOUR)
-    free_slots = get_free_slots(busy_slots,day_start,day_end)    
-    processed_free_slots = []
-    for i in range(0,len(free_slots),2):
-        processed_free_slots.append({'start':process_only_time_from_str(free_slots[i]),'end':process_only_time_from_str(free_slots[i+1])})
+def get_interviewer_email_id(interviewer_work_time_slots):
+    "Parse the email id from the list"    
+    interviewers_email_id = []    
+    for each_interviewer_in_row in interviewer_work_time_slots:
+        interviewers_email_id.append(each_interviewer_in_row['interviewer_email'])
         
+    return interviewers_email_id
+
+
+def get_free_slots_for_date(fetch_date,interviewer_work_time_slots,debug=False):
+    "Return a list of free slots for a given date and email"
+    all_interviewers_email_id = get_interviewer_email_id(interviewer_work_time_slots)
+    for individual_interviewer_email_id in all_interviewers_email_id:
+        busy_slots = get_busy_slots_for_date(individual_interviewer_email_id,fetch_date,debug=debug)
+        processed_free_slots = []
+        for each_slot in interviewer_work_time_slots:
+            day_start_hour = each_slot['interviewer_start_time']
+            day_end_hour = each_slot['interviewer_end_time']
+            day_start = process_time_to_gcal(fetch_date,day_start_hour)
+            day_end = process_time_to_gcal(fetch_date,day_end_hour)
+            free_slots = get_free_slots(busy_slots,day_start,day_end)        
+            for i in range(0,len(free_slots),2):
+                processed_free_slots.append({'start':process_only_time_from_str(free_slots[i]),'end':process_only_time_from_str(free_slots[i+1])})
+            
     return processed_free_slots
 
 
@@ -296,7 +337,7 @@ def process_time_to_gcal(given_date,hour_offset=None):
     "Process a given string to a gcal like datetime format"
     processed_date = gcal.process_date_string(given_date)
     if hour_offset is not None:
-        processed_date = processed_date.replace(hour=hour_offset)
+        processed_date = processed_date.replace(hour=int(hour_offset))        
     processed_date = gcal.process_date_isoformat(processed_date)
     processed_date = str(processed_date).replace('Z',TIMEZONE_STRING)
 
@@ -315,12 +356,14 @@ if __name__ == '__main__':
     email = 'test@qxf2.com'
     date = '8/13/2019'
     selected_slot = '9:30-10:00'
+    interviewer_work_time_slots = [{'interviewer_start_time': '14:00', 'interviewer_end_time': '20:00'}, 
+    {'interviewer_start_time': '21:00', 'interviewer_end_time': '23:00'}]
     print("\n=====HOW TO GET ALL EVENTS ON A DAY=====")
     get_events_for_date(email, date, debug=True)
     print("\n=====HOW TO GET BUSY SLOTS=====")
     busy_slots = get_busy_slots_for_date(email,date,debug=True)
     print("\n=====HOW TO GET FREE SLOTS=====")
-    free_slots = get_free_slots_for_date(email,date)    
+    free_slots = get_free_slots_for_date(date,interviewer_work_time_slots)    
     print("Free slots for {email} on {date} are:".format(email=email, date=date)) 
     print(free_slots)      
     for slot in free_slots:
@@ -329,5 +372,5 @@ if __name__ == '__main__':
     #free_slots = [{'start': '09:00', 'end': '12:35'}, {'start': '13:00', 'end': '13:30'},{'start': '15:00', 'end': '16:30'}]
     free_slots_in_chunks = get_free_slots_in_chunks(free_slots)      
     print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
-    event_created_slot = create_event_for_fetched_date_and_time(email,date,selected_slot)
+    event_created_slot = create_event_for_fetched_date_and_time(date,selected_slot,interviewer_work_time_slots)
     print("The event created,The details are",event_created_slot)  

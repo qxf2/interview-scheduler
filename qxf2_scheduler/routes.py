@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
 
-from qxf2_scheduler.models import Addinterviewer
+from qxf2_scheduler.models import Interviewers,Interviewertimeslots
 DOMAIN = 'qxf2.com'
 
 
@@ -17,41 +17,37 @@ def date_picker():
     "Dummy page to let you see a schedule"
     if request.method == 'GET':
         return render_template('get-schedule.html')
-    if request.method == 'POST':
-        email = request.form.get('email')
+    if request.method == 'POST':        
         date = request.form.get('date')
-        if '@' + DOMAIN != email[-9:]:
-            api_response = {
-                'error': 'This application will only work for emails ending in @{domain}'.format(domain=DOMAIN)}
-        elif my_scheduler.is_past_date(date):
-            api_response = {
-                'error': 'You can only get schedules for today or later.'}
-        elif my_scheduler.is_qxf2_holiday(date):
-            api_response = {
-                'error': 'The date you have provided is a Qxf2 holiday. Please pick another day.'}
-        elif my_scheduler.is_weekend(date):
-            api_response = {
-                'error': 'Qxf2 does not work on weekends. Please pick another day.'}
-        else:
-            free_slots = my_scheduler.get_free_slots_for_date(email, date)
-            free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(
-                free_slots)
-            api_response = {
-                'free_slots_in_chunks': free_slots_in_chunks, 'email': email, 'date': date}
+        new_slot = Interviewers.query.join(Interviewertimeslots,Interviewers.interviewer_id==Interviewertimeslots.interviewer_id).values(Interviewers.interviewer_email,Interviewertimeslots.interviewer_start_time,Interviewertimeslots.interviewer_end_time)
+        interviewer_work_time_slots = []
+        for interviewer_email,interviewer_start_time,interviewer_end_time in new_slot:
+            interviewer_work_time_slots.append({'interviewer_email':interviewer_email,'interviewer_start_time':interviewer_start_time,
+            'interviewer_end_time':interviewer_end_time})             
+        
+        free_slots = my_scheduler.get_free_slots_for_date(date,interviewer_work_time_slots)
+        free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(
+            free_slots)
+        api_response = {
+            'free_slots_in_chunks': free_slots_in_chunks, 'date': date}
 
         return jsonify(api_response)
 
+<<<<<<< HEAD
 @app.route("/confirmation")
 def confirmation():
     "Confirming the event message"
     response_value = request.args['value']   
     return render_template("confirmation.html",value=json.loads(response_value))
         
+=======
+>>>>>>> cfdec5c5eeb1e9c87732d87bc2af1034bef4fc97
 
 @app.route("/confirmation", methods=['GET','POST'])
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
     if request.method == 'GET':
+<<<<<<< HEAD
        return render_template("get-schedule.html")
     if request.method == 'POST':
         slot = request.form.get('slot')
@@ -62,6 +58,21 @@ def scehdule_and_confirm():
         value = {'schedule_event': schedule_event,
                         'email': email, 'date': date}
         value = json.dumps(value)
+=======
+        return render_template("get-schedule.html")
+    else:
+        new_slot = Interviewers.query.join(Interviewertimeslots,Interviewers.interviewer_id==Interviewertimeslots.interviewer_id).values(Interviewers.interviewer_email,Interviewertimeslots.interviewer_start_time,Interviewertimeslots.interviewer_end_time)
+        interviewer_work_time_slots = []
+        for interviewer_email,interviewer_start_time,interviewer_end_time in new_slot:
+            interviewer_work_time_slots.append({'interviewer_email':interviewer_email,'interviewer_start_time':interviewer_start_time,
+            'interviewer_end_time':interviewer_end_time})
+        slot = request.form.get('slot')        
+        date = request.form.get('date')
+        schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
+            date, slot,interviewer_work_time_slots)
+        api_response = {'schedule_event': schedule_event,
+                        'date': date}
+>>>>>>> cfdec5c5eeb1e9c87732d87bc2af1034bef4fc97
 
     return redirect(url_for('.confirmation', value=value)) 
 
@@ -72,8 +83,8 @@ def index():
     return "The page is not ready yet!"
 
 
-@app.route("/listinterviewer")
+@app.route("/interviewers")
 def listinterviewer():
     "List the interviewer names,designation"
-    interviewers_list = Addinterviewer.query.all()
+    interviewers_list = Interviewers.query.all()
     return render_template("list-interviewer.html", result=interviewers_list)

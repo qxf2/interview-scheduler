@@ -16,6 +16,7 @@ SCOPES = ['https://www.googleapis.com/auth/calendar','https://www.googleapis.com
 TIMEAHEAD = '+05:30'
 TIMEZONE = 'UTC'+TIMEAHEAD
 DATETIME_FORMAT = '%m/%d/%Y'
+EMAIL = 'test@qxf2.com'
 
 def get_today():
     "Return today in a datetime format consistent with DATETIME_FORMAT"
@@ -114,7 +115,7 @@ def make_day_busy(fetch_date):
     return busy_slots
 
 
-def create_event_for_fetched_date_and_time(service,email,event_start_time,event_end_time,summary,location,description,attendee):
+def create_event_for_fetched_date_and_time(service,event_start_time,event_end_time,summary,location,description,attendee):
     "Create an event for a particular date and time"
     event = {
             'summary': summary,
@@ -151,6 +152,6 @@ def create_event_for_fetched_date_and_time(service,email,event_start_time,event_
                 }
             }
             }
-    event = service.events().insert(calendarId=email, body=event).execute()
+    event = service.events().insert(calendarId=EMAIL, body=event).execute()
     
     return event 

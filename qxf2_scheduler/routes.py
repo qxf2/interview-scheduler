@@ -41,8 +41,8 @@ def date_picker():
 
         return jsonify(api_response)
 
-@app.route("/confirmation")
-def confirmation():
+@app.route("/confirm")
+def confirm():
     "Confirming the event message"
     response_value = request.args['value']   
     return render_template("confirmation.html",value=json.loads(response_value))
@@ -63,7 +63,8 @@ def scehdule_and_confirm():
                         'email': email, 'date': date}
         value = json.dumps(value)
 
-    return redirect(url_for('.confirmation', value=value)) 
+        return redirect(url_for('confirm', value=value)) 
+    return render_template("get-schedule.html")
 
 
 @app.route("/")

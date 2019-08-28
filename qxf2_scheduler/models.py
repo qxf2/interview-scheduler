@@ -20,4 +20,3 @@ class Interviewertimeslots(db.Model):
 
     def __repr__(self):
         return f"Interviewertimeslots('{self.interviewer_id}', '{self.interviewer_start_time}','{self.interviewer_end_time}','{self.time_id}'')"
-

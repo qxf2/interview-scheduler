@@ -293,7 +293,9 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     pto_flag = False
     for event in all_events:
         if 'summary' in event.keys():
-            if 'PTO' in event['summary']:
+            event_name = event['summary'].split(':')[-1].strip()
+            event_name = event_name.split()[0]
+            if 'PTO'.lower() == event_name.lower():
                 pto_flag = True 
                 break
     if pto_flag:

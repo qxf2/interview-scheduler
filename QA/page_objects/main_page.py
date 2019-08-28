@@ -1,3 +1,6 @@
+"""
+This class models the landing page of the Interview Scheduler Application.
+"""
 from .Base_Page import Base_Page
 from utils.Wrapit import Wrapit
 import conf.locators_conf as locators 

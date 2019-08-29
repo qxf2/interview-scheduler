@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
 
-from qxf2_scheduler.models import Interviewers,Interviewertimeslots
+from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Roleinterviewercombine
 DOMAIN = 'qxf2.com'
 
 
@@ -94,6 +94,29 @@ def listinterviewer():
             if append_flag == True:                
                 interviewer_work_time_slots.append(interviewer_details)
                
-    return render_template("list-interviewer.html", result=interviewer_work_time_slots)    
+    return render_template("list-interviewer.html", result=interviewer_work_time_slots)   
     
 
+@app.route("/jobs/")
+def jobs_page():
+    "Displays the jobs page for the interview"
+    #role_to_fetch = Jobs.query.filter(Jobs.job_id==jobid).all().values(Jobs.job_role)
+    display_jobs = Jobs.query.all()
+    my_job_list = []
+    for each_job in display_jobs:
+        my_job_list.append({'job_id':each_job.job_id,'job_role':each_job.job_role})
+        
+    return render_template("list-jobs.html",result=my_job_list)
+
+@app.route("/<job_id>/interviewers/")
+def interviewers_for_roles(job_id):
+    "Display the interviewers based on the job id" 
+    interviewers_list = []   
+    interviewer_list_for_roles = Interviewers.query.join(Roleinterviewercombine,Interviewers.interviewer_id==Roleinterviewercombine.interviewer_id).filter(Roleinterviewercombine.job_id==job_id). values(Interviewers.interviewer_name)
+    
+    for each_interviewer in  interviewer_list_for_roles:
+        interviewers_list.append({'interviewers_name':each_interviewer.interviewer_name})
+
+    return render_template("role-for-interviewers.html",result=interviewers_list)
+    
+    

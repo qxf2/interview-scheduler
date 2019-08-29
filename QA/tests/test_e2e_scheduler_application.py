@@ -9,7 +9,7 @@ from conf import google_api_conf as conf
 
 
 
-def test_api_factorial(api_url='http://127.0.0.1:6464/get-schedule'):
+def test_api_interview_scheduler():
     "Run api test"
     try:
 
@@ -60,6 +60,6 @@ def test_api_factorial(api_url='http://127.0.0.1:6464/get-schedule'):
     
 
 if __name__ == '__main__':
-    test_api_factorial()
+    test_api_interview_scheduler()
    
    

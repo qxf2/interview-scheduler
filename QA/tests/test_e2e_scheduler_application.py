@@ -1,5 +1,5 @@
 """
-API FACTORIAL TEST
+API test for Interview Scheduler application
 
 """
 import os,sys,time

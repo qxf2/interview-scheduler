@@ -17,6 +17,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://getbootstrap.com/2.3.2/assets/js/bootstrap.js"></script>
 </head>
 
 <body>
@@ -39,13 +42,36 @@
                     <tr>
                         <td>{{ each_job.job_id }}</td>
                         <td><a href="/{{ each_job.job_id }}/interviewers">{{ each_job.job_role }}</a></td>
-                        <td><input class="btn btn-info" type="button" id="edit" value="Edit"> <input
-                                class="btn btn-info" type='button' id='delete' value='Delete'></td>
-
+                        <td><input class="btn btn-info" type="button" id="edit" value="Edit">
+                            <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
+                                data-yourparameter="{{ each_job.job_role }}" data-href="/jobs/{{ each_job.job_id }}" data-toggle="modal">Delete</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <div aria-labelledby="myModalLabel" class="modal fade modal-megamenu" id="confirmdeletemodal" role="dialog"
+                tabindex="-1">
+                <div class="modal-megamenu" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Remove Job role</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you wish to remove role?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                            <button class="btn btn-danger" id="remove-button" type="submit">Remove</button>
+                        </div>
+                    </div><!-- end modal-content -->
+                </div><!-- end modal-dialog -->
+            </div>
+            <script>
+                // Remove button event trigger
+                $('#confirmdeletemodal').on('show.bs.modal', function (e) {
+                    $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
+                });
+            </script>
 </body>
 
 </html>

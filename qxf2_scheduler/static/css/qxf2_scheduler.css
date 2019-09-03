@@ -17,6 +17,11 @@ body {
     height:10px     
   }
 
+.modal-megamenu {
+    max-height: calc(30vh - 20px);
+    overflow-y: 10px;
+}
+
 .top-space-10 {
     margin-top: 10px;
 }
@@ -36,3 +41,4 @@ body {
 .bottom-space-20 {
     margin-bottom: 20px;
 }
+

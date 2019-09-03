@@ -5,21 +5,19 @@
         List of interviewer details
     </title>
 
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    
+    <!--Stylesheets-->
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">    
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" >
+    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+
+    <!--JS files-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="http://getbootstrap.com/2.3.2/assets/js/bootstrap.js"></script>
 </head>
 
 <body>
@@ -49,15 +47,14 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <div aria-labelledby="myModalLabel" class="modal fade modal-megamenu" id="confirmdeletemodal" role="dialog"
-                tabindex="-1">
-                <div class="modal-megamenu" role="document">
+            <div class="modal" id="confirmdeletemodal">
+                <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Remove Job role</h4>
+                            <h4 class="modal-title">Remove Job?</h4>
                         </div>
                         <div class="modal-body">
-                            <p>Are you sure you wish to remove role?</p>
+                            <p>Are you sure you wish to delete the job?</p>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
@@ -66,10 +63,15 @@
                     </div><!-- end modal-content -->
                 </div><!-- end modal-dialog -->
             </div>
+        </div>
+    </div>
             <script>
                 // Remove button event trigger
-                $('#confirmdeletemodal').on('show.bs.modal', function (e) {
+                $('#confirmdeletemodal').on('shown.bs.modal', function(e) {
+                    var triggeringElement = $(e.relatedTarget);
+                    console.log("Triggering element is: ",triggeringElement.data('href'));
                     $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
+                    console.log("This is in confirmdelete" + $(e.relatedTarget).data('href'));
                 });
             </script>
 </body>

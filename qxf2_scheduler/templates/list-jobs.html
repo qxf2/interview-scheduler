@@ -42,7 +42,7 @@
                         <td><a href="/{{ each_job.job_id }}/interviewers">{{ each_job.job_role }}</a></td>
                         <td><input class="btn btn-info" type="button" id="edit" value="Edit">
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
-                                data-yourparameter="{{ each_job.job_role }}" data-href="/jobs/{{ each_job.job_id }}" data-toggle="modal">Delete</button></td>
+                                data-jobrole="{{ each_job.job_role }}" data-href="/jobs/{{ each_job.job_id }}" data-toggle="modal">Delete</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -54,7 +54,7 @@
                             <h4 class="modal-title">Remove Job?</h4>
                         </div>
                         <div class="modal-body">
-                            <p>Are you sure you wish to delete the job?</p>
+                            <input type="text" class="form-control" id="recipient-name">
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
@@ -72,6 +72,9 @@
                     console.log("Triggering element is: ",triggeringElement.data('href'));
                     $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
                     console.log("This is in confirmdelete" + $(e.relatedTarget).data('href'));
+                    var modal = $(this)
+                    modal.find('.modal-body').text('Are you sure you wish to delete this '+ triggeringElement.data("jobrole") + 'job? ')
+
                 });
             </script>
 </body>

@@ -30,11 +30,11 @@ class Jobs(db.Model):
     def __repr__(self):
         return f"Jobs('{self.job_id}','{self.job_role}')"
 
-class Roleinterviewercombine(db.Model):
+class Jobinterviewer(db.Model):
     "Combine Job id and Interviewer ID"
     combo_id = db.Column(db.Integer,primary_key=True)
     job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
     interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
 
     def __repr__(self):
-        return f"Userrolestables('{self.job_id}','{self.interviewer_id}')"
+        return f"Jobinterviewer('{self.job_id}','{self.interviewer_id}')"

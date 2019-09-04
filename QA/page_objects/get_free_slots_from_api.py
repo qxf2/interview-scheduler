@@ -38,6 +38,6 @@ class fetch_api_response(Results):
             end_time_list.append(str(each_time_dict['end']))
 
         #Join the end time and start times in the list
-        self.api_free_slots=[start_time_list[i]+"-"+end_time_list[i] for i in range(0,len(start_time_list)-1)]
+        self.api_free_slots=[start_time_list[i]+"-"+end_time_list[i] for i in range(0,len(end_time_list))]
         return self.api_free_slots
  

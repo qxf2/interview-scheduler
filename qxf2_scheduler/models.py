@@ -37,4 +37,4 @@ class Roleinterviewercombine(db.Model):
     interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
 
     def __repr__(self):
-        return f"Userrolestables('{self.job_id}','{self.interviewer_id}')"
+        return f"Roleinterviewercombine('{self.job_id}','{self.interviewer_id}')"

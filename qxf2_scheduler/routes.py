@@ -108,15 +108,30 @@ def jobs_page():
         
     return render_template("list-jobs.html",result=my_job_list)
 
+
 @app.route("/<job_id>/interviewers/")
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id" 
     interviewers_list = []   
-    interviewer_list_for_roles = Interviewers.query.join(Roleinterviewercombine,Interviewers.interviewer_id==Roleinterviewercombine.interviewer_id).filter(Roleinterviewercombine.job_id==job_id). values(Interviewers.interviewer_name)
+    interviewer_list_for_roles = Interviewers.query.join(Roleinterviewercombine,Interviewers.interviewer_id==Roleinterviewercombine.interviewer_id).filter(Roleinterviewercombine.job_id==job_id).values(Interviewers.interviewer_name)
     
     for each_interviewer in  interviewer_list_for_roles:
         interviewers_list.append({'interviewers_name':each_interviewer.interviewer_name})
 
     return render_template("role-for-interviewers.html",result=interviewers_list)
-    
+
+
+@app.route("/delete",methods=["POST"]) 
+def delete_job():
+    "Deletes a job"
+    if request.method== 'POST':
+        job_id_to_delete = request.form.get('job-id')
+        deleted_role = Jobs.query.filter(Jobs.job_id==job_id_to_delete).first()
+        data = {'job_role':deleted_role.job_role,'job_id':deleted_role.job_id}       
+        db.session.delete(deleted_role)
+        db.session.commit()        
+        
+    return jsonify(data)
+
+
     

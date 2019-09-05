@@ -18,17 +18,19 @@
             <table id="test-table" border="4" cellspacing="0" width="100%">
                 <thead>
                     <tr>                        
-                        <th>Interviewer Name</th>
+                        <th>Interviewer ID</th>
                         <th>Interviewer email</th>
-                        <th>Interviewer Designation</th>
+                        <th>Interviewer start time</th>
+                        <th>Interviewer end time</th>
                     </tr>
                 </thead>
                 <tbody>
                         {% for each_interviewer in result %}                        
                         <tr>
-                            <td>{{ each_interviewer.interviewer_name }}</td>
+                            <td>{{ each_interviewer.interviewer_id }}</td>
                             <td>{{ each_interviewer.interviewer_email }}</td>
-                            <td>{{ each_interviewer.interviewer_designation }}</td>
+                            <td>{{ each_interviewer.interviewer_start_time }}</td>
+                            <td>{{ each_interviewer.interviewer_end_time }}</td>
                         </tr>
                         {% endfor %}
                 </tbody>

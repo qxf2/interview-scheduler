@@ -1,3 +1,9 @@
 {
+<<<<<<< HEAD
     "python.pythonPath": "venv-interview-scheduler\\Scripts\\python.exe"
+=======
+    "python.pythonPath": "venv-interview-scheduler\\Scripts\\python.exe",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+>>>>>>> CAL-210-interview_scheduler_test_framework
 }

@@ -26,12 +26,7 @@
 <body>
     <div class="container col-md-offset-1">
         <div class="row top-space-30">
-            <form>
-                <div class='form-group'>
-                    <label for='candidatesemail'>Your email: </label>
-                    <input name='emailfield' type='text' class='form-group' id="emailfield"
-                        onblur="validateEmail(this);" />
-                </div>
+            <form>                
                 <div class='form-group'>
                     <div id="holder" class='form-group'></div>
                     <label for='Date'>Choose the interview date:</label>
@@ -47,25 +42,8 @@
         </div>
         <div class="row top-space-30" id="chosenSlot"></div>
         <div class="row top-space-30" id="scheduledEvent"></div>
-    </div>
-
+    </div>    
     <script>
-        function validateEmail(emailfield) {
-            var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-            $('#emailfield').css('border', 'solid 2px rgb(238,238,238)');
-            $('#resultDiv').css('color', 'black');
-            $('#resultDiv').text('');
-            if (reg.test(emailfield.value) == false) {
-                $('#emailfield').css('border', 'solid 2px red');
-                $('#resultDiv').css('color', 'red');
-                $('#resultDiv').text('Invalid Email Address')
-                return false;
-            }
-            return true;
-        }
-    </script>
-    <script>
-
         $(function () {
             //holidays in yyyy-mm-dd format
             var holidays = ['2019-01-01', '2019-01-15', '2019-03-04', '2019-05-01', '2019-08-15', '2019-09-02', '2019-10-02', '2019-10-08', '2019-11-01'];
@@ -90,20 +68,11 @@
     </script>    
     <script>       
         $("document").ready(function () {
-            $(window).bind("pageshow", function() {
-            $("#emailfield").val('');
-            $("#datepicker").val('');
-        });
-            $('#submit').click(function () {
-                var email = $('#emailfield').val();
+            $('#submit').click(function () {                
                 var date = $('#datepicker').val();
                 var elements = [];
                 $("#resultDiv").empty();
-                if (email == "") {
-                    $('#emailfield').css('border', 'solid 2px red');
-                    $('#resultDiv').css('color', 'red');
-                    $('#resultDiv').text('Invalid Email Address')
-                } else if (date == "") {
+                if (date == "") {
                     $('#datepicker').css('border', 'solid 2px red');
                     $('#resultDiv').css('color', 'red');
                     $('#resultDiv').text('Invalid date')
@@ -112,8 +81,7 @@
                     var callDetails = {
                         type: 'POST',
                         url: '/get-schedule',
-                        data: {
-                            'email': email,
+                        data: {                            
                             'date': date
                         }
                     };
@@ -122,6 +90,7 @@
                         $('#datepicker').css('border', 'solid 2px rgb(238,238,238)');
                         $("#resultDiv").css('color', 'black');
                         freeChunkSlots = result.free_slots_in_chunks
+                        console.log(freeChunkSlots)
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';
                         if (result.hasOwnProperty('error')) {
@@ -129,12 +98,12 @@
                         }
                         else {
                             if (freeChunkSlots.length == 0) {
-                                msg += 'There were no free slots for ' + result.email + ' on ' + result.date;
+                                msg += 'There were no free slots for  on ' + result.date;
                             } else {
-                                msg = 'The free slots for ' + result.email + ' on ' + result.date + ' are: <br>';
+                                msg = 'The free slots on ' + result.date + ' are: <br>';
                                 for (index in freeChunkSlots) {
-                                    slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;
-                                    var timeSlotButton = $('<div class="col-md-2 top-space-20 text-align:left"><input type="button" onclick="displayChosenSlot(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
+                                    slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;                                    
+                                    var timeSlotButton = $('<div class="col-md-2 top-space-20 text-align:left"><input type="button" onclick="displayChosenSlot(\'' + freeChunkSlots[index].email +'\', \'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
                                     elements.push(timeSlotButton);
                                 }
                             }//end of if freeSlots is empty
@@ -150,9 +119,10 @@
     </script>
 
     <script>
-        function displayChosenSlot(email, date, slot) {
-            var msg = "The chosen slot for the interviewer " + email + " on " + date + " is: " + slot;
-            var timeSlotButton = $('<div class="top-space-20"><input class="btn btn-info" type="button" onclick="scheduleEvent(\'' + email + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');        
+        function displayChosenSlot(emails,date, slot) {
+            console.log(emails)
+            var msg = "The chosen slot for the interviewer   on " + date + " is: " + slot;
+            var timeSlotButton = $('<div class="top-space-20"><input class="btn btn-info" type="button" onclick="scheduleEvent(\''+ emails + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');        
             $("#chosenSlot").html(msg);
             $("#chosenSlot").append(timeSlotButton);
         } 
@@ -170,11 +140,11 @@
         }
     </script>
     <script>
-        function scheduleEvent(email, date, slot) {
+        function scheduleEvent(emails,date, slot) {
             form = document.createElement("form");
             form.method = "POST";
-            form.action = "/confirmation";
-            addHidden(form,'email',email);
+            form.action = "/confirmation"; 
+            addHidden(form,'emails',emails)           
             addHidden(form,'date',date);
             addHidden(form,'slot',slot);            
             form.submit();

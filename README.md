@@ -77,6 +77,13 @@ To verify your Google calendar setup, try the following command
             python utils/verify_gcal_setup.py <your_email_id> 
 
 If all went well, you should see 10 upcoming events for the email id you provided.
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5e3956d860ce0d0061d154b48d6fdd770dc229ed
+>>>>>>> 98d0a0cd33d86d84f24da02dd990d0a6e9e0b3e7
 __f) Start the application__
 
 To start the application, run

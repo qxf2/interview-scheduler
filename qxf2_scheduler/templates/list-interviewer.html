@@ -1,9 +1,10 @@
 <html>
+
 <head>
     <title>
         List of interviewer details
     </title>
-    
+
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
@@ -14,29 +15,35 @@
 
 <body>
     <div class="container col-md-offset-1">
-            <h1>Interviewer List</h1>                        
-            <table id="test-table" border="4" cellspacing="0" width="100%">
-                <thead>
-                    <tr>                        
-                        <th>Interviewer ID</th>
-                        <th>Interviewer email</th>
-                        <th>Interviewer start time</th>
-                        <th>Interviewer end time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                        {% for each_interviewer in result %}                        
-                        <tr>
-                            <td>{{ each_interviewer.interviewer_id }}</td>
-                            <td>{{ each_interviewer.interviewer_email }}</td>
-                            <td>{{ each_interviewer.interviewer_start_time }}</td>
-                            <td>{{ each_interviewer.interviewer_end_time }}</td>
-                        </tr>
-                        {% endfor %}
-                </tbody>
-            </table>
-            
-
+        <div>
+            <input class="btn btn-info" type="button" id="add" onclick="addinterviewer()" value="Add">
+        </div>
+        <h2 class="grey_text text-center">Interviewers List</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Interviewer ID</th>
+                    <th>Interviewer email</th>
+                    <th>Interviewer start time</th>
+                    <th>Interviewer end time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for each_interviewer in result %}
+                <tr>
+                    <td>{{ each_interviewer.interviewer_id }}</td>
+                    <td>{{ each_interviewer.interviewer_email }}</td>
+                    <td>{{ each_interviewer.interviewer_start_time }}</td>
+                    <td>{{ each_interviewer.interviewer_end_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <script>
+            function addinterviewer(){
+                document.location.href='/interviewers/add'
+            }
+        </script>
 
 </body>
 

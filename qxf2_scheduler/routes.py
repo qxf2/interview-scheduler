@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
 
-from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Roleinterviewercombine
+from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Jobinterviewer
 DOMAIN = 'qxf2.com'
 
 
@@ -99,8 +99,7 @@ def listinterviewer():
 
 @app.route("/jobs/")
 def jobs_page():
-    "Displays the jobs page for the interview"
-    #role_to_fetch = Jobs.query.filter(Jobs.job_id==jobid).all().values(Jobs.job_role)
+    "Displays the jobs page for the interview"    
     display_jobs = Jobs.query.all()
     my_job_list = []
     for each_job in display_jobs:
@@ -113,7 +112,7 @@ def jobs_page():
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id" 
     interviewers_list = []   
-    interviewer_list_for_roles = Interviewers.query.join(Roleinterviewercombine,Interviewers.interviewer_id==Roleinterviewercombine.interviewer_id).filter(Roleinterviewercombine.job_id==job_id).values(Interviewers.interviewer_name)
+    interviewer_list_for_roles = Interviewers.query.join(Jobinterviewer,Interviewers.interviewer_id==Jobinterviewer.interviewer_id).filter(Jobinterviewer.job_id==job_id).values(Interviewers.interviewer_name)
     
     for each_interviewer in  interviewer_list_for_roles:
         interviewers_list.append({'interviewers_name':each_interviewer.interviewer_name})
@@ -132,6 +131,24 @@ def delete_job():
         db.session.commit()        
         
     return jsonify(data)
+
+
+@app.route("/interviewers/add",methods=["GET","POST"])
+def add_interviewers():
+    "Adding the interviewers"
+    if request.method == 'GET':
+        return render_template("add-interviewers.html")
+    if request.method == 'POST':
+        """interviewer_id = request.form.get('id')
+        interviewer_name = request.form.get('name')
+        interviewer_email = request.form.get('email')
+        interivewer_designation = request.form.get('designation')"""
+        add_interviewers = Interviewers(interviewer_id = request.form.get('id'),interviewer_name = request.form.get('name'),interviewer_email = request.form.get('email'),interivewer_designation = request.form.get('designation'))
+        db.session.add(add_interviewers)
+        db.session.commit()
+
+        return jsonify(add_interviewers)
+    
 
 
     

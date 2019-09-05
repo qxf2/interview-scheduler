@@ -33,32 +33,11 @@ def date_picker():
 
         return jsonify(api_response)
 
-<<<<<<< HEAD
-@app.route("/confirmation")
-def confirmation():
-    "Confirming the event message"
-    response_value = request.args['value']   
-    return render_template("confirmation.html",value=json.loads(response_value))
-        
-=======
->>>>>>> cfdec5c5eeb1e9c87732d87bc2af1034bef4fc97
 
 @app.route("/confirmation", methods=['GET','POST'])
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
     if request.method == 'GET':
-<<<<<<< HEAD
-       return render_template("get-schedule.html")
-    if request.method == 'POST':
-        slot = request.form.get('slot')
-        email = request.form.get('email')
-        date = request.form.get('date')
-        schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
-            email, date, slot)
-        value = {'schedule_event': schedule_event,
-                        'email': email, 'date': date}
-        value = json.dumps(value)
-=======
         return render_template("get-schedule.html")
     else:
         new_slot = Interviewers.query.join(Interviewertimeslots,Interviewers.interviewer_id==Interviewertimeslots.interviewer_id).values(Interviewers.interviewer_email,Interviewertimeslots.interviewer_start_time,Interviewertimeslots.interviewer_end_time)
@@ -72,7 +51,6 @@ def scehdule_and_confirm():
             date, slot,interviewer_work_time_slots)
         api_response = {'schedule_event': schedule_event,
                         'date': date}
->>>>>>> cfdec5c5eeb1e9c87732d87bc2af1034bef4fc97
 
     return redirect(url_for('.confirmation', value=value)) 
 

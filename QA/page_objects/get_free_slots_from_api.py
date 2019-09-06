@@ -11,7 +11,6 @@ from utils.results import Results
 
 
 url="http://127.0.0.1:6464/get-schedule"
-emailid=conf.emailid
 date=conf.date
 start_time_list=[]
 end_time_list=[]
@@ -23,7 +22,7 @@ class fetch_api_response(Results):
 
     def connect_to_website(self):
         #method to for api call to fetch response from webpage
-        self.config_details={'email':emailid,'date':date}
+        self.config_details={'date':date}
         self.api_call=requests.post(url,data=self.config_details)
         self.free_timeslot_list=self.api_call.json()['free_slots_in_chunks']
         return self.free_timeslot_list

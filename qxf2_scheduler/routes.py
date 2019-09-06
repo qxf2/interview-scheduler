@@ -6,7 +6,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json
+import json,sys
 
 from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -136,18 +136,21 @@ def delete_job():
 @app.route("/interviewers/add",methods=["GET","POST"])
 def add_interviewers():
     "Adding the interviewers"
+    data={}
     if request.method == 'GET':
         return render_template("add-interviewers.html")
-    if request.method == 'POST':
-        """interviewer_id = request.form.get('id')
-        interviewer_name = request.form.get('name')
-        interviewer_email = request.form.get('email')
-        interivewer_designation = request.form.get('designation')"""
-        add_interviewers = Interviewers(interviewer_id = request.form.get('id'),interviewer_name = request.form.get('name'),interviewer_email = request.form.get('email'),interivewer_designation = request.form.get('designation'))
+    if request.method == 'POST':              
+        try:
+            interviewer_name = request.form.get('name')
+            data = {'interviewer_name':interviewer_name}
+            add_interviewers = Interviewers(interviewer_name = request.form.get('name'),interviewer_email = request.form.get('email'),interviewer_designation = request.form.get('designation'))
+        except Exception as e:
+            print(e)        
         db.session.add(add_interviewers)
         db.session.commit()
+        flash("Interviewer"+ interviewer_name + "has been added successfully")
+        return jsonify(data)
 
-        return jsonify(add_interviewers)
     
 
 

@@ -96,7 +96,7 @@
                 console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
                 $.ajax({
                     type: 'POST',
-                    url: '/delete',
+                    url: '/jobs/delete',
                     data: { 'job-id': $(e.relatedTarget).data('href') },
                     success: function (data) {
                         var msg = "The role deleted is " + data.job_role;

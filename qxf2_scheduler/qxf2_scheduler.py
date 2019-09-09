@@ -71,7 +71,6 @@ def convert_combined_string_into_isoformat(create_event_timings_and_date):
 
 def combine_date_and_time(date,selected_slot):
     "Combine the date and selected slot into isoformat" 
-    print("I am date",date)   
     start_time = selected_slot.split('-')[0].strip()    
     end_time = selected_slot.split('-')[-1].strip()    
     create_event_start_time =  convert_combined_string_into_isoformat((date + start_time)) 

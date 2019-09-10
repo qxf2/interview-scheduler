@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from qxf2_scheduler.models import Interviewers,Interviewertimeslots
+from qxf2_scheduler import models
 from qxf2_scheduler import db
 from qxf2_scheduler.__init__ import app
 from flask_script import Manager

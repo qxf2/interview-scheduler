@@ -1,23 +1,30 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <title>
-        Add interviewer details
-    </title>
-
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add Interviewers</title>
 
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .bs-example {
+            margin: 20px;
+        }
 
-    <!------ Include the above in your HEAD tag ---------->
+        textarea {
+            display: inline
+        }
+    </style>
 </head>
 
 <body>
@@ -36,53 +43,79 @@
             </div>
         </div>
     </div>
-    <form class="form-horizontal">
+    <div class="bs-example">
+        <form class="form-horizontal">
 
-        <!-- Form Name -->
-        <h2 class="grey_text text-justify">Add Interviewers</h2>
-        <!-- Text input-->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="fname">First Name</label>
-            <div class="col-md-4">
-                <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md" required="">
+            <!-- Form Name -->
+            <h2 class="grey_text text-justify">Add Interviewers</h2>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="fname">First Name</label>
+                <div class="col-md-4">
+                    <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
+                        required="">
 
+                </div>
             </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="email">Email</label>
+                <div class="col-md-4">
+                    <input id="email" name="email" type="text" placeholder="johndoe@example.com"
+                        class="form-control input-md" required="">
+
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="designation">Designation</label>
+                <div class="col-md-4">
+                    <input id="designation" name="designation" type="text" placeholder="QA"
+                        class="form-control input-md" required="">
+
+                </div>
+            </div>
+        </form>
+        <form class="form-inline">
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="starttime">Starttime</label>
+                <div class="col-md-4">
+                    <input type="startime" class="form-control input-md" id="starttime" placeholder="starttime"
+                        required="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="endtime">Endtime</label>
+                <div class="col-md-4">
+                    <input type="endtime" class="form-control input-md" id="endtime" placeholder="endtime" required="">
+                </div>
+            </div>
+        </form>
+        <div>
+            <input class="btn btn-info" onclick="addtextbox()" type="button" value="Add">
         </div>
-
-        <!-- Text input-->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="email">Email</label>
-            <div class="col-md-4">
-                <input id="email" name="email" type="text" placeholder="johndoe@example.com"
-                    class="form-control input-md" required="">
-
-            </div>
-        </div>
-
-        <!-- Text input-->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="designation">Designation</label>
-            <div class="col-md-4">
-                <input id="designation" name="designation" type="text" placeholder="QA" class="form-control input-md"
-                    required="">
-
-            </div>
+        <div id="ToolsGroup">
         </div>
 
         <!-- Button (Double) -->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="save"></label>
-            <div class="col-md-8">
-                <!------<button id="save" name="save" onclick="addinterviewer()" class="btn btn-success">Add</button>---->
-                <input class="btn btn-success" type='button' id='submit' value='Add'>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="save"></label>
+                <div class="col-md-8">
+                    <!------<button id="save" name="save" onclick="addinterviewer()" class="btn btn-success">Add</button>---->
+                    <input class="btn btn-success" type='button' id='submit' value='Add'>
 
-                <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
+                    <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
+        </form>
 
+    </div>
     <script>
-        $("#submit").click(function(){
+        $("#submit").click(function () {
             var id = $("#intid").val();
             var email = $("#email").val();
             var name = $("#fname").val();
@@ -91,19 +124,39 @@
             $.ajax({
                 type: 'POST',
                 url: '/interviewers/add',
-                data: {                    
+                data: {
                     'email': email,
                     'name': name,
                     'designation': designation
                 },
-                success:function (result) {
-                    var msg = " The interviewer " +' ' + result.interviewer_name+' ' + " has been added successfully";
+                success: function (result) {
+                    var msg = " The interviewer " + ' ' + result.interviewer_name + ' ' + " has been added successfully";
                     $('#myModal').modal('show');
                     $('#myModal .modal-body p').html(msg);
-                }          
-                 
+                }
+
+            })
         })
-        })
+    </script>
+    <script>
+
+        function addtextbox() {
+            var newTextBoxDiv = document.createElement('div');
+            newTextBoxDiv.id = 'Tools';
+            document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
+            
+            newTextBoxDiv.innerHTML ='<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="startime" class="form-control input-md" id="starttime" placeholder="starttime" required=""> </div></div>'+
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="endtime" class="form-control input-md" id="endtime" placeholder="endtime" required=""></div></div></form>' +
+                '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
+        };
+
+        function removeTextArea(inputElement) {
+            var el = inputElement;
+            while (el.tagName != 'DIV') el = el.parentElement;
+            el.parentElement.removeChild(el);
+            counter--;
+        }
+
     </script>
 </body>
 

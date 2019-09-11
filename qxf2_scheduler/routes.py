@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
 
-from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Roleinterviewercombine
+from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Jobinterviewer
 DOMAIN = 'qxf2.com'
 
 
@@ -113,7 +113,7 @@ def jobs_page():
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id" 
     interviewers_list = []   
-    interviewer_list_for_roles = Interviewers.query.join(Roleinterviewercombine,Interviewers.interviewer_id==Roleinterviewercombine.interviewer_id).filter(Roleinterviewercombine.job_id==job_id).values(Interviewers.interviewer_name)
+    interviewer_list_for_roles = Interviewers.query.join(Jobinterviewer,Interviewers.interviewer_id==Jobinterviewer.interviewer_id).filter(Jobinterviewer.job_id==job_id).values(Interviewers.interviewer_name)
     
     for each_interviewer in  interviewer_list_for_roles:
         interviewers_list.append({'interviewers_name':each_interviewer.interviewer_name})

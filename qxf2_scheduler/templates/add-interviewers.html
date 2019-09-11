@@ -82,14 +82,14 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="starttime">Starttime</label>
                 <div class="col-md-4">
-                    <input type="startime" class="form-control input-md" id="starttime" placeholder="starttime"
+                    <input type="startime" class="form-control input-md" id="starttime0" placeholder="starttime"
                         required="">
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-md-4 control-label" for="endtime">Endtime</label>
                 <div class="col-md-4">
-                    <input type="endtime" class="form-control input-md" id="endtime" placeholder="endtime" required="">
+                    <input type="endtime" class="form-control input-md" id="endtime0" placeholder="endtime" required="">
                 </div>
             </div>
         </form>
@@ -103,10 +103,8 @@
         <form class="form-horizontal">
             <div class="form-group">
                 <label class="col-md-4 control-label" for="save"></label>
-                <div class="col-md-8">
-                    <!------<button id="save" name="save" onclick="addinterviewer()" class="btn btn-success">Add</button>---->
+                <div class="col-md-8">                   
                     <input class="btn btn-success" type='button' id='submit' value='Add'>
-
                     <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
@@ -115,20 +113,29 @@
 
     </div>
     <script>
+        timeObject={
+            starttime: [],
+            endtime: []
+        };
         $("#submit").click(function () {
             var id = $("#intid").val();
             var email = $("#email").val();
             var name = $("#fname").val();
-            var designation = $("#designation").val();
-            console.log("I am here");
+            var designation = $("#designation").val();            
+            for (var index = 0; index<count+1; index++) {
+                timeObject.starttime.push($("#starttime"+index).val())
+                timeObject.endtime.push($("#endtime"+index).val()) 
+                    }
+            console.log(timeObject);
             $.ajax({
                 type: 'POST',
                 url: '/interviewers/add',
                 data: {
                     'email': email,
                     'name': name,
-                    'designation': designation
-                },
+                    'designation': designation,
+                    'timeObject':JSON.stringify(timeObject)
+                },                
                 success: function (result) {
                     var msg = " The interviewer " + ' ' + result.interviewer_name + ' ' + " has been added successfully";
                     $('#myModal').modal('show');
@@ -139,15 +146,17 @@
         })
     </script>
     <script>
-
+        var count = 0;
         function addtextbox() {
+            count++;
             var newTextBoxDiv = document.createElement('div');
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
-            
-            newTextBoxDiv.innerHTML ='<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="startime" class="form-control input-md" id="starttime" placeholder="starttime" required=""> </div></div>'+
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="endtime" class="form-control input-md" id="endtime" placeholder="endtime" required=""></div></div></form>' +
+
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="startime" class="form-control input-md" id="starttime'+count+'" placeholder="starttime" required=""> </div></div>' +
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="endtime" class="form-control input-md" id="endtime'+count+'" placeholder="endtime" required=""></div></div></form>' +
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
+            console.log("Iam count",count);
         };
 
         function removeTextArea(inputElement) {

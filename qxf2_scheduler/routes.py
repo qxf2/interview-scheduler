@@ -6,7 +6,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json,sys
+import json
 
 from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -141,17 +141,27 @@ def add_interviewers():
         return render_template("add-interviewers.html")
     if request.method == 'POST':              
         try:
+            # Adding the name,email,deignation through UI
             interviewer_name = request.form.get('name')
             data = {'interviewer_name':interviewer_name}
-            add_interviewers = Interviewers(interviewer_name = request.form.get('name'),interviewer_email = request.form.get('email'),interviewer_designation = request.form.get('designation'))
+            add_interviewers = Interviewers(interviewer_name = request.form.get('name'),interviewer_email = request.form.get('email'),interviewer_designation = request.form.get('designation'))  
+            db.session.add(add_interviewers)
+            
+            # Filtering the interviewer id from the table to use it for interviewertimeslots table
+            added_interviewer_id = Interviewers.query.filter(Interviewers.interviewer_name==interviewer_name).first()
+
+            # Adding the time slots in the interviewerstimeslots table                
+            interviewer_time_slots = eval(request.form.get('timeObject'))
+            interviewer_start_time = interviewer_time_slots['starttime']
+            interviewer_end_time = interviewer_time_slots['endtime']            
+            len_of_slots=len(interviewer_start_time)
+            for i in range(len_of_slots):
+                add_time_slots=Interviewertimeslots(interviewer_id=added_interviewer_id.interviewer_id,interviewer_start_time=interviewer_start_time[i],interviewer_end_time=interviewer_end_time[i])
+                db.session.add(add_time_slots)
+
         except Exception as e:
-            print(e)        
-        db.session.add(add_interviewers)
+            print(e)               
+        
         db.session.commit()
-        flash("Interviewer"+ interviewer_name + "has been added successfully")
-        return jsonify(data)
-
-    
-
-
-    
+        
+        return jsonify(data)    

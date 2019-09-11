@@ -120,7 +120,7 @@ def interviewers_for_roles(job_id):
     return render_template("role-for-interviewers.html",result=interviewers_list)
 
 
-@app.route("/delete",methods=["POST"]) 
+@app.route("/jobs/delete",methods=["POST"]) 
 def delete_job():
     "Deletes a job"
     if request.method== 'POST':

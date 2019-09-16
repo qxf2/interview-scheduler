@@ -7,6 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
+import sys
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -80,17 +81,17 @@ def listinterviewers():
 
 
 def parse_interviewer_detail(interviewer_details):
-    "Parse the interviewer detail with start and end time"    
+    "Parse the interviewer detail with start and end time"
     time_dict = {}
     time_dict['starttime'] = interviewer_details['interviewers_starttime']
-    time_dict['endtime'] = interviewer_details['interviewers_endtime']   
+    time_dict['endtime'] = interviewer_details['interviewers_endtime']
     del interviewer_details['interviewers_starttime']
     del interviewer_details['interviewers_endtime']
     interviewer_details['time'] = time_dict
 
     return interviewer_details
 
-    
+
 @app.route("/<interviewer_id>/interviewer/")
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
@@ -99,20 +100,46 @@ def read_interviewer_details(interviewer_id):
         Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
     for each_detail in interviewer_details:
         interviewer_detail = {
+            'interviewers_id': each_detail.interviewer_id,
             'interviewers_name': each_detail.interviewer_name,
             'interviewers_email': each_detail.interviewer_email,
             'interviewers_designation': each_detail.interviewer_designation,
             'interviewers_starttime': each_detail.interviewer_start_time,
             'interviewers_endtime': each_detail.interviewer_end_time}
-        
-        parsed_interviewer_detail = parse_interviewer_detail(interviewer_detail)
+
+        parsed_interviewer_detail = parse_interviewer_detail(
+            interviewer_detail)
         if not parsed_interviewer_details:
             parsed_interviewer_details.append(parsed_interviewer_detail)
         else:
             if interviewer_detail['interviewers_name'] in parsed_interviewer_details[0].values():
-                parsed_interviewer_details[0]['time']=[parsed_interviewer_details[0]['time'],parsed_interviewer_detail['time']] 
-         
+                parsed_interviewer_details[0]['time'] = [
+                    parsed_interviewer_details[0]['time'], parsed_interviewer_detail['time']]
+
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
+
+
+@app.route("/<interviewer_id>/interviewer/edit/")
+def edit_interviewer(interviewer_id):
+    "Edit the interviewers"
+    print(interviewer_id, type(interviewer_id), file=sys.stderr)
+    interviewer_id = interviewer_id.strip("'")
+    print(interviewer_id, file=sys.stderr)
+    """edit_interviewer_details = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).values(
+        Interviewers.interviewer_id, Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation)"""
+    edit_interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).values(
+        Interviewers.interviewer_id, Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+    for each_detail in edit_interviewer_details:
+        interviewer_detail = {
+            'interviewers_id': each_detail.interviewer_id,
+            'interviewers_name': each_detail.interviewer_name,
+            'interviewers_email': each_detail.interviewer_email,
+            'interviewers_designation': each_detail.interviewer_designation,
+            'interviewers_starttime': each_detail.interviewer_start_time,
+            'interviewers_endtime':each_detail.interviewer_end_time
+        }
+        print(interviewer_detail, file=sys.stderr)
+    return render_template("edit_interviewer.html",result=interviewer_detail)
 
 
 @app.route("/jobs/")

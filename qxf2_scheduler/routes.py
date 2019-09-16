@@ -122,9 +122,8 @@ def read_interviewer_details(interviewer_id):
 @app.route("/<interviewer_id>/interviewer/edit/")
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
-    print(interviewer_id, type(interviewer_id), file=sys.stderr)
-    interviewer_id = interviewer_id.strip("'")
-    print(interviewer_id, file=sys.stderr)
+    parsed_interviewer_details = []    
+    interviewer_id = interviewer_id.strip("'")   
     """edit_interviewer_details = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).values(
         Interviewers.interviewer_id, Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation)"""
     edit_interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).values(
@@ -138,17 +137,24 @@ def edit_interviewer(interviewer_id):
             'interviewers_starttime': each_detail.interviewer_start_time,
             'interviewers_endtime':each_detail.interviewer_end_time
         }
-        print(interviewer_detail, file=sys.stderr)
-    return render_template("edit_interviewer.html",result=interviewer_detail)
+        parsed_interviewer_detail = parse_interviewer_detail(
+            interviewer_detail)
+        
+        if not parsed_interviewer_details:
+            parsed_interviewer_details.append(parsed_interviewer_detail)
+            
+        else:
+            if interviewer_detail['interviewers_name'] in parsed_interviewer_details[0].values():
+                parsed_interviewer_details[0]['time'] = [
+                    parsed_interviewer_details[0]['time'], parsed_interviewer_detail['time']]
+               
+        print(str(parsed_interviewer_details), file=sys.stderr)
+    return render_template("edit-interviewer.html",result=parsed_interviewer_details)
 
 
 @app.route("/jobs/")
 def jobs_page():
-<<<<<<< HEAD
     "Displays the jobs page for the interview"
-=======
-    "Displays the jobs page for the interview"    
->>>>>>> db7b358c410bf260fce71fd39875cb2f88be5bbc
     display_jobs = Jobs.query.all()
     my_job_list = []
     for each_job in display_jobs:

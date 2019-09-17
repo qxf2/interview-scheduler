@@ -18,7 +18,7 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Interviewers work hours</th>
+                    <th scope="col">Study time</th>
                     <th scope="col">Actions</th>
 
                 </tr>
@@ -27,23 +27,21 @@
                 {% for each_detail in result %}
                 
                 <tr>
-                    <td>{{ each_detail.interviewers_name }}</td>
-                    <td>{{ each_detail.interviewers_email }}</td>
+                    <td>{{ each_detail.student_name }}</td>
+                    <td>{{ each_detail.student_email }}</td>
                     {% for each_time in each_detail.time %}
-                    <td>{{ each_time['starttime'] }}-{{ each_time['endtime'] }}</td>
+                    <td style="padding-left: 0px;">{{ each_time['starttime'] }}-{{ each_time['endtime'] }}</td>
                     {% endfor %}
                     
                     <td><input class="btn btn-info" type="button" value="Edit" id="edit"
-                            onclick="editinterviewer('\''+ '{{ each_detail.interviewers_id }}' +'\'')"></td>
+                            onclick="editinterviewer({{ each_detail.interviewers_id }})"></td>
                 </tr>
                 {% endfor %}
             </tbody>
 
         </table>
         <script>
-            function editinterviewer(interviewer_id) {
-                console.log(Number(interviewer_id),parseInt(interviewer_id,10));
-                
+            function editinterviewer(interviewer_id) {               
                 document.location.href = "/" + interviewer_id + "/interviewer/edit/"
                 $.ajax({
                     type:'POST',

@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
 
-from qxf2_scheduler.models import Interviewers,Interviewertimeslots
+from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Jobinterviewer
 DOMAIN = 'qxf2.com'
 
 
@@ -33,8 +33,8 @@ def date_picker():
 
         return jsonify(api_response)
 
-@app.route("/confirmation")
-def confirmation():
+@app.route("/confirm")
+def confirm():
     "Confirming the event message"
     response_value = request.args['value']   
     return render_template("confirmation.html",value=json.loads(response_value))
@@ -54,7 +54,8 @@ def scehdule_and_confirm():
         value = {'schedule_event': schedule_event,'date': date}
         value = json.dumps(value)
 
-    return redirect(url_for('.confirmation', value=value)) 
+        return redirect(url_for('confirm', value=value)) 
+    return render_template("get-schedule.html")
 
 
 @app.route("/")
@@ -93,6 +94,44 @@ def listinterviewer():
             if append_flag == True:                
                 interviewer_work_time_slots.append(interviewer_details)
                
-    return render_template("list-interviewer.html", result=interviewer_work_time_slots)    
+    return render_template("list-interviewer.html", result=interviewer_work_time_slots)   
     
 
+@app.route("/jobs/")
+def jobs_page():
+    "Displays the jobs page for the interview"
+    #role_to_fetch = Jobs.query.filter(Jobs.job_id==jobid).all().values(Jobs.job_role)
+    display_jobs = Jobs.query.all()
+    my_job_list = []
+    for each_job in display_jobs:
+        my_job_list.append({'job_id':each_job.job_id,'job_role':each_job.job_role})
+        
+    return render_template("list-jobs.html",result=my_job_list)
+
+
+@app.route("/<job_id>/interviewers/")
+def interviewers_for_roles(job_id):
+    "Display the interviewers based on the job id" 
+    interviewers_list = []   
+    interviewer_list_for_roles = Interviewers.query.join(Jobinterviewer,Interviewers.interviewer_id==Jobinterviewer.interviewer_id).filter(Jobinterviewer.job_id==job_id).values(Interviewers.interviewer_name)
+    
+    for each_interviewer in  interviewer_list_for_roles:
+        interviewers_list.append({'interviewers_name':each_interviewer.interviewer_name})
+
+    return render_template("role-for-interviewers.html",result=interviewers_list)
+
+
+@app.route("/jobs/delete",methods=["POST"]) 
+def delete_job():
+    "Deletes a job"
+    if request.method== 'POST':
+        job_id_to_delete = request.form.get('job-id')
+        deleted_role = Jobs.query.filter(Jobs.job_id==job_id_to_delete).first()
+        data = {'job_role':deleted_role.job_role,'job_id':deleted_role.job_id}       
+        db.session.delete(deleted_role)
+        db.session.commit()        
+        
+    return jsonify(data)
+
+
+    

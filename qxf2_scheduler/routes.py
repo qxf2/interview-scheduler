@@ -79,7 +79,7 @@ def list_interviewers():
     return render_template("list-interviewers.html", result=my_interviewers_list)
 
 
-def parse_interviewer_detail(interviewer_details):
+def form_interviewer_timeslot(start_time,end_time):
     "Parse the interviewer detail with start and end time"    
     time_dict = {}
     time_dict['starttime'] = interviewer_details['interviewers_starttime']
@@ -106,7 +106,7 @@ def read_interviewer_details(interviewer_id):
             'interviewers_starttime': each_detail.interviewer_start_time,
             'interviewers_endtime': each_detail.interviewer_end_time}
         
-        parsed_interviewer_detail = parse_interviewer_detail(interviewer_detail)
+        parsed_interviewer_detail = form_interviewer_timeslot(start_time=each_detail.interviewer_start_time,end_time=each_detail.interviewer_end_time)
         if not parsed_interviewer_details:
             parsed_interviewer_details.append(parsed_interviewer_detail)
         else:

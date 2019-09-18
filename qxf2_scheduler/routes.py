@@ -107,7 +107,7 @@ def read_interviewer_details(interviewer_id):
             'interviewers_endtime': each_detail.interviewer_end_time}
         
         parsed_interviewer_detail = form_interviewer_timeslot(start_time=each_detail.interviewer_start_time,end_time=each_detail.interviewer_end_time)
-        if not parsed_interviewer_details:
+        if len(parsed_interviewer_details)==0:
             parsed_interviewer_details.append(parsed_interviewer_detail)
         else:
             if interviewer_detail['interviewers_name'] in parsed_interviewer_details[0].values():

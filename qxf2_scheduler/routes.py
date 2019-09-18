@@ -97,6 +97,7 @@ def form_interviewer_details(interviewer_details):
     parsed_interviewer_details = []
     for each_detail in interviewer_details:
         interviewer_detail = {
+            'interviewer_id':each_detail.interviewer_id,
             'interviewers_name': each_detail.interviewer_name,
             'interviewers_email': each_detail.interviewer_email,
             'interviewers_designation': each_detail.interviewer_designation,
@@ -120,7 +121,7 @@ def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
     interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
-        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
 
     parsed_interviewer_details = form_interviewer_details(interviewer_details)
 
@@ -129,12 +130,13 @@ def read_interviewer_details(interviewer_id):
 
 @app.route("/<interviewer_id>/interviewer/edit/", methods=['GET', 'POST'])
 def edit_interviewer(interviewer_id):
-    "Edit the interviewers"    
+    "Edit the interviewers"
     # This query fetch the interviewer details by joining the time slots table and interviewers table.
     edit_interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).values(
         Interviewers.interviewer_id, Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
-    
-    parsed_interviewer_details = form_interviewer_details(edit_interviewer_details)
+
+    parsed_interviewer_details = form_interviewer_details(
+        edit_interviewer_details)
 
     if request.method == "POST":
         interviewer_name = request.form.get('name')
@@ -165,6 +167,21 @@ def edit_interviewer(interviewer_id):
         return jsonify(data)
 
     return render_template("edit-interviewer.html", result=parsed_interviewer_details)
+
+
+@app.route("/<interviewer_id>/interviewer/delete", methods=["POST"])
+def delete_interviewer(interviewer_id):
+    "Deletes a job"
+    if request.method == 'POST':
+        #interviewer_to_delete = request.form.get('interviewer-id')
+        deleted_user = Interviewers.query.filter(
+            Interviewers.interviewer_id == interviewer_id).first()
+        data = {'interviewer_name': deleted_user.interviewer_name,
+                'interviewer_id': deleted_user.interviewer_id}
+        db.session.delete(deleted_user)
+        db.session.commit()
+
+    return jsonify(data)
 
 
 @app.route("/jobs/")

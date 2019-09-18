@@ -95,6 +95,7 @@ def parse_interviewer_detail(interviewer_details):
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     parsed_interviewer_details = []
+    # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
     interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
         Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
     for each_detail in interviewer_details:

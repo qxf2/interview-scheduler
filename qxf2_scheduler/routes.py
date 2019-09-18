@@ -69,7 +69,7 @@ def index():
 
 
 @app.route("/interviewers")
-def listinterviewers():
+def list_interviewers():
     "List all the interviewer names"
     all_interviewers = Interviewers.query.all()
     my_interviewers_list = []
@@ -80,72 +80,61 @@ def listinterviewers():
     return render_template("list-interviewers.html", result=my_interviewers_list)
 
 
-def parse_interviewer_detail(interviewer_details):
+def form_interviewer_timeslot(time_slot):
     "Parse the interviewer detail with start and end time"
     time_dict = {}
-    time_dict['starttime'] = interviewer_details['interviewers_starttime']
-    time_dict['endtime'] = interviewer_details['interviewers_endtime']
-    del interviewer_details['interviewers_starttime']
-    del interviewer_details['interviewers_endtime']
-    interviewer_details['time'] = time_dict
+    time_dict['starttime'] = time_slot['interviewers_starttime']
+    time_dict['endtime'] = time_slot['interviewers_endtime']
+    del time_slot['interviewers_starttime']
+    del time_slot['interviewers_endtime']
+    time_slot['time'] = time_dict
 
-    return interviewer_details
+    return time_slot
 
 
-@app.route("/<interviewer_id>/interviewer/")
-def read_interviewer_details(interviewer_id):
-    "Displays all the interviewer details"
+def form_interviewer_details(interviewer_details):
+    "Parsing the interviewer detals we get it from form"
     parsed_interviewer_details = []
-    interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
-        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
     for each_detail in interviewer_details:
         interviewer_detail = {
-            'interviewers_id': each_detail.interviewer_id,
             'interviewers_name': each_detail.interviewer_name,
             'interviewers_email': each_detail.interviewer_email,
             'interviewers_designation': each_detail.interviewer_designation,
             'interviewers_starttime': each_detail.interviewer_start_time,
             'interviewers_endtime': each_detail.interviewer_end_time}
 
-        parsed_interviewer_detail = parse_interviewer_detail(
-            interviewer_detail)
-        if not parsed_interviewer_details:
+        parsed_interviewer_detail = form_interviewer_timeslot(
+            time_slot=interviewer_detail)
+        if len(parsed_interviewer_details) == 0:
             parsed_interviewer_details.append(parsed_interviewer_detail)
         else:
             if interviewer_detail['interviewers_name'] in parsed_interviewer_details[0].values():
                 parsed_interviewer_details[0]['time'] = [
                     parsed_interviewer_details[0]['time'], parsed_interviewer_detail['time']]
+
+    return parsed_interviewer_details
+
+
+@app.route("/<interviewer_id>/interviewer/")
+def read_interviewer_details(interviewer_id):
+    "Displays all the interviewer details"
+    # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
+    interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
+        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+
+    parsed_interviewer_details = form_interviewer_details(interviewer_details)
 
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
 
 
 @app.route("/<interviewer_id>/interviewer/edit/", methods=['GET', 'POST'])
 def edit_interviewer(interviewer_id):
-    "Edit the interviewers"
-    parsed_interviewer_details = []
-    # This query fetch the interviewer details by joining the time slots table and interviewers table. 
+    "Edit the interviewers"    
+    # This query fetch the interviewer details by joining the time slots table and interviewers table.
     edit_interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).values(
         Interviewers.interviewer_id, Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
-    # Parsing the interviewer detail object
-    for each_detail in edit_interviewer_details:
-        interviewer_detail = {
-            'interviewers_id': each_detail.interviewer_id,
-            'interviewers_name': each_detail.interviewer_name,
-            'interviewers_email': each_detail.interviewer_email,
-            'interviewers_designation': each_detail.interviewer_designation,
-            'interviewers_starttime': each_detail.interviewer_start_time,
-            'interviewers_endtime': each_detail.interviewer_end_time
-        }
-        parsed_interviewer_detail = parse_interviewer_detail(
-            interviewer_detail)
-
-        if not parsed_interviewer_details:
-            parsed_interviewer_details.append(parsed_interviewer_detail)
-
-        else:
-            if interviewer_detail['interviewers_name'] in parsed_interviewer_details[0].values():
-                parsed_interviewer_details[0]['time'] = [
-                    parsed_interviewer_details[0]['time'], parsed_interviewer_detail['time']]
+    
+    parsed_interviewer_details = form_interviewer_details(edit_interviewer_details)
 
     if request.method == "POST":
         interviewer_name = request.form.get('name')
@@ -155,21 +144,22 @@ def edit_interviewer(interviewer_id):
             'name'), 'interviewer_email': request.form.get('email'), 'interviewer_designation': request.form.get('designation')})
         db.session.commit()
 
-        # Adding the time slots in the interviewerstimeslots table        
+        # Adding the time slots in the interviewerstimeslots table
         interviewer_time_slots = eval(request.form.get('timeObject'))
         interviewer_start_time = interviewer_time_slots['starttime']
         interviewer_end_time = interviewer_time_slots['endtime']
 
-        #Updating the table based on the time id of the interviewertimeslots table
-        #Fetching the time ids of interviewer
+        # Updating the table based on the time id of the interviewertimeslots table
+        # Fetching the time ids of interviewer
         total_rows_of_interviewer_in_time_table = Interviewertimeslots.query.filter(
             Interviewertimeslots.interviewer_id == interviewer_id).values(Interviewertimeslots.time_id)
-        
-        #Updating the timeslots 
-        i=0
-        for each_time_id in total_rows_of_interviewer_in_time_table:            
-            edited_time_slots = Interviewertimeslots.query.filter(Interviewertimeslots.time_id == each_time_id.time_id).update({'interviewer_start_time': interviewer_start_time[i], 'interviewer_end_time': interviewer_end_time[i]})
-            i=i+1
+
+        # Updating the timeslots
+        i = 0
+        for each_time_id in total_rows_of_interviewer_in_time_table:
+            edited_time_slots = Interviewertimeslots.query.filter(Interviewertimeslots.time_id == each_time_id.time_id).update(
+                {'interviewer_start_time': interviewer_start_time[i], 'interviewer_end_time': interviewer_end_time[i]})
+            i = i + 1
         db.session.commit()
 
         return jsonify(data)

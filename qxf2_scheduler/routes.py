@@ -123,8 +123,10 @@ def read_interviewer_details(interviewer_id):
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
     parsed_interviewer_details = []
+    # This query fetch the interviewer details by joining the time slots table and interviewers table. 
     edit_interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).values(
         Interviewers.interviewer_id, Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+    # Parsing the interviewer detail object
     for each_detail in edit_interviewer_details:
         interviewer_detail = {
             'interviewers_id': each_detail.interviewer_id,

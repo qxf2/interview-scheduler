@@ -18,7 +18,7 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Study time</th>
+                    <th scope="col" colspan="2" align="center">Interviewers work hours</th>
                     <th scope="col">Actions</th>
 
                 </tr>
@@ -27,10 +27,10 @@
                 {% for each_detail in result %}
                 
                 <tr>
-                    <td>{{ each_detail.student_name }}</td>
-                    <td>{{ each_detail.student_email }}</td>
+                    <td>{{ each_detail.interviewers_name }}</td>
+                    <td>{{ each_detail.interviewers_email }}</td>
                     {% for each_time in each_detail.time %}
-                    <td style="padding-left: 0px;">{{ each_time['starttime'] }}-{{ each_time['endtime'] }}</td>
+                    <td>{{each_time['starttime'] }}-{{ each_time['endtime']}}</td>
                     {% endfor %}
                     
                     <td><input class="btn btn-info" type="button" value="Edit" id="edit"

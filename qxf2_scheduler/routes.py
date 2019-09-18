@@ -68,7 +68,7 @@ def index():
 
 
 @app.route("/interviewers")
-def listinterviewers():
+def list_interviewers():
     "List all the interviewer names"
     all_interviewers = Interviewers.query.all()
     my_interviewers_list = []

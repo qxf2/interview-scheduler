@@ -38,7 +38,7 @@
                     <p>Success:</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" onclick="redirectNew()" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -146,10 +146,15 @@
                     var msg = " The interviewer " + ' ' + result.interviewer_name + ' ' + " has been edited successfully";
                     $('#myModal').modal('show');
                     $('#myModal .modal-body p').html(msg);
-                    document.location.href="/interviewers"
+                   
                 }
 
             })
+        }
+    </script>
+    <script>
+        function redirectNew(){
+            document.location.href = "/interviewers"
         }
     </script>
 

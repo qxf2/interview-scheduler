@@ -94,7 +94,9 @@ def form_interviewer_timeslot(time_slot):
 
 def form_interviewer_details(interviewer_details):
     "Parsing the interviewer detals we get it from form"
+    list_parsed_interviewer_detail = []
     parsed_interviewer_details = []
+
     for each_detail in interviewer_details:
         interviewer_detail = {
             'interviewers_name': each_detail.interviewer_name,
@@ -104,13 +106,16 @@ def form_interviewer_details(interviewer_details):
             'interviewers_endtime': each_detail.interviewer_end_time}
 
         parsed_interviewer_detail = form_interviewer_timeslot(
-            time_slot=interviewer_detail)
+        time_slot=interviewer_detail)
+        list_parsed_interviewer_detail.append(parsed_interviewer_detail)
+       
+    for each_dict in list_parsed_interviewer_detail :
         if len(parsed_interviewer_details) == 0:
-            parsed_interviewer_details.append(parsed_interviewer_detail)
-        else:
-            if interviewer_detail['interviewers_name'] in parsed_interviewer_details[0].values():
-                parsed_interviewer_details[0]['time'] = [
-                    parsed_interviewer_details[0]['time'], parsed_interviewer_detail['time']]
+            parsed_interviewer_details.append(each_dict)
+            parsed_interviewer_details[0]["time"] = [parsed_interviewer_details[0]["time"]]
+        else : 
+            parsed_interviewer_details[0]['time'].append(each_dict['time'])        
+       
 
     return parsed_interviewer_details
 
@@ -145,6 +150,8 @@ def edit_interviewer(interviewer_id):
         db.session.commit()
 
         # Adding the time slots in the interviewerstimeslots table
+        inter_time = request.form.get('timeobject')
+        print(inter_time,file=sys.stderr)
         interviewer_time_slots = eval(request.form.get('timeObject'))
         interviewer_start_time = interviewer_time_slots['starttime']
         interviewer_end_time = interviewer_time_slots['endtime']

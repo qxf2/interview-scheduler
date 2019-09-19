@@ -169,7 +169,7 @@ def edit_interviewer(interviewer_id):
     return render_template("edit-interviewer.html", result=parsed_interviewer_details)
 
 
-@app.route("/<interviewer_id>/interviewer/delete", methods=["POST"])
+@app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
 def delete_interviewer(interviewer_id):
     "Deletes a job"
     if request.method == 'POST':

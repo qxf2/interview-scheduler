@@ -119,11 +119,22 @@ def interviewers_for_roles(job_id):
 
     return render_template("role-for-interviewers.html",result=interviewers_list)
 
+@app.route("/jobs/add",methods=["GET","POST"])
+def add_job():
+    "Add ajob through UI"
+    all_interviewers = Interviewers.query.all()
+    interviewer_list = []
+    for each_interviewer in all_interviewers:
+        interviewer_list.append({'interviewers_id':each_interviewer.interviewer_id,'interviewers_name':each_interviewer.interviewer_name})
+
+   
+    return render_template("add-jobs.html",result=interviewer_list)
+
 
 @app.route("/jobs/delete",methods=["POST"]) 
 def delete_job():
     "Deletes a job"
-    if request.method== 'POST':
+    if request.method == 'POST':
         job_id_to_delete = request.form.get('job-id')
         deleted_role = Jobs.query.filter(Jobs.job_id==job_id_to_delete).first()
         data = {'job_role':deleted_role.job_role,'job_id':deleted_role.job_id}       

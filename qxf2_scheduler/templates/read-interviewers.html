@@ -12,7 +12,7 @@
 
 <body>
     <div class="container">
-        <h2>Striped Rows</h2>
+        <h2>Interviewer Details</h2>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -25,14 +25,22 @@
             </thead>
             <tbody>
                 {% for each_detail in result %}
-                
                 <tr>
                     <td>{{ each_detail.interviewers_name }}</td>
                     <td>{{ each_detail.interviewers_email }}</td>
+                    {% set time_dict = each_detail.time | length %}
+
+                    {% if time_dict == 1 %}
+
+                    <td>{{each_detail['time'][0]['starttime'] }}-{{ each_detail['time'][0]['endtime']}}</td>
+                    {% else %}
+                    {% if time_dict >=2 %}
                     {% for each_time in each_detail.time %}
                     <td>{{each_time['starttime'] }}-{{ each_time['endtime']}}</td>
                     {% endfor %}
-                    
+                    {% endif %}
+                    {% endif %}
+
                     <td><input class="btn btn-info" type="button" value="Edit" id="edit"
                             onclick="editinterviewer({{ each_detail.interviewers_id }})"></td>
                 </tr>
@@ -41,12 +49,12 @@
 
         </table>
         <script>
-            function editinterviewer(interviewer_id) {               
+            function editinterviewer(interviewer_id) {
                 document.location.href = "/" + interviewer_id + "/interviewer/edit/"
                 $.ajax({
-                    type:'POST',
-                    url:'/'+interviewer_id +'/interviewer/edit/',
-                    
+                    type: 'POST',
+                    url: '/' + interviewer_id + '/interviewer/edit/',
+
                 })
             }
         </script>

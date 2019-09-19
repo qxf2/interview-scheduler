@@ -113,7 +113,7 @@
                 console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
                 $.ajax({
                     type: 'POST',
-                    url: '/' + $(e.relatedTarget).data('href') + '/interviewer/delete',
+                    url:'/interviewer/'+ $(e.relatedTarget).data('href') + '/delete',                    
                     data: { 'interviewer-id': $(e.relatedTarget).data('href') },
                     success: function (data) {
                         var msg = "The user deleted is " + data.interviewer_name;

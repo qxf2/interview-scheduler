@@ -25,6 +25,7 @@
             </thead>
             <tbody>
                 {% for each_detail in result %}
+                {{each_detail.interviewers_id}}
                 <tr>
                     <td>{{ each_detail.interviewers_name }}</td>
                     <td>{{ each_detail.interviewers_email }}</td>
@@ -50,10 +51,11 @@
         </table>
         <script>
             function editinterviewer(interviewer_id) {
-                document.location.href = "/" + interviewer_id + "/interviewer/edit/"
+                console.log(interviewer_id);
+                document.location.href = "/interviewer/" + interviewer_id + "/edit/"
                 $.ajax({
                     type: 'POST',
-                    url: '/' + interviewer_id + '/interviewer/edit/',
+                    url: "/interviewer/" + interviewer_id + "/edit/",
 
                 })
             }

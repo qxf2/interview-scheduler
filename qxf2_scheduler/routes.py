@@ -91,29 +91,46 @@ def form_interviewer_timeslot(time_slot):
     return time_slot
 
     
-@app.route("/<interviewer_id>/interviewer/")
-def read_interviewer_details(interviewer_id):
-    "Displays all the interviewer details"
+def form_interviewer_details(interviewer_details):
+    "Parsing the interviewer detals we get it from form"
+    list_parsed_interviewer_detail = []
     parsed_interviewer_details = []
-    # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
-    interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
-        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+
     for each_detail in interviewer_details:
         interviewer_detail = {
             'interviewers_name': each_detail.interviewer_name,
+            'interviewers_id': each_detail.interviewer_id,
             'interviewers_email': each_detail.interviewer_email,
             'interviewers_designation': each_detail.interviewer_designation,
             'interviewers_starttime': each_detail.interviewer_start_time,
             'interviewers_endtime': each_detail.interviewer_end_time}
-        
-        parsed_interviewer_detail = form_interviewer_timeslot(time_slot=interviewer_detail)
-        if len(parsed_interviewer_details)==0:
-            parsed_interviewer_details.append(parsed_interviewer_detail)
+
+        parsed_interviewer_detail = form_interviewer_timeslot(
+            time_slot=interviewer_detail)
+        list_parsed_interviewer_detail.append(parsed_interviewer_detail)
+
+    for each_dict in list_parsed_interviewer_detail:
+        if len(parsed_interviewer_details) == 0:
+            parsed_interviewer_details.append(each_dict)
+            parsed_interviewer_details[0]["time"] = [
+                parsed_interviewer_details[0]["time"]]
         else:
-            if interviewer_detail['interviewers_name'] in parsed_interviewer_details[0].values():
-                parsed_interviewer_details[0]['time']=[parsed_interviewer_details[0]['time'],parsed_interviewer_detail['time']] 
-         
+            parsed_interviewer_details[0]['time'].append(each_dict['time'])
+
+    return parsed_interviewer_details
+
+
+@app.route("/<interviewer_id>/interviewer/")
+def read_interviewer_details(interviewer_id):
+    "Displays all the interviewer details"
+    # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
+    interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
+        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+
+    parsed_interviewer_details = form_interviewer_details(interviewer_details)
+
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
+
 
 
 @app.route("/jobs/")

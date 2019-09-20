@@ -11,32 +11,58 @@
 </head>
 
 <body>
-
-    <div class="container">
-        <table class="table table-striped">
-            <h2 class="grey_text text-center">Interviewer details</h2>
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col" colspan="2">Interviewers work hours</th>
-
-                </tr>
-            </thead>
-            <tbody>
-                {% for each_detail in result %}
-                <tr>
-
-                    <td>{{ each_detail.interviewers_name }}</td>
-                    <td>{{ each_detail.interviewers_email }}</td>
-                    {% for each_time in each_detail.time %}
-                    <td>{{ each_time['starttime'] }}-{{ each_time['endtime'] }}</td>
+        <div class="container">
+            <h2>Interviewer Details</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col" colspan="2" align="center">Interviewers work hours</th>
+                        <th scope="col">Actions</th>
+    
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for each_detail in result %}
+                    {{each_detail.interviewers_id}}
+                    <tr>
+                        <td>{{ each_detail.interviewers_name }}</td>
+                        <td>{{ each_detail.interviewers_email }}</td>
+                        {% set time_dict = each_detail.time | length %}
+    
+                        {% if time_dict == 1 %}
+    
+                        <td>{{each_detail['time'][0]['starttime'] }}-{{ each_detail['time'][0]['endtime']}}</td>
+                        {% else %}
+                        {% if time_dict >=2 %}
+                        {% for each_time in each_detail.time %}
+                        <td>{{each_time['starttime'] }}-{{ each_time['endtime']}}</td>
+                        {% endfor %}
+                        {% endif %}
+                        {% endif %}
+    
+                        <td><input class="btn btn-info" type="button" value="Edit" id="edit"
+                                onclick="editinterviewer({{ each_detail.interviewers_id }})"></td>
+                    </tr>
                     {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</body>
-
+                </tbody>
+    
+            </table>
+            <script>
+                function editinterviewer(interviewer_id) {
+                    console.log(interviewer_id);
+                    document.location.href = "/interviewer/" + interviewer_id + "/edit/"
+                    $.ajax({
+                        type: 'POST',
+                        url: "/interviewer/" + interviewer_id + "/edit/",
+    
+                    })
+                }
+            </script>
+    
+    
+        </div>
+    </body>
+    
 </html>

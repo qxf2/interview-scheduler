@@ -15,7 +15,7 @@ class Interviewers(db.Model):
 class Interviewertimeslots(db.Model):
     "Adding the timing for interviewer" 
     time_id = db.Column(db.Integer,primary_key=True)   
-    interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id),nullable=False)    
+    interviewer_id = db.Column(db.Integer,db.ForeignKey(Interviewers.interviewer_id),nullable=False)    
     interviewer_start_time = db.Column(db.String,nullable=False)
     interviewer_end_time = db.Column(db.String,nullable=False)
 

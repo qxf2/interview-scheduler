@@ -127,10 +127,8 @@ def read_interviewer_details(interviewer_id):
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
     interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
         Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
-    print(interviewer_details)
 
     parsed_interviewer_details = form_interviewer_details(interviewer_details)
-    print(parsed_interviewer_details[0]['interviewers_id'])
 
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
 
@@ -146,35 +144,44 @@ def edit_interviewer(interviewer_id):
 
     parsed_interviewer_details = form_interviewer_details(
         edit_interviewer_details)  
-    print("I am in the server side",jsonify(parsed_interviewer_details)) 
         
     if request.method == "POST":
+        #Updating the interviewers table
         interviewer_name = request.form.get('name')
         data = {'interviewer_name': interviewer_name}
-        print("ia interviewer is", interviewer_name, file=sys.stderr)
         edit_interviewers = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).update({'interviewer_name': request.form.get(
             'name'), 'interviewer_email': request.form.get('email'), 'interviewer_designation': request.form.get('designation')})
-        db.session.commit()
+        db.session.commit()        
 
-        # Adding the time slots in the interviewerstimeslots table
-        inter_time = request.form.get('timeobject')
-        print(inter_time, file=sys.stderr)
-        interviewer_time_slots = eval(request.form.get('timeObject'))
-        interviewer_start_time = interviewer_time_slots['starttime']
-        interviewer_end_time = interviewer_time_slots['endtime']
-
-        # Updating the table based on the time id of the interviewertimeslots table
         # Fetching the time ids of interviewer
         total_rows_of_interviewer_in_time_table = Interviewertimeslots.query.filter(
             Interviewertimeslots.interviewer_id == interviewer_id).values(Interviewertimeslots.time_id)
+        
+        # Store the timeid in the list for deleting at the end
+        list_edited_time_slots = []
+        for each_time_id in total_rows_of_interviewer_in_time_table:            
+            list_edited_time_slots.append(each_time_id.time_id)
 
-        # Updating the timeslots
-        i = 0
-        for each_time_id in total_rows_of_interviewer_in_time_table:
-            edited_time_slots = Interviewertimeslots.query.filter(Interviewertimeslots.time_id == each_time_id.time_id).update(
-                {'interviewer_start_time': interviewer_start_time[i], 'interviewer_end_time': interviewer_end_time[i]})
-            i = i + 1
-        db.session.commit()
+        # Filtering the interviewer id from the table to use it for interviewertimeslots table
+        added_interviewer_id = Interviewers.query.filter(
+            Interviewers.interviewer_name == interviewer_name).first()
+
+        # Adding the new time slots in the interviewerstimeslots table
+        interviewer_time_slots = eval(request.form.get('timeObject'))
+        interviewer_start_time = interviewer_time_slots['starttime']
+        interviewer_end_time = interviewer_time_slots['endtime']
+        len_of_slots = len(interviewer_start_time)
+        for i in range(len_of_slots):
+            add_time_slots = Interviewertimeslots(interviewer_id=added_interviewer_id.interviewer_id,
+                                                    interviewer_start_time=interviewer_start_time[i], interviewer_end_time=interviewer_end_time[i])
+            db.session.add(add_time_slots)
+            db.session.commit()
+
+        #Deleting the old time slots based on the timeie
+        for each_times_id in list_edited_time_slots:
+            delete_time_slots = Interviewertimeslots.query.filter(Interviewertimeslots.time_id==each_times_id).one()
+            db.session.delete(delete_time_slots)
+            db.session.commit()        
 
         return jsonify(data)
     return render_template("edit-interviewer.html", result=parsed_interviewer_details)

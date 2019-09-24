@@ -6,8 +6,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json
-import sys
+import json,ast
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -138,7 +137,7 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
             Interviewers.interviewer_name == interviewer_name).first()
 
     # Adding the new time slots in the interviewerstimeslots table
-    interviewer_time_slots = eval(request.form.get('timeObject'))
+    interviewer_time_slots = ast.literal_eval(request.form.get('timeObject'))
     interviewer_start_time = interviewer_time_slots['starttime']
     interviewer_end_time = interviewer_time_slots['endtime']
     len_of_slots = len(interviewer_start_time)

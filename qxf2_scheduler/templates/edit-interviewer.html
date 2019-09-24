@@ -101,7 +101,7 @@
                             value="{{each_slot['endtime']}}" placeholder="endtime" required="">
                     </td>
                     <td>
-                        <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="RemoveBtn">
+                        <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="btn btn-link">
                     </td>
                 </tr>
                 <br />
@@ -111,7 +111,7 @@
                     <td>
                         {% set counter = each_details['time'] | length %}
                         <input type="hidden" id="TestHidden" value="{{counter}}" </td> </tr> </table> </form> <div>
-                        <input class="btn btn-info" onclick="addtextbox()" type="button" value="Add">
+                        <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
     </div>
     <div id="ToolsGroup">
     </div>
@@ -186,7 +186,7 @@
 
             newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="startime" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
                 '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="endtime" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
-                '<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
+                '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);">'
             console.log("Iam count", count);
         };
 

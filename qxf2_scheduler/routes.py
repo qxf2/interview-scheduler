@@ -132,6 +132,22 @@ def read_interviewer_details(interviewer_id):
 
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
 
+def add_edit_interviewers_in_time_slot_table(interviewer_name):
+    "Adding the interviewers in the interviewer time slots table"
+    added_edited_interviewer_id = Interviewers.query.filter(
+            Interviewers.interviewer_name == interviewer_name).first()
+
+    # Adding the new time slots in the interviewerstimeslots table
+    interviewer_time_slots = eval(request.form.get('timeObject'))
+    interviewer_start_time = interviewer_time_slots['starttime']
+    interviewer_end_time = interviewer_time_slots['endtime']
+    len_of_slots = len(interviewer_start_time)
+    for i in range(len_of_slots):
+        add_edit_time_slots = Interviewertimeslots(interviewer_id=added_edited_interviewer_id.interviewer_id,
+                                                interviewer_start_time=interviewer_start_time[i], interviewer_end_time=interviewer_end_time[i])
+        db.session.add(add_edit_time_slots)
+        db.session.commit()
+
 
 @app.route("/interviewer/<interviewer_id>/edit/", methods=['GET', 'POST'])
 def edit_interviewer(interviewer_id):
@@ -163,19 +179,7 @@ def edit_interviewer(interviewer_id):
             list_edited_time_slots.append(each_time_id.time_id)
 
         # Filtering the interviewer id from the table to use it for interviewertimeslots table
-        added_interviewer_id = Interviewers.query.filter(
-            Interviewers.interviewer_name == interviewer_name).first()
-
-        # Adding the new time slots in the interviewerstimeslots table
-        interviewer_time_slots = eval(request.form.get('timeObject'))
-        interviewer_start_time = interviewer_time_slots['starttime']
-        interviewer_end_time = interviewer_time_slots['endtime']
-        len_of_slots = len(interviewer_start_time)
-        for i in range(len_of_slots):
-            add_time_slots = Interviewertimeslots(interviewer_id=added_interviewer_id.interviewer_id,
-                                                    interviewer_start_time=interviewer_start_time[i], interviewer_end_time=interviewer_end_time[i])
-            db.session.add(add_time_slots)
-            db.session.commit()
+        add_edit_interviewers_in_time_slot_table(interviewer_name)
 
         #Deleting the old time slots based on the timeie
         for each_times_id in list_edited_time_slots:
@@ -184,8 +188,7 @@ def edit_interviewer(interviewer_id):
             db.session.commit()        
 
         return jsonify(data)
-    return render_template("edit-interviewer.html", result=parsed_interviewer_details)
-    
+    return render_template("edit-interviewer.html", result=parsed_interviewer_details)    
    
 
 @app.route("/jobs/")
@@ -245,19 +248,7 @@ def add_interviewers():
             db.session.add(add_interviewers)
 
             # Filtering the interviewer id from the table to use it for interviewertimeslots table
-            added_interviewer_id = Interviewers.query.filter(
-                Interviewers.interviewer_name == interviewer_name).first()
-
-            # Adding the time slots in the interviewerstimeslots table
-            interviewer_time_slots = eval(request.form.get('timeObject'))
-            interviewer_start_time = interviewer_time_slots['starttime']
-            interviewer_end_time = interviewer_time_slots['endtime']
-            len_of_slots = len(interviewer_start_time)
-            for i in range(len_of_slots):
-                add_time_slots = Interviewertimeslots(interviewer_id=added_interviewer_id.interviewer_id,
-                                                      interviewer_start_time=interviewer_start_time[i], interviewer_end_time=interviewer_end_time[i])
-                db.session.add(add_time_slots)
-
+            add_edit_interviewers_in_time_slot_table(interviewer_name)
         except Exception as e:
             print(e)
 

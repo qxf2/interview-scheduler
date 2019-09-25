@@ -119,16 +119,38 @@ def interviewers_for_roles(job_id):
 
     return render_template("role-for-interviewers.html",result=interviewers_list)
 
+
 @app.route("/jobs/add",methods=["GET","POST"])
 def add_job():
     "Add ajob through UI"
-    all_interviewers = Interviewers.query.all()
-    interviewer_list = []
-    for each_interviewer in all_interviewers:
-        interviewer_list.append({'interviewers_id':each_interviewer.interviewer_id,'interviewers_name':each_interviewer.interviewer_name})
+    if request.method == 'GET':
+        return render_template("add-jobs.html")
+    if request.method == 'POST':
+        job_role = request.form.get("role")
+        data = {'jobrole':job_role}
+        interviewer1 = request.form.get("interviewername1")
+        interviewer2 = request.form.get("interviewername2")
+        interviewers = request.form.get('interviewerlist')        
+        job_object = Jobs(job_role=job_role)
+        db.session.add(job_object)
+        db.session.commit()
+        job_id = job_object.job_id
+        
+        #Append the users to the list.This should be removed
+        interviewer_list = []
+        interviewer_list.append(interviewer1)
+        interviewer_list.append(interviewer2)
 
-   
-    return render_template("add-jobs.html",result=interviewer_list)
+        #Get the id of the user from the interviewers table
+        for each_interviewer in interviewer_list:
+            interviewers_id = Interviewers.query.filter(Interviewers.interviewer_name==each_interviewer).values(Interviewers.interviewer_id)
+            for each_user_id in interviewers_id:               
+                job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=each_user_id.interviewer_id)
+            db.session.add(job_interviewer_object)
+            db.session.commit()
+            
+        return jsonify(data)
+        
 
 
 @app.route("/jobs/delete",methods=["POST"]) 

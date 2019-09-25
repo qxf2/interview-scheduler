@@ -1,0 +1,64 @@
+<html>
+
+<head>
+    <title>
+        Add Jobs
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container col-md-offset-1">
+        <div class="row top-space-30">
+            <div class="form-group">
+                <h2>Add the job role and Interviewers</h2>
+                <label class="col-md-4 control-label" for="jobrole">Job role:</label> <input id="role" name="jobrole"
+                    type="text" placeholder="QA" class="form-control input-md" required="">
+
+            </div>
+        </div>
+        <div class="row top-space-30">
+            <input type="text" id="interviewer1">
+            <input type="text" id="interviewer2">
+
+        </div>
+        <div calss="row top-space-30">
+            <input type="button" id="submit" value="Submit">
+        </div>
+    </div>
+    <script>
+        $("#submit").click(function () {
+            var jobName = $("#role").val();
+            var interviewerName1 = $("#interviewer1").val();
+            var interviewerName2 = $("#interviewer2").val();
+            var interviewersList = [interviewerName1, interviewerName2];
+            console.log(interviewersList);
+            $.ajax({
+                type: 'POST',
+                url: '/jobs/add',
+                data: {
+                    'role': jobName,
+                    'interviewername1': interviewerName1,
+                    'interviewername2':interviewerName2,
+                    'interviewerlist':interviewersList
+                },
+                success: function (result) {
+                    alert("The job has been added");
+                    document.location.href = "/jobs";
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>

@@ -14,6 +14,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 </head>
 
@@ -28,9 +30,12 @@
             </div>
         </div>
         <div class="row top-space-30">
-            <input type="text" id="interviewer1">
-            <input type="text" id="interviewer2">
-
+            <input type="text" id="interviewers">
+            {% set interviewers_array = [] %}            
+            {% for each_user in result %}           
+            {{interviewers_array.append(each_user['interviewers_name'])}}
+            {% endfor %}
+            {{interviewers_array}}
         </div>
         <div calss="row top-space-30">
             <input type="button" id="submit" value="Submit">
@@ -39,16 +44,15 @@
     <script>
         $("#submit").click(function () {
             var jobName = $("#role").val();
-            var interviewerName1 = $("#interviewer1").val();
-            var interviewerName2 = $("#interviewer2").val();
-            var interviewersList = [interviewerName1, interviewerName2];
+            var interviewersList = $("#interviewers").val().split(',');
+            interviewersList.pop();
             console.log(interviewersList);
             $.ajax({
                 type: 'POST',
                 url: '/jobs/add',
                 data: {
                     'role': jobName,
-                    'interviewerlist':JSON.stringify(interviewersList)
+                    'interviewerlist': JSON.stringify(interviewersList)
                 },
                 success: function (result) {
                     alert("The job has been added");
@@ -56,6 +60,51 @@
                 }
             })
         })
+    </script>
+    <script>
+        $(function () {
+            var availableTags = [
+                "Arun", "Annapoorani", "Capa"
+            ];
+            function split(val) {
+                return val.split(/,\s*/);
+            }
+            function extractLast(term) {
+                return split(term).pop();
+            }
+
+            $("#interviewers")
+                // don't navigate away from the field on tab when selecting an item
+                .on("keydown", function (event) {
+                    if (event.keyCode === $.ui.keyCode.TAB &&
+                        $(this).autocomplete("instance").menu.active) {
+                        event.preventDefault();
+                    }
+                })
+                .autocomplete({
+                    minLength: 0,
+                    source: function (request, response) {
+                        // delegate back to autocomplete, but extract the last term
+                        response($.ui.autocomplete.filter(
+                            availableTags, extractLast(request.term)));
+                    },
+                    focus: function () {
+                        // prevent value inserted on focus
+                        return false;
+                    },
+                    select: function (event, ui) {
+                        var terms = split(this.value);
+                        // remove the current input
+                        terms.pop();
+                        // add the selected item
+                        terms.push(ui.item.value);
+                        // add placeholder to get the comma-and-space at the end
+                        terms.push("");
+                        this.value = terms.join(", ");
+                        return false;
+                    }
+                });
+        });
     </script>
 </body>
 

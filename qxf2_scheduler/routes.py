@@ -7,6 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
+import ast
 
 from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -128,24 +129,17 @@ def add_job():
     if request.method == 'POST':
         job_role = request.form.get("role")
         data = {'jobrole':job_role}
-        interviewer1 = request.form.get("interviewername1")
-        interviewer2 = request.form.get("interviewername2")
-        interviewers = request.form.get('interviewerlist')        
+        interviewers = ast.literal_eval(request.form.get("interviewerlist"))
         job_object = Jobs(job_role=job_role)
         db.session.add(job_object)
         db.session.commit()
         job_id = job_object.job_id
         
-        #Append the users to the list.This should be removed
-        interviewer_list = []
-        interviewer_list.append(interviewer1)
-        interviewer_list.append(interviewer2)
-
         #Get the id of the user from the interviewers table
-        for each_interviewer in interviewer_list:
-            interviewers_id = Interviewers.query.filter(Interviewers.interviewer_name==each_interviewer).values(Interviewers.interviewer_id)
-            for each_user_id in interviewers_id:               
-                job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=each_user_id.interviewer_id)
+        for each_interviewer in interviewers:
+            interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer).scalar()
+            print(interviewer_id)               
+            job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=interviewer_id)
             db.session.add(job_interviewer_object)
             db.session.commit()
             

@@ -48,9 +48,7 @@
                 url: '/jobs/add',
                 data: {
                     'role': jobName,
-                    'interviewername1': interviewerName1,
-                    'interviewername2':interviewerName2,
-                    'interviewerlist':interviewersList
+                    'interviewerlist':JSON.stringify(interviewersList)
                 },
                 success: function (result) {
                     alert("The job has been added");

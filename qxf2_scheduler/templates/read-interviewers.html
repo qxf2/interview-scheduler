@@ -24,6 +24,16 @@
                 </tr>
             </thead>
             <tbody>
+                {{result}}
+                {% if type({{result}}) is dict %}
+                <tr>
+                    <td>{{result.interviewers_name}}</td>
+                    <td>{{result.interviewers_email}}</td>
+                    <td></td>
+                    <td><input class="btn btn-info" type="button" value="Edit" id="edit"
+                        onclick="editinterviewer({{ each_detail.interviewers_id }})"></td></td>
+                </tr>
+                {% else %}
                 {% for each_detail in result %}
                 <tr>
                     <td>{{ each_detail.interviewers_name }}</td>
@@ -37,6 +47,7 @@
                             onclick="editinterviewer({{ each_detail.interviewers_id }})"></td>
                 </tr>
                 {% endfor %}
+                {% endif %}
             </tbody>
 
         </table>

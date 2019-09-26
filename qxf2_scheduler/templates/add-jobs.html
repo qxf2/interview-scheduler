@@ -30,12 +30,10 @@
             </div>
         </div>
         <div class="row top-space-30">
-            <input type="text" id="interviewers">
-            {% set interviewers_array = [] %}            
-            {% for each_user in result %}           
-            {{interviewers_array.append(each_user['interviewers_name'])}}
-            {% endfor %}
-            {{interviewers_array}}
+            <label class="col-md-4 control-label" for="interviewers">List of Interviewers:</label>
+            <input class="input-md" type="text" id="interviewers">
+
+            <input type="hidden" id="TestHidden" value="{{result}}" >
         </div>
         <div calss="row top-space-30">
             <input type="button" id="submit" value="Submit">
@@ -63,9 +61,7 @@
     </script>
     <script>
         $(function () {
-            var availableTags = [
-                "Arun", "Annapoorani", "Capa"
-            ];
+            var availableTags = eval(document.getElementById("TestHidden").value);            
             function split(val) {
                 return val.split(/,\s*/);
             }

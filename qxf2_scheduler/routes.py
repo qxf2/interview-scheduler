@@ -127,8 +127,8 @@ def add_job():
     if request.method == 'GET':
         all_interviewers = Interviewers.query.all()
         interviewers_list = []
-        for each_interviewer in all_interviewers:
-            interviewers_list.append({"interviewers_id":each_interviewer.interviewer_id,"interviewers_name":each_interviewer.interviewer_name})
+        for each_interviewer in all_interviewers:           
+            interviewers_list.append(each_interviewer.interviewer_name)
 
         return render_template("add-jobs.html",result=interviewers_list)
 

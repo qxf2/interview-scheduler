@@ -16,7 +16,8 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+    <!--This is to disable liveregion of multi-select,Source is  https://stackoverflow.com/questions/13011127/how-to-remove-change-jquery-ui-autocomplete-helper-text-->
+    <style>.ui-helper-hidden-accessible {position: absolute; left: -999em;}</style>
 </head>
 
 <body>
@@ -68,7 +69,7 @@
             function extractLast(term) {
                 return split(term).pop();
             }
-
+            //document.getElementById("id1").style.display="none";
             $("#interviewers")
                 // don't navigate away from the field on tab when selecting an item
                 .on("keydown", function (event) {
@@ -83,6 +84,10 @@
                         // delegate back to autocomplete, but extract the last term
                         response($.ui.autocomplete.filter(
                             availableTags, extractLast(request.term)));
+                    },
+                    messages: {
+                        noResults:'',
+                        results: function() {}
                     },
                     focus: function () {
                         // prevent value inserted on focus

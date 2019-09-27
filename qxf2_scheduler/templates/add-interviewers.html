@@ -44,7 +44,7 @@
         </div>
     </div>
     <div class="bs-example">
-        <form class="form-horizontal">
+        <form class="form-horizontal was-validated">
 
             <!-- Form Name -->
             <h2 class="grey_text text-justify">Add Interviewers</h2>
@@ -54,7 +54,8 @@
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
                         required="">
-
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
                 </div>
             </div>
 
@@ -64,7 +65,8 @@
                 <div class="col-md-4">
                     <input id="email" name="email" type="text" placeholder="johndoe@example.com"
                         class="form-control input-md" required="">
-
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
                 </div>
             </div>
 
@@ -74,7 +76,8 @@
                 <div class="col-md-4">
                     <input id="designation" name="designation" type="text" placeholder="QA"
                         class="form-control input-md" required="">
-
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
                 </div>
             </div>
         </form>
@@ -103,8 +106,8 @@
         <form class="form-horizontal">
             <div class="form-group">
                 <label class="col-md-4 control-label" for="save"></label>
-                <div class="col-md-8">                   
-                    <input class="btn btn-success" type='button' id='submit' value='Add'>
+                <div class="col-md-8">
+                    <input class="btn btn-success" type='button' id='submit' value='Save'>
                     <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
@@ -113,7 +116,7 @@
 
     </div>
     <script>
-        timeObject={
+        timeObject = {
             starttime: [],
             endtime: []
         };
@@ -121,11 +124,11 @@
             var id = $("#intid").val();
             var email = $("#email").val();
             var name = $("#fname").val();
-            var designation = $("#designation").val();            
-            for (var index = 0; index<count+1; index++) {
-                timeObject.starttime.push($("#starttime"+index).val())
-                timeObject.endtime.push($("#endtime"+index).val()) 
-                    }
+            var designation = $("#designation").val();
+            for (var index = 0; index < count + 1; index++) {
+                timeObject.starttime.push($("#starttime" + index).val())
+                timeObject.endtime.push($("#endtime" + index).val())
+            }
             console.log(timeObject);
             $.ajax({
                 type: 'POST',
@@ -134,8 +137,8 @@
                     'email': email,
                     'name': name,
                     'designation': designation,
-                    'timeObject':JSON.stringify(timeObject)
-                },                
+                    'timeObject': JSON.stringify(timeObject)
+                },
                 success: function (result) {
                     var msg = " The interviewer " + ' ' + result.interviewer_name + ' ' + " has been added successfully";
                     $('#myModal').modal('show');
@@ -153,10 +156,10 @@
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="startime" class="form-control input-md" id="starttime'+count+'" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="endtime" class="form-control input-md" id="endtime'+count+'" placeholder="endtime" required=""></div></div></form>' +
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="startime" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="endtime" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
-            console.log("Iam count",count);
+            console.log("Iam count", count);
         };
 
         function removeTextArea(inputElement) {

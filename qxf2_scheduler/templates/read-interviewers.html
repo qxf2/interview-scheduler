@@ -24,30 +24,32 @@
                 </tr>
             </thead>
             <tbody>
-                {{result}}
-                {% if type({{result}}) is dict %}
+                {% if result is mapping  %}
                 <tr>
-                    <td>{{result.interviewers_name}}</td>
-                    <td>{{result.interviewers_email}}</td>
-                    <td></td>
+                    <td>{{ result.interviewers_name }}</td>
+                    <td>{{ result.interviewers_email }}</td>
+                    <td>---</td>
                     <td><input class="btn btn-info" type="button" value="Edit" id="edit"
-                        onclick="editinterviewer({{ each_detail.interviewers_id }})"></td></td>
+                        onclick="editinterviewer({{ result.interviewers_id }})"></td>
+
                 </tr>
                 {% else %}
+
                 {% for each_detail in result %}
                 <tr>
                     <td>{{ each_detail.interviewers_name }}</td>
                     <td>{{ each_detail.interviewers_email }}</td>
                     <td>
-                    {% for each_time in each_detail.time %}
-                    <p>{{each_time['starttime'] }}-{{ each_time['endtime']}}</p>
-                    {% endfor %}
+                        {% for each_time in each_detail.time %}
+                        <p>{{each_time['starttime'] }}-{{ each_time['endtime']}}</p>
+                        {% endfor %}
                     </td>
                     <td><input class="btn btn-info" type="button" value="Edit" id="edit"
                             onclick="editinterviewer({{ each_detail.interviewers_id }})"></td>
                 </tr>
                 {% endfor %}
                 {% endif %}
+
             </tbody>
 
         </table>
@@ -55,7 +57,7 @@
             function editinterviewer(interviewer_id) {
                 console.log(interviewer_id);
                 document.location.href = "/interviewer/" + interviewer_id + "/edit/"
-                
+
             }
         </script>
 

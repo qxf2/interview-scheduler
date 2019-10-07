@@ -46,17 +46,15 @@
     </div>
     <div class="bs-example">
         <form class="form-horizontal">
-
             <!-- Form Name -->
             <h2 class="grey_text text-justify">Edit Interviewers</h2>
             <!-- Text input-->
-            {% for each_details in result %}
+            {% if result is mapping %}
             <div class="form-group">
                 <label class="col-md-4 control-label" for="fname">First Name</label>
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
-                        value="{{each_details['interviewers_name']}}" required="">
-
+                        value="{{result.interviewers_name}}" required="">
                 </div>
             </div>
 
@@ -65,7 +63,7 @@
                 <label class="col-md-4 control-label" for="email">Email</label>
                 <div class="col-md-4">
                     <input id="email" name="email" type="text" placeholder="johndoe@example.com"
-                        value="{{each_details['interviewers_email']}}" class="form-control input-md" required="">
+                        value="{{result.interviewers_email}}" class="form-control input-md" required="">
 
                 </div>
             </div>
@@ -75,47 +73,20 @@
                 <label class="col-md-4 control-label" for="designation">Designation</label>
                 <div class="col-md-4">
                     <input id="designation" name="designation" type="text" placeholder="QA"
-                        value="{{each_details['interviewers_designation']}}" class="form-control input-md" required="">
+                        value="{{result.interviewers_designation}}" class="form-control input-md" required="">
 
                 </div>
             </div>
         </form>
-        <form class="form-inline">
-            <table id="timeTable" style="width: 100%">
-                {% for each_slot in each_details['time'] %}
-                <tr id="time-slot-{{loop.index}}">
-                    <td>
-                        <label class="col-md-4 control-label" for="starttime">Starttime</label>
-                    </td>
-                    <td>
-                        <input type="startime" class="form-control input-md" id="starttime{{loop.index}}"
-                            placeholder="starttime" value="{{each_slot['starttime']}}" required="">
-
-
-                    </td>
-                    <td>
-                        <label class="col-md-8 control-label" for="endtime">Endtime</label>
-                    </td>
-                    <td>
-                        <input type="endtime" class="form-control input-md" id="endtime{{loop.index}}"
-                            value="{{each_slot['endtime']}}" placeholder="endtime" required="">
-                    </td>
-                    <td>
-                        <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="btn btn-link">
-                    </td>
-                </tr>
-                <br />
-                {% endfor %}
-
-                <tr>
-                    <td>
-                        {% set counter = each_details['time'] | length %}
-                        <input type="hidden" id="TestHidden" value="{{counter}}" </td> </tr> </table> </form> <div>
-                        <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
+        <table id="timeTable" style="width: 100%">
+            <tr>
+                <td>
+                    {% set counter = 0 %}
+                    <input type="hidden" id="TestHidden" value="{{counter}}" ></td> </tr> </table> </form> <div>
+                    <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
     </div>
     <div id="ToolsGroup">
     </div>
-
     <!-- Button (Double) -->
     <form class="form-horizontal">
         <div class="form-group">
@@ -127,7 +98,88 @@
         </div>
     </form>
     </form>
+    </table>
+    {% else %}
+    {% for each_details in result %}
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="fname">First Name</label>
+        <div class="col-md-4">
+            <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
+                value="{{each_details['interviewers_name']}}" required="">
+
+        </div>
+    </div>
+
+    <!-- Text input-->
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="email">Email</label>
+        <div class="col-md-4">
+            <input id="email" name="email" type="text" placeholder="johndoe@example.com"
+                value="{{each_details['interviewers_email']}}" class="form-control input-md" required="">
+
+        </div>
+    </div>
+
+    <!-- Text input-->
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="designation">Designation</label>
+        <div class="col-md-4">
+            <input id="designation" name="designation" type="text" placeholder="QA"
+                value="{{each_details['interviewers_designation']}}" class="form-control input-md" required="">
+
+        </div>
+    </div>
+    </form>
+    <form class="form-inline">
+        <table id="timeTable" style="width: 100%">
+            {% for each_slot in each_details['time'] %}
+            <tr id="time-slot-{{loop.index}}">
+                <td>
+                    <label class="col-md-4 control-label" for="starttime">Starttime</label>
+                </td>
+                <td>
+                    <input type="startime" class="form-control input-md" id="starttime{{loop.index}}"
+                        placeholder="starttime" value="{{each_slot['starttime']}}" required="">
+
+
+                </td>
+                <td>
+                    <label class="col-md-8 control-label" for="endtime">Endtime</label>
+                </td>
+                <td>
+                    <input type="endtime" class="form-control input-md" id="endtime{{loop.index}}"
+                        value="{{each_slot['endtime']}}" placeholder="endtime" required="">
+                </td>
+                <td>
+                    <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="btn btn-link">
+                </td>
+            </tr>
+            <br />
+            {% endfor %}
+
+            <tr>
+                <td>
+                    {% set counter = each_details['time'] | length %}
+                    <input type="hidden" id="TestHidden" value="{{counter}}"> </td> </tr> </table> </form> <div>
+                    <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
+                    </div>
+                    <div id="ToolsGroup">
+                    </div>
+
+                    <!-- Button (Double) -->
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="save"></label>
+                            <div class="col-md-8">
+                                <input class="btn btn-success" type='button' id='submit' value='Save'>
+                                <input type='button' id="clear" value='Cancel' onclick="redirectNew()"
+                                    class="btn btn-danger">
+                            </div>
+                        </div>
+                    </form>
+    </form>
     {% endfor %}
+    {% endif %}
     </div>
     <script>
         timeObject = {
@@ -143,12 +195,12 @@
             var count = timeSlotTable.rows.length;
             console.log(count);
             for (var index = 1; index <= count; index++) {
-                var starttimeVal = $("#starttime"+index).val();
+                var starttimeVal = $("#starttime" + index).val();
                 console.log(typeof starttimeVal, starttimeVal)
-                if (starttimeVal != undefined){
-                timeObject.starttime.push($("#starttime" + index).val())
-                timeObject.endtime.push($("#endtime" + index).val())
-            }
+                if (starttimeVal != undefined) {
+                    timeObject.starttime.push($("#starttime" + index).val())
+                    timeObject.endtime.push($("#endtime" + index).val())
+                }
             }
             console.log(timeObject);
             $.ajax({
@@ -208,8 +260,8 @@
         //  $(this).closest('tr').remove();
         // });
         function removeButton(loopIndex) {
-            console.log(loopIndex);            
-            var row_id = "time-slot-"+loopIndex;
+            console.log(loopIndex);
+            var row_id = "time-slot-" + loopIndex;
             console.log(row_id);
             var elem = document.getElementById(row_id);
             elem.parentNode.removeChild(elem);

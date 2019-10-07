@@ -138,8 +138,6 @@ def read_interviewer_details(interviewer_id):
             'interviewers_email': each_detail.interviewer_email,
             'interviewers_designation': each_detail.interviewer_designation}
 
-    
-
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
 
 def add_edit_interviewers_in_time_slot_table(interviewer_name):
@@ -163,14 +161,21 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
     # This query fetch the interviewer details by joining the time slots table and interviewers table.
-    
-    edit_interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
-        Interviewers.interviewer_id == interviewer_id).values(
-        Interviewers.interviewer_id, Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
-
-    parsed_interviewer_details = form_interviewer_details(
-        edit_interviewer_details)  
-        
+    if request.method == "GET":    
+        exists = db.session.query(db.exists().where(Interviewertimeslots.interviewer_id == interviewer_id)).scalar()
+        if exists:
+            interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
+            Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+            parsed_interviewer_details = form_interviewer_details(interviewer_details)
+        else:
+            interviewer_details = Interviewers.query.filter(Interviewers.interviewer_id==interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_name,Interviewers.interviewer_email,Interviewers.interviewer_designation)
+            for each_detail in interviewer_details:
+                parsed_interviewer_details = {
+                'interviewers_name': each_detail.interviewer_name,
+                'interviewers_id': each_detail.interviewer_id,
+                'interviewers_email': each_detail.interviewer_email,
+                'interviewers_designation': each_detail.interviewer_designation}
+            
     if request.method == "POST":
         #Updating the interviewers table
         interviewer_name = request.form.get('name')

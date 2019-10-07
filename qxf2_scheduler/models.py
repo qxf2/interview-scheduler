@@ -3,7 +3,7 @@ from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint
 
 class Interviewers(db.Model):
     "Adding the interviewer" 
-    interviewer_id = db.Column(db.Integer,primary_key=True,nullable=False)   
+    interviewer_id = db.Column(db.Integer,primary_key=True)   
     interviewer_name = db.Column(db.String(50),nullable=False)
     interviewer_email = db.Column(db.String(50),nullable=False)
     interviewer_designation = db.Column(db.String(40),nullable=False)

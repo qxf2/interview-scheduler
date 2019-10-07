@@ -6,10 +6,8 @@ class Interviewers(db.Model):
     interviewer_id = db.Column(db.Integer,primary_key=True)   
     interviewer_name = db.Column(db.String(50),nullable=False)
     interviewer_email = db.Column(db.String(50),nullable=False)
-    interviewer_designation = db.Column(db.String(40),nullable=False)
-    #CONSTRAINT interviewer_name CHECK (value >= 3)
-    db.CheckConstraint(interviewer_name > 5)
-    
+    interviewer_designation = db.Column(db.String(40),nullable=False)    
+    db.CheckConstraint(interviewer_name > 5)    
     
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"

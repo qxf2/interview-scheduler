@@ -25,7 +25,6 @@ def date_picker():
         for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
             interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,
                                                 'interviewer_end_time': interviewer_end_time})
-
         free_slots = my_scheduler.get_free_slots_for_date(
             date, interviewer_work_time_slots)
         free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(

@@ -33,7 +33,7 @@
         </div>
 
         <div class="row top-space-30">
-            <form class="was-validated">
+            <form class="needs-validation">
                 <div class="form-group row">
                     <label class="col-md-4 col-form-label text-md-right" for="jobrole">Job role:</label>
                     <div class="col-md-6">
@@ -47,8 +47,10 @@
                 <div class="form-group row">
                     <label class="col-md-4 col-form-label text-md-right" for="interviewers">Interviewers:</label>
                     <div class="col-md-8">
-                        <input class="form-control" type="text" id="interviewers">
+                        <input class="form-control" type="text" id="interviewers" required>
                         <input type="hidden" id="TestHidden" value="{{result}}" required>
+                        <div class="valid-feedback">Valid.</div>
+                        <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
                 </div>
 
@@ -59,27 +61,51 @@
         </div>
     </div>
     <script>
-        $("#submit").click(function (e) {
-            var jobName = $("#role").val();
-            var interviewersList = $("#interviewers").val().split(',');
-            interviewersList.pop();
-            console.log(interviewersList);
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (form.checkValidity() === false) {
+                            console.log("I am inside true");
 
-            $.ajax({
-                type: 'POST',
-                url: '/jobs/add',
-                data: {
-                    'role': jobName,
-                    'interviewerlist': JSON.stringify(interviewersList)
-                },
-                success: function (result) {
-                    alert("The job has been added");
-                    document.location.href = "/jobs";
-                }
-            })
-        })
+                        }
+                        else {
+                            var jobName = $("#role").val();
+                            var interviewersList = $("#interviewers").val().split(',');
+                            interviewersList.pop();
+                            console.log(interviewersList);
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '/jobs/add',
+                                data: {
+                                    'role': jobName,
+                                    'interviewerlist': JSON.stringify(interviewersList)
+                                },
+                                success: function (result) {
+                                    alert("The job has been added");
+                                    document.location.href = "/jobs";
+                                },
+                                error: function (request, status, message) {
+                                    console.log(request);
+                                    alert(request.responseJSON.message);
+                                    document.location.href = "/jobs/add";
+                                }
+                            })
+                        }
+
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
     </script>
-
     <script>
         $(function () {
             var availableTags = eval(document.getElementById("TestHidden").value);

@@ -40,7 +40,7 @@
                     <p>Success:</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" id="close" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -55,7 +55,7 @@
                 <label class="col-md-4 control-label" for="fname">First Name</label>
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
-                        required="">
+                        required>
 
                 </div>
             </div>
@@ -65,7 +65,7 @@
                 <label class="col-md-4 control-label" for="email">Email</label>
                 <div class="col-md-4">
                     <input id="email" name="email" type="text" placeholder="johndoe@example.com"
-                        class="form-control input-md" required="">
+                        class="form-control input-md" required>
 
                 </div>
             </div>
@@ -75,7 +75,7 @@
                 <label class="col-md-4 control-label" for="designation">Designation</label>
                 <div class="col-md-4">
                     <input id="designation" name="designation" type="text" placeholder="QA"
-                        class="form-control input-md" required="">
+                        class="form-control input-md" required>
 
                 </div>
             </div>
@@ -84,15 +84,14 @@
             <div class="form-group bfh-timepicker" data-mode="12h">
                 <label class="col-md-4 control-label" for="starttime">Starttime</label>
                 <div class="col-md-4">
-                    <input type="time" class="form-control input-md" id="starttime0" placeholder="starttime"
-                        required="">
+                    <input type="time" class="form-control input-md" id="starttime0" placeholder="starttime" required>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-md-4 control-label" for="endtime">Endtime</label>
                 <div class="col-md-4">
                     <input type="time" class="form-control input-md" id="endtime0" placeholder="endtime" id="time"
-                        required="">
+                        required>
                 </div>
             </div>
         </form>
@@ -121,30 +120,44 @@
             endtime: []
         };
         $("#submit").click(function () {
+            var validValue = true;
             var email = $("#email").val();
             var name = $("#fname").val();
             var designation = $("#designation").val();
             for (var index = 0; index < count + 1; index++) {
                 timeObject.starttime.push($("#starttime" + index).val())
                 timeObject.endtime.push($("#endtime" + index).val())
-            }
+            }            
             console.log(timeObject);
-            $.ajax({
-                type: 'POST',
-                url: '/interviewers/add',
-                data: {
-                    'email': email,
-                    'name': name,
-                    'designation': designation,
-                    'timeObject': JSON.stringify(timeObject)
-                },
-                success: function (result) {
-                    var msg = " The interviewer " + ' ' + result.interviewer_name + ' ' + " has been added successfully";
-                    $('#myModal').modal('show');
-                    $('#myModal .modal-body p').html(msg);
-                }
+            if (email.length < 1 || name.length < 1 || designation.length < 1) {
+                $('#email').css('border', 'solid 2px red');
+                $('#fname').css('border', 'solid 2px red');
+                $('#designation').css('border', 'solid 2px red');
+                $('#email').after('<span class="error">This field is required</span>');
+                $('#fname').after('<span class="error">This field is required</span>');
+                $('#designation').after('<span class="error">This field is required</span>');
+                validValue = false;
 
-            })
+            }            
+            if (validValue === true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/interviewers/add',
+                    data: {
+                        'email': email,
+                        'name': name,
+                        'designation': designation,
+                        'timeObject': JSON.stringify(timeObject)
+                    },
+                    success: function (result) {
+                        var msg = " The interviewer " + ' ' + result.interviewer_name + ' ' + " has been added successfully";
+                        $('#myModal').modal('show');
+                        $('#myModal .modal-body p').html(msg);
+                    }
+
+                })
+
+            }            
         })
     </script>
     <script>
@@ -189,7 +202,12 @@
             });
         });
     </script>
-     
+    <script>
+        $("#close").click(function () {
+            document.location.href = "/interviewers"
+        })
+    </script>
+
 </body>
 
 </html>

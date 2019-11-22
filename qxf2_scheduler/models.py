@@ -7,6 +7,8 @@ class Interviewers(db.Model):
     interviewer_name = db.Column(db.String(50),nullable=False)
     interviewer_email = db.Column(db.String(50),nullable=False)
     interviewer_designation = db.Column(db.String(40),nullable=False)
+    job_interviewer = db.relationship('Jobinterviewer', backref='Interviewers', 
+     lazy=True, cascade="delete") 
     
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"
@@ -26,13 +28,15 @@ class Jobs(db.Model):
     "Adding the Job page"
     job_id = db.Column(db.Integer,primary_key=True,nullable=False)   
     job_role = db.Column(db.String,nullable=False)
+    job_interviewer = db.relationship('Jobinterviewer', backref='Jobs', 
+       lazy=True, cascade="delete")
 
     def __repr__(self):
         return f"Jobs('{self.job_id}','{self.job_role}')"
 
 class Jobinterviewer(db.Model):
     "Combine Job id and Interviewer ID"
-    combo_id = db.Column(db.Integer,primary_key=True)
+    combo_id = db.Column(db.Integer,primary_key=True,autoincrement=True)
     job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
     interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
 

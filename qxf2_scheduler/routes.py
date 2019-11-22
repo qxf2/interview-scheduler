@@ -7,7 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
-import ast
+import ast,sys
 
 from qxf2_scheduler.models import Interviewers,Interviewertimeslots,Jobs,Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -170,6 +170,36 @@ def delete_job():
         db.session.commit()        
         
     return jsonify(data)
+
+
+@app.route("/job/edit/<job_id>",methods=["GET","POST"])
+def edit_job(job_id):
+    "Editing the already existing job"
+    if request.method == 'GET':
+        # Fetch the Job role from the job table
+        interviewers_name_list = []
+        fetched_job_id = job_id
+        get_job_role = Jobs.query.filter(Jobs.job_id==fetched_job_id).scalar()
+        print(get_job_role.job_role,file=sys.stderr)
+        #Fetch the interviewer id based on the job id from the Jobinterviewer table
+        get_interviewers_id = Jobinterviewer.query.filter(Jobinterviewer.job_id==fetched_job_id).all()
+        for each_interviewer_id in get_interviewers_id:
+            interviewer_id = each_interviewer_id.interviewer_id
+            print(interviewer_id,file=sys.stderr)
+            #Fetch the interviewer name by using the parsed interviewer id in interviewers table
+            interviewer_name_for_role = db.session.query(Interviewers.interviewer_name).filter(Interviewers.interviewer_id==interviewer_id).scalar()
+            print(interviewer_name_for_role)
+            interviewers_name_list.append(interviewer_name_for_role)
+            print(interviewers_name_list)
+            #I am repeating this code here to fetch all the interviewers list.
+            #I should refactor it
+            all_interviewers = Interviewers.query.all()
+            interviewers_list = []
+            for each_interviewer in all_interviewers:           
+                interviewers_list.append(each_interviewer.interviewer_name)
+        api_response = {'role_name':get_job_role.job_role,'interviewers_name':interviewers_name_list,'interviewers_list':interviewers_list}                   
+
+        return render_template("edit-jobs.html",result=api_response)    
 
 
 @app.route("/interviewers/add",methods=["GET","POST"])

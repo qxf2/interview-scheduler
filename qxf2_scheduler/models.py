@@ -38,3 +38,12 @@ class Jobinterviewer(db.Model):
 
     def __repr__(self):
         return f"Jobinterviewer('{self.job_id}','{self.interviewer_id}')"
+
+class Candidates(db.Model):
+    "Adding the candidates"
+    candidate_id = db.Column(db.Integer,primary_key=True)
+    candidate_name = db.Column(db.Integer,nullable=False)
+    candidate_email = db.Column(db.Integer,nullable=False)
+
+    def __repr__(self):
+        return f"Candidates('{candidate_name}','{candidate_email}')"

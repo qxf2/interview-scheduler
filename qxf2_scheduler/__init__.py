@@ -11,3 +11,4 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///%s"%db_file
 db = SQLAlchemy(app)
 
 from qxf2_scheduler import routes
+from qxf2_scheduler import candidates

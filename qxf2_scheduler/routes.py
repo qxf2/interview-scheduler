@@ -206,27 +206,30 @@ def edit_job(job_id):
         job_role = request.form.get('role')
         job_id = request.form.get('id')
         data = {'job_role':job_role}
-        interviewers_list = ast.literal_eval(request.form.get('interviewerlist'))       
-        edit_job = Jobs.query.filter(Jobs.job_id==job_id).update({'job_role':job_role})
-        db.session.commit()
-        #Fetch the combo id of each row which matches with job id
-        fetch_combo_id = Jobinterviewer.query.filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.combo_id)
-        list_combo_id = []
-        for each_id in fetch_combo_id:            
-            list_combo_id.append(each_id.combo_id)
-        #Delete the existing rows of job-id in the Jobinterviewer       
-        for each_combo_id in list_combo_id:            
-            delete_updated_job_id = Jobinterviewer.query.filter(Jobinterviewer.combo_id==each_combo_id).one()
-            db.session.delete(delete_updated_job_id)
+        interviewers_list = ast.literal_eval(request.form.get('interviewerlist'))
+        check_job_exists = db.session.query(db.exists().where(Jobs.job_role==job_role)).scalar()
+        if check_job_exists != True:       
+            edit_job = Jobs.query.filter(Jobs.job_id==job_id).update({'job_role':job_role})
             db.session.commit()
-        #Fetch the interviewers id from the interviewers table
-        #Add new rows in the Jobinterviewer table with updated interviewer id
-        for each_interviewer in interviewers_list:                
-                interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer.strip()).scalar()               
-                job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=interviewer_id)
-                db.session.add(job_interviewer_object)
+            #Fetch the combo id of each row which matches with job id
+            fetch_combo_id = Jobinterviewer.query.filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.combo_id)
+            list_combo_id = []
+            for each_id in fetch_combo_id:            
+                list_combo_id.append(each_id.combo_id)
+            #Delete the existing rows of job-id in the Jobinterviewer       
+            for each_combo_id in list_combo_id:            
+                delete_updated_job_id = Jobinterviewer.query.filter(Jobinterviewer.combo_id==each_combo_id).one()
+                db.session.delete(delete_updated_job_id)
                 db.session.commit()
-        
+            #Fetch the interviewers id from the interviewers table
+            #Add new rows in the Jobinterviewer table with updated interviewer id
+            for each_interviewer in interviewers_list:                
+                    interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer.strip()).scalar()               
+                    job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=interviewer_id)
+                    db.session.add(job_interviewer_object)
+                    db.session.commit()
+        else:
+            return jsonify(message='The job already exists,Check before you edit the Jobs'),500        
 
         return jsonify(data)        
 

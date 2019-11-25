@@ -31,8 +31,6 @@
         <div class="row top-space-30">
             <h2>Edit the job role and Interviewers</h2>
         </div>
-        {{result}}
-
         <div class="row top-space-30">
             <form class="needs-validation">
                 <div class="form-group row">
@@ -44,7 +42,7 @@
                         <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
                 </div>
-
+                <input type="hidden" id="idHidden" value="{{result.job_id}}" required>
                 <div class="form-group row">
                     <label class="col-md-4 col-form-label text-md-right" for="interviewers">Interviewers:</label>
                     <div class="col-md-8">
@@ -56,8 +54,8 @@
                 </div>
 
                 <div class="col-md-6 offset-md-4 top-space-30">
-                    <button type="submit" id="edit">Edit</button>
-                    <button type='cancel' id='cancel'>Cancel</button>
+                    <button type="submit" id="submit">Edit</button>
+                    <input type='button' onclick="clearEdit()" value='Cancel' class="btn btn-danger">
                 </div>
             </form>
         </div>
@@ -70,7 +68,7 @@
                 var forms = document.getElementsByClassName('needs-validation');
                 // Loop over them and prevent submission
                 var validation = Array.prototype.filter.call(forms, function (form) {
-                    form.addEventListener('edit', function (event) {
+                    form.addEventListener('submit', function (event) {
                         event.preventDefault();
                         event.stopPropagation();
                         if (form.checkValidity() === false) {
@@ -80,14 +78,16 @@
                         else {
                             var jobName = $("#role").val();
                             var interviewersList = $("#interviewers").val().split(',');
+                            var jobId = document.getElementById("idHidden").value;
                             interviewersList.pop();
-                            console.log(interviewersList);
+                            console.log(interviewersList,jobId);
 
                             $.ajax({
                                 type: 'POST',
-                                url: '/jobs/edit/<job-id>',
+                                url: '/jobs/edit/%d'%jobId,
                                 data: {
                                     'role': jobName,
+                                    'id':jobId,                                     
                                     'interviewerlist': JSON.stringify(interviewersList)
                                 },
                                 success: function (result) {
@@ -97,7 +97,7 @@
                                 error: function (request, status, message) {
                                     console.log(request);
                                     alert(request.responseJSON.message);
-                                    document.location.href = "/jobs/edit/<job-id>";
+                                    document.location.href = "/jobs/edit/%d"%jobId;
                                 }
                             })
                         }
@@ -154,6 +154,13 @@
                     }
                 });
         });
+    </script>
+    <script>
+        function clearEdit(){
+            document.location.href = "/jobs";
+
+        }
+        
     </script>
 
 </body>

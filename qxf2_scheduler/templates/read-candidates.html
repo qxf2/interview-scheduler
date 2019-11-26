@@ -24,7 +24,22 @@
     <div class="modal modal-megamenu" id="myModal">
         <div class="modal-dialog modal-megamenu">
             <div class="modal-content modal-megamenu">
-                <div class="modal-header modal-megamenu">                    
+                <div class="modal-header modal-megamenu">
+                    <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+                </div>
+                <div class="modal-body modal-megamenu">
+                    <p>Success:</p>
+                </div>
+                <div class="modal-footer modal-megamenu">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-megamenu" id="myModal">
+        <div class="modal-dialog modal-megamenu">
+            <div class="modal-content modal-megamenu">
+                <div class="modal-header modal-megamenu">
                     <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
                 </div>
                 <div class="modal-body modal-megamenu">
@@ -49,23 +64,75 @@
                         <th>Candidate Name</th>
                         <th>Candidate Email</th>
                         <th>Actions</th>
-                        
+
                     </tr>
                 </thead>
                 <tbody>
                     {% for each_candidate in result %}
                     <tr>
                         <td>{{ each_candidate.candidate_id }}</td>
-                        <td><a href="/{{ each_candidate.candidate_id }}/candidates">{{ each_candidate.candidate_name }}</a></td>
+                        <td><a
+                                href="/{{ each_candidate.candidate_id }}/candidates">{{ each_candidate.candidate_name }}</a>
+                        </td>
                         <td>{{ each_candidate.candidate_email }}</td>
                         <td><input class="btn btn-info" type="button" id="edit" value="Edit">
-                            <input class="btn btn-info" type="button" id="edit" value="Delete"></td>
+                            <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
+                                data-candidatename="{{ each_candidate.candidate_name }}"
+                                data-href="{{ each_candidate.candidate_id }}" data-toggle="modal">Delete</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-           
-   
+            <div class="modal modal-megamenu" id="confirmdeletemodal">
+                <div class="modal-dialog modal-megamenu">
+                    <div class="modal-content modal-megamenu">
+                        <div class="modal-header modal-megamenu">
+                            <h4 class="modal-title">Remove candidate?</h4>
+                        </div>
+                        <div class="modal-body modal-megamenu">
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="modal-footer modal-megamenu">
+                            <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                            <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
+                                type="submit">Remove</button>
+                        </div>
+                    </div><!-- end modal-content -->
+                </div><!-- end modal-dialog -->
+            </div>
+        </div>
+    </div>
+    <script>
+        // Remove button event trigger
+        $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
+            var triggeringElement = $(e.relatedTarget);
+            console.log("Triggering element is: ", triggeringElement.data('href'));
+            $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
+            console.log("This is in confirmdelete" + $(e.relatedTarget).data('href'));
+            var modal = $(this)
+            modal.find('.modal-body').text('Are you sure you wish to delete this ' + triggeringElement.data("candidatename") + 'candidate? ')
+            $("#remove-button").on('click', function () {
+                var jobid = triggeringElement.data('href');
+                console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
+                $.ajax({
+                    type: 'POST',
+                    url: '/candidate/delete',
+                    data: { 'candidate-id': $(e.relatedTarget).data('href') },
+                    success: function (data) {
+                        var msg = "The  deleted candidate is " + data.candidate_name;
+                        console.log(msg, data);
+                        $('#myModal').modal('show');
+                        $('#myModal .modal-body p').html(msg);
+
+                    }
+                })
+
+            })
+        })
+
+    </script>
+
+
 
 </body>
 

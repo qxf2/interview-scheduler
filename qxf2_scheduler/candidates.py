@@ -18,3 +18,16 @@ def read_candidates():
     return render_template("read-candidates.html",result=my_candidates_list)
 
 
+@app.route("/candidate/delete",methods=["POST"]) 
+def delete_candidate():
+    "Deletes a candidate"
+    if request.method== 'POST':
+        candidate_id_to_delete = request.form.get('candidate-id')
+        candidate_to_delete = Candidates.query.filter(Candidates.candidate_id==candidate_id_to_delete).first()
+        data = {'candidate_name':candidate_to_delete.candidate_name,'candidate_id':candidate_to_delete.candidate_id}       
+        db.session.delete(candidate_to_delete)
+        db.session.commit()        
+        
+    return jsonify(data)
+
+

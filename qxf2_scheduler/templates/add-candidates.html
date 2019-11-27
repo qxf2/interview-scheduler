@@ -10,6 +10,8 @@
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
         id="bootstrap-css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -67,33 +69,76 @@
 
         <label class="col-md-4 control-label" for="save"></label>
         <div class="col-md-8">
-                <input class="btn btn-success" type='button' id='submit' value='Add'>
-                <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
+            <!---<input class="btn btn-success" type='button' id='submit' value='Add'>--->
+            <button id="submit" type="submit" value="Add"></button>
+            <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
         </div>
     </div>
-    </form>   
+    </form>
     <script>
-       $("#submit").click(function () {
-        {
-            var candidateName = $("#fname").val();
-            var candidateEmail = $("#email").val();
-            console.log(candidateEmail, candidateName);
-            $.ajax({
-                type: 'POST',
-                url: '/candidate/add',
-                data: {
-                    'candidateName': candidateName,
-                    'candidateEmail': candidateEmail
-                },
-                success: function (result) {
-                    alert("The department has been added");
-                    document.location.href = "/candidates";
-                }
-            })
-        }
-    })
+            (function () {
+                'use strict';
+                window.addEventListener('load', function () {
+                    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                    var forms = document.getElementsByClassName('needs-validation');
+                    // Loop over them and prevent submission
+                    console.log("I am inside function");
+                    var validation = Array.prototype.filter.call(forms, function (form) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        form.addEventListener('submit', function (event) {
+                            console.log("I am inside submit")
+                            if (form.checkValidity() === false) {
+                                console.log("I am inside true");
+    
+                            }
+                            else {
+                                console.log("I am inside else");
+                                var candidateName = $("#fname").val();
+                                var candidateEmail = $("#email").val();
+                                console.log(candidateEmail, candidateName);
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/candidate/add',
+                                    data: {
+                                        'candidateName': candidateName,
+                                        'candidateEmail': candidateEmail
+                                    },
+                                    success: function (result) {
+                                        alert("The department has been added");
+                                        document.location.href = "/candidates";
+                                    }
+                                })
+                            }
+    
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+        </script>
+    <!-----<script>
+        $("#submit").click(function () {
+            {
+                var candidateName = $("#fname").val();
+                var candidateEmail = $("#email").val();
+                console.log(candidateEmail, candidateName);
+                $.ajax({
+                    type: 'POST',
+                    url: '/candidate/add',
+                    data: {
+                        'candidateName': candidateName,
+                        'candidateEmail': candidateEmail
+                    },
+                    success: function (result) {
+                        alert("The department has been added");
+                        document.location.href = "/candidates";
+                    }
+                })
+            }
+        })
 
-    </script>
+    </script>----->
 
 </body>
 

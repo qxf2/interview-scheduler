@@ -36,45 +36,40 @@
 
 <body>
     <div>
-        
+
         <h2 class="grey_text text-justify">Add Candidates</h2>
         <!----<form class="needs-validation">---->
         <label class="col-md-4 control-label" for="fname">First Name</label>
         <div class="col-md-4">
-            <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md" required="">
-            <div class="invalid-feedback">
-                Please choose a username.
-            </div>
+            <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md" required>
+            
         </div>
 
         <label class="col-md-4 control-label" for="email">Email</label>
         <div class="col-md-4">
             <input id="email" name="email" type="text" placeholder="johndoe@example.com" class="form-control input-md"
                 required>
-            <div class="invalid-feedback">
-                Please choose a email.
-            </div>
-
+            
         </div>
 
         <label class="col-md-4 control-label" for="select1">Job applied for</label>
         <div class="col-md-4">
-            
             <select class="form-control input-md" id="select1" required>
-                    {% for each_job in data %}
+                <option value="None">Select the below option</option>
+                {% for each_job in data %}
                 <option value="{{each_job}}">{{each_job}}</option>
                 {% endfor %}
             </select>
-            
+
         </div>
 
         <label class="col-md-4 control-label" for="save"></label>
         <div class="col-md-8">
-            <input class="btn btn-success" type='button' id='submit' value='Add'>            
+            <input class="btn btn-success" type='button' id='submit' value='Add'>
             <button id="clear" name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
         </div>
     </div>
-    </form>    
+    </form>
     <script>
         $("#submit").click(function () {
             {
@@ -82,14 +77,14 @@
                 var candidateEmail = $("#email").val();
                 var dropdownValue = document.getElementById("select1");
                 var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
-                console.log(candidateEmail, candidateName,jobApplied);
+                console.log(candidateEmail, candidateName, jobApplied);
                 $.ajax({
                     type: 'POST',
                     url: '/candidate/add',
                     data: {
                         'candidateName': candidateName,
                         'candidateEmail': candidateEmail,
-                        'jobApplied':jobApplied
+                        'jobApplied': jobApplied
                     },
                     success: function (result) {
                         alert("The candidate has been added");
@@ -101,7 +96,7 @@
 
     </script>
     <script>
-        function clearAdd(){
+        function clearAdd() {
             document.location.href = "/candidate/add"
         }
     </script>

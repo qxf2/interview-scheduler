@@ -85,7 +85,6 @@ To start the application, run
 
 The command should be run from the root directory (same as the directory of this readme). If all goes well, when you visit http://localhost:6464 on your browser, you should see the homepage of the application.
 
-
 __g) Initial db setup__
 
       1] First FORK and CLONE the interview scheduler from Qxf2 git repository

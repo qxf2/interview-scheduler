@@ -36,11 +36,12 @@
 
 <body>
     <div>
+        
         <h2 class="grey_text text-justify">Add Candidates</h2>
         <!----<form class="needs-validation">---->
         <label class="col-md-4 control-label" for="fname">First Name</label>
         <div class="col-md-4">
-            <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md" required>
+            <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md" required="">
             <div class="invalid-feedback">
                 Please choose a username.
             </div>
@@ -58,87 +59,52 @@
 
         <label class="col-md-4 control-label" for="select1">Job applied for</label>
         <div class="col-md-4">
+            
             <select class="form-control input-md" id="select1" required>
-                <option>QA Manager</option>
-                <option>Senior QA</option>
-                <option>QA</option>
-                <option>Junior QA</option>
-                <option>Interns</option>
+                    {% for each_job in data %}
+                <option value="{{each_job}}">{{each_job}}</option>
+                {% endfor %}
             </select>
+            
         </div>
 
         <label class="col-md-4 control-label" for="save"></label>
         <div class="col-md-8">
-            <!---<input class="btn btn-success" type='button' id='submit' value='Add'>--->
-            <button id="submit" type="submit" value="Add"></button>
-            <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
+            <input class="btn btn-success" type='button' id='submit' value='Add'>            
+            <button id="clear" name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
         </div>
     </div>
-    </form>
+    </form>    
     <script>
-            (function () {
-                'use strict';
-                window.addEventListener('load', function () {
-                    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                    var forms = document.getElementsByClassName('needs-validation');
-                    // Loop over them and prevent submission
-                    console.log("I am inside function");
-                    var validation = Array.prototype.filter.call(forms, function (form) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        form.addEventListener('submit', function (event) {
-                            console.log("I am inside submit")
-                            if (form.checkValidity() === false) {
-                                console.log("I am inside true");
-    
-                            }
-                            else {
-                                console.log("I am inside else");
-                                var candidateName = $("#fname").val();
-                                var candidateEmail = $("#email").val();
-                                console.log(candidateEmail, candidateName);
-                                $.ajax({
-                                    type: 'POST',
-                                    url: '/candidate/add',
-                                    data: {
-                                        'candidateName': candidateName,
-                                        'candidateEmail': candidateEmail
-                                    },
-                                    success: function (result) {
-                                        alert("The department has been added");
-                                        document.location.href = "/candidates";
-                                    }
-                                })
-                            }
-    
-                            form.classList.add('was-validated');
-                        }, false);
-                    });
-                }, false);
-            })();
-        </script>
-    <!-----<script>
         $("#submit").click(function () {
             {
                 var candidateName = $("#fname").val();
                 var candidateEmail = $("#email").val();
-                console.log(candidateEmail, candidateName);
+                var dropdownValue = document.getElementById("select1");
+                var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
+                console.log(candidateEmail, candidateName,jobApplied);
                 $.ajax({
                     type: 'POST',
                     url: '/candidate/add',
                     data: {
                         'candidateName': candidateName,
-                        'candidateEmail': candidateEmail
+                        'candidateEmail': candidateEmail,
+                        'jobApplied':jobApplied
                     },
                     success: function (result) {
-                        alert("The department has been added");
+                        alert("The candidate has been added");
                         document.location.href = "/candidates";
                     }
                 })
             }
         })
 
-    </script>----->
+    </script>
+    <script>
+        function clearAdd(){
+            document.location.href = "/candidate/add"
+        }
+    </script>
 
 </body>
 

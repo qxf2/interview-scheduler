@@ -63,6 +63,7 @@
                         <th>Candidate ID</th>
                         <th>Candidate Name</th>
                         <th>Candidate Email</th>
+                        <th>Job Applied</th>
                         <th>Actions</th>
 
                     </tr>
@@ -75,6 +76,7 @@
                                 href="/{{ each_candidate.candidate_id }}/candidates">{{ each_candidate.candidate_name }}</a>
                         </td>
                         <td>{{ each_candidate.candidate_email }}</td>
+                        <td>{{ each_candidate.job_applied }}</td>
                         <td><input class="btn btn-info" type="button" id="edit" value="Edit">
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
                                 data-candidatename="{{ each_candidate.candidate_name }}"

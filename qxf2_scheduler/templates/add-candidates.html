@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add Candidates</title>
+
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .bs-example {
+            margin: 20px;
+        }
+
+        textarea {
+            display: inline
+        }
+
+        input:invalid {
+            border: 2px dashed red;
+        }
+
+        input:valid {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h2 class="grey_text text-justify">Add Candidates</h2>
+        <!----<form class="needs-validation">---->
+        <label class="col-md-4 control-label" for="fname">First Name</label>
+        <div class="col-md-4">
+            <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md" required>
+            <div class="invalid-feedback">
+                Please choose a username.
+            </div>
+        </div>
+
+        <label class="col-md-4 control-label" for="email">Email</label>
+        <div class="col-md-4">
+            <input id="email" name="email" type="text" placeholder="johndoe@example.com" class="form-control input-md"
+                required>
+            <div class="invalid-feedback">
+                Please choose a email.
+            </div>
+
+        </div>
+
+        <label class="col-md-4 control-label" for="select1">Job applied for</label>
+        <div class="col-md-4">
+            <select class="form-control input-md" id="select1" required>
+                <option>QA Manager</option>
+                <option>Senior QA</option>
+                <option>QA</option>
+                <option>Junior QA</option>
+                <option>Interns</option>
+            </select>
+        </div>
+
+        <label class="col-md-4 control-label" for="save"></label>
+        <div class="col-md-8">
+                <input class="btn btn-success" type='button' id='submit' value='Add'>
+                <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
+        </div>
+    </div>
+    </form>   
+    <script>
+       $("#submit").click(function () {
+        {
+            var candidateName = $("#fname").val();
+            var candidateEmail = $("#email").val();
+            console.log(candidateEmail, candidateName);
+            $.ajax({
+                type: 'POST',
+                url: '/candidate/add',
+                data: {
+                    'candidateName': candidateName,
+                    'candidateEmail': candidateEmail
+                },
+                success: function (result) {
+                    alert("The department has been added");
+                    document.location.href = "/candidates";
+                }
+            })
+        }
+    })
+
+    </script>
+
+</body>
+
+</html>

@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json
+import json,sys
 
 from qxf2_scheduler.models import Candidates
 DOMAIN = 'qxf2.com'
@@ -21,7 +21,7 @@ def read_candidates():
 @app.route("/candidate/delete",methods=["POST"]) 
 def delete_candidate():
     "Deletes a candidate"
-    if request.method== 'POST':
+    if request.method == 'POST':
         candidate_id_to_delete = request.form.get('candidate-id')
         candidate_to_delete = Candidates.query.filter(Candidates.candidate_id==candidate_id_to_delete).first()
         data = {'candidate_name':candidate_to_delete.candidate_name,'candidate_id':candidate_to_delete.candidate_id}       
@@ -29,5 +29,21 @@ def delete_candidate():
         db.session.commit()        
         
     return jsonify(data)
+
+
+@app.route("/candidate/add",methods=["GET","POST"])
+def add_candidate():
+    "Add a candidate"
+    if request.method == 'GET':
+        print("I am always coming here",file=sys.stderr)
+        return render_template("add-candidates.html")
+    if request.method == 'POST':
+        print("I am not coming here",file=sys.stderr)
+        candidate_name = request.form.get('candidateName')
+        candidate_email = request.form.get('cndidateEmail')
+        print(candidate_name,candidate_email)
+        data = {'candidate_name':candidate_name}
+    return jsonify(data)
+        
 
 

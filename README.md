@@ -84,3 +84,29 @@ To start the application, run
       python run.py
 
 The command should be run from the root directory (same as the directory of this readme). If all goes well, when you visit http://localhost:6464 on your browser, you should see the homepage of the application.
+
+
+__g) Initial db setup__
+
+      1] First FORK and CLONE the interview scheduler from Qxf2 git repository
+
+      2] When we complete the step 1],  a folder  Named interview-scheduler will be created.
+
+      3] Open the interview-scheduler folder and create another folder named "data"(This folder is Database folder)
+
+      4]The above created "data" folder will be empty initially.
+            We have to migrate the required data to this "data" folder. Migrating Database can be done by using the following command (Migrating Database should be done in the directory where interview-scheduler has been created ) 
+            ==>  'python migrate_db.py db  migrate' (The command should be ran inside the interview-scheduler directory)
+
+      5]Once you follow the above step you will see that Database has be created. The created database will be with 
+            '.db'extension. (<Filename>.db)
+
+      6]The Database will be empty. So now we should add the required tables by using the following command
+            ==> 'python migrate_db.py db upgrade'(mention directory also)
+
+      7] To check if the tables have been added:
+            open your terminal go to the interview-scheduler  directory and Move in to the data folder and follow the commands. 
+            *(Check if sqlite3 is installed in your pc and proceed for further steps)
+            sqlite3 <filename with extension>
+            To check the table names: .table
+            To check the structure of table: .schema

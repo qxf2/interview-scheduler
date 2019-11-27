@@ -59,7 +59,6 @@ With your virtualenv activated, run the following command:
 
             pip install -r requirements.txt
 
-
 __d) Google calendar setup__
 
 If you are not from Qxf2, please create a token.pickle file using this link: [Google Calendar API: Python quickstart](https://developers.google.com/calendar/quickstart/python)

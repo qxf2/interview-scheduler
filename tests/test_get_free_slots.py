@@ -22,7 +22,14 @@ class Get_free_slots(unittest.TestCase):
         
         #hardcoding the free slots that should be displayed by the fuction
         free_slots=[parse("2019-08-13T10:00:00+05:30"),parse("2019-08-13T14:00:00+05:30"),parse("2019-08-13T15:00:00+05:30"),parse("2019-08-13T18:00:00+05:30")]
-        
+               
+        print("Actual:")
+        for each in get_free_slots(mockbusy_slots.return_value,mockday_start.return_value,mockday_end.return_value):
+            print(each)
+        print("Expected:")
+        for each in free_slots:
+            print(each)
+
         #comparing the hardcoded free_slots with the actual free_slots obtained by the function
         assert get_free_slots(mockbusy_slots.return_value,mockday_start.return_value,mockday_end.return_value)==free_slots
     
@@ -39,6 +46,12 @@ class Get_free_slots(unittest.TestCase):
         #hardcoding the free slots that should be displayed by the fuction
         free_slots=[parse("2019-08-13T10:00:00+05:30"),parse("2019-08-13T18:00:00+05:30")]
         
+        print("Actual:")
+        for each in get_free_slots(mockbusy_slots.return_value,mockday_start.return_value,mockday_end.return_value):
+            print(each)
+        print("Expected:")
+        for each in free_slots:
+            print(each)
         #comparing the hardcoded free_slots with the actual free_slots obtained by the function
         assert get_free_slots(mockbusy_slots.return_value,mockday_start.return_value,mockday_end.return_value)==free_slots
 

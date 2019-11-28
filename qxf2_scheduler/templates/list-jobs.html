@@ -113,8 +113,9 @@
 
     </script>
     <script>
-        function addCandidate(job_role){
-            document.location.href = "/candidate/add"
+        function addCandidate(jobRole){
+            console.log(jobRole);
+            document.location.href = "/candidate/add/"+jobRole;
         }
     </script>
 

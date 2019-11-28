@@ -42,14 +42,14 @@
         <label class="col-md-4 control-label" for="fname">First Name</label>
         <div class="col-md-4">
             <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md" required>
-            
+
         </div>
 
         <label class="col-md-4 control-label" for="email">Email</label>
         <div class="col-md-4">
             <input id="email" name="email" type="text" placeholder="johndoe@example.com" class="form-control input-md"
                 required>
-            
+
         </div>
 
         <label class="col-md-4 control-label" for="select1">Job applied for</label>
@@ -87,8 +87,18 @@
                         'jobApplied': jobApplied
                     },
                     success: function (result) {
-                        alert("The candidate has been added");
-                        document.location.href = "/candidates";
+                        if (result.length > 0) {
+                            alert("The candidate has been added");
+                            document.location.href = "/candidates";
+
+                        }
+
+                        else if (result.error != null) {
+                            alert("The candidate already exists");
+                            document.location.href = "/candidates";
+                        }
+
+
                     }
                 })
             }

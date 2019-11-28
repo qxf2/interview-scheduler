@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json,sys
+import json
 
 from qxf2_scheduler.models import Candidates,Jobs
 DOMAIN = 'qxf2.com'
@@ -29,31 +29,38 @@ def delete_candidate():
         db.session.commit()        
         
     return jsonify(data)
-
-
-@app.route("/candidate/add",methods=["GET","POST"])
-def add_candidate():
+#Passing the optional parameter through URL
+@app.route('/candidate/add/<job_role>')
+@app.route("/candidate/add",defaults={'job_role': None},methods=["GET","POST"])
+def add_candidate(job_role):
     "Add a candidate"
+    data,error = [],None
     if request.method == 'GET':
-        available_job_list = []
-        print("I am always coming here",file=sys.stderr)
-        job_available = Jobs.query.all()
-        print(job_available,file=sys.stderr)
-        for each_job in job_available:
-            available_job_list.append(each_job.job_role)
-            print(available_job_list)
+        available_job_list = []        
+        if job_role is None:
+            #If the parameter is none then fetch the jobs from the database    
+            job_available = Jobs.query.all()            
+            for each_job in job_available:
+                available_job_list.append(each_job.job_role)               
+        else: 
+            #Since we have come through the job page pass the exact job role          
+            available_job_list.append(job_role)
+            
         return render_template("add-candidates.html",data=available_job_list)
-    if request.method == 'POST':
-        print("I am not coming here",file=sys.stderr)
+
+    if request.method == 'POST':        
         candidate_name = request.form.get('candidateName')
         candidate_email = request.form.get('candidateEmail')
-        candidate_job_applied = request.form.get('jobApplied')
-        print(candidate_name,candidate_email)
+        candidate_job_applied = request.form.get('jobApplied')        
         data = {'candidate_name':candidate_name}
-        add_candidate_object = Candidates(candidate_name=candidate_name,candidate_email=candidate_email,job_applied=candidate_job_applied)
-        db.session.add(add_candidate_object)
-        db.session.commit()
-    return jsonify(data)
-        
+        #Check the candidate has been already added or not
+        check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar()        
+        if check_candidate_exists == True:
+            error = "The user already exists in the table"            
+        else:
+            add_candidate_object = Candidates(candidate_name=candidate_name,candidate_email=candidate_email,job_applied=candidate_job_applied)
+            db.session.add(add_candidate_object)
+            db.session.commit()
 
-
+        api_response = {'data':data,'error':error}
+        return jsonify(api_response)

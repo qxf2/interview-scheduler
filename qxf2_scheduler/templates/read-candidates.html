@@ -117,7 +117,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '/candidate/delete',
-                    data: { 'candidate-id': $(e.relatedTarget).data('href') },
+                    data: { 'candidateId': $(e.relatedTarget).data('href') },
                     success: function (data) {
                         var msg = "The  deleted candidate is " + data.candidate_name;
                         console.log(msg, data);

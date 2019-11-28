@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Interviewer Details</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Stylesheets-->
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+
+    <!--JS files-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="modal modal-megamenu" id="myModal">
+            <div class="modal-dialog modal-megamenu">
+                <div class="modal-content modal-megamenu">
+                    <div class="modal-header modal-megamenu">
+                        <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+                    </div>
+                    <div class="modal-body modal-megamenu">
+                        <p>Success:</p>
+                    </div>
+                    <div class="modal-footer modal-megamenu">
+                        <button type="button" class="btn btn-default" onclick="redirectNew()"
+                            data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-striped">
+            <h2 class="grey_text text-center">Interviewer Details</h2>
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col" colspan="2" align="center">Interviewers work hours</th>
+                    <th scope="col" colspan="2" align="center">Actions</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for each_detail in result %}
+
+                <tr>
+                    <td>{{ each_detail.interviewers_name }}</td>
+                    <td>{{ each_detail.interviewers_email }}</td>
+                    {% for each_time in each_detail.time %}
+                    <td>{{each_time['starttime'] }}-{{ each_time['endtime']}}</td>
+                    {% endfor %}
+                    {{each_detail.interviewer_id}}
+                    <td><input class="btn btn-info" type="button" value="Edit" id="edit"
+                            onclick="editinterviewer({{ each_detail.interviewers_id }})"> <button type="button"
+                            class="btn btn-info" data-target="#confirmdeletemodal"
+                            data-username="{{ each_detail.interviewers_name }}"
+                            data-href="{{ each_detail.interviewer_id }}" data-toggle="modal">Delete</button></td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+        <script>
+            function editinterviewer(interviewer_id) {
+                document.location.href = "/" + interviewer_id + "/interviewer/edit/"
+                $.ajax({
+                    type: 'POST',
+                    url: '/' + interviewer_id + '/interviewer/edit/',
+
+                })
+            }
+        </script>
+
+    </div>
+    <div class="modal modal-megamenu" id="confirmdeletemodal">
+        <div class="modal-dialog modal-megamenu">
+            <div class="modal-content modal-megamenu">
+                <div class="modal-header modal-megamenu">
+                    <h4 class="modal-title">Remove User?</h4>
+                </div>
+                <div class="modal-body modal-megamenu">
+                    <input type="text" class="form-control" id="recipient-name">
+                </div>
+                <div class="modal-footer modal-megamenu">
+                    <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                    <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
+                        type="submit">Remove</button>
+                </div>
+            </div><!-- end modal-content -->
+        </div><!-- end modal-dialog -->
+    </div>
+    </div>
+    </div>
+    <script>
+        // Remove button event trigger
+        $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
+            var triggeringElement = $(e.relatedTarget);
+            console.log("Triggering element is: ", triggeringElement.data('href'));
+            $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
+            console.log("This is in confirmdelete" + $(e.relatedTarget).data('href'));
+            var modal = $(this)
+            modal.find('.modal-body').text('Are you sure you wish to delete this  ' + triggeringElement.data("username") + 'from the list? ')
+            $("#remove-button").on('click', function () {
+                console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
+                $.ajax({
+                    type: 'POST',
+                    url:'/interviewer/'+ $(e.relatedTarget).data('href') + '/delete',                    
+                    data: { 'interviewer-id': $(e.relatedTarget).data('href') },
+                    success: function (data) {
+                        var msg = "The user deleted is " + data.interviewer_name;
+                        console.log(msg, data);
+                        $('#myModal').modal('show');
+                        $('#myModal .modal-body p').html(msg);
+
+                    }
+                })
+
+            })
+        })
+
+    </script>
+    <script>
+        function redirectNew() {
+            document.location.href = "/interviewers"
+        }
+    </script>
+
+
+
+</body>
+
+</html>

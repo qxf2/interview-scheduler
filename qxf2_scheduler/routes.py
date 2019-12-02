@@ -97,6 +97,7 @@ def form_interviewer_details(interviewer_details):
 
     for each_detail in interviewer_details:
         interviewer_detail = {
+            'interviewer_id':each_detail.interviewer_id,
             'interviewers_name': each_detail.interviewer_name,
             'interviewers_id': each_detail.interviewer_id,
             'interviewers_email': each_detail.interviewer_email,
@@ -204,6 +205,21 @@ def edit_interviewer(interviewer_id):
         return jsonify(data)
     return render_template("edit-interviewer.html", result=parsed_interviewer_details)    
    
+
+@app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
+def delete_interviewer(interviewer_id):
+    "Deletes a job"
+    if request.method == 'POST':
+        #interviewer_to_delete = request.form.get('interviewer-id')
+        deleted_user = Interviewers.query.filter(
+            Interviewers.interviewer_id == interviewer_id).first()
+        data = {'interviewer_name': deleted_user.interviewer_name,
+                'interviewer_id': deleted_user.interviewer_id}
+        db.session.delete(deleted_user)
+        db.session.commit()
+
+    return jsonify(data)
+
 
 @app.route("/jobs/")
 def jobs_page():

@@ -56,15 +56,14 @@
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
                         required>
-
                 </div>
             </div>
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="email">Email</label>
+                <label class="col-md-4 control-label" for="email" >Email</label>
                 <div class="col-md-4">
-                    <input id="email" name="email" type="text" placeholder="johndoe@example.com"
+                    <input id="email" name="email" type="email" placeholder="johndoe@example.com"
                         class="form-control input-md" required>
 
                 </div>
@@ -96,7 +95,7 @@
             </div>
         </form>
         <div>
-            <input class="btn btn-info" onclick="addtextbox()" type="button" value="Add">
+            <input class="btn btn-info" onclick="addtextbox()" type="button" value="Add time">
         </div>
         <div id="ToolsGroup">
         </div>
@@ -106,7 +105,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="save"></label>
                 <div class="col-md-8">
-                    <input class="btn btn-success" type='button' id='submit' value='Add'>
+                    <input class="btn btn-success" type='button' id='submit' value='Sublit'>
                     <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
@@ -120,25 +119,62 @@
             endtime: []
         };
         $("#submit").click(function () {
-            var validValue = true;
+            var validValue = false;
             var email = $("#email").val();
             var name = $("#fname").val();
             var designation = $("#designation").val();
             for (var index = 0; index < count + 1; index++) {
                 timeObject.starttime.push($("#starttime" + index).val())
                 timeObject.endtime.push($("#endtime" + index).val())
-            }            
+            }           
             console.log(timeObject);
-            if (email.length < 1 || name.length < 1 || designation.length < 1) {
-                $('#email').css('border', 'solid 2px red');
-                $('#fname').css('border', 'solid 2px red');
-                $('#designation').css('border', 'solid 2px red');
-                $('#email').after('<span class="error" style="color:red">This email field is required</span>');
-                $('#fname').after('<span class="error" style="color:red">This name field is required</span>');
-                $('#designation').after('<span class="error" style="color:red">This designation field is required</span>');
+            /*
+            if(name == "")
+            {
+                $('#name').remove();
+                $('#fname').after('<span id="name" class="error" style="color:red">This name field is required</span>');
                 validValue = false;
+            }
+            if(name != "")
+            {
+                $('#name').remove();
+            }
+            if (email == "")
+            {
+                $('#mail').remove();
+                $('#email').after('<span id="mail" class="error" style="color:red">This email field is required</span>');
+                validValue = false;
+            }
+            if(email != "")
+            {   
+                 if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
+                {
+                    $('#mail').remove();
+                    validValue = true;
+                }
+                else
+                {
+                $('#mail').remove();
+                $('#email').after('<span id="mail" class="error" style="color:red">Please enter a valid email address</span>');
+                validValue = false;
+                }
+            }
+            if (email == "")
+            {
+                $('#mail').remove();
+                $('#email').after('<span id="mail" class="error" style="color:red">This email field is required</span>');
+                validValue = false;
+            }
+            if(designation == "")
+            {
+                $('#validDesignation').remove();
+                $('#designation').after('<span id="validDesignation" class="error" style="color:red">This designation field is required</span>');
+                validValue = false;
+            }*/
+            
 
-            }            
+
+
             if (validValue === true) {
                 $.ajax({
                     type: 'POST',
@@ -167,11 +203,10 @@
             var newTextBoxDiv = document.createElement('div');
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
-
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required="" onclick="timePicker()"></div></div></form>' +
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required> </div></div>' +
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" onclick="timePicker()" required></div></div></form>' +
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
-            console.log("Iam count", count);
+            console.log("I am count", count);
         };
 
         function removeTextArea(inputElement) {

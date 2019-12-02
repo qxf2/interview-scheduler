@@ -50,9 +50,9 @@
             <label class="col-md-4 control-label" for="select1">Job applied for</label>
             <div class="col-md-4">
                 <select class="form-control" id="select1" required>
-                    <option value="None" required>Select the below option</option>
+                    <option value="">Select the below option</option>
                     {% for each_job in data %}
-                    <option value="{{each_job}}" required>{{each_job}}</option>
+                    <option value="{{each_job}}">{{each_job}}</option>
                     {% endfor %}
                 </select>
                 <div class="valid-feedback">Valid</div>
@@ -62,48 +62,11 @@
 
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
-                <!----<input class="btn btn-success" type='button' id='submit' value='Add'>---->
                 <button class="btn btn-primary btn-sm" type="submit">Submit</button>
                 <button id="clear" name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
             </div>
         </form>
-    </div>
-
-    <!-----<script>
-        $("#submit").click(function () {
-            {
-                var candidateName = $("#fname").val();
-                var candidateEmail = $("#email").val();
-                var dropdownValue = document.getElementById("select1");
-                var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
-                console.log(candidateEmail, candidateName, jobApplied);
-                $.ajax({
-                    type: 'POST',
-                    url: '/candidate/add',
-                    data: {
-                        'candidateName': candidateName,
-                        'candidateEmail': candidateEmail,
-                        'jobApplied': jobApplied
-                    },
-                    success: function (result) {
-                        if (result.length > 0) {
-                            alert("The candidate has been added");
-                            document.location.href = "/candidates";
-
-                        }
-
-                        else if (result.error != null) {
-                            alert("The candidate already exists");
-                            document.location.href = "/candidates";
-                        }
-
-
-                    }
-                })
-            }
-        })
-
-    </script>----->
+    </div>    
     <script>
         function clearAdd() {
             document.location.href = "/candidate/add"
@@ -120,17 +83,13 @@
                         event.preventDefault();
                         event.stopPropagation();
                         console.log("I am inside submit")
-                        if (form.checkValidity() === false) {
-                            console.log("I am inside true");
-
-                        }
-                        else {
+                        if (form.checkValidity() === true) {                            
                             console.log("I am coming here")
                             var candidateName = $("#fname").val();
                             var candidateEmail = $("#email").val();
                             var dropdownValue = document.getElementById("select1");
                             var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
-                            console.log(candidateEmail, candidateName, jobApplied);
+                            console.log(candidateEmail, candidateName, jobApplied);                            
                             $.ajax({
                                 type: 'POST',
                                 url: '/candidate/add',
@@ -140,7 +99,11 @@
                                     'jobApplied': jobApplied
                                 },
                                 success: function (result) {
-                                    if (result.length > 0) {
+                                    console.log(result.error,result.data['candidate_name']);
+                                    var resultName=result.data['candidate_name'];
+                                    console.log(resultName);
+                                   
+                                    if (resultName==candidateName) {
                                         alert("The candidate has been added");
                                         document.location.href = "/candidates";
 

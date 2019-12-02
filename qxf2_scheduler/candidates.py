@@ -29,6 +29,8 @@ def delete_candidate():
         db.session.commit()        
         
     return jsonify(data)
+
+    
 #Passing the optional parameter through URL
 @app.route('/candidate/add/<job_role>')
 @app.route("/candidate/add",defaults={'job_role': None},methods=["GET","POST"])

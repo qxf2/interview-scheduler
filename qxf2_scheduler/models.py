@@ -13,6 +13,7 @@ class Interviewers(db.Model):
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"
 
+
 class Interviewertimeslots(db.Model):
     "Adding the timing for interviewer" 
     time_id = db.Column(db.Integer,primary_key=True)   
@@ -42,3 +43,12 @@ class Jobinterviewer(db.Model):
 
     def __repr__(self):
         return f"Jobinterviewer('{self.job_id}','{self.interviewer_id}')"
+
+class Candidates(db.Model):
+    "Adding the candidates"
+    candidate_id = db.Column(db.Integer,primary_key=True)
+    candidate_name = db.Column(db.String,nullable=False)
+    candidate_email = db.Column(db.String,nullable=False)
+
+    def __repr__(self):
+        return f"Candidates('{self.candidate_name}','{self.candidate_email}')"

@@ -81,7 +81,7 @@
                         <label class="col-md-4 control-label" for="starttime">Starttime</label>
                     </td>
                     <td>
-                        <input type="startime" class="form-control input-md" id="starttime{{loop.index}}"
+                        <input type="time" class="form-control input-md" id="starttime{{loop.index}}"
                             placeholder="starttime" value="{{each_slot['starttime']}}" required="">
 
 
@@ -90,7 +90,7 @@
                         <label class="col-md-8 control-label" for="endtime">Endtime</label>
                     </td>
                     <td>
-                        <input type="endtime" class="form-control input-md" id="endtime{{loop.index}}"
+                        <input type="time" class="form-control input-md" id="endtime{{loop.index}}"
                             value="{{each_slot['endtime']}}" placeholder="endtime" required="">
                     </td>
                     <td>
@@ -182,8 +182,8 @@
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="startime" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="endtime" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
                 '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);">'
             console.log("Iam count", count);
         };
@@ -209,6 +209,26 @@
             var elem = document.getElementById(row_id);
             elem.parentNode.removeChild(elem);
         }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#starttime0').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 30,
+                use24hours: true,
+                scrollbar: true,
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#endtime0').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 30,
+                use24hours: true,
+                scrollbar: true,
+            });
+        });
     </script>
 
 

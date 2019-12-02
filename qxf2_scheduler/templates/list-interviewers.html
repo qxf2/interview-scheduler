@@ -15,11 +15,12 @@
 
 <body>
     <div class="container col-md-offset-1">
+
         <h1>Interviewer List</h1>
         <div>
             <input class="btn btn-info" type="button" id="add" onclick="addinterviewer()" value="Add">
         </div>
-        <br />
+        <br/>
         <table id="test-table" border="4" cellspacing="0" width="100%">
             <thead>
                 <tr>
@@ -40,12 +41,12 @@
                 {% endfor %}
             </tbody>
         </table>
+
         <script>
             function addinterviewer() {
                 document.location.href = '/interviewers/add'
             }
         </script>
-
 
 </body>
 

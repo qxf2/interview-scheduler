@@ -81,10 +81,10 @@ def combine_date_and_time(date,selected_slot):
 
 def append_the_create_event_info(create_event):
     "Appends the created event information into list"
-    created_event_info = []      
+    created_event_info = [] 
     created_event_info.append({'start':create_event['start']})    
     created_event_info.append({'end':create_event['end']})     
-    created_event_info.append({'Link':create_event['hangoutLink']})
+    created_event_info.append({'Link':create_event['htmlLink']})
     
     return created_event_info
 

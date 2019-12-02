@@ -23,7 +23,6 @@
         textarea {
             display: inline
         }
-        
     </style>
 </head>
 
@@ -42,6 +41,8 @@
             <div class="col-md-4">
                 <input id="email" name="email" type="Email" placeholder="johndoe@example.com" class="form-control"
                     required>
+                    <div class=" col-md-8 row top-space-30" id="resultDiv">
+                        </div>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
 
@@ -62,11 +63,11 @@
 
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
-                <button class="btn btn-primary btn-sm" type="submit">Submit</button>
-                <button id="clear" name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
+                <button class="btn btn-info" type="submit">Submit</button>
+                <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
             </div>
         </form>
-    </div>    
+    </div>
     <script>
         function clearAdd() {
             document.location.href = "/candidate/add"
@@ -82,14 +83,20 @@
                     form.addEventListener('submit', function (event) {
                         event.preventDefault();
                         event.stopPropagation();
+                        var candidateEmail = $("#email").val();
+                        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                        var emailValidate=re.test(candidateEmail);
+                        console.log(emailValidate);                        
                         console.log("I am inside submit")
-                        if (form.checkValidity() === true) {                            
+                        $("#resultDiv").empty();
+                        if (emailValidate === true){
+                        if (form.checkValidity() === true) {
                             console.log("I am coming here")
                             var candidateName = $("#fname").val();
                             var candidateEmail = $("#email").val();
                             var dropdownValue = document.getElementById("select1");
                             var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
-                            console.log(candidateEmail, candidateName, jobApplied);                            
+                            console.log(candidateEmail, candidateName, jobApplied);
                             $.ajax({
                                 type: 'POST',
                                 url: '/candidate/add',
@@ -99,11 +106,11 @@
                                     'jobApplied': jobApplied
                                 },
                                 success: function (result) {
-                                    console.log(result.error,result.data['candidate_name']);
-                                    var resultName=result.data['candidate_name'];
+                                    console.log(result.error, result.data['candidate_name']);
+                                    var resultName = result.data['candidate_name'];
                                     console.log(resultName);
-                                   
-                                    if (resultName==candidateName) {
+
+                                    if (resultName == candidateName) {
                                         alert("The candidate has been added");
                                         document.location.href = "/candidates";
 
@@ -117,9 +124,13 @@
 
                                 }
                             })
+                        }}
+                        else{
+                            $("#resultDiv").text("Enter the valid email address");
+                            $("#resultDiv").css('color', 'red');
                         }
 
-                        form.classList.add('was-validated');
+                        
                     }, false);
                 });
             }, false);

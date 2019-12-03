@@ -6,8 +6,8 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json
-import sys
+import json,ast
+
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -214,6 +214,45 @@ def interviewers_for_roles(job_id):
             {'interviewers_name': each_interviewer.interviewer_name})
 
     return render_template("role-for-interviewers.html", result=interviewers_list)
+
+
+@app.route("/jobs/add",methods=["GET","POST"])
+def add_job():
+    "Add ajob through UI"
+    if request.method == 'GET':
+        all_interviewers = Interviewers.query.all()
+        interviewers_list = []
+        for each_interviewer in all_interviewers:           
+            interviewers_list.append(each_interviewer.interviewer_name)
+
+        return render_template("add-jobs.html",result=interviewers_list)
+
+    if request.method == 'POST':
+        job_role = request.form.get("role")
+        data = {'jobrole':job_role}
+        #Check the job role exists in database
+        check_job_exists = db.session.query(db.exists().where(Jobs.job_role==job_role)).scalar()
+       
+        #If the job is already in the database send failure
+        #If it's not there add the new job role and return success
+        if check_job_exists != True:
+            interviewers = ast.literal_eval(request.form.get("interviewerlist"))            
+            job_object = Jobs(job_role=job_role)
+            db.session.add(job_object)
+            db.session.commit()
+            job_id = job_object.job_id
+            #Get the id of the user from the interviewers table
+            for each_interviewer in interviewers:                
+                interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer.strip()).scalar()                       
+                job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=interviewer_id)
+                db.session.add(job_interviewer_object)
+                db.session.commit()
+                
+        else:
+            return jsonify(message='The job already exists'),500           
+        data = {'jobrole':job_role,'interviewers':interviewers}       
+        
+        return jsonify(data)
 
 
 @app.route("/jobs/delete", methods=["POST"])

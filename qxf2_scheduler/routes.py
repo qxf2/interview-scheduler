@@ -248,30 +248,23 @@ def delete_job():
 
 @app.route("/interviewers/add", methods=["GET", "POST"])
 def add_interviewers():
-    "Adding the interviewers"
     data = {}
+    "Adding the interviewers"
     if request.method == 'GET':
         return render_template("add-interviewers.html")
     if request.method == 'POST':        
-        interviewer_email = request.form.get('email')        
-        data = {'interviewer_email':interviewer_email}
+        interviewer_name = request.form.get('name')
+        interviewer_email = request.form.get('email')
+        interviewer_designation = request.form.get('designation') 
+        print(interviewer_email)       
         #Check the candidate has been already added or not
         check_interviewer_exists = db.session.query(db.exists().where(Interviewers.interviewer_email==interviewer_email)).scalar()        
         print(f'This is check_interviewers_exist : {check_interviewer_exists}')
-        if check_interviewer_exists != True:
-            interviewers = ast.literal_eval(request.form.get("interviewerlist"))
-            print(interviewers)
-            interviewer_object = Interviewers(interviewer_email=interviewer_email)
-            db.session.add(Interviewers)
+        if check_interviewer_exists == False:
+            data={'interviewer_name':interviewer_name}
+            interviewer_object = Interviewers(interviewer_name=interviewer_name,interviewer_email=interviewer_email,interviewer_designation=interviewer_designation)
+            db.session.add(interviewer_object)
             db.session.commit()
-            job_id = interviewer_object.job_id
-            #Get the id of the user from the interviewers table
-            for each_interviewer in interviewers:
-                #Check the 
-                interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer.strip()).scalar()
-                print(interviewer_id)        
-                job_interviewer_object = interviewers(job_id=job_id,interviewer_id=interviewer_id)
-                db.session.add(job_interviewer_object)
-                db.session.commit()
+            return jsonify(data=data)
         else:
-            return jsonify(message='The job already exists'),500    
+            return jsonify(error='Interviewer already exists'),500    

@@ -123,7 +123,6 @@
         };
         $("#submit").click(function () {
             var validValue = false;
-            //make validValue = false; at starting
             var email = $("#email").val();
             var name = $("#fname").val();
             var designation = $("#designation").val();
@@ -132,6 +131,7 @@
                 timeObject.endtime.push($("#endtime" + index).val())
             }           
             console.log(timeObject);
+
             //Validation of name email and designation starts here
             if(name == "")
             {
@@ -167,12 +167,6 @@
             {
                 $('#mail').remove();
                 $('#email').after('<span id="mail" class="error" style="color:red">This email field is required</span>');
-                validValue = false;
-            }
-            if(designation == "")
-            {
-                $('#validDesignation').remove();
-                $('#designation').after('<span id="validDesignation" class="error" style="color:red">This designation field is required</span>');
                 validValue = false;
             }
             ////validation for timings
@@ -276,10 +270,7 @@
         $("#close").click(function () {
             document.location.href = "/interviewers"
         })
-    </script>
-
-
-    
+    </script>  
 </body>
 
 </html>

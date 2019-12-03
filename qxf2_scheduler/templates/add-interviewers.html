@@ -37,7 +37,7 @@
                     <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Success:</p>
+                    <p></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" id="close" data-dismiss="modal">Close</button>
@@ -94,18 +94,20 @@
                 </div>
             </div>
         </form>
+        <div class="col-md-4"id="resultDiv"></div>
         <div>
             <input class="btn btn-info" onclick="addtextbox()" type="button" value="Add time">
         </div>
         <div id="ToolsGroup">
         </div>
+       
 
         <!-- Button (Double) -->
         <form class="form-horizontal">
             <div class="form-group">
                 <label class="col-md-4 control-label" for="save"></label>
                 <div class="col-md-8">
-                    <input class="btn btn-success" type='button' id='submit' value='Sublit'>
+                    <input class="btn btn-success" type='button' id='submit' value='Submit'>
                     <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
@@ -120,6 +122,7 @@
         };
         $("#submit").click(function () {
             var validValue = false;
+            //make validValue = false; at starting
             var email = $("#email").val();
             var name = $("#fname").val();
             var designation = $("#designation").val();
@@ -128,7 +131,8 @@
                 timeObject.endtime.push($("#endtime" + index).val())
             }           
             console.log(timeObject);
-            /*
+            //Validation of name email and designation starts here
+            
             if(name == "")
             {
                 $('#name').remove();
@@ -170,35 +174,61 @@
                 $('#validDesignation').remove();
                 $('#designation').after('<span id="validDesignation" class="error" style="color:red">This designation field is required</span>');
                 validValue = false;
-            }*/
+            }
+
+            ////validation for timings
+            for(index = 0; index <= count; index++) {
+            starttime = $("#starttime"+index).val();
+            endtime = $("#endtime"+index).val();
+            console.log(starttime)
+            console.log(endtime)
+            if(starttime != "" || endtime != "") {
+                if (starttime >= endtime) {
+                    validValue = false;
+                    $('#endtimevalid'+index).remove();
+                    var msg = "The start time should be greater than endtime"
+                    //$('#endtime'+index).after('<br/><span id="endtimevalid'+ index +'" class="error" style="color:red">Error</span>');
+                    $("#resultDiv").html(msg)
+                }
+                else {
+                    validValue = true;
+                    $('#endtimevalid'+index).remove();
+                }
+            }
+            else {
+                validValue = false;
+                $('#endtimevalid'+index).remove();
+                $('#endtime'+index).after('<br/><span id="endtimevalid'+ index +'" class="error" style="color:red">Invalid time</span>');
+            }
+            }
             
-
-
+            //to check validation and not to store data in database validValue = false;
+            validValue = false;
             if (validValue === true) {
                 $.ajax({
                     type: 'POST',
                     url: '/interviewers/add',
                     data: {
-                        'email': email,
                         'name': name,
+                        'email': email,
                         'designation': designation,
                         'timeObject': JSON.stringify(timeObject)
                     },
-                    success: function (result) 
-                    {
-                    console.log(result);
-                    alert("The job has been added");
-                    document.location.href = "/interviewers";
+                    success: function (result) {
+                    console.log(result)
+                    var msg = "Success: The interviewer " + ' ' + result.data.interviewer_name + ' ' + " has been added successfully";
+                    $('#myModal').modal('show');
+                    $('#myModal .modal-body p').html(msg);
                     },
-                    error: function (request, status, message) {
-                    console.log(request);
-                    alert(request.responseJSON.message);
-                    document.location.href = "/interviewers/add";
+                    error: function (result) {
+                    console.log(result)
+                    var msg ="Failure: The interviewer" + ' '+ name +' ' + "already exist, check email properly";
+                    $('#myModal').modal('show');
+                    $('#myModal .modal-body p').html(msg);
                     }
-
             })            
         }
-        })
+    })
     </script>
     <script>
         var count = 0;

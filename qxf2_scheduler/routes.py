@@ -91,19 +91,12 @@ def form_interviewer_timeslot(time_slot):
 
     return time_slot
 
-<<<<<<< HEAD
     
 def form_interviewer_details(interviewer_details):
     "Parsing the interviewer detals we get it from form"
     list_parsed_interviewer_detail = []
     parsed_interviewer_details = []
 
-=======
-
-def form_interviewer_details(interviewer_details):
-    "Parsing the interviewer detals we get it from form"
-    parsed_interviewer_details = []
->>>>>>> master
     for each_detail in interviewer_details:
         interviewer_detail = {
             'interviewer_id':each_detail.interviewer_id,
@@ -116,7 +109,6 @@ def form_interviewer_details(interviewer_details):
 
         parsed_interviewer_detail = form_interviewer_timeslot(
             time_slot=interviewer_detail)
-<<<<<<< HEAD
         list_parsed_interviewer_detail.append(parsed_interviewer_detail)
 
     for each_dict in list_parsed_interviewer_detail:
@@ -126,32 +118,16 @@ def form_interviewer_details(interviewer_details):
                 parsed_interviewer_details[0]["time"]]
         else:
             parsed_interviewer_details[0]['time'].append(each_dict['time'])
-=======
-        if len(parsed_interviewer_details) == 0:
-            parsed_interviewer_details.append(parsed_interviewer_detail)
-        else:
-            if interviewer_detail['interviewers_name'] in parsed_interviewer_details[0].values():
-                parsed_interviewer_details[0]['time'] = [
-                    parsed_interviewer_details[0]['time'], parsed_interviewer_detail['time']]
->>>>>>> master
 
     return parsed_interviewer_details
 
 
-<<<<<<< HEAD
 @app.route("/interviewer/<interviewer_id>")
-=======
-@app.route("/<interviewer_id>/interviewer/")
->>>>>>> master
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
     interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
-<<<<<<< HEAD
         Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
-=======
-        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
->>>>>>> master
 
     parsed_interviewer_details = form_interviewer_details(interviewer_details)
 

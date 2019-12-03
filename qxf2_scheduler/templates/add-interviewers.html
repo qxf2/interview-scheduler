@@ -93,8 +93,9 @@
                         required>
                 </div>
             </div>
+            <div class="col-md-4" id="resultDiv0"></div>
         </form>
-        <div class="col-md-4"id="resultDiv"></div>
+        
         <div>
             <input class="btn btn-info" onclick="addtextbox()" type="button" value="Add time">
         </div>
@@ -132,7 +133,6 @@
             }           
             console.log(timeObject);
             //Validation of name email and designation starts here
-            
             if(name == "")
             {
                 $('#name').remove();
@@ -175,35 +175,36 @@
                 $('#designation').after('<span id="validDesignation" class="error" style="color:red">This designation field is required</span>');
                 validValue = false;
             }
-
             ////validation for timings
             for(index = 0; index <= count; index++) {
             starttime = $("#starttime"+index).val();
             endtime = $("#endtime"+index).val();
-            console.log(starttime)
-            console.log(endtime)
+            var msg="";
+            console.log("start time : "+starttime);
+            console.log("end time : "+endtime);
             if(starttime != "" || endtime != "") {
                 if (starttime >= endtime) {
                     validValue = false;
-                    $('#endtimevalid'+index).remove();
-                    var msg = "The start time should be greater than endtime"
-                    //$('#endtime'+index).after('<br/><span id="endtimevalid'+ index +'" class="error" style="color:red">Error</span>');
-                    $("#resultDiv").html(msg)
+                    msg = "Start time can't be less than or same as end time";
+                    $("#resultDiv"+index).css('color', 'red');
+                    $("#resultDiv"+index).html(msg);
                 }
                 else {
                     validValue = true;
-                    $('#endtimevalid'+index).remove();
+                    $("#resultDiv"+index).remove();
                 }
             }
             else {
                 validValue = false;
-                $('#endtimevalid'+index).remove();
-                $('#endtime'+index).after('<br/><span id="endtimevalid'+ index +'" class="error" style="color:red">Invalid time</span>');
-            }
+                msg = "Start time and end time can't be empty";
+                $("#resultDiv"+index).css('color', 'red');
+                $("#resultDiv"+index).html(msg);
+                console.log($("#resultDiv"+index).html(msg));
+                }
             }
             
-            //to check validation and not to store data in database validValue = false;
-            validValue = false;
+            //to check validation and not to store data in database make validValue = false in next line;
+            //validValue = false;
             if (validValue === true) {
                 $.ajax({
                     type: 'POST',
@@ -238,7 +239,7 @@
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
             newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" onclick="timePicker()" required></div></div></form>' +
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" onclick="timePicker()" required></div></div><div class="col-md-4" id="resultDiv'+ count +'"></div></form>' +
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
             console.log("I am count", count);
         };

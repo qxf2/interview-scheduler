@@ -81,17 +81,10 @@ def list_interviewers():
 
 
 def form_interviewer_timeslot(time_slot):
-<<<<<<< HEAD
-    "Parse the interviewer detail with start and end time"    
-    time_dict = {}
-    time_dict['starttime'] = time_slot['interviewers_starttime']
-    time_dict['endtime'] = time_slot['interviewers_endtime']   
-=======
     "Parse the interviewer detail with start and end time"
     time_dict = {}
     time_dict['starttime'] = time_slot['interviewers_starttime']
     time_dict['endtime'] = time_slot['interviewers_endtime']
->>>>>>> master
     del time_slot['interviewers_starttime']
     del time_slot['interviewers_endtime']
     time_slot['time'] = time_dict
@@ -165,12 +158,6 @@ def read_interviewer_details(interviewer_id):
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
 
 
-<<<<<<< HEAD
-
-@app.route("/jobs/")
-def jobs_page():
-    "Displays the jobs page for the interview"    
-=======
 @app.route("/<interviewer_id>/interviewer/edit/", methods=['GET', 'POST'])
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
@@ -230,7 +217,6 @@ def delete_interviewer(interviewer_id):
 @app.route("/jobs/")
 def jobs_page():
     "Displays the jobs page for the interview"
->>>>>>> master
     display_jobs = Jobs.query.all()
     my_job_list = []
     for each_job in display_jobs:
@@ -267,13 +253,9 @@ def delete_job():
         db.session.commit()
 
     return jsonify(data)
-<<<<<<< HEAD
-@app.route("/interviewers/add",methods=["GET","POST"])
-=======
 
 
 @app.route("/interviewers/add", methods=["GET", "POST"])
->>>>>>> master
 def add_interviewers():
     "Adding the interviewers"
     data = {}
@@ -306,10 +288,5 @@ def add_interviewers():
             print(e)
 
         db.session.commit()
-<<<<<<< HEAD
-        
-        return jsonify(data)    
-=======
 
         return jsonify(data)
->>>>>>> master

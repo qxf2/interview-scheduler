@@ -120,7 +120,7 @@ def form_interviewer_details(interviewer_details):
     return parsed_interviewer_details
 
 
-@app.route("/<interviewer_id>/interviewer/")
+@app.route("/interviewer/<interviewer_id>")
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables

@@ -7,11 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
-<<<<<<< HEAD
-import ast
-=======
 import sys
->>>>>>> master
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -95,14 +91,17 @@ def form_interviewer_timeslot(time_slot):
 
     return time_slot
 
-
+    
 def form_interviewer_details(interviewer_details):
     "Parsing the interviewer detals we get it from form"
+    list_parsed_interviewer_detail = []
     parsed_interviewer_details = []
+
     for each_detail in interviewer_details:
         interviewer_detail = {
             'interviewer_id':each_detail.interviewer_id,
             'interviewers_name': each_detail.interviewer_name,
+            'interviewers_id': each_detail.interviewer_id,
             'interviewers_email': each_detail.interviewer_email,
             'interviewers_designation': each_detail.interviewer_designation,
             'interviewers_starttime': each_detail.interviewer_start_time,
@@ -110,22 +109,25 @@ def form_interviewer_details(interviewer_details):
 
         parsed_interviewer_detail = form_interviewer_timeslot(
             time_slot=interviewer_detail)
+        list_parsed_interviewer_detail.append(parsed_interviewer_detail)
+
+    for each_dict in list_parsed_interviewer_detail:
         if len(parsed_interviewer_details) == 0:
-            parsed_interviewer_details.append(parsed_interviewer_detail)
+            parsed_interviewer_details.append(each_dict)
+            parsed_interviewer_details[0]["time"] = [
+                parsed_interviewer_details[0]["time"]]
         else:
-            if interviewer_detail['interviewers_name'] in parsed_interviewer_details[0].values():
-                parsed_interviewer_details[0]['time'] = [
-                    parsed_interviewer_details[0]['time'], parsed_interviewer_detail['time']]
+            parsed_interviewer_details[0]['time'].append(each_dict['time'])
 
     return parsed_interviewer_details
 
 
-@app.route("/<interviewer_id>/interviewer/")
+@app.route("/interviewer/<interviewer_id>")
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
     interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
-        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
 
     parsed_interviewer_details = form_interviewer_details(interviewer_details)
 
@@ -212,48 +214,9 @@ def interviewers_for_roles(job_id):
             {'interviewers_name': each_interviewer.interviewer_name})
 
     return render_template("role-for-interviewers.html", result=interviewers_list)
-    
-
-@app.route("/jobs/add",methods=["GET","POST"])
-def add_job():
-    "Add ajob through UI"
-    if request.method == 'GET':
-        all_interviewers = Interviewers.query.all()
-        interviewers_list = []
-        for each_interviewer in all_interviewers:           
-            interviewers_list.append(each_interviewer.interviewer_name)
-
-        return render_template("add-jobs.html",result=interviewers_list)
-
-    if request.method == 'POST':
-        job_role = request.form.get("role")
-        data = {'jobrole':job_role}
-        #Check the job role exists in database
-        check_job_exists = db.session.query(db.exists().where(Jobs.job_role==job_role)).scalar()
-       
-        #If the job is already in the database send failure
-        #If it's not there add the new job role and return success
-        if check_job_exists != True:
-            interviewers = ast.literal_eval(request.form.get("interviewerlist"))            
-            job_object = Jobs(job_role=job_role)
-            db.session.add(job_object)
-            db.session.commit()
-            job_id = job_object.job_id
-            #Get the id of the user from the interviewers table
-            for each_interviewer in interviewers:                
-                interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer.strip()).scalar()                       
-                job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=interviewer_id)
-                db.session.add(job_interviewer_object)
-                db.session.commit()
-                
-        else:
-            return jsonify(message='The job already exists'),500           
-        data = {'jobrole':job_role,'interviewers':interviewers}       
-        
-        return jsonify(data)        
 
 
-@app.route("/jobs/delete",methods=["POST"]) 
+@app.route("/jobs/delete", methods=["POST"])
 def delete_job():
     "Deletes a job"
     if request.method == 'POST':

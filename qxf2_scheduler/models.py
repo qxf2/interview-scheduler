@@ -45,7 +45,7 @@ class Candidates(db.Model):
     candidate_id = db.Column(db.Integer,primary_key=True)
     candidate_name = db.Column(db.String,nullable=False)
     candidate_email = db.Column(db.String,nullable=False)
-    job_applied = db.Column(db.String,nullable=False)
+    job_id = db.Column(db.Integer,nullable=False)
 
     def __repr__(self):
-        return f"Candidates('{self.candidate_name}','{self.candidate_email}','{self.job_applied}')"
+        return f"Candidates('{self.candidate_name}','{self.candidate_email}','{self.job_id}')"

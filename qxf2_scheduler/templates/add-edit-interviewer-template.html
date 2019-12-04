@@ -73,6 +73,7 @@
                 </div>
             </div>
         </form>
+        <div class="form-group bfh-timepicker" data-mode="12h">
         <form class="form-inline">
             <table id="timeTable" style="width: 100%">
                 {% for each_slot in each_details['time'] %}
@@ -107,6 +108,7 @@
                 </tr>
             </table>
         </form>
+    </div>
         <div>
             <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
         </div>
@@ -182,8 +184,8 @@
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+                '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
                 '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);">'
             console.log("Iam count", count);
         };

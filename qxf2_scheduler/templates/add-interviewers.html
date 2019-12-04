@@ -110,11 +110,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="save"></label>
                 <div class="col-md-8">
-<<<<<<< HEAD
                     <input class="btn btn-success" type='button' id='submit' value='Save'>
-=======
-                    <input class="btn btn-success" type='button' id='submit' value='Add'>
->>>>>>> master
                     <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
@@ -162,13 +158,8 @@
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-<<<<<<< HEAD
             newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="startime" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
                 '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="endtime" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
-=======
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required="" onclick="timePicker()"></div></div></form>' +
->>>>>>> master
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
             console.log("Iam count", count);
         };

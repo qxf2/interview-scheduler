@@ -82,14 +82,14 @@
             </div>
         </form>
         <form class="form-inline">
-            <div class="form-group bfh-timepicker" data-mode="12h">
+            <div class="form-group ">
                 <label class="col-md-4 control-label" for="starttime">Starttime</label>
                 <div class="col-md-4">
                     <input type="time" class="form-control input-md" id="starttime0" placeholder="starttime"
                         required="">
                 </div>
             </div>
-            <div class="form-group bfh-timepicker">
+            <div class="form-group">
                 <label class="col-md-4 control-label" for="endtime">Endtime</label>
                 <div class="col-md-4">
                     <input type="time" class="form-control input-md" id="endtime0" placeholder="endtime" id="time"
@@ -156,7 +156,7 @@
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker" data-mode="12h"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" "id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
                 '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
             console.log("Iam count", count);
@@ -195,17 +195,7 @@
             document.location.href = "/interviewers";
         }
     </script>
-    <script>
-        
-            $('.bfh-timepicker').on('click', 'timepicker', function () {
-                timeFormat: 'HH:mm',
-                    interval: 30,
-                        use24hours: true,
-                            scrollbar: true,
-
-        })
-    </script>
-
+    
 </body>
 
 </html>

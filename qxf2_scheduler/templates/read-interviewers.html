@@ -18,25 +18,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
 
-<body>
-    <div class="container">
-        <div class="modal modal-megamenu" id="myModal">
-            <div class="modal-dialog modal-megamenu">
-                <div class="modal-content modal-megamenu">
-                    <div class="modal-header modal-megamenu">
-                        <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
-                    </div>
-                    <div class="modal-body modal-megamenu">
-                        <p>Success:</p>
-                    </div>
-                    <div class="modal-footer modal-megamenu">
-                        <button type="button" class="btn btn-default" onclick="redirectNew()"
-                            data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+<body> 
+        <div class="container col-md-offset-1">
+   
         <table class="table table-striped">
             <h2 class="grey_text text-center">Interviewer Details</h2>
             <thead>
@@ -44,7 +28,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th scope="col col-md-2">Interviewers work hours</th>
-                    <th scope="col">Actions</th>
+                   
 
                 </tr>
             </thead>
@@ -69,83 +53,13 @@
                         <p>{{each_time['starttime'] }}-{{ each_time['endtime']}}</p>
                         {% endfor %}
                     </td>
-                    <td><input class="btn btn-info" type="button" value="Edit" id="edit"
-                            onclick="editinterviewer({{ each_detail.interviewers_id }})"> <button type="button"
-                            class="btn btn-info" data-target="#confirmdeletemodal"
-                            data-username="{{ each_detail.interviewers_name }}"
-                            data-href="{{ each_detail.interviewer_id }}" data-toggle="modal">Delete</button></td>
-
+                    
                 </tr>
                 {% endfor %}
                 {% endif %}
-
             </tbody>
-
         </table>
-        <script>
-            function editinterviewer(interviewer_id) {
-                console.log(interviewer_id);
-                document.location.href = "/interviewer/" + interviewer_id + "/edit/"
-
-            }
-        </script>
-
-    </div>
-    <div class="modal modal-megamenu" id="confirmdeletemodal">
-        <div class="modal-dialog modal-megamenu">
-            <div class="modal-content modal-megamenu">
-                <div class="modal-header modal-megamenu">
-                    <h4 class="modal-title">Remove User?</h4>
-                </div>
-                <div class="modal-body modal-megamenu">
-                    <input type="text" class="form-control" id="recipient-name">
-                </div>
-                <div class="modal-footer modal-megamenu">
-                    <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
-                    <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
-                        type="submit">Remove</button>
-                </div>
-            </div><!-- end modal-content -->
-        </div><!-- end modal-dialog -->
-    </div>
-    </div>
-    </div>
-    <script>
-        // Remove button event trigger
-        $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
-            var triggeringElement = $(e.relatedTarget);
-            console.log("Triggering element is: ", triggeringElement.data('href'));
-            $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
-            console.log("This is in confirmdelete" + $(e.relatedTarget).data('href'));
-            var modal = $(this)
-            modal.find('.modal-body').text('Are you sure you wish to delete this  ' + triggeringElement.data("username") + 'from the list? ')
-            $("#remove-button").on('click', function () {
-                console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
-                $.ajax({
-                    type: 'POST',
-                    url:'/interviewer/'+ $(e.relatedTarget).data('href') + '/delete',                    
-                    data: { 'interviewer-id': $(e.relatedTarget).data('href') },
-                    success: function (data) {
-                        var msg = "The user deleted is " + data.interviewer_name;
-                        console.log(msg, data);
-                        $('#myModal').modal('show');
-                        $('#myModal .modal-body p').html(msg);
-
-                    }
-                })
-
-            })
-        })
-
-    </script>
-    <script>
-        function redirectNew() {
-            document.location.href = "/interviewers"
-        }
-    </script>
-
-
-
+        </div>
 </body>
 
 </html>

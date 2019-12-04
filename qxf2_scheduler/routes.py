@@ -7,10 +7,6 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json,ast
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -143,6 +139,7 @@ def read_interviewer_details(interviewer_id):
             'interviewers_designation': each_detail.interviewer_designation}
 
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
+    
 
 def add_edit_interviewers_in_time_slot_table(interviewer_name):
     "Adding the interviewers in the interviewer time slots table"
@@ -271,7 +268,13 @@ def add_job():
         #If the job is already in the database send failure
         #If it's not there add the new job role and return success
         if check_job_exists != True:
-            interviewers = ast.literal_eval(request.form.get("interviewerlist"))            
+            new_interviewers_list = []
+            interviewers = ast.literal_eval(request.form.get("interviewerlist"))
+            #I have to remove the duplicates and removing the whitespaces which will be 
+            #added repeatedly through UI
+            for each_interviewers in interviewers:
+                new_interviewers_list.append(each_interviewers.strip())
+            interviewers=list(set(new_interviewers_list))                        
             job_object = Jobs(job_role=job_role)
             db.session.add(job_object)
             db.session.commit()

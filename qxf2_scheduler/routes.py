@@ -7,11 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
-<<<<<<< HEAD
 import ast,sys
-=======
-import sys
->>>>>>> master
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -297,7 +293,7 @@ def edit_job(job_id):
 
     if request.method == 'POST':        
         #Get the job role and Job ID,and name list
-        job_role = request.form.get('role')
+        job_role = request.form.get('role').lower()
         job_id = request.form.get('id')
         data = {'job_role':job_role}
         interviewers_list = ast.literal_eval(request.form.get('interviewerlist'))

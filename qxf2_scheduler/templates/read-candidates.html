@@ -2,7 +2,7 @@
 
 <head>
     <title>
-        List of interviewer details
+        List of candidate details
     </title>
 
     <meta charset="utf-8">
@@ -24,7 +24,22 @@
     <div class="modal modal-megamenu" id="myModal">
         <div class="modal-dialog modal-megamenu">
             <div class="modal-content modal-megamenu">
-                <div class="modal-header modal-megamenu">                    
+                <div class="modal-header modal-megamenu">
+                    <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+                </div>
+                <div class="modal-body modal-megamenu">
+                    <p>Success:</p>
+                </div>
+                <div class="modal-footer modal-megamenu">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-megamenu" id="myModal">
+        <div class="modal-dialog modal-megamenu">
+            <div class="modal-content modal-megamenu">
+                <div class="modal-header modal-megamenu">
                     <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
                 </div>
                 <div class="modal-body modal-megamenu">
@@ -37,7 +52,7 @@
         </div>
     </div>
     <div class="container col-md-offset-1">
-        <h2 class="grey_text text-center">Job roles</h2>
+        <h2 class="grey_text text-center">Candidates List</h2>
         <div>
             <input class="btn btn-info" type="button" id="add" value="Add">
         </div>
@@ -45,29 +60,34 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Job ID</th>
-                        <th>Job role</th>
+                        <th>Candidate ID</th>
+                        <th>Candidate Name</th>
+                        <th>Candidate Email</th>
                         <th>Actions</th>
+
                     </tr>
                 </thead>
                 <tbody>
-                    {% for each_job in result %}
+                    {% for each_candidate in result %}
                     <tr>
-                        <td>{{ each_job.job_id }}</td>
-                        <td><a href="/{{ each_job.job_id }}/interviewers">{{ each_job.job_role }}</a></td>
+                        <td>{{ each_candidate.candidate_id }}</td>
+                        <td><a
+                                href="/{{ each_candidate.candidate_id }}/candidates">{{ each_candidate.candidate_name }}</a>
+                        </td>
+                        <td>{{ each_candidate.candidate_email }}</td>
                         <td><input class="btn btn-info" type="button" id="edit" value="Edit">
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
-                                data-jobrole="{{ each_job.job_role }}" data-href="{{ each_job.job_id }}"
-                                data-toggle="modal">Delete</button></td>
+                                data-candidatename="{{ each_candidate.candidate_name }}"
+                                data-href="{{ each_candidate.candidate_id }}" data-toggle="modal">Delete</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             <div class="modal modal-megamenu" id="confirmdeletemodal">
-                <div class="modal-dialog modal-megamenu" >
+                <div class="modal-dialog modal-megamenu">
                     <div class="modal-content modal-megamenu">
                         <div class="modal-header modal-megamenu">
-                            <h4 class="modal-title">Remove Job?</h4>
+                            <h4 class="modal-title">Remove candidate?</h4>
                         </div>
                         <div class="modal-body modal-megamenu">
                             <input type="text" class="form-control" id="recipient-name">
@@ -90,16 +110,16 @@
             $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
             console.log("This is in confirmdelete" + $(e.relatedTarget).data('href'));
             var modal = $(this)
-            modal.find('.modal-body').text('Are you sure you wish to delete this ' + triggeringElement.data("jobrole") + 'job? ')
+            modal.find('.modal-body').text('Are you sure you wish to delete this ' + triggeringElement.data("candidatename") + 'candidate? ')
             $("#remove-button").on('click', function () {
                 var jobid = triggeringElement.data('href');
                 console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
                 $.ajax({
                     type: 'POST',
-                    url: '/jobs/delete',
-                    data: { 'job-id': $(e.relatedTarget).data('href') },
+                    url: '/candidate/delete',
+                    data: { 'candidateId': $(e.relatedTarget).data('href') },
                     success: function (data) {
-                        var msg = "The role deleted is " + data.job_role;
+                        var msg = "The  deleted candidate is " + data.candidate_name;
                         console.log(msg, data);
                         $('#myModal').modal('show');
                         $('#myModal .modal-body p').html(msg);
@@ -111,6 +131,7 @@
         })
 
     </script>
+
 
 
 </body>

@@ -1,12 +1,13 @@
 from qxf2_scheduler import db
-from sqlalchemy import Integer, ForeignKey, String, Column
+from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint
 
 class Interviewers(db.Model):
     "Adding the interviewer" 
     interviewer_id = db.Column(db.Integer,primary_key=True)   
     interviewer_name = db.Column(db.String(50),nullable=False)
     interviewer_email = db.Column(db.String(50),nullable=False)
-    interviewer_designation = db.Column(db.String(40),nullable=False)
+    interviewer_designation = db.Column(db.String(40),nullable=False)    
+    db.CheckConstraint(interviewer_name > 5)    
     
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"
@@ -39,3 +40,12 @@ class Jobinterviewer(db.Model):
 
     def __repr__(self):
         return f"Jobinterviewer('{self.job_id}','{self.interviewer_id}')"
+
+class Candidates(db.Model):
+    "Adding the candidates"
+    candidate_id = db.Column(db.Integer,primary_key=True)
+    candidate_name = db.Column(db.String,nullable=False)
+    candidate_email = db.Column(db.String,nullable=False)
+
+    def __repr__(self):
+        return f"Candidates('{self.candidate_name}','{self.candidate_email}')"

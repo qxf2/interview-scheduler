@@ -349,7 +349,7 @@ def process_time_to_gcal(given_date,hour_offset=None):
     processed_date = str(processed_date).replace('Z',TIMEZONE_STRING)
 
     return processed_date
-    
+        
 
 def process_only_time_from_str(date):
     "Process and return only the time stamp from a given string"

@@ -89,7 +89,7 @@ def form_interviewer_timeslot(time_slot):
 
     return time_slot
 
-
+    
 def form_interviewer_details(interviewer_details):
     "Parsing the interviewer detals we get it from form"
     list_parsed_interviewer_detail = []
@@ -97,6 +97,7 @@ def form_interviewer_details(interviewer_details):
 
     for each_detail in interviewer_details:
         interviewer_detail = {
+            'interviewer_id':each_detail.interviewer_id,
             'interviewers_name': each_detail.interviewer_name,
             'interviewers_id': each_detail.interviewer_id,
             'interviewers_email': each_detail.interviewer_email,
@@ -119,7 +120,7 @@ def form_interviewer_details(interviewer_details):
     return parsed_interviewer_details
 
 
-@app.route("/<interviewer_id>/interviewer/")
+@app.route("/interviewer/<interviewer_id>")
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
@@ -156,7 +157,7 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
         db.session.commit()
 
 
-@app.route("/interviewer/<interviewer_id>/edit/", methods=['GET', 'POST'])
+@app.route("/interviewer/edit/<interviewer_id>", methods=['GET', 'POST'])
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
     # This query fetch the interviewer details by joining the time slots table and interviewers table.
@@ -204,6 +205,21 @@ def edit_interviewer(interviewer_id):
         return jsonify(data)
     return render_template("edit-interviewer.html", result=parsed_interviewer_details)    
    
+
+@app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
+def delete_interviewer(interviewer_id):
+    "Deletes a job"
+    if request.method == 'POST':
+        #interviewer_to_delete = request.form.get('interviewer-id')
+        deleted_user = Interviewers.query.filter(
+            Interviewers.interviewer_id == interviewer_id).first()
+        data = {'interviewer_name': deleted_user.interviewer_name,
+                'interviewer_id': deleted_user.interviewer_id}
+        db.session.delete(deleted_user)
+        db.session.commit()
+
+    return jsonify(data)
+
 
 @app.route("/jobs/")
 def jobs_page():

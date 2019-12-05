@@ -122,7 +122,7 @@
             endtime: []
         };
         $("#submit").click(function () {
-            var validValue = false;
+            var validValue = true;
             var email = $("#email").val();
             var name = $("#fname").val();
             var designation = $("#designation").val();
@@ -140,6 +140,7 @@
             }
             if(name != "")
             {
+                validValue &= true; 
                 $('#name').remove();
             }
             if (email == "")
@@ -153,7 +154,7 @@
                  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
                 {
                     $('#mail').remove();
-                    validValue = true;
+                    validValue &= true;
                 }
                 else
                 {
@@ -175,7 +176,7 @@
                     $("#resultDiv"+index).html(msg);
                 }
                 else {
-                    validValue = true;
+                    validValue &= true;
                     $("#resultDiv"+index).remove();
                 }
             }
@@ -189,7 +190,7 @@
             
             //to check validation and not to store data in database make validValue = false in next line;
             //validValue = false;
-            if (validValue === true) {
+            if (validValue == true) {
                 $.ajax({
                     type: 'POST',
                     url: '/interviewers/add',

@@ -1,14 +1,13 @@
 from qxf2_scheduler import db
-from sqlalchemy import Integer, ForeignKey, String, Column
+from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint
 
 class Interviewers(db.Model):
     "Adding the interviewer" 
     interviewer_id = db.Column(db.Integer,primary_key=True)   
     interviewer_name = db.Column(db.String(50),nullable=False)
     interviewer_email = db.Column(db.String(50),nullable=False)
-    interviewer_designation = db.Column(db.String(40),nullable=False)
-    job_interviewer = db.relationship('Jobinterviewer', backref='Interviewers', 
-     lazy=True, cascade="delete") 
+    interviewer_designation = db.Column(db.String(40),nullable=False)    
+    db.CheckConstraint(interviewer_name > 5)    
     
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"
@@ -17,7 +16,7 @@ class Interviewers(db.Model):
 class Interviewertimeslots(db.Model):
     "Adding the timing for interviewer" 
     time_id = db.Column(db.Integer,primary_key=True)   
-    interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id),nullable=False)    
+    interviewer_id = db.Column(db.Integer,db.ForeignKey(Interviewers.interviewer_id),nullable=False)    
     interviewer_start_time = db.Column(db.String,nullable=False)
     interviewer_end_time = db.Column(db.String,nullable=False)
 

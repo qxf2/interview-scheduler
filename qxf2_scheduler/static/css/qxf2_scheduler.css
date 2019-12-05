@@ -41,8 +41,9 @@ body {
 .bottom-space-20 {
     margin-bottom: 20px;
 }
-.dropdown-menu {
-    width: 300px;
-    height: 400px;
+.bs-example {
+    margin: 20px;
 }
-
+.textarea {
+    display: inline
+}

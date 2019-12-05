@@ -260,7 +260,7 @@ def add_job():
         return render_template("add-jobs.html",result=interviewers_list)
 
     if request.method == 'POST':
-        job_role = request.form.get("role")
+        job_role = request.form.get("role").lower()
         data = {'jobrole':job_role}
         #Check the job role exists in database
         check_job_exists = db.session.query(db.exists().where(Jobs.job_role==job_role)).scalar()

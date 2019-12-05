@@ -130,7 +130,6 @@
                 timeObject.starttime.push($("#starttime" + index).val())
                 timeObject.endtime.push($("#endtime" + index).val())
             }           
-            console.log(timeObject);
 
             //Validation of name email and designation starts here
             if(name == "")
@@ -169,13 +168,11 @@
                 $('#email').after('<span id="mail" class="error" style="color:red">This email field is required</span>');
                 validValue = false;
             }
-            ////validation for timings
+            //validation for timings
             for(index = 0; index <= count; index++) {
             starttime = $("#starttime"+index).val();
             endtime = $("#endtime"+index).val();
             var msg="";
-            console.log("start time : "+starttime);
-            console.log("end time : "+endtime);
             if(starttime != "" || endtime != "") {
                 if (starttime >= endtime) {
                     validValue = false;
@@ -193,7 +190,6 @@
                 msg = "Start time and end time can't be empty";
                 $("#resultDiv"+index).css('color', 'red');
                 $("#resultDiv"+index).html(msg);
-                console.log($("#resultDiv"+index).html(msg));
                 }
             }
             
@@ -210,13 +206,11 @@
                         'timeObject': JSON.stringify(timeObject)
                     },
                     success: function (result) {
-                    console.log(result)
                     var msg = "Success: The interviewer " + ' ' + result.data.interviewer_name + ' ' + " has been added successfully";
                     $('#myModal').modal('show');
                     $('#myModal .modal-body p').html(msg);
                     },
                     error: function (result) {
-                    console.log(result)
                     var msg ="Failure: The interviewer" + ' '+ name +' ' + "already exist, check email properly";
                     $('#myModal').modal('show');
                     $('#myModal .modal-body p').html(msg);
@@ -235,7 +229,6 @@
             newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required> </div></div>' +
                 '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" onclick="timePicker()" required></div></div><div class="col-md-4" id="resultDiv'+ count +'"></div></form>' +
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
-            console.log("I am count", count);
         };
 
         function removeTextArea(inputElement) {

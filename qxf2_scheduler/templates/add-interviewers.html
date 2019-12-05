@@ -52,7 +52,7 @@
             <h2 class="grey_text text-justify">Add Interviewers</h2>
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="fname">First Name</label>
+                <label class="col-md-4 control-label" for="fname">Interviewer Name</label>
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
                         required>
@@ -81,13 +81,13 @@
         </form>
         <form class="form-inline">
             <div class="form-group bfh-timepicker" data-mode="12h">
-                <label class="col-md-4 control-label" for="starttime">Starttime</label>
+                <label class="col-md-6 control-label" for="starttime">Start time</label>
                 <div class="col-md-4">
                     <input type="time" class="form-control input-md" id="starttime0" placeholder="starttime" required>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-4 control-label" for="endtime">Endtime</label>
+                <label class="col-md-6 control-label" for="endtime">End time</label>
                 <div class="col-md-4">
                     <input type="time" class="form-control input-md" id="endtime0" placeholder="endtime" id="time"
                         required>
@@ -135,7 +135,7 @@
             if(name == "")
             {
                 $('#name').remove();
-                $('#fname').after('<span id="name" class="error" style="color:red">This name field is required</span>');
+                $('#fname').after('<span id="name" class="error" style="color:red">Name field is required</span>');
                 validValue = false;
             }
             if(name != "")
@@ -145,7 +145,7 @@
             if (email == "")
             {
                 $('#mail').remove();
-                $('#email').after('<span id="mail" class="error" style="color:red">This email field is required</span>');
+                $('#email').after('<span id="mail" class="error" style="color:red">Email field is required</span>');
                 validValue = false;
             }
             if(email != "")
@@ -162,12 +162,6 @@
                 validValue = false;
                 }
             }
-            if (email == "")
-            {
-                $('#mail').remove();
-                $('#email').after('<span id="mail" class="error" style="color:red">This email field is required</span>');
-                validValue = false;
-            }
             //validation for timings
             for(index = 0; index <= count; index++) {
             starttime = $("#starttime"+index).val();
@@ -176,7 +170,7 @@
             if(starttime != "" || endtime != "") {
                 if (starttime >= endtime) {
                     validValue = false;
-                    msg = "Start time can't be less than or same as end time";
+                    msg = "Start time can't be greater than or same as end time";
                     $("#resultDiv"+index).css('color', 'red');
                     $("#resultDiv"+index).html(msg);
                 }
@@ -226,8 +220,8 @@
             var newTextBoxDiv = document.createElement('div');
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" onclick="timePicker()" required></div></div><div class="col-md-4" id="resultDiv'+ count +'"></div></form>' +
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-6 control-label" for="starttime">Start time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required> </div></div>' +
+                '<div class="form-group"><label class="col-md-6 control-label" for="endtime">End time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" onclick="timePicker()" required></div></div><div class="col-md-4" id="resultDiv'+ count +'"></div></form>' +
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
         };
 

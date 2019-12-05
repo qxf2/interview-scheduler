@@ -279,6 +279,7 @@ def add_interviewers():
             interviewer_object = Interviewers(interviewer_name=interviewer_name,interviewer_email=interviewer_email,interviewer_designation=interviewer_designation)
             db.session.add(interviewer_object)
             db.session.commit()
+            add_edit_interviewers_in_time_slot_table(interviewer_name)
             return jsonify(data=data)
         else:
             return jsonify(error='Interviewer already exists'),500    

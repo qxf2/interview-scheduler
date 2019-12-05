@@ -74,41 +74,42 @@
             </div>
         </form>
         <div class="form-group bfh-timepicker" data-mode="12h">
-        <form class="form-inline">
-            <table id="timeTable" style="width: 100%">
-                {% for each_slot in each_details['time'] %}
-                <tr id="time-slot-{{loop.index}}">
-                    <td>
-                        <label class="col-md-4 control-label" for="starttime">Starttime</label>
-                    </td>
-                    <td>
-                        <input type="time" class="form-control input-md" id="starttime{{loop.index}}"
-                            placeholder="starttime" value="{{each_slot['starttime']}}" required="">
+            <form class="form-inline">
+                <table id="timeTable" style="width: 100%">
+                    {% for each_slot in each_details['time'] %}
+                    <tr id="time-slot-{{loop.index}}">
+                        <td>
+                            <label class="col-md-4 control-label" for="starttime">Starttime</label>
+                        </td>
+                        <td>
+                            <input type="time" class="form-control input-md" id="starttime{{loop.index}}"
+                                placeholder="starttime" value="{{each_slot['starttime']}}" required="">
 
 
-                    </td>
-                    <td>
-                        <label class="col-md-8 control-label" for="endtime">Endtime</label>
-                    </td>
-                    <td>
-                        <input type="time" class="form-control input-md" id="endtime{{loop.index}}"
-                            value="{{each_slot['endtime']}}" placeholder="endtime" required="">
-                    </td>
-                    <td>
-                        <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="btn btn-link">
-                    </td>
-                </tr>
-                <br />
-                {% endfor %}
+                        </td>
+                        <td>
+                            <label class="col-md-8 control-label" for="endtime">Endtime</label>
+                        </td>
+                        <td>
+                            <input type="time" class="form-control input-md" id="endtime{{loop.index}}"
+                                value="{{each_slot['endtime']}}" placeholder="endtime" required="">
+                        </td>
+                        <td>
+                            <input type="button" value="Remove" onclick="removeButton({{loop.index}})"
+                                class="btn btn-link">
+                        </td>
+                    </tr>
+                    <br />
+                    {% endfor %}
 
-                <tr>
-                    <td>
-                        {% set counter = each_details['time'] | length %}
-                        <input type="hidden" id="TestHidden" value="{{counter}}"> </td>
-                </tr>
-            </table>
-        </form>
-    </div>
+                    <tr>
+                        <td>
+                            {% set counter = each_details['time'] | length %}
+                            <input type="hidden" id="TestHidden" value="{{counter}}"> </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
         <div>
             <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
         </div>
@@ -173,12 +174,6 @@
     <script>
         var count = 0;
         function addtextbox() {
-            debugger;
-            var countTest = document.getElementById("TestHidden").value;
-
-            if (countTest > 0) {
-                count = countTest;
-            }
             count++;
             var newTextBoxDiv = document.createElement('div');
             newTextBoxDiv.id = 'Tools';
@@ -186,8 +181,15 @@
 
             newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
                 '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
-                '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);">'
+                '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
             console.log("Iam count", count);
+            $('#Tools input').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 30,
+                use24hours: true,
+                scrollbar: true,
+            });
+
         };
 
         function removeTextArea(inputElement) {

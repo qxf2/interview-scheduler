@@ -22,7 +22,7 @@ def read_candidates():
 def delete_candidate():
     "Deletes a candidate"
     if request.method == 'POST':
-        candidate_id_to_delete = request.form.get('candidate_id')
+        candidate_id_to_delete = request.form.get('candidateId')
         candidate_to_delete = Candidates.query.filter(Candidates.candidate_id==candidate_id_to_delete).first()
         data = {'candidate_name':candidate_to_delete.candidate_name,'candidate_id':candidate_to_delete.candidate_id}       
         db.session.delete(candidate_to_delete)

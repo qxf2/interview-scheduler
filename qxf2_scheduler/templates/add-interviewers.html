@@ -140,8 +140,8 @@
             }
             if(name != "")
             {
-                validValue &= true; 
                 $('#name').remove();
+                validValue &= true;
             }
             if (email == "")
             {
@@ -154,7 +154,7 @@
                  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
                 {
                     $('#mail').remove();
-                    validValue &= true;
+                    validValue = true;
                 }
                 else
                 {

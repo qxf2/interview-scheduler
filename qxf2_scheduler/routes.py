@@ -6,7 +6,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json,ast
+import json,ast,sys
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -260,11 +260,20 @@ def add_job():
         return render_template("add-jobs.html",result=interviewers_list)
 
     if request.method == 'POST':
-        job_role = request.form.get("role").lower()
+        job_role = request.form.get("role")
         data = {'jobrole':job_role}
-        #Check the job role exists in database
-        check_job_exists = db.session.query(db.exists().where(Jobs.job_role==job_role)).scalar()
-       
+        fetch_existing_job_role = Jobs.query.all()
+        jobs_list = []
+        #Fetch the job role
+        for each_job in fetch_existing_job_role:           
+            jobs_list.append(each_job.job_role.lower())
+        
+        #Compare the job with database job list
+        if job_role.lower() in jobs_list:
+            check_job_exists = True
+        else:
+            check_job_exists = False            
+        
         #If the job is already in the database send failure
         #If it's not there add the new job role and return success
         if check_job_exists != True:

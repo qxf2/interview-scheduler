@@ -7,7 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
-import ast
+import ast,sys
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -380,8 +380,7 @@ def edit_job(job_id):
         # Fetch the Job role from the job table
         fetched_job_id = job_id
         get_job_role = Jobs.query.filter(
-            Jobs.job_id == fetched_job_id).scalar()
-        print(get_job_role.job_role, file=sys.stderr)
+            Jobs.job_id == fetched_job_id).scalar()       
         interviewers_name_list = get_interviewers_name_for_jobupdate(
             fetched_job_id)
         # I am repeating this code here to fetch all the interviewers list.
@@ -397,7 +396,7 @@ def edit_job(job_id):
 
     if request.method == 'POST':
         # Get the job role and Job ID,and name list
-        job_role = request.form.get('role').lower()
+        job_role = request.form.get('role')
         job_id = request.form.get('id')
         data = {'job_role': job_role}
         interviewers_list = ast.literal_eval(
@@ -410,19 +409,20 @@ def edit_job(job_id):
         check_interviewer_list = is_equal(
             interviewers_name_list, interviewers_list)
         # Check the job already exists in the database
+        
         check_job_exists = db.session.query(
             db.exists().where(Jobs.job_role == job_role)).scalar()
         if (check_job_exists != True and check_interviewer_list != True):
             update_job_interviewer_in_database(job_id,job_role,interviewers_list)
-        elif (check_job_exists == True and check_interviewer_list == True):
-            return jsonify(message='There is no change detected for this job and interviewers')
+            return jsonify(data)       
         elif (check_job_exists != True and check_interviewer_list == True):
-            
-
+            update_job_interviewer_in_database(job_id,job_role,interviewers_list)
+            return jsonify(data)
+        elif (check_job_exists == True and check_interviewer_list != True):
+            update_job_interviewer_in_database(job_id,job_role,interviewers_list)
+            return jsonify(data)
         else:
             return jsonify(message='The job already exists,Check before you edit the Jobs'), 500
-
-        return jsonify(data)
 
 
 @app.route("/interviewers/add", methods=["GET", "POST"])

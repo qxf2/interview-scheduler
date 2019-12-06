@@ -79,8 +79,14 @@
                             var jobName = $("#role").val();
                             var interviewersList = $("#interviewers").val().split(',');
                             interviewersList.pop();
-                            console.log(interviewersList);
-
+                            console.log("I am interviewer list",interviewersList);
+                            var interviewerslistLength = interviewersList.length
+                            console.log(interviewerslistLength);
+                            if (interviewerslistLength === 0){
+                                alert("The interviewers should be chosen from the list");
+                                document.location.href = "/jobs/add";
+                            }
+                            else{
                             $.ajax({
                                 type: 'POST',
                                 url: '/jobs/add',
@@ -89,6 +95,7 @@
                                     'interviewerlist': JSON.stringify(interviewersList)
                                 },
                                 success: function (result) {
+                                    console.log(result);
                                     alert("The job has been added");
                                     document.location.href = "/jobs";
                                 },
@@ -98,9 +105,7 @@
                                     document.location.href = "/jobs/add";
                                 }
                             })
-                        }
-
-                        form.classList.add('was-validated');
+                        }}                        
                     }, false);
                 });
             }, false);

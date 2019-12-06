@@ -74,11 +74,11 @@
             </div>
         </form>
         <form class="form-inline">
-            <table id="timeTable" style="width: 100%">
+            <table id="timeTable">
                 {% for each_slot in each_details['time'] %}
                 <tr id="time-slot-{{loop.index}}">
                     <td>
-                        <label class="col-md-4 control-label" for="starttime">Starttime</label>
+                        <label class="col-md-10 control-label" for="starttime">Start&nbsp;time</label>
                     </td>
                     <td>
                         <input type="time" class="form-control input-md" id="starttime{{loop.index}}"
@@ -87,7 +87,7 @@
 
                     </td>
                     <td>
-                        <label class="col-md-4 control-label" for="endtime">Endtime</label>
+                        <label class="col-md-10 control-label" for="endtime">End&nbsp;time</label>
                     </td>
                     <td>
                         <input type="time" class="form-control input-md" id="endtime{{loop.index}}"
@@ -96,6 +96,7 @@
                     <td>
                         <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="btn btn-link">
                     </td>
+                    <td><div id="resultDiv{{loop.index}}"></div></td>
                 </tr>
                 <br />
                 {% endfor %}
@@ -140,18 +141,26 @@
             var timeSlotTable = document.getElementById("timeTable");
             var count = timeSlotTable.rows.length;
             validValue = true;
-            console.log(count);
             for (var index = 1; index <= count; index++) {
                 var starttimeVal = $("#starttime" + index).val();
-                console.log(typeof starttimeVal, starttimeVal)
                 if (starttimeVal != undefined) {
                     timeObject.starttime.push($("#starttime" + index).val())
                     timeObject.endtime.push($("#endtime" + index).val())
                 }
             }
+            for (var index = 0; index <= 15; index++) {
+                if(document.getElementById("dstarttime"+index)==null)
+                {
+                    break;
+                }
+                var starttimeVal = $("#dstarttime" + index).val();
+                if (starttimeVal != undefined) {
+                    timeObject.starttime.push($("#dstarttime" + index).val())
+                    timeObject.endtime.push($("#dendtime" + index).val())
+                }
+            }
             console.log(timeObject);
             //validation starts from here
-
             if(name == "")
             {
                 $('#name').remove();
@@ -208,10 +217,36 @@
                 $("#resultDiv"+index).html(msg);
                 }
             }
-
+            //validation for dynamic time
+            for(index = 0; index < 20; index++) {
+            starttime = $("#dstarttime"+index).val();
+            endtime = $("#dendtime"+index).val();
+            var msg="";
+            if(starttime==null)
+            {
+                break;
+            }
+            if(starttime != "" || endtime != "") {
+                if (starttime >= endtime) {
+                    validValue = false;
+                    msg = "Start time can't be greater than or same as end time";
+                    $("#dresultDiv"+index).css('color', 'red');
+                    $("#dresultDiv"+index).html(msg);
+                }
+                else {
+                    validValue &= true;
+                    msg = "";                    
+                    $("#dresultDiv"+index).html(msg);
+                }
+            }
+            else {
+                validValue = false;
+                msg = "Start time and end time can't be empty";
+                $("#dresultDiv"+index).css('color', 'red');
+                $("#dresultDiv"+index).html(msg);
+                }
+            }
             //validation end
-
-            validValue = false;
             if (validValue == true){
 
             $.ajax({
@@ -237,21 +272,14 @@
     <script>
         var count = 0;
         function addtextbox() {
-            debugger;
-            var countTest = document.getElementById("TestHidden").value;
-
-            if (countTest > 0) {
-                count = countTest;
-            }
-            count++;
             var newTextBoxDiv = document.createElement('div');
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
-                '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);">'
-            console.log("Iam count", count);
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Start&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dstarttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">End&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dendtime' + count + '" placeholder="endtime" required=""></div>' +
+                '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);"></div><div id="dresultDiv'+count+'"></div></form>'
+            count++;   
         };
 
         function removeTextArea(inputElement) {

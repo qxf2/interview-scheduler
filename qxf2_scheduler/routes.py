@@ -6,7 +6,8 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json,ast
+import json
+import ast
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -89,7 +90,7 @@ def form_interviewer_timeslot(time_slot):
 
     return time_slot
 
-    
+
 def form_interviewer_details(interviewer_details):
     "Parsing the interviewer detals we get it from form"
     list_parsed_interviewer_detail = []
@@ -97,7 +98,7 @@ def form_interviewer_details(interviewer_details):
 
     for each_detail in interviewer_details:
         interviewer_detail = {
-            'interviewer_id':each_detail.interviewer_id,
+            'interviewer_id': each_detail.interviewer_id,
             'interviewers_name': each_detail.interviewer_name,
             'interviewers_id': each_detail.interviewer_id,
             'interviewers_email': each_detail.interviewer_email,
@@ -124,26 +125,30 @@ def form_interviewer_details(interviewer_details):
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
-    exists = db.session.query(db.exists().where(Interviewertimeslots.interviewer_id == interviewer_id)).scalar()
+    exists = db.session.query(db.exists().where(
+        Interviewertimeslots.interviewer_id == interviewer_id)).scalar()
     if exists:
         interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
-        Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
-        parsed_interviewer_details = form_interviewer_details(interviewer_details)
+            Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+        parsed_interviewer_details = form_interviewer_details(
+            interviewer_details)
     else:
-        interviewer_details = Interviewers.query.filter(Interviewers.interviewer_id==interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_name,Interviewers.interviewer_email,Interviewers.interviewer_designation)
+        interviewer_details = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).values(
+            Interviewers.interviewer_id, Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation)
         for each_detail in interviewer_details:
             parsed_interviewer_details = {
-            'interviewers_name': each_detail.interviewer_name,
-            'interviewers_id': each_detail.interviewer_id,
-            'interviewers_email': each_detail.interviewer_email,
-            'interviewers_designation': each_detail.interviewer_designation}
+                'interviewers_name': each_detail.interviewer_name,
+                'interviewers_id': each_detail.interviewer_id,
+                'interviewers_email': each_detail.interviewer_email,
+                'interviewers_designation': each_detail.interviewer_designation}
 
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
+
 
 def add_edit_interviewers_in_time_slot_table(interviewer_name):
     "Adding the interviewers in the interviewer time slots table"
     added_edited_interviewer_id = Interviewers.query.filter(
-            Interviewers.interviewer_name == interviewer_name).first()
+        Interviewers.interviewer_name == interviewer_name).first()
 
     # Adding the new time slots in the interviewerstimeslots table
     interviewer_time_slots = ast.literal_eval(request.form.get('timeObject'))
@@ -152,7 +157,7 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
     len_of_slots = len(interviewer_start_time)
     for i in range(len_of_slots):
         add_edit_time_slots = Interviewertimeslots(interviewer_id=added_edited_interviewer_id.interviewer_id,
-                                                interviewer_start_time=interviewer_start_time[i], interviewer_end_time=interviewer_end_time[i])
+                                                   interviewer_start_time=interviewer_start_time[i], interviewer_end_time=interviewer_end_time[i])
         db.session.add(add_edit_time_slots)
         db.session.commit()
 
@@ -161,56 +166,60 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
     # This query fetch the interviewer details by joining the time slots table and interviewers table.
-    if request.method == "GET":    
-        exists = db.session.query(db.exists().where(Interviewertimeslots.interviewer_id == interviewer_id)).scalar()
+    if request.method == "GET":
+        exists = db.session.query(db.exists().where(
+            Interviewertimeslots.interviewer_id == interviewer_id)).scalar()
         if exists:
             interviewer_details = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).filter(
-            Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
-            parsed_interviewer_details = form_interviewer_details(interviewer_details)
+                Interviewers.interviewer_id == interviewer_id).values(Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation, Interviewers.interviewer_id, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+            parsed_interviewer_details = form_interviewer_details(
+                interviewer_details)
         else:
-            interviewer_details = Interviewers.query.filter(Interviewers.interviewer_id==interviewer_id).values(Interviewers.interviewer_id,Interviewers.interviewer_name,Interviewers.interviewer_email,Interviewers.interviewer_designation)
+            interviewer_details = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).values(
+                Interviewers.interviewer_id, Interviewers.interviewer_name, Interviewers.interviewer_email, Interviewers.interviewer_designation)
             for each_detail in interviewer_details:
                 parsed_interviewer_details = {
-                'interviewers_name': each_detail.interviewer_name,
-                'interviewers_id': each_detail.interviewer_id,
-                'interviewers_email': each_detail.interviewer_email,
-                'interviewers_designation': each_detail.interviewer_designation}
-            
+                    'interviewers_name': each_detail.interviewer_name,
+                    'interviewers_id': each_detail.interviewer_id,
+                    'interviewers_email': each_detail.interviewer_email,
+                    'interviewers_designation': each_detail.interviewer_designation}
+
     if request.method == "POST":
-        #Updating the interviewers table
+        # Updating the interviewers table
         interviewer_name = request.form.get('name')
         data = {'interviewer_name': interviewer_name}
         edit_interviewers = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).update({'interviewer_name': request.form.get(
             'name'), 'interviewer_email': request.form.get('email'), 'interviewer_designation': request.form.get('designation')})
-        db.session.commit()        
+        db.session.commit()
 
         # Fetching the time ids of interviewer
         total_rows_of_interviewer_in_time_table = Interviewertimeslots.query.filter(
             Interviewertimeslots.interviewer_id == interviewer_id).values(Interviewertimeslots.time_id)
-        
+
         # Store the timeid in the list for deleting at the end
         list_edited_time_slots = []
-        for each_time_id in total_rows_of_interviewer_in_time_table:            
+        for each_time_id in total_rows_of_interviewer_in_time_table:
             list_edited_time_slots.append(each_time_id.time_id)
 
         # Filtering the interviewer id from the table to use it for interviewertimeslots table
         add_edit_interviewers_in_time_slot_table(interviewer_name)
 
-        #Deleting the old time slots based on the timeie
+        # Deleting the old time slots based on the timeie
         for each_times_id in list_edited_time_slots:
-            delete_time_slots = Interviewertimeslots.query.filter(Interviewertimeslots.time_id==each_times_id).one()
+            delete_time_slots = Interviewertimeslots.query.filter(
+                Interviewertimeslots.time_id == each_times_id).one()
             db.session.delete(delete_time_slots)
-            db.session.commit()        
+            db.session.commit()
 
         return jsonify(data)
-    return render_template("edit-interviewer.html", result=parsed_interviewer_details)    
-   
+    return render_template("edit-interviewer.html", result=parsed_interviewer_details)
+
 
 @app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
 def delete_interviewer(interviewer_id):
     "Deletes a job"
     if request.method == 'POST':
-        #interviewer_to_delete = request.form.get('interviewer-id')
+        # interviewer_to_delete = request.form.get('interviewer-id')
         deleted_user = Interviewers.query.filter(
             Interviewers.interviewer_id == interviewer_id).first()
         data = {'interviewer_name': deleted_user.interviewer_name,
@@ -246,45 +255,50 @@ def interviewers_for_roles(job_id):
 
     return render_template("role-for-interviewers.html", result=interviewers_list)
 
-@app.route("/jobs/add",methods=["GET","POST"])
+
+@app.route("/jobs/add", methods=["GET", "POST"])
 def add_job():
     "Add ajob through UI"
     if request.method == 'GET':
         all_interviewers = Interviewers.query.all()
         interviewers_list = []
-        for each_interviewer in all_interviewers:           
+        for each_interviewer in all_interviewers:
             interviewers_list.append(each_interviewer.interviewer_name)
 
-        return render_template("add-jobs.html",result=interviewers_list)
+        return render_template("add-jobs.html", result=interviewers_list)
 
     if request.method == 'POST':
         job_role = request.form.get("role")
-        data = {'jobrole':job_role}
-        #Check the job role exists in database
-        check_job_exists = db.session.query(db.exists().where(Jobs.job_role==job_role)).scalar()
-       
-        #If the job is already in the database send failure
-        #If it's not there add the new job role and return success
+        data = {'jobrole': job_role}
+        # Check the job role exists in database
+        check_job_exists = db.session.query(
+            db.exists().where(Jobs.job_role == job_role)).scalar()
+
+        # If the job is already in the database send failure
+        # If it's not there add the new job role and return success
         if check_job_exists != True:
-            interviewers = ast.literal_eval(request.form.get("interviewerlist"))
+            interviewers = ast.literal_eval(
+                request.form.get("interviewerlist"))
             job_object = Jobs(job_role=job_role)
             db.session.add(job_object)
             db.session.commit()
             job_id = job_object.job_id
-            #Get the id of the user from the interviewers table
+            # Get the id of the user from the interviewers table
             for each_interviewer in interviewers:
-                interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer.strip()).scalar()
-                print(interviewer_id)        
-                job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=interviewer_id)
+                interviewer_id = db.session.query(Interviewers.interviewer_id).filter(
+                    Interviewers.interviewer_name == each_interviewer.strip()).scalar()
+                print(interviewer_id)
+                job_interviewer_object = Jobinterviewer(
+                    job_id=job_id, interviewer_id=interviewer_id)
                 db.session.add(job_interviewer_object)
                 db.session.commit()
         else:
-            return jsonify(message='The job already exists'),500           
-                
-        return jsonify(data)        
+            return jsonify(message='The job already exists'), 500
+
+        return jsonify(data)
 
 
-@app.route("/jobs/delete",methods=["POST"]) 
+@app.route("/jobs/delete", methods=["POST"])
 def delete_job():
     "Deletes a job"
     if request.method == 'POST':
@@ -299,69 +313,119 @@ def delete_job():
     return jsonify(data)
 
 
-@app.route("/job/edit/<job_id>",methods=["GET","POST"])
+def is_equal(interviewers_name_list, interviewers_list):
+    "Check both lists are same or not"
+    return sorted(interviewers_name_list) == sorted(interviewers_list)
+
+
+def get_interviewers_name_for_jobupdate(fetched_job_id):
+    "Get the interviewers name from table using Jobid"
+    # Fetch the interviewer id based on the job id from the Jobinterviewer table
+    interviewers_name_list = []
+    get_interviewers_id = Jobinterviewer.query.filter(
+        Jobinterviewer.job_id == fetched_job_id).all()
+    for each_interviewer_id in get_interviewers_id:
+        interviewer_id = each_interviewer_id.interviewer_id
+        print(interviewer_id, file=sys.stderr)
+        # Fetch the interviewer name by using the parsed interviewer id in interviewers table
+        interviewer_name_for_role = db.session.query(Interviewers.interviewer_name).filter(
+            Interviewers.interviewer_id == interviewer_id).scalar()
+        print(interviewer_name_for_role)
+        interviewers_name_list.append(interviewer_name_for_role)
+        print(interviewers_name_list)
+    return interviewers_name_list
+
+
+def remove_duplicate_interviewers(interviewers_list):
+    "Remove the duplicates from the interviewers list"
+    new_interviewers_list = []
+    for each_interviewers in interviewers_list:
+        new_interviewers_list.append(each_interviewers.strip())
+    interviewers = list(set(new_interviewers_list))
+
+    return interviewers
+
+
+def update_job_interviewer_in_database(job_id,job_role,interviewers_list):
+    "Update the Job and Interviewer in database based on the condition"
+    edit_job = Jobs.query.filter(
+        Jobs.job_id == job_id).update({'job_role': job_role})
+    db.session.commit()
+    # Fetch the combo id of each row which matches with job id
+    fetch_combo_id = Jobinterviewer.query.filter(Jobinterviewer.job_id == job_id).values(Jobinterviewer.combo_id)
+    list_combo_id = []
+    for each_id in fetch_combo_id:
+        list_combo_id.append(each_id.combo_id)
+    # Delete the existing rows of job-id in the Jobinterviewer
+    for each_combo_id in list_combo_id:
+        delete_updated_job_id = Jobinterviewer.query.filter(
+            Jobinterviewer.combo_id == each_combo_id).one()
+        db.session.delete(delete_updated_job_id)
+        db.session.commit()
+    # Fetch the interviewers id from the interviewers table
+    # Add new rows in the Jobinterviewer table with updated interviewer id
+    for each_interviewer in interviewers_list:
+        interviewer_id = db.session.query(Interviewers.interviewer_id).filter(
+            Interviewers.interviewer_name == each_interviewer.strip()).scalar()
+        job_interviewer_object = Jobinterviewer(
+            job_id=job_id, interviewer_id=interviewer_id)
+        db.session.add(job_interviewer_object)
+        db.session.commit()
+
+
+@app.route("/job/edit/<job_id>", methods=["GET", "POST"])
 def edit_job(job_id):
     "Editing the already existing job"
     if request.method == 'GET':
         # Fetch the Job role from the job table
-        interviewers_name_list = []
         fetched_job_id = job_id
-        get_job_role = Jobs.query.filter(Jobs.job_id==fetched_job_id).scalar()
-        print(get_job_role.job_role,file=sys.stderr)
-        #Fetch the interviewer id based on the job id from the Jobinterviewer table
-        get_interviewers_id = Jobinterviewer.query.filter(Jobinterviewer.job_id==fetched_job_id).all()
-        for each_interviewer_id in get_interviewers_id:
-            interviewer_id = each_interviewer_id.interviewer_id
-            print(interviewer_id,file=sys.stderr)
-            #Fetch the interviewer name by using the parsed interviewer id in interviewers table
-            interviewer_name_for_role = db.session.query(Interviewers.interviewer_name).filter(Interviewers.interviewer_id==interviewer_id).scalar()
-            print(interviewer_name_for_role)
-            interviewers_name_list.append(interviewer_name_for_role)
-            print(interviewers_name_list)
-            #I am repeating this code here to fetch all the interviewers list.
-            #I should refactor it
-            all_interviewers = Interviewers.query.all()
-            interviewers_list = []
-            for each_interviewer in all_interviewers:           
-                interviewers_list.append(each_interviewer.interviewer_name)
-        api_response = {'role_name':get_job_role.job_role,'job_id':fetched_job_id,'interviewers_name':interviewers_name_list,'interviewers_list':interviewers_list}
+        get_job_role = Jobs.query.filter(
+            Jobs.job_id == fetched_job_id).scalar()
+        print(get_job_role.job_role, file=sys.stderr)
+        interviewers_name_list = get_interviewers_name_for_jobupdate(
+            fetched_job_id)
+        # I am repeating this code here to fetch all the interviewers list.
+        # I should refactor it
+        all_interviewers = Interviewers.query.all()
+        interviewers_list = []
+        for each_interviewer in all_interviewers:
+            interviewers_list.append(each_interviewer.interviewer_name)
+        api_response = {'role_name': get_job_role.job_role, 'job_id': fetched_job_id,
+                        'interviewers_name': interviewers_name_list, 'interviewers_list': interviewers_list}
 
-        return render_template("edit-jobs.html",result=api_response)
+        return render_template("edit-jobs.html", result=api_response)
 
-    if request.method == 'POST':        
-        #Get the job role and Job ID,and name list
+    if request.method == 'POST':
+        # Get the job role and Job ID,and name list
         job_role = request.form.get('role').lower()
         job_id = request.form.get('id')
-        data = {'job_role':job_role}
-        interviewers_list = ast.literal_eval(request.form.get('interviewerlist'))
-        check_job_exists = db.session.query(db.exists().where(Jobs.job_role==job_role)).scalar()
-        if check_job_exists != True:       
-            edit_job = Jobs.query.filter(Jobs.job_id==job_id).update({'job_role':job_role})
-            db.session.commit()
-            #Fetch the combo id of each row which matches with job id
-            fetch_combo_id = Jobinterviewer.query.filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.combo_id)
-            list_combo_id = []
-            for each_id in fetch_combo_id:            
-                list_combo_id.append(each_id.combo_id)
-            #Delete the existing rows of job-id in the Jobinterviewer       
-            for each_combo_id in list_combo_id:            
-                delete_updated_job_id = Jobinterviewer.query.filter(Jobinterviewer.combo_id==each_combo_id).one()
-                db.session.delete(delete_updated_job_id)
-                db.session.commit()
-            #Fetch the interviewers id from the interviewers table
-            #Add new rows in the Jobinterviewer table with updated interviewer id
-            for each_interviewer in interviewers_list:                
-                    interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer.strip()).scalar()               
-                    job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=interviewer_id)
-                    db.session.add(job_interviewer_object)
-                    db.session.commit()
+        data = {'job_role': job_role}
+        interviewers_list = ast.literal_eval(
+            request.form.get('interviewerlist'))
+        # Fetch the interviewers list which is already exists for the job
+        interviewers_name_list = get_interviewers_name_for_jobupdate(job_id)
+        # Remove the duplicate interviewers
+        interviewers_list = remove_duplicate_interviewers(interviewers_list)
+        # Compare the two list which is fetched from UI and Database
+        check_interviewer_list = is_equal(
+            interviewers_name_list, interviewers_list)
+        # Check the job already exists in the database
+        check_job_exists = db.session.query(
+            db.exists().where(Jobs.job_role == job_role)).scalar()
+        if (check_job_exists != True and check_interviewer_list != True):
+            update_job_interviewer_in_database(job_id,job_role,interviewers_list)
+        elif (check_job_exists == True and check_interviewer_list == True):
+            return jsonify(message='There is no change detected for this job and interviewers')
+        elif (check_job_exists != True and check_interviewer_list == True):
+            
+
         else:
-            return jsonify(message='The job already exists,Check before you edit the Jobs'),500        
+            return jsonify(message='The job already exists,Check before you edit the Jobs'), 500
 
-        return jsonify(data)        
+        return jsonify(data)
 
 
-@app.route("/interviewers/add",methods=["GET","POST"])
+@app.route("/interviewers/add", methods=["GET", "POST"])
 def add_interviewers():
     "Adding the interviewers"
     data = {}

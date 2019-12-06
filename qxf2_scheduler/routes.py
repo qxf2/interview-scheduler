@@ -256,6 +256,23 @@ def interviewers_for_roles(job_id):
     return render_template("role-for-interviewers.html", result=interviewers_list)
 
 
+def check_jobs_exists(job_role):
+    "Check the job already exists in the database"
+    fetch_existing_job_role = Jobs.query.all()
+    jobs_list = []
+    #Fetch the job role
+    for each_job in fetch_existing_job_role:           
+        jobs_list.append(each_job.job_role.lower())
+    
+    #Compare the job with database job list
+    if job_role.lower() in jobs_list:
+        check_job_exists = True
+    else:
+        check_job_exists = False
+
+    return check_job_exists   
+
+
 @app.route("/jobs/add",methods=["GET","POST"])
 def add_job():
     "Add ajob through UI"
@@ -270,28 +287,18 @@ def add_job():
     if request.method == 'POST':
         job_role = request.form.get("role")
         data = {'jobrole':job_role}
-        fetch_existing_job_role = Jobs.query.all()
-        jobs_list = []
-        #Fetch the job role
-        for each_job in fetch_existing_job_role:           
-            jobs_list.append(each_job.job_role.lower())
-        
-        #Compare the job with database job list
-        if job_role.lower() in jobs_list:
-            check_job_exists = True
-        else:
-            check_job_exists = False            
-        
+        check_job_exists = check_jobs_exists(job_role)       
         #If the job is already in the database send failure
         #If it's not there add the new job role and return success
         if check_job_exists != True:
-            new_interviewers_list = []
+            #new_interviewers_list = []
             interviewers = ast.literal_eval(request.form.get("interviewerlist"))
             #I have to remove the duplicates and removing the whitespaces which will be 
             #added repeatedly through UI
-            for each_interviewers in interviewers:
+            interviewers = remove_duplicate_interviewers(interviewers)
+            """for each_interviewers in interviewers:
                 new_interviewers_list.append(each_interviewers.strip())
-            interviewers=list(set(new_interviewers_list))                        
+            interviewers=list(set(new_interviewers_list))"""                        
             job_object = Jobs(job_role=job_role)
             db.session.add(job_object)
             db.session.commit()
@@ -420,10 +427,9 @@ def edit_job(job_id):
         # Compare the two list which is fetched from UI and Database
         check_interviewer_list = is_equal(
             interviewers_name_list, interviewers_list)
-        # Check the job already exists in the database
-        
-        check_job_exists = db.session.query(
-            db.exists().where(Jobs.job_role == job_role)).scalar()
+        # Check the job already exists in the database        
+        check_job_exists = check_jobs_exists(job_role)
+        #These are all the four conditions to be tested for editing
         if (check_job_exists != True and check_interviewer_list != True):
             update_job_interviewer_in_database(job_id,job_role,interviewers_list)
             return jsonify(data)       

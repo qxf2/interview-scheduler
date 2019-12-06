@@ -15,6 +15,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".show-modal").click(function () {
+                $("#myModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            });
+        });
+    </script>
+    </script>
 
 </head>
 
@@ -118,7 +129,7 @@
         <div class="form-group">
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
-                <input class="btn btn-success" type='button' id='submit' value='Save'>
+                <input class="btn btn-success show-modal" type='button' id='submit' value='Save'>
                 <input type='button' id="clear" value='Cancel' onclick="redirectNew()" class="btn btn-danger">
             </div>
         </div>

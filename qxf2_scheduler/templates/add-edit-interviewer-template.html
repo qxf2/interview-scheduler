@@ -3,23 +3,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>Interview Scheduler</title>
-
+    <title>Edit Interviewers</title>
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
         id="bootstrap-css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 </head>
-
-</html>
 
 <body>
     <div class="modal" id="myModal">
@@ -73,7 +70,7 @@
                 </div>
             </div>
         </form>
-        <div class="form-group bfh-timepicker" data-mode="12h">
+        <div class="form-group">
             <form class="form-inline">
                 <table id="timeTable" style="width: 100%">
                     {% for each_slot in each_details['time'] %}
@@ -82,7 +79,7 @@
                             <label class="col-md-4 control-label" for="starttime">Starttime</label>
                         </td>
                         <td>
-                            <input type="time" class="form-control input-md" id="starttime{{loop.index}}"
+                            <input type="time" class="form-control bfh-timepicker input-md" id="starttime{{loop.index}}"
                                 placeholder="starttime" value="{{each_slot['starttime']}}" required="">
 
 
@@ -91,7 +88,7 @@
                             <label class="col-md-8 control-label" for="endtime">Endtime</label>
                         </td>
                         <td>
-                            <input type="time" class="form-control input-md" id="endtime{{loop.index}}"
+                            <input type="time" class="form-control input-md bfh-timepicker" id="endtime{{loop.index}}"
                                 value="{{each_slot['endtime']}}" placeholder="endtime" required="">
                         </td>
                         <td>
@@ -101,33 +98,33 @@
                     </tr>
                     <br />
                     {% endfor %}
+        </div>
+        <tr>
+            <td>
+                {% set counter = each_details['time'] | length %}
+                <input type="hidden" id="TestHidden" value="{{counter}}"> </td>
+        </tr>
+        </table>
+        </form>
+    </div>
+    <div>
+        <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
+    </div>
+    <div id="ToolsGroup">
+    </div>
 
-                    <tr>
-                        <td>
-                            {% set counter = each_details['time'] | length %}
-                            <input type="hidden" id="TestHidden" value="{{counter}}"> </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-        <div>
-            <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
-        </div>
-        <div id="ToolsGroup">
-        </div>
-
-        <!-- Button (Double) -->
-        <form class="form-horizontal">
-            <div class="form-group">
-                <label class="col-md-4 control-label" for="save"></label>
-                <div class="col-md-8">
-                    <input class="btn btn-success" type='button' id='submit' value='Save'>
-                    <input type='button' id="clear" value='Cancel' onclick="redirectNew()" class="btn btn-danger">
-                </div>
+    <!-- Button (Double) -->
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="save"></label>
+            <div class="col-md-8">
+                <input class="btn btn-success" type='button' id='submit' value='Save'>
+                <input type='button' id="clear" value='Cancel' onclick="redirectNew()" class="btn btn-danger">
             </div>
-        </form>
-        </form>
-        {% endfor %}
+        </div>
+    </form>
+    </form>
+    {% endfor %}
 
     </div>
     <script>
@@ -215,26 +212,13 @@
         }
     </script>
     <script>
-        $(document).ready(function () {
-            $('#starttime0').timepicker({
-                timeFormat: 'HH:mm',
-                interval: 30,
-                use24hours: true,
-                scrollbar: true,
-            });
+        $('.bfh-timepicker').timepicker({
+            timeFormat: 'HH:mm',
+            interval: 30,
+            use24hours: true,
+            scrollbar: true,
         });
     </script>
-    <script>
-        $(document).ready(function () {
-            $('#endtime0').timepicker({
-                timeFormat: 'HH:mm',
-                interval: 30,
-                use24hours: true,
-                scrollbar: true,
-            });
-        });
-    </script>
-
-
-
 </body>
+
+</html>

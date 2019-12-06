@@ -73,8 +73,8 @@
                 </div>
             </div>
         </form>
-        <form class="form-inline">
-            <table id="timeTable" style="width: 100%">
+        <form class="form-inline" id="form1">
+            <table id="timeTable" style="width: 80%">
                 {% for each_slot in each_details['time'] %}
                 <tr id="time-slot-{{loop.index}}">
                     <td>
@@ -87,7 +87,7 @@
 
                     </td>
                     <td>
-                        <label class="col-md-8 control-label" for="endtime">Endtime</label>
+                        <label class="col-md-4 control-label" for="endtime">Endtime</label>
                     </td>
                     <td>
                         <input type="time" class="form-control input-md" id="endtime{{loop.index}}"
@@ -95,6 +95,9 @@
                     </td>
                     <td>
                         <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="btn btn-link">
+                    </td>
+                    <td>
+                        <div id="resultDiv{{loop.index}}">hello there i am remove button. click me to remove time</div>
                     </td>
                 </tr>
                 <br />
@@ -105,7 +108,9 @@
                         {% set counter = each_details['time'] | length %}
                         <input type="hidden" id="TestHidden" value="{{counter}}"> </td>
                 </tr>
+                
             </table>
+            
         </form>
         <div>
             <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
@@ -139,16 +144,84 @@
             var designation = $("#designation").val();
             var timeSlotTable = document.getElementById("timeTable");
             var count = timeSlotTable.rows.length;
-            console.log(count);
-            for (var index = 1; index <= count; index++) {
+            console.log("count:"+count)
+            validValue = true;
+            for (var index = 1; index < count; index++) {
                 var starttimeVal = $("#starttime" + index).val();
-                console.log(typeof starttimeVal, starttimeVal)
                 if (starttimeVal != undefined) {
                     timeObject.starttime.push($("#starttime" + index).val())
                     timeObject.endtime.push($("#endtime" + index).val())
                 }
             }
             console.log(timeObject);
+            //validation starts from here
+
+            if(name == "")
+            {
+                $('#name').remove();
+                $('#fname').after('<span id="name" class="error" style="color:red">Name field is required</span>');
+                validValue = false;
+            }
+            if(name != "")
+            {
+                $('#name').remove();
+                validValue &= true;
+            }
+            if (email == "")
+            {
+                $('#mail').remove();
+                $('#email').after('<span id="mail" class="error" style="color:red">Email field is required</span>');
+                validValue = false;
+            }
+            if(email != "")
+            {   
+                 if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
+                {
+                    $('#mail').remove();
+                    validValue &= true;
+                }
+                else
+                {
+                $('#mail').remove();
+                $('#email').after('<span id="mail" class="error" style="color:red">Please enter a valid email address</span>');
+                validValue = false;
+                }
+            }
+            //validation for timings
+            for(index = 1; index < count; index++) {
+            starttime = $("#starttime"+index).val();
+            endtime = $("#endtime"+index).val();
+            console.log(starttime);
+            console.log(endtime);
+            var msg="";
+            if(starttime != "" || endtime != "") {
+                console.log(starttime >=endtime);
+                if (starttime >= endtime) {
+                    validValue = false;
+                    msg = "Start time can't be greater than or same as end time";
+                    $("#resultDiv"+index).css('color', 'red');
+                    $("#resultDiv"+index).html(msg);
+                    console.log("#resultDiv"+index);
+                }
+                else {
+                    validValue &= true;
+                    msg = "";
+                    $("#resultDiv"+index).html(msg);
+                }
+            }
+            else {
+                validValue = false;
+                msg = "Start time and end time can't be empty";
+                $("#resultDiv"+index).css('color', 'red');
+                $("#resultDiv"+index).html(msg);
+                }
+            }
+
+            //validation end
+
+            validValue = false;
+            if (validValue == true){
+
             $.ajax({
                 type: 'POST',
                 url: '/interviewers/%d/edit' % id,
@@ -166,26 +239,38 @@
                 }
 
             })
+            }
         })
     </script>
     <script>
-        var count = 0;
+        var count_previous_row = 0;
         function addtextbox() {
-            debugger;
-            var countTest = document.getElementById("TestHidden").value;
-
-            if (countTest > 0) {
-                count = countTest;
+            //debugger;
+            for (var number_of_row = 1; number_of_row < 100; number_of_row++)
+            {
+                starttime_object = document.getElementById("#starttime"+number_of_row);
+                console.log("#starttime"+number_of_row);
+                console.log(starttime_object == null);
+                if(starttime_object == null)
+                {
+                    count = number_of_row - 1;
+                    break;
+                }
+                console.log("loop count"+count);
             }
-            count++;
+            console.log("count loop outside"+count)
+            count=count+1;
+            console.log("count ++"+count)
             var newTextBoxDiv = document.createElement('div');
-            newTextBoxDiv.id = 'Tools';
-            document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
+            newTextBoxDiv.id = 'timeTable';
+            document.getElementById("form1").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
-                '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);">'
-            console.log("Iam count", count);
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><table id="timeTable" style="width: 80%"><tr id="time-slot'+count+'"><td><label class="col-md-4 control-label"for="starttime">Starttime</label></td>'+
+            '<td><input type="time" class="form-control input-md" id="starttime'+count+'" placeholder="starttime" required=""></td><td><label class="col-md-4 control-label" for="endtime">Endtime</label>'+
+            '</td><td><input type="time" class="form-control input-md" id="endtime'+count+'" placeholder="endtime" required=""></td><td>'+
+            '<input type="button" value="Remove" onclick="removeButton'+count+'" class="btn btn-link"></td><td><div id="resultDiv'+ count +'">hello there i am remove button. click me to remove time</div></td></tr><br/>'+                
+            '</table></form>'
+            console.log("I am count", count);
         };
 
         function removeTextArea(inputElement) {

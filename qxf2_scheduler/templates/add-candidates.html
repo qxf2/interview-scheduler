@@ -110,13 +110,12 @@
                                     var resultName = result.data['candidate_name'];
                                     console.log(resultName);
 
-                                    if (resultName == candidateName) {
+                                    if (result.error == "Success") {
                                         alert("The candidate has been added");
                                         document.location.href = "/candidates";
 
                                     }
-
-                                    else if (result.error != null) {
+                                    else{
                                         alert("The candidate already exists");
                                         document.location.href = "/candidates";
                                     }

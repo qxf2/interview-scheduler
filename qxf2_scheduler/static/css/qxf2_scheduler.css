@@ -41,4 +41,9 @@ body {
 .bottom-space-20 {
     margin-bottom: 20px;
 }
-
+.bs-example {
+    margin: 20px;
+}
+.textarea {
+    display: inline
+}

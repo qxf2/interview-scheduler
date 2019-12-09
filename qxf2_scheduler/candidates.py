@@ -3,18 +3,28 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
+import string
+import random
 
-from qxf2_scheduler.models import Candidates,Jobs
+from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate
 DOMAIN = 'qxf2.com'
+
+def url_gen(candidate_id = 0, job_id = 0):
+    "generate random url for candidate"
+    if(candidate_id == 0 or job_id == 0):
+        return ""
+    else:
+        KEY_LEN = random.randint(8,16)
+        urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]
+        return (f'{candidate_id}/{job_id}/{"".join(urllist)}')
 
 @app.route("/candidates",methods=["GET"])
 def read_candidates():
     "Read the candidates"      
-    display_candidates = db.session.query(Candidates, Jobs).filter(Candidates.job_id == Jobs.job_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Candidates.job_id,Jobs.job_role)
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role)
     my_candidates_list = []
     for each_candidate in display_candidates:
         my_candidates_list.append({'candidate_id':each_candidate.candidate_id,'candidate_name':each_candidate.candidate_name,'candidate_email':each_candidate.candidate_email,'job_id':each_candidate.job_id,'job_role':each_candidate.job_role})
-        
     return render_template("read-candidates.html",result=my_candidates_list)
 
 
@@ -26,7 +36,10 @@ def delete_candidate():
         candidate_to_delete = Candidates.query.filter(Candidates.candidate_id==candidate_id_to_delete).first()
         data = {'candidate_name':candidate_to_delete.candidate_name,'candidate_id':candidate_to_delete.candidate_id}       
         db.session.delete(candidate_to_delete)
-        db.session.commit()        
+        db.session.commit()   
+        job_candidate_to_delete = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id_to_delete).first()
+        db.session.delete(job_candidate_to_delete)
+        db.session.commit()     
         
     return jsonify(data)
 
@@ -55,20 +68,35 @@ def add_candidate(job_role):
         candidate_name = request.form.get('candidateName')
         candidate_email = request.form.get('candidateEmail').lower()
         candidate_job_applied = request.form.get('jobApplied')  
-        #job_available =  Jobs.query.all()
+        '''
+        job_available =  Jobs.query.all()
+        for each_job_available in job_available:
+            if candidate_job_applied.lower() == each_job_available.job_role.lower():
+                job_id = each_job_available.job_id
+
         for each_job in job_available:
             if each_job.job_role == candidate_job_applied:
-                job_id = each_job.job_id    
+                job_id = each_job.job_id  
+        ''' 
+        job_id = Jobs.query.filter(Jobs.job_role == candidate_job_applied).value(Jobs.job_id) 
         data = {'candidate_name':candidate_name}
         #Check the candidate has been already added or not
         check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar()        
+        print(check_candidate_exists == True)
         if check_candidate_exists == True:
             error = "The user already exists in the table"            
         else:
-            error = "The successfully added" 
-            add_candidate_object = Candidates(candidate_name=candidate_name,candidate_email=candidate_email,job_id=job_id)
+            add_candidate_object = Candidates(candidate_name=candidate_name,candidate_email=candidate_email)
             db.session.add(add_candidate_object)
             db.session.commit()
+            #getting the unique candidate id for new candidate
+            candidate_id = Candidates.query.filter(Candidates.candidate_email==candidate_email).value(Candidates.candidate_id)
+            
+            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='')
+            db.session.add(add_job_candidate_object)
+            db.session.commit()
+            #here
+            error = "The successfully added"
 
         api_response = {'data':data,'error':error}
         return jsonify(api_response)
@@ -78,7 +106,7 @@ def add_candidate(job_role):
 @app.route("/candidate/<job_id>/<candidate_id>") 
 def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"     
-    candidate_job_data = Candidates.query.join(Jobs, Candidates.job_id == Jobs.job_id).filter(Candidates.candidate_id == candidate_id).values(Candidates.candidate_name, Jobs.job_role)
+    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id and Jobs.job_id == job_id).values(Candidates.candidate_name, Jobs.job_role)
     for each_data in candidate_job_data:
         data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role} 
  

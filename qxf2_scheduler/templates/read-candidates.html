@@ -67,7 +67,8 @@
                         <td><input class="btn btn-info" type="button" id="edit" value="Edit">
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
                                 data-candidatename="{{ each_candidate.candidate_name }}"
-                                data-href="{{ each_candidate.candidate_id }}" data-toggle="modal">Delete</button></td>
+                                data-candidateid="{{ each_candidate.candidate_id }}"
+                                data-jobid="{{ each_candidate.job_id }}" data-toggle="modal">Delete</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -106,7 +107,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '/candidate/delete',
-                    data: { 'candidateId': $(e.relatedTarget).data('href') },
+                    data: { 'candidateId': $(e.relatedTarget).data('candidateid'), 'jobId': $(e.relatedTarget).data('jobid') },
                     success: function (data) {
                         var msg = "The  deleted candidate is " + data.candidate_name;
                         console.log(msg, data);
@@ -114,7 +115,7 @@
                         $('#myModal .modal-body p').html(msg);
                     }
                 })
-
+                window.location.reload();
             })
             $("#close-button").on('click', function () {
                 console.log("I am inside the close button");
@@ -128,8 +129,6 @@
             document.location.href = '/candidate/add'
         }
     </script>
-
-
 
 </body>
 

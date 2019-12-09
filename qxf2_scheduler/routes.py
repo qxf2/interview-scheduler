@@ -270,7 +270,7 @@ def add_interviewers():
         return render_template("add-interviewers.html")
     if request.method == 'POST':        
         interviewer_name = request.form.get('name')
-        interviewer_email = request.form.get('email')
+        interviewer_email = request.form.get('email').lower()
         interviewer_designation = request.form.get('designation')      
         #Check the candidate has been already added or not
         check_interviewer_exists = db.session.query(db.exists().where(Interviewers.interviewer_email==interviewer_email)).scalar()        

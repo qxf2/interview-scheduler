@@ -4,7 +4,7 @@ We use this extensively in the routes.py of the qxf2_scheduler application
 """
 
 import qxf2_scheduler.base_gcal as gcal
-#import base_gcal as gcal
+from googleapiclient.errors import HttpError
 import datetime
 from datetime import timedelta
 import random
@@ -288,21 +288,26 @@ def get_free_slots(busy_slots, day_start, day_end):
 def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     "Get the busy slots for a given date"
     service = gcal.base_gcal()
-    all_events = gcal.get_events_for_date(service,email_id,fetch_date)
-    pto_flag = False
-    for event in all_events:
-        if 'summary' in event.keys():
-            event_name = event['summary'].split(':')[-1].strip()
-            event_name = event_name.split()[0]
-            if 'PTO'.lower() == event_name.lower():
-                pto_flag = True 
-                break
-    if pto_flag:
-        busy_slots = gcal.make_day_busy(fetch_date)
-    else:
-        busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
-
-    return busy_slots
+    busy_slots = []
+    if service:
+        try:            
+            all_events = gcal.get_events_for_date(service,email_id,fetch_date)
+            pto_flag = False                        
+            for event in all_events:
+                if 'summary' in event.keys():
+                    event_name = event['summary'].split(':')[-1].strip()
+                    event_name = event_name.split()[0]
+                    if 'PTO'.lower() == event_name.lower():
+                        pto_flag = True 
+                        break
+            if pto_flag:
+                busy_slots = gcal.make_day_busy(fetch_date)
+            else:
+                busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
+        except HttpError:            
+            pass
+           
+        return busy_slots
 
 
 def get_interviewer_email_id(interviewer_work_time_slots):

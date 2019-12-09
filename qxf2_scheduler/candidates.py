@@ -9,14 +9,14 @@ import random
 from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate
 DOMAIN = 'qxf2.com'
 
-def url_gen(candidate_id = 0, job_id = 0):
+
+def url_gen(candidate_id, job_id):
     "generate random url for candidate"
-    if(candidate_id == 0 or job_id == 0):
-        return ""
-    else:
-        KEY_LEN = random.randint(8,16)
-        urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]
-        return (f'{candidate_id}/{job_id}/{"".join(urllist)}')
+    KEY_LEN = random.randint(8,16)
+    print(f"{candidate_id}-----------------{job_id}")
+    urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]
+    return (f'{candidate_id}/{job_id}/{"".join(urllist)}')
+
 
 @app.route("/candidates",methods=["GET"])
 def read_candidates():
@@ -91,13 +91,20 @@ def add_candidate(job_role):
         api_response = {'data':data,'error':error}
         return jsonify(api_response)
 
+@app.route("/candidate/url")
+def generate_unique_url(candidate_id,job_id,):
+    print(f"{candidate_id}-*************************-{job_id}")
+    url=url_gen(candidate_id,job_id)
+    api_response = {'url':url}
 
+    return jsonify(api_response)
+    
         
 @app.route("/candidate/<job_id>/<candidate_id>") 
 def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"     
-    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id).values(Candidates.candidate_name, Jobs.job_role)
+    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id).values(Candidates.candidate_name, Jobs.job_role,Jobcandidate.job_id,Jobcandidate.candidate_id)
     for each_data in candidate_job_data:
-        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role} 
+        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':each_data.candidate_id,'job_id':each_data.job_id} 
  
     return render_template("candidate-job-status.html",result=data)

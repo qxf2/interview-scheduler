@@ -46,7 +46,16 @@ class Candidates(db.Model):
     candidate_id = db.Column(db.Integer,primary_key=True)
     candidate_name = db.Column(db.String,nullable=False)
     candidate_email = db.Column(db.String,nullable=False)
-    job_id = db.Column(db.Integer,nullable=False)
 
     def __repr__(self):
-        return f"Candidates('{self.candidate_name}','{self.candidate_email}','{self.job_id}')"
+        return f"Candidates('{self.candidate_name}','{self.candidate_email}')"
+
+class Jobcandidate(db.Model):
+    "Combine Job id and Candidate ID"
+    combo_id = db.Column(db.Integer,primary_key=True)
+    candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
+    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
+    url = db.Column(db.String)
+
+    def __repr__(self):
+        return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}')"

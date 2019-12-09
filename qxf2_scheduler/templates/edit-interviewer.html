@@ -1,0 +1,22 @@
+{% extends "add-edit-interviewer-template.html" %}
+{% if result is mapping %}
+{% block content %}
+<input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
+    value="{{result.interviewers_name}}" required="">
+
+<input id="email" name="email" type="text" placeholder="johndoe@example.com" value="{{result.interviewers_email}}"
+    class="form-control input-md" required="">
+
+
+<input id="designation" name="designation" type="text" placeholder="QA" value="{{result.interviewers_designation}}"
+    class="form-control input-md" required="">
+{% endblock %}
+{% else %}
+
+{{ super() }}
+{% endif %}
+
+
+</body>
+
+</html>

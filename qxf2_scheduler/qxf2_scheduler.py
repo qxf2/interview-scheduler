@@ -81,10 +81,10 @@ def combine_date_and_time(date,selected_slot):
 
 def append_the_create_event_info(create_event):
     "Appends the created event information into list"
-    created_event_info = []      
+    created_event_info = [] 
     created_event_info.append({'start':create_event['start']})    
     created_event_info.append({'end':create_event['end']})     
-    created_event_info.append({'Link':create_event['hangoutLink']})
+    created_event_info.append({'Link':create_event['htmlLink']})
     
     return created_event_info
 
@@ -342,12 +342,14 @@ def process_time_to_gcal(given_date,hour_offset=None):
     "Process a given string to a gcal like datetime format"
     processed_date = gcal.process_date_string(given_date)
     if hour_offset is not None:
-        processed_date = processed_date.replace(hour=int(hour_offset))        
+        time_split = hour_offset.split(":")
+        processed_date = processed_date.replace(hour=int(time_split[0]))
+        processed_date = processed_date.replace(minute=int(time_split[1]))
     processed_date = gcal.process_date_isoformat(processed_date)
     processed_date = str(processed_date).replace('Z',TIMEZONE_STRING)
 
     return processed_date
-    
+        
 
 def process_only_time_from_str(date):
     "Process and return only the time stamp from a given string"

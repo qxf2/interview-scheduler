@@ -13,7 +13,6 @@ DOMAIN = 'qxf2.com'
 def url_gen(candidate_id, job_id):
     "generate random url for candidate"
     KEY_LEN = random.randint(8,16)
-    print(f"{candidate_id}-----------------{job_id}")
     urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]
     return (f'{candidate_id}/{job_id}/{"".join(urllist)}')
 
@@ -91,20 +90,27 @@ def add_candidate(job_role):
         api_response = {'data':data,'error':error}
         return jsonify(api_response)
 
-@app.route("/candidate/url")
-def generate_unique_url(candidate_id,job_id,):
-    print(f"{candidate_id}-*************************-{job_id}")
-    url=url_gen(candidate_id,job_id)
-    api_response = {'url':url}
-
+@app.route("/candidate/url",methods=["GET","POST"])
+def generate_unique_url():
+    candidate_id = request.form.get('candidateId')
+    job_id = request.form.get('jobId')
+    url_exists = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).value(Jobcandidate.url)
+    if (url_exists != ''):
+        url=url_exists
+    else:
+        url=url_gen(candidate_id,job_id)
+        edit_url = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).update({'url': url})
+        db.session.commit()
+        print(f"else url :{url}")
+    api_response = {'url': url}
     return jsonify(api_response)
     
         
 @app.route("/candidate/<job_id>/<candidate_id>") 
 def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"     
-    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id).values(Candidates.candidate_name, Jobs.job_role,Jobcandidate.job_id,Jobcandidate.candidate_id)
+    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id).values(Candidates.candidate_name, Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url)
     for each_data in candidate_job_data:
-        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':each_data.candidate_id,'job_id':each_data.job_id} 
+        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':each_data.candidate_id,'job_id':each_data.job_id,'url': each_data.url} 
  
     return render_template("candidate-job-status.html",result=data)

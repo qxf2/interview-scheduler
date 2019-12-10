@@ -21,11 +21,16 @@
     <body>
         <h2 class="grey_text text-center">Candidate Details</h2>
         <div class="container col-md-offset-1">
-                
+                {% if result.url=="" %}
                 <div class="col-md-8">
                     <input type="unique-url" id="generate-url" value="generate url" disabled="true"/>
                     <button class="btn btn-info" id="urlbutton" type="submit">Generate URL</button>
                 </div>
+                {% else %}
+                <div class="col-md-8">URL:
+                    <input type="unique-url" id="generate-url" value="{{ result.url }}" disabled="true"/>
+                </div>
+                {% endif %}
                  
             <table class="table table-striped">
                 <thead>
@@ -49,20 +54,21 @@
             $("#urlbutton").on('click', function () {
             var candidateId="{{ result.candidate_id }}";
             var jobId="{{ result.job_id }}";
-            console.log("clicked on generate url button jid"+jobId+"cid"+candidateId);
+            console.log("clicked on generate url button job id :"+jobId+" candidate id :"+candidateId);
             $.ajax({
-                    type: ['GET','POST'],
+                    type: 'POST',
                     url: '/candidate/url',
                     data: { 
-                        'candidate_id':candidateId, 
-                        'job_id': jobId 
+                        'candidateId': candidateId, 
+                        'jobId': jobId 
                         },
                     success: function (data) {
                         console.log("it's a success:"+data.url);
-                        var utl_textbox = document.getElementById("generate-url"); 
-                        utl_textbox.setAttribute('value', data.url);  
+                        var url_textbox = document.getElementById("generate-url"); 
+                        url_textbox.setAttribute('value', data.url);  
                     }
-                })   
+                })
+            window.location.reload();   
         }) 
     </script>
 </body>

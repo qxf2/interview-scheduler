@@ -37,6 +37,7 @@
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
+            <input type="hidden" value="{{result.candidate_id}}" id="candidateId">
 
             <label class="col-md-4 control-label" for="email">Email</label>
             <div class="col-md-4">
@@ -48,6 +49,7 @@
                 <div class="invalid-feedback">Please fill out this field</div>
 
             </div>
+            <input type="hidden"id="oldJob" value="{{result.job_role}}">
 
             <label class="col-md-4 control-label" for="select1">Job applied for</label>
             <div class="col-md-4">
@@ -64,14 +66,14 @@
             </div>
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
-                <button class="btn btn-info" type="submit">Submit</button>
-                <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
+                <button class="btn btn-info" type="submit">Edit</button>
+                <button name="clear" onclick="clearEdit()" class="btn btn-danger">Cancel</button>
             </div>
         </form>
     </div>
     <script>
-        function clearAdd() {
-            document.location.href = "/candidate/add"
+        function clearEdit() {
+            document.location.href = "/candidates"
         }
     </script>
     <script>
@@ -97,30 +99,26 @@
                                 var candidateEmail = $("#email").val();
                                 var dropdownValue = document.getElementById("select1");
                                 var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
-                                console.log(candidateEmail, candidateName, jobApplied);
+                                var existingJob = document.getElementById("oldJob").value;
+                                var candidateId = document.getElementById("candidateId").value;
+                                console.log(candidateEmail, candidateName, jobApplied,existingJob);
                                 $.ajax({
                                     type: 'POST',
-                                    url: '/candidate/add',
+                                    url: '/candidate/edit/%d'%candidateId,
                                     data: {
                                         'candidateName': candidateName,
                                         'candidateEmail': candidateEmail,
-                                        'jobApplied': jobApplied
+                                        'jobApplied': jobApplied,
+                                        'existJob':existingJob
                                     },
                                     success: function (result) {
                                         console.log(result.error, result.data['candidate_name']);
                                         var resultName = result.data['candidate_name'];
                                         console.log(resultName);
+                                        alert("The candidate has been edited");
+                                        document.location.href = "/candidates";
 
-                                        if (result.error == "Success") {
-                                            alert("The candidate has been added");
-                                            document.location.href = "/candidates";
-
-                                        }
-                                        else {
-                                            alert("The candidate already exists");
-                                            document.location.href = "/candidates";
-                                        }
-
+                                        
 
                                     }
                                 })

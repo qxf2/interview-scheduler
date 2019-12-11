@@ -9,7 +9,7 @@
     <!--Stylesheets-->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+    
     <!--JS-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -23,12 +23,12 @@
         <div class="container col-md-offset-1">
                 {% if result.url=="" %}
                 <div class="col-md-8">
-                    <input type="unique-url" id="generate-url" value="generate url" disabled="true"/>
+                    <input id="generate-url" value="generate url" size="40%" readonly/>
                     <button class="btn btn-info" id="urlbutton" type="submit">Generate URL</button>
                 </div>
                 {% else %}
                 <div class="col-md-8">URL:
-                    <input type="unique-url" id="generate-url" value="{{ result.url }}" disabled="true"/>
+                    <input id="generate-url" value="{{ result.url }}" size="40%" readonly/>
                 </div>
                 {% endif %}
                  
@@ -51,10 +51,9 @@
     </div>
     
     <script>
+        var candidateId="{{ result.candidate_id }}";
+        var jobId="{{ result.job_id }}";
             $("#urlbutton").on('click', function () {
-            var candidateId="{{ result.candidate_id }}";
-            var jobId="{{ result.job_id }}";
-            console.log("clicked on generate url button job id :"+jobId+" candidate id :"+candidateId);
             $.ajax({
                     type: 'POST',
                     url: '/candidate/url',
@@ -63,7 +62,6 @@
                         'jobId': jobId 
                         },
                     success: function (data) {
-                        console.log("it's a success:"+data.url);
                         var url_textbox = document.getElementById("generate-url"); 
                         url_textbox.setAttribute('value', data.url);  
                     }

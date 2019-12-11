@@ -40,7 +40,8 @@
                     <p>Success:</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" onclick="clearAdd()" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" onclick="clearAdd()"
+                        data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -84,7 +85,7 @@
             </div>
         </form>
         <form class="form-inline">
-            <div class="form-group bfh-timepicker" data-mode="12h">
+            <div class="form-group ">
                 <label class="col-md-4 control-label" for="starttime">Starttime</label>
                 <div class="col-md-4">
                     <input type="time" class="form-control input-md" id="starttime0" placeholder="starttime"
@@ -151,18 +152,25 @@
         })
     </script>
     <script>
-        var count = 0;
+        var count = 0;        
         function addtextbox() {
-            count++;
-            var newTextBoxDiv = document.createElement('div');
-            newTextBoxDiv.id = 'Tools';
-            document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
+        count++;
+        var newTextBoxDiv = document.createElement('div');
+        newTextBoxDiv.id = 'Tools';
+        document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="startime" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="endtime" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
-                '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
-            console.log("Iam count", count);
-        };
+        newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+            '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
+            '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
+        console.log("Iam count", count);
+       $('#Tools input').timepicker({
+           timeFormat: 'HH:mm',
+           interval: 30,
+           use24hours: true,
+           scrollbar: true,
+       });
+
+    };
 
         function removeTextArea(inputElement) {
             var el = inputElement;
@@ -193,11 +201,11 @@
         });
     </script>
     <script>
-        function clearAdd(){
+        function clearAdd() {
             document.location.href = "/interviewers";
         }
     </script>
-     
+    
 </body>
 
 </html>

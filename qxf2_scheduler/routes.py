@@ -6,7 +6,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json,ast
+import json,ast,sys
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
 DOMAIN = 'qxf2.com'
@@ -139,6 +139,7 @@ def read_interviewer_details(interviewer_id):
             'interviewers_designation': each_detail.interviewer_designation}
 
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
+    
 
 def add_edit_interviewers_in_time_slot_table(interviewer_name):
     "Adding the interviewers in the interviewer time slots table"
@@ -245,6 +246,60 @@ def interviewers_for_roles(job_id):
             {'interviewers_name': each_interviewer.interviewer_name})
 
     return render_template("role-for-interviewers.html", result=interviewers_list)
+
+
+@app.route("/jobs/add",methods=["GET","POST"])
+def add_job():
+    "Add ajob through UI"
+    if request.method == 'GET':
+        all_interviewers = Interviewers.query.all()
+        interviewers_list = []
+        for each_interviewer in all_interviewers:           
+            interviewers_list.append(each_interviewer.interviewer_name)
+
+        return render_template("add-jobs.html",result=interviewers_list)
+
+    if request.method == 'POST':
+        job_role = request.form.get("role")
+        data = {'jobrole':job_role}
+        fetch_existing_job_role = Jobs.query.all()
+        jobs_list = []
+        #Fetch the job role
+        for each_job in fetch_existing_job_role:           
+            jobs_list.append(each_job.job_role.lower())
+        
+        #Compare the job with database job list
+        if job_role.lower() in jobs_list:
+            check_job_exists = True
+        else:
+            check_job_exists = False            
+        
+        #If the job is already in the database send failure
+        #If it's not there add the new job role and return success
+        if check_job_exists != True:
+            new_interviewers_list = []
+            interviewers = ast.literal_eval(request.form.get("interviewerlist"))
+            #I have to remove the duplicates and removing the whitespaces which will be 
+            #added repeatedly through UI
+            for each_interviewers in interviewers:
+                new_interviewers_list.append(each_interviewers.strip())
+            interviewers=list(set(new_interviewers_list))                        
+            job_object = Jobs(job_role=job_role)
+            db.session.add(job_object)
+            db.session.commit()
+            job_id = job_object.job_id
+            #Get the id of the user from the interviewers table
+            for each_interviewer in interviewers:                
+                interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer.strip()).scalar()                       
+                job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=interviewer_id)
+                db.session.add(job_interviewer_object)
+                db.session.commit()
+                
+        else:
+            return jsonify(message='The job already exists'),500           
+        data = {'jobrole':job_role,'interviewers':interviewers}       
+        
+        return jsonify(data)
 
 
 @app.route("/jobs/delete", methods=["POST"])

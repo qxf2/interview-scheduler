@@ -47,7 +47,7 @@
         </div>
     </div>
     <div class="bs-example">
-        <form class="form-horizontal">
+        <form class="form-horizontal was-validated">
 
             <!-- Form Name -->
             <h2 class="grey_text text-justify">Add Interviewers</h2>
@@ -57,7 +57,8 @@
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
                         required="">
-
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
                 </div>
             </div>
 
@@ -67,7 +68,8 @@
                 <div class="col-md-4">
                     <input id="email" name="email" type="text" placeholder="johndoe@example.com"
                         class="form-control input-md" required="">
-
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
                 </div>
             </div>
 
@@ -77,7 +79,8 @@
                 <div class="col-md-4">
                     <input id="designation" name="designation" type="text" placeholder="QA"
                         class="form-control input-md" required="">
-
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
                 </div>
             </div>
         </form>
@@ -108,7 +111,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="save"></label>
                 <div class="col-md-8">
-                    <input class="btn btn-success" type='button' id='submit' value='Add'>
+                    <input class="btn btn-success" type='button' id='submit' value='Save'>
                     <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
                 </div>
             </div>

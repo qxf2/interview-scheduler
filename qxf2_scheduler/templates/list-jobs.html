@@ -39,7 +39,7 @@
     <div class="container col-md-offset-1">
         <h2 class="grey_text text-center">Job roles</h2>
         <div>
-            <input class="btn btn-info" type="button" id="add" value="Add">
+            <input class="btn btn-info" type="button" id="add" onclick="addJob()" value="Add">
         </div>
         <div class="row-fluid top-space-20">
             <table class="table table-striped">
@@ -110,6 +110,13 @@
             })
         })
 
+    </script>
+    <script>
+        
+            function addJob(){
+                document.location.href='/jobs/add'
+            }
+       
     </script>
 
 

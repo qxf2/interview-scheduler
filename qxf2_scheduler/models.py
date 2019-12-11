@@ -51,3 +51,13 @@ class Candidates(db.Model):
 
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"
+
+class Rounds(db.Model):
+    "Adding the rounds"
+    round_id = db.Column(db.Integer,primary_key=True)
+    round_time = db.Column(db.String,nullable=False)
+    round_description = db.Column(db.String,nullable=False)
+    round_requirement = db.Column(db.String,nullable=False)
+
+    def __repr__(self):
+        return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}')"

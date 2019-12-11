@@ -1,0 +1,167 @@
+<html>
+
+<head>
+    <title>
+        Edit Jobs
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!--This is to disable liveregion of multi-select,Source is  https://stackoverflow.com/questions/13011127/how-to-remove-change-jquery-ui-autocomplete-helper-text-->
+    <style>
+        .ui-helper-hidden-accessible {
+            position: absolute;
+            left: -999em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container col-md-offset-1">
+        <div class="row top-space-30">
+            <h2>Edit the job role and Interviewers</h2>
+        </div>
+        <div class="row top-space-30">
+            <form class="needs-validation">
+                <div class="form-group row">
+                    <label class="col-md-4 col-form-label text-md-right" for="jobrole">Job role:</label>
+                    <div class="col-md-6">
+                        <input id="role" name="jobrole" type="text" placeholder="QA" value='{{ result.role_name }}' class="form-control input-md"
+                            required>
+                        <div class="valid-feedback">Valid.</div>
+                        <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                </div>
+                <input type="hidden" id="idHidden" value="{{result.job_id}}" required>
+                <div class="form-group row">
+                    <label class="col-md-4 col-form-label text-md-right" for="interviewers">Interviewers:</label>
+                    <div class="col-md-8">
+                        <input class="form-control" type="text" id="interviewers" value="{{result.interviewers_name}}" required>
+                        <input type="hidden" id="TestHidden" value="{{result.interviewers_list}}" required>
+                        <div class="valid-feedback">Valid.</div>
+                        <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 offset-md-4 top-space-30">
+                    <button class="btn btn-info" type="submit" id="submit">Edit</button>
+                    <input type='button' onclick="clearEdit()" value='Cancel' class="btn btn-danger">
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (form.checkValidity() === false) {
+                            console.log("I am inside true");
+
+                        }
+                        else {
+                            var jobName = $("#role").val();
+                            var interviewersList = $("#interviewers").val().split(',');
+                            var jobId = document.getElementById("idHidden").value;
+                            interviewersList.pop();
+                            console.log(interviewersList,jobId);
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '/jobs/edit/%d'%jobId,
+                                data: {
+                                    'role': jobName,
+                                    'id':jobId,                                     
+                                    'interviewerlist': JSON.stringify(interviewersList)
+                                },
+                                success: function (result,message) {
+                                    alert("The job has been edited");
+                                    document.location.href = "/jobs";
+                                },
+                                error: function (request, status, message) {
+                                    console.log(request);
+                                    alert(request.responseJSON.message);
+                                    document.location.href = "/jobs";
+                                }
+                            })
+                        }
+
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+    <script>
+        $(function () {
+            var availableTags = eval(document.getElementById("TestHidden").value);
+            function split(val) {
+                return val.split(/,\s*/);
+            }
+            function extractLast(term) {
+                return split(term).pop();
+            }
+            //document.getElementById("id1").style.display="none";
+            $("#interviewers")
+                // don't navigate away from the field on tab when selecting an item
+                .on("keydown", function (event) {
+                    if (event.keyCode === $.ui.keyCode.TAB &&
+                        $(this).autocomplete("instance").menu.active) {
+                        event.preventDefault();
+                    }
+                })
+                .autocomplete({
+                    minLength: 0,
+                    source: function (request, response) {
+                        // delegate back to autocomplete, but extract the last term
+                        response($.ui.autocomplete.filter(
+                            availableTags, extractLast(request.term)));
+                    },
+                    messages: {
+                        noResults: '',
+                        results: function () { }
+                    },
+                    focus: function () {
+                        // prevent value inserted on focus
+                        return false;
+                    },
+                    select: function (event, ui) {
+                        var terms = split(this.value);
+                        // remove the current input
+                        terms.pop();
+                        // add the selected item
+                        terms.push(ui.item.value);
+                        // add placeholder to get the comma-and-space at the end
+                        terms.push("");
+                        this.value = terms.join(", ");
+                        return false;
+                    }
+                });
+        });
+    </script>
+    <script>
+        function clearEdit(){
+            document.location.href = "/jobs";
+
+        }
+        
+    </script>
+
+</body>
+
+</html>

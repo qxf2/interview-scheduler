@@ -27,22 +27,11 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col col-md-2">Interviewers work hours</th>
-                   
+                    <th scope="col col-md-2">Interviewers work hours</th>                   
 
                 </tr>
             </thead>
-            <tbody>
-                {% if result is mapping  %}
-                <tr>
-                    <td>{{ result.interviewers_name }}</td>
-                    <td>{{ result.interviewers_email }}</td>
-                    <td>---</td>
-                    <td><input class="btn btn-info" type="button" value="Edit" id="edit"
-                        onclick="editinterviewer({{ result.interviewers_id }})"></td>
-
-                </tr>
-                {% else %}
+            <tbody>              
 
                 {% for each_detail in result %}
                 <tr>
@@ -56,7 +45,7 @@
                     
                 </tr>
                 {% endfor %}
-                {% endif %}
+               
             </tbody>
         </table>
         </div>

@@ -4,10 +4,10 @@ We use this extensively in the routes.py of the qxf2_scheduler application
 """
 
 import qxf2_scheduler.base_gcal as gcal
-#import base_gcal as gcal
+from googleapiclient.errors import HttpError
 import datetime
 from datetime import timedelta
-import random
+import random,sys
 
 TIMEZONE_STRING = '+05:30'
 FMT='%H:%M'
@@ -288,21 +288,26 @@ def get_free_slots(busy_slots, day_start, day_end):
 def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     "Get the busy slots for a given date"
     service = gcal.base_gcal()
-    all_events = gcal.get_events_for_date(service,email_id,fetch_date)
-    pto_flag = False
-    for event in all_events:
-        if 'summary' in event.keys():
-            event_name = event['summary'].split(':')[-1].strip()
-            event_name = event_name.split()[0]
-            if 'PTO'.lower() == event_name.lower():
-                pto_flag = True 
-                break
-    if pto_flag:
-        busy_slots = gcal.make_day_busy(fetch_date)
-    else:
-        busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
-
-    return busy_slots
+    busy_slots = []
+    if service:
+        try:            
+            all_events = gcal.get_events_for_date(service,email_id,fetch_date)
+            pto_flag = False                        
+            for event in all_events:
+                if 'summary' in event.keys():
+                    event_name = event['summary'].split(':')[-1].strip()
+                    event_name = event_name.split()[0]
+                    if 'PTO'.lower() == event_name.lower():
+                        pto_flag = True 
+                        break
+            if pto_flag:
+                busy_slots = gcal.make_day_busy(fetch_date)
+            else:
+                busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
+        except HttpError:            
+            pass
+           
+        return busy_slots
 
 
 def get_interviewer_email_id(interviewer_work_time_slots):
@@ -320,13 +325,15 @@ def get_free_slots_for_date(fetch_date,interviewer_work_time_slots,debug=False):
     for each_slot in interviewer_work_time_slots:
         individual_interviewer_email_id = each_slot['interviewer_email']
         busy_slots = get_busy_slots_for_date(individual_interviewer_email_id,fetch_date,debug=debug)        
-        day_start_hour = each_slot['interviewer_start_time']
-        day_end_hour = each_slot['interviewer_end_time']
-        day_start = process_time_to_gcal(fetch_date,day_start_hour)
-        day_end = process_time_to_gcal(fetch_date,day_end_hour)
-        free_slots = get_free_slots(busy_slots,day_start,day_end)
-        for i in range(0,len(free_slots),2):
-            processed_free_slots.append({'start':process_only_time_from_str(free_slots[i]),'end':process_only_time_from_str(free_slots[i+1]),'email_id':individual_interviewer_email_id})
+        len_of_busy_slots= len(busy_slots)
+        if len_of_busy_slots >=1:        
+            day_start_hour = each_slot['interviewer_start_time']
+            day_end_hour = each_slot['interviewer_end_time']
+            day_start = process_time_to_gcal(fetch_date,day_start_hour)
+            day_end = process_time_to_gcal(fetch_date,day_end_hour)
+            free_slots = get_free_slots(busy_slots,day_start,day_end)
+            for i in range(0,len(free_slots),2):
+                processed_free_slots.append({'start':process_only_time_from_str(free_slots[i]),'end':process_only_time_from_str(free_slots[i+1]),'email_id':individual_interviewer_email_id})
     return processed_free_slots
 
 

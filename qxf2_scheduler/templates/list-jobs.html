@@ -60,7 +60,7 @@
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
                                 data-jobrole="{{ each_job.job_role }}" data-href="{{ each_job.job_id }}"
                                 data-toggle="modal">Delete</button>
-                                <input class="btn btn-info" type="button" id="addRounds" value="Add rounds"></button></td>
+                                <input class="btn btn-info" type="button" onclick="addRounds('{{ each_job.job_id }}')" value="Add rounds"></button></td>
                             
                     </tr>
                     {% endfor %}
@@ -129,6 +129,13 @@
         function addCandidate(jobRole){
             console.log(jobRole);
             document.location.href = "/candidate/add/"+jobRole;
+        }
+    </script>
+    <script>
+        function addRounds(jobId){
+            document.location.href = "/job/" +jobId+ "/rounds";
+
+
         }
     </script>
 

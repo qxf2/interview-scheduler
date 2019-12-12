@@ -17,16 +17,19 @@
 <body>
     <h2 class="grey_text text-center">Interviewer list for the Job role</h2>
     <div class="container col-md-offset-1">
-        
-        
-        <div>
+        <table class="table table-striped">
+            <thead>
+                <tr> 
+                    <th scope="col">Interviewer Name</th>      
+                </tr>
+            </thead>
+            <tbody>
             {% for each_job in result %}
-
-            <p>{{ each_job.interviewers_name }}</p>
+            <td>{{ each_job.interviewers_name }}</td>
             {% endfor %}
+            </tbody>
 
-        </div>
-
+    </div>
 </body>
 
 </html>

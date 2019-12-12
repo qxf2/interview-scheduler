@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <h3 class="grey_text text-center">Interviewer list for the Job role and round</h3>
+    <h3 class="grey_text text-center">Interviewer list for the Job role</h3>
     <div class="container col-md-offset-1">
         <table class="table table-striped">
             <thead>
@@ -25,11 +25,32 @@
             </thead>
             <tbody>
             {% for each_job in result %}
+            <tr>
             <td>{{ each_job.interviewers_name }}</td>
             {% endfor %}
+            </tr>
             </tbody>
-
-    </div>
+        </table>
+    </div><br/><br/>
+    <h3 class="grey_text text-center">Round details</h3>
+    <div class="container col-md-offset-1">
+            <table class="table table-striped">
+                <thead>
+                    <tr> 
+                        <th scope="col">Time Duration</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Requirements</th>      
+                    </tr>
+                </thead>
+                <tbody>
+                {% for each_round in round %}
+                <td>{{ each_round.round_time }}</td>
+                <td>{{ each_round.round_description }}</td>
+                <td>{{ each_round.round_requirement }}</td>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 </body>
 
 </html>

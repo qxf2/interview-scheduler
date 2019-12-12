@@ -55,7 +55,12 @@
                     <tr>                        
                         <td>{{ each_job.job_id }}</td>
                         <td><a href="/{{ each_job.job_id }}/interviewers">{{ each_job.job_role }}</a></td>
+<<<<<<< HEAD
                         <td><input class="btn btn-info" type="button" onclick="editJob('{{each_job.job_id}}')" id="edit" value="Edit">
+=======
+                        <td><input class="btn btn-info" type="button" id="addCandidate" onclick="addCandidate('{{each_job.job_role}}')"value="Add Candidate">
+                            <input class="btn btn-info" type="button" id="edit" value="Edit">
+>>>>>>> e8f1bd925654852350cb6a3427946bbe15bd4abc
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
                                 data-jobrole="{{ each_job.job_role }}" data-href="{{ each_job.job_id }}"
                                 data-toggle="modal">Delete</button></td>
@@ -112,6 +117,7 @@
 
     </script>
     <script>
+<<<<<<< HEAD
         
             function addJob(){
                 document.location.href='/jobs/add'
@@ -123,6 +129,12 @@
         console.log(jobId);
         document.location.href = '/job/edit/'+jobId;
     }
+=======
+        function addCandidate(jobRole){
+            console.log(jobRole);
+            document.location.href = "/candidate/add/"+jobRole;
+        }
+>>>>>>> e8f1bd925654852350cb6a3427946bbe15bd4abc
     </script>
 
 

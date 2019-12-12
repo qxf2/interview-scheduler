@@ -61,3 +61,13 @@ class Rounds(db.Model):
 
     def __repr__(self):
         return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}')"
+        
+class Jobcandidate(db.Model):
+    "Combine Job id and Candidate ID"
+    combo_id = db.Column(db.Integer,primary_key=True)
+    candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
+    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
+    url = db.Column(db.String)
+
+    def __repr__(self):
+        return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}')"

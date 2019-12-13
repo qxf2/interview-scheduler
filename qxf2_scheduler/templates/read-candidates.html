@@ -64,7 +64,7 @@
                         <td>{{ each_candidate.candidate_email }}</td>
                         <!--change each_candidate.job_applied-->
                         <td>{{ each_candidate.job_role }}</td>
-                        <td><input class="btn btn-info" type="button" id="edit" value="Edit">
+                        <td><input class="btn btn-info" type="button" id="edit" onclick="editCandidates({{each_candidate.candidate_id}})" value="Edit">
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
                                 data-candidatename="{{ each_candidate.candidate_name }}"
                                 data-candidateid="{{ each_candidate.candidate_id }}"
@@ -127,6 +127,11 @@
     <script>
         function addCandidate(){
             document.location.href = '/candidate/add'
+        }
+    </script>
+    <script>
+        function editCandidates(candidate_id){
+            document.location.href = '/candidate/edit/'+candidate_id;
         }
     </script>
 

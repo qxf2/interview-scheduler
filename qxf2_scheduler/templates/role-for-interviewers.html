@@ -27,8 +27,9 @@
             {% for each_job in result %}
             <tr>
             <td>{{ each_job.interviewers_name }}</td>
-            {% endfor %}
             </tr>
+            {% endfor %}
+            
             </tbody>
         </table>
     </div><br/><br/>
@@ -43,11 +44,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                
                 {% for each_round in round %}
+                <tr>
                 <td>{{ each_round.round_time }}</td>
                 <td>{{ each_round.round_description }}</td>
                 <td>{{ each_round.round_requirement }}</td>
+                </tr>
                 {% endfor %}
+                
                 </tbody>
             </table>
         </div>

@@ -94,8 +94,11 @@
                             value="{{each_slot['endtime']}}" placeholder="endtime" required="">
                     </td>
                     <td>
+                        {% if loop.index != 1 %}
                         <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="btn btn-link">
+                        {% endif %}
                     </td>
+                    
                     <td><div id="resultDiv{{loop.index}}"></div></td>
                 </tr>
                 <br />

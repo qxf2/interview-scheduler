@@ -41,18 +41,17 @@
                         </thead>
                         <tbody>
                             {% for each_round in rounds %}
-                            
+                            <tr>
                                 <td>{{ each_round.round_name }}</td>
                                 <td>{{ each_round.round_time }}</td>
                                 <td>{{ each_round.round_description }}</td>
-                                <td>{{ each_round.round_requirement }}</td>
-
-                                {% endfor %}
+                                <td>{{ each_round.round_requirement }}</td>                                
                                 <td>
                                     <input type="button" class="btn btn-info" value="Edit round">
                                     <input type="button" class="btn btn-info" value="Delete round">
                                 </td>
-                                                        
+                             </tr>
+                             {% endfor %}                           
                         </tbody>
                     </table>
                 </div>

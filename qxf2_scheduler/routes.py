@@ -187,6 +187,7 @@ def edit_interviewer(interviewer_id):
     if request.method == "POST":
         # Updating the interviewers table
         interviewer_name = request.form.get('name')
+        time_object = request.form.get('timeObject')
         data = {'interviewer_name': interviewer_name}
         edit_interviewers = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).update({'interviewer_name': request.form.get(
             'name'), 'interviewer_email': request.form.get('email'), 'interviewer_designation': request.form.get('designation')})

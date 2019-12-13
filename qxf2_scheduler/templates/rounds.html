@@ -7,20 +7,25 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!--Stylesheets-->
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
-
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
     <!--JS files-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!--Confirmation message for deleteing round-->
 </head>
 
 <body>
+    <div id="dialog-confirm" title="Delete round?">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These round will be permanently deleted and cannot be recovered. Are you sure?</p>
+    </div>
     <div class="container col-md-offset-1">
         <h2 class="grey_text text-center">Rounds List</h2>
         <div>
@@ -55,11 +60,32 @@
                         <td>{{result.round_description}}</td>
                         <td>{{result.round_requirements}}</td>
                         <td>
-                            <input type="button" class="btn btn-info" value="Edit round">
-                            <input type="button" class="btn btn-info" value="Delete round">
+                            <input type="button" class="btn btn-info" value="Edit round" id="edit-button">
+                            <input type="button" class="btn btn-info" value="Delete round" id="delete-button">
                         </td>
                     </tbody>
 
                 </table>
             </div>
+            
+            <script>
+                    $("#delete-button").on('click',function (){
+                    $("#dialog-confirm").dialog({
+                    resizable: false,
+                    height: "auto",
+                    width: 400,
+                    modal: true,
+                    buttons: {
+                    "Delete": function() {
+                    $( this ).dialog( "close" );
+                    },
+                    Cancel: function() {
+                    $( this ).dialog( "close" );
+                    }
+                    }
+                    });
+                    });
+                </script> 
+     
 </body>
+</html>

@@ -13,13 +13,14 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="/resources/demos/style.css">
     <!--JS files-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    
     <!--Confirmation message for deleteing round-->
+  
 </head>
 
 <body>
@@ -56,27 +57,31 @@
                         <th>Actions</th>
                     </thead>
                     <tbody>
-                        <td>{{result.round_time}}</td>
-                        <td>{{result.round_description}}</td>
-                        <td>{{result.round_requirements}}</td>
+                        {% for each_item in result %}
+                        <td>{{each_item.round_time}}</td>
+                        <td>{{each_item.round_description}}</td>
+                        <td>{{each_item.round_requirements}}</td>
                         <td>
-                            <input type="button" class="btn btn-info" value="Edit round" id="edit-button">
+                            <input type="button" class="btn btn-info" value="Edit round" id="edit-button"><sapn display="none">{{each_item.round_id}}</sapn>
                             <input type="button" class="btn btn-info" value="Delete round" id="delete-button">
                         </td>
+                        {% endfor %}
                     </tbody>
 
                 </table>
             </div>
             
             <script>
-                    $("#delete-button").on('click',function (){
-                    $("#dialog-confirm").dialog({
+                    var dialog = $("#dialog-confirm").dialog({
                     resizable: false,
                     height: "auto",
+                    autoOpen: false,
                     width: 400,
                     modal: true,
                     buttons: {
                     "Delete": function() {
+
+                    
                     $( this ).dialog( "close" );
                     },
                     Cancel: function() {
@@ -84,6 +89,9 @@
                     }
                     }
                     });
+                    $('#delete-button').on('click',function()
+                    {     
+                    dialog.dialog( "open" );
                     });
                 </script> 
      

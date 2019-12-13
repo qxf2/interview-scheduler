@@ -187,6 +187,7 @@ def edit_interviewer(interviewer_id):
     if request.method == "POST":
         # Updating the interviewers table
         interviewer_name = request.form.get('name')
+        time_object = request.form.get('timeObject')
         data = {'interviewer_name': interviewer_name}
         edit_interviewers = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).update({'interviewer_name': request.form.get(
             'name'), 'interviewer_email': request.form.get('email'), 'interviewer_designation': request.form.get('designation')})
@@ -445,24 +446,22 @@ def edit_job(job_id):
 
 @app.route("/interviewers/add", methods=["GET", "POST"])
 def add_interviewers():
-    "Adding the interviewers"
     data = {}
+    "Adding the interviewers"
     if request.method == 'GET':
         return render_template("add-interviewers.html")
-    if request.method == 'POST':
-        try:
-            # Adding the name,email,deignation through UI
-            interviewer_name = request.form.get('name')
-            data = {'interviewer_name': interviewer_name}
-            add_interviewers = Interviewers(interviewer_name=request.form.get('name'), interviewer_email=request.form.get(
-                'email'), interviewer_designation=request.form.get('designation'))
-            db.session.add(add_interviewers)
-
-            # Filtering the interviewer id from the table to use it for interviewertimeslots table
+    if request.method == 'POST':        
+        interviewer_name = request.form.get('name')
+        interviewer_email = request.form.get('email').lower()
+        interviewer_designation = request.form.get('designation')      
+        #Check the candidate has been already added or not
+        check_interviewer_exists = db.session.query(db.exists().where(Interviewers.interviewer_email==interviewer_email)).scalar()        
+        if check_interviewer_exists == False:
+            data={'interviewer_name':interviewer_name}
+            interviewer_object = Interviewers(interviewer_name=interviewer_name,interviewer_email=interviewer_email,interviewer_designation=interviewer_designation)
+            db.session.add(interviewer_object)
+            db.session.commit()
             add_edit_interviewers_in_time_slot_table(interviewer_name)
-        except Exception as e:
-            print(e)
-
-        db.session.commit()
-
-        return jsonify(data)
+            return jsonify(data=data)
+        else:
+            return jsonify(error='Interviewer already exists'),500    

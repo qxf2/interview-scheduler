@@ -9,15 +9,32 @@
     <!--Stylesheets-->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+    
+    <!--JS-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
+
     </head>
 
     <body>
+        <h2 class="grey_text text-center">Candidate Details</h2>
         <div class="container col-md-offset-1">
-        <table class="table table-striped">
-            <h2 class="grey_text text-center">Candidate Details</h2>
+                {% if result.url=="" %}
+                <div class="col-md-8">
+                    <input id="generate-url" value="generate url" size="40%" readonly/>
+                    <button class="btn btn-info" id="urlbutton" type="submit">Generate URL</button>
+                </div>
+                {% else %}
+                <div class="col-md-8">URL:
+                    <input id="generate-url" value="{{ result.url }}" size="40%" readonly/>
+                </div>
+                {% endif %}
+                 
+            <table class="table table-striped">
                 <thead>
-                   <tr>
+                   <tr> 
                         <th scope="col">Candidate Name</th>
                         <th>Job Applied</th>      
                     </tr>
@@ -32,5 +49,25 @@
                 </tbody>
         </table>
     </div>
-    </body>
+    
+    <script>
+        var candidateId="{{ result.candidate_id }}";
+        var jobId="{{ result.job_id }}";
+            $("#urlbutton").on('click', function () {
+            $.ajax({
+                    type: 'POST',
+                    url: '/candidate/url',
+                    data: { 
+                        'candidateId': candidateId, 
+                        'jobId': jobId 
+                        },
+                    success: function (data) {
+                        var url_textbox = document.getElementById("generate-url"); 
+                        url_textbox.setAttribute('value', data.url);  
+                    }
+                })
+            window.location.reload();   
+        }) 
+    </script>
+</body>
 </html>   

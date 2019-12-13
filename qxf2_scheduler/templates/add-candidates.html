@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add Candidates</title>
+
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .bs-example {
+            margin: 20px;
+        }
+
+        textarea {
+            display: inline
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h2 class="grey_text text-justify">Add Candidates</h2>
+        <form class="needs-validation">
+            <label class="col-md-4 control-label" for="fname">Name of the candidate</label>
+            <div class="col-md-4">
+                <input id="fname" name="fname" type="text" placeholder="John" class="form-control" required>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+            </div>
+
+            <label class="col-md-4 control-label" for="email">Email</label>
+            <div class="col-md-4">
+                <input id="email" name="email" type="Email" placeholder="johndoe@example.com" class="form-control"
+                    required>
+                    <div class=" col-md-8 row top-space-30" id="resultDiv">
+                        </div>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+
+            </div>
+
+            <label class="col-md-4 control-label" for="select1">Job applied for</label>
+            <div class="col-md-4">
+                <select class="form-control" id="select1" required>
+                    <option value="">Select the below option</option>
+                    {% for each_job in data %}
+                    <option value="{{each_job}}">{{each_job}}</option>
+                    {% endfor %}
+                </select>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+
+            </div>
+
+            <label class="col-md-4 control-label" for="save"></label>
+            <div class="col-md-8">
+                <button class="btn btn-info" type="submit">Submit</button>
+                <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        function clearAdd() {
+            document.location.href = "/candidate/add"
+        }
+    </script>
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                console.log("I am inside function");
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        var candidateEmail = $("#email").val();
+                        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                        var emailValidate=re.test(candidateEmail);
+                        console.log(emailValidate);                        
+                        console.log("I am inside submit")
+                        $("#resultDiv").empty();
+                        if (emailValidate === true){
+                        if (form.checkValidity() === true) {
+                            console.log("I am coming here")
+                            var candidateName = $("#fname").val();
+                            var candidateEmail = $("#email").val();
+                            var dropdownValue = document.getElementById("select1");
+                            var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
+                            console.log(candidateEmail, candidateName, jobApplied);
+                            $.ajax({
+                                type: 'POST',
+                                url: '/candidate/add',
+                                data: {
+                                    'candidateName': candidateName,
+                                    'candidateEmail': candidateEmail,
+                                    'jobApplied': jobApplied
+                                },
+                                success: function (result) {
+                                    console.log(result.error, result.data['candidate_name']);
+                                    var resultName = result.data['candidate_name'];
+                                    console.log(resultName);
+
+                                    if (result.error == "Success") {
+                                        alert("The candidate has been added");
+                                        document.location.href = "/candidates";
+
+                                    }
+                                    else{
+                                        alert("The candidate already exists");
+                                        document.location.href = "/candidates";
+                                    }
+
+
+                                }
+                            })
+                        }}
+                        else{
+                            $("#resultDiv").text("Enter the valid email address");
+                            $("#resultDiv").css('color', 'red');
+                        }
+
+                        
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+
+</body>
+
+</html>

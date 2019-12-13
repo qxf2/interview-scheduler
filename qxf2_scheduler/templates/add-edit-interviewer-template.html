@@ -150,7 +150,7 @@
             var designation = $("#designation").val();
             var timeSlotTable = document.getElementById("timeTable");
             var count = timeSlotTable.rows.length;
-            console.log(count);
+            console.log("I am second",count);
             for (var index = 1; index <= count; index++) {
                 var starttimeVal = $("#starttime" + index).val();
                 console.log(typeof starttimeVal, starttimeVal)
@@ -180,7 +180,7 @@
         })
     </script>
     <script>
-        var count = 0;
+        var count = 1;
         function addtextbox() {
             count++;
             var newTextBoxDiv = document.createElement('div');

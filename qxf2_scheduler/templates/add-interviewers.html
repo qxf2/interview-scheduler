@@ -46,11 +46,10 @@
                     <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Success:</p>
+                    <p></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" onclick="clearAdd()"
-                        data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" id="close" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -62,23 +61,20 @@
             <h2 class="grey_text text-justify">Add Interviewers</h2>
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="fname">First Name</label>
+                <label class="col-md-4 control-label" for="fname">Interviewer Name</label>
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
-                        required="">
-                    <div class="valid-feedback">Valid.</div>
-                    <div class="invalid-feedback">Please fill out this field.</div>
+                        required>
                 </div>
             </div>
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="email">Email</label>
+                <label class="col-md-4 control-label" for="email" >Email</label>
                 <div class="col-md-4">
-                    <input id="email" name="email" type="text" placeholder="johndoe@example.com"
-                        class="form-control input-md" required="">
-                    <div class="valid-feedback">Valid.</div>
-                    <div class="invalid-feedback">Please fill out this field.</div>
+                    <input id="email" name="email" type="email" placeholder="johndoe@example.com"
+                        class="form-control input-md" required>
+
                 </div>
             </div>
 
@@ -87,33 +83,34 @@
                 <label class="col-md-4 control-label" for="designation">Designation</label>
                 <div class="col-md-4">
                     <input id="designation" name="designation" type="text" placeholder="QA"
-                        class="form-control input-md" required="">
-                    <div class="valid-feedback">Valid.</div>
-                    <div class="invalid-feedback">Please fill out this field.</div>
+                        class="form-control input-md" required>
+
                 </div>
             </div>
         </form>
         <form class="form-inline">
-            <div class="form-group ">
-                <label class="col-md-4 control-label" for="starttime">Starttime</label>
+            <div class="form-group bfh-timepicker" data-mode="12h">
+                <label class="col-md-6 control-label" for="starttime">Start time</label>
                 <div class="col-md-4">
-                    <input type="time" class="form-control input-md" id="starttime0" placeholder="starttime"
-                        required="">
+                    <input type="time" class="form-control input-md" id="starttime0" placeholder="starttime" required>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-4 control-label" for="endtime">Endtime</label>
+                <label class="col-md-6 control-label" for="endtime">End time</label>
                 <div class="col-md-4">
                     <input type="time" class="form-control input-md" id="endtime0" placeholder="endtime" id="time"
-                        required="">
+                        required>
                 </div>
             </div>
+            <div class="col-md-4" id="resultDiv0"></div>
         </form>
+        
         <div>
-            <input class="btn btn-info" onclick="addtextbox()" type="button" value="Add">
+            <input class="btn btn-info" onclick="addtextbox()" type="button" value="Add time">
         </div>
         <div id="ToolsGroup">
         </div>
+       
 
         <!-- Button (Double) -->
         <form class="form-horizontal">
@@ -134,31 +131,97 @@
             endtime: []
         };
         $("#submit").click(function () {
+            var validValue = true;
             var email = $("#email").val();
             var name = $("#fname").val();
             var designation = $("#designation").val();
             for (var index = 0; index < count + 1; index++) {
                 timeObject.starttime.push($("#starttime" + index).val())
                 timeObject.endtime.push($("#endtime" + index).val())
+            }           
+
+            //Validation of name email and designation starts here
+            if(name == "")
+            {
+                $('#name').remove();
+                $('#fname').after('<span id="name" class="error" style="color:red">Name field is required</span>');
+                validValue = false;
             }
-            console.log(timeObject);
-            $.ajax({
-                type: 'POST',
-                url: '/interviewers/add',
-                data: {
-                    'email': email,
-                    'name': name,
-                    'designation': designation,
-                    'timeObject': JSON.stringify(timeObject)
-                },
-                success: function (result) {
-                    var msg = " The interviewer " + ' ' + result.interviewer_name + ' ' + " has been added successfully";
+            if(name != "")
+            {
+                $('#name').remove();
+                validValue &= true;
+            }
+            if (email == "")
+            {
+                $('#mail').remove();
+                $('#email').after('<span id="mail" class="error" style="color:red">Email field is required</span>');
+                validValue = false;
+            }
+            if(email != "")
+            {   
+                 if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
+                {
+                    $('#mail').remove();
+                    validValue = true;
+                }
+                else
+                {
+                $('#mail').remove();
+                $('#email').after('<span id="mail" class="error" style="color:red">Please enter a valid email address</span>');
+                validValue = false;
+                }
+            }
+            //validation for timings
+            for(index = 0; index <= count; index++) {
+            starttime = $("#starttime"+index).val();
+            endtime = $("#endtime"+index).val();
+            var msg="";
+            if(starttime != "" || endtime != "") {
+                if (starttime >= endtime) {
+                    validValue = false;
+                    msg = "Start time can't be greater than or same as end time";
+                    $("#resultDiv"+index).css('color', 'red');
+                    $("#resultDiv"+index).html(msg);
+                }
+                else {
+                    validValue &= true;
+                    $("#resultDiv"+index).remove();
+                }
+            }
+            else {
+                validValue = false;
+                msg = "Start time and end time can't be empty";
+                $("#resultDiv"+index).css('color', 'red');
+                $("#resultDiv"+index).html(msg);
+                }
+            }
+            
+            //to check validation and not to store data in database make validValue = false in next line;
+            //validValue = false;
+            if (validValue == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/interviewers/add',
+                    data: {
+                        'name': name,
+                        'email': email,
+                        'designation': designation,
+                        'timeObject': JSON.stringify(timeObject)
+                    },
+                    success: function (result) {
+                    var msg = "Success: The interviewer " + ' ' + result.data.interviewer_name + ' ' + " has been added successfully";
                     $('#myModal').modal('show');
                     $('#myModal .modal-body p').html(msg);
-                }
-
-            })
-        })
+                    },
+                    error: function (result) {
+                    var msg ="Failure: The interviewer" + ' '+ name +' ' + "already exist, check email properly";
+                    $('#myModal').modal('show');
+                    $('#myModal .modal-body p').html(msg);
+                    }
+            })            
+        }
+    })
     </script>
     <script>
         var count = 0;        
@@ -210,11 +273,13 @@
         });
     </script>
     <script>
-        function clearAdd() {
-            document.location.href = "/interviewers";
-        }
-    </script>
-    
+        $("#close").click(function () {
+            document.location.href = "/interviewers"
+        })
+    </script>  
 </body>
 
 </html>
+
+
+

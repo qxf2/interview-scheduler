@@ -279,9 +279,9 @@
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Start&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dstarttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">End&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dendtime' + count + '" placeholder="endtime" required=""></div>' +
-                '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);"></div><div id="dresultDiv'+count+'"></div></form>'
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Start&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dstarttime' + count + '" placeholder="starttime" required> </div></div>' +
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">End&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dendtime' + count + '" placeholder="endtime"></div></div>' +
+                '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);"></div><div id="dresultDiv' + count + '"></div></form>'
             count++;   
         };
 

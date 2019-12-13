@@ -251,7 +251,7 @@ def interviewers_for_roles(job_id):
     interviewer_list_for_roles = Interviewers.query.join(Jobinterviewer, Interviewers.interviewer_id == Jobinterviewer.interviewer_id).filter(
         Jobinterviewer.job_id == job_id).values(Interviewers.interviewer_name)
     db_round_list = db.session.query(Jobs, Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
-        Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
+       Rounds.round_id,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
 
     for each_interviewer in interviewer_list_for_roles:
         interviewers_list.append(
@@ -259,7 +259,9 @@ def interviewers_for_roles(job_id):
     
     for each_round in db_round_list:
         rounds_list.append(
-            {'round_time' : each_round.round_time,
+            {
+            'round_id' : each_round.round_id,
+            'round_time' : each_round.round_time,
             'round_description' : each_round.round_description,
             'round_requirement' : each_round.round_requirement}
         )

@@ -249,7 +249,7 @@ def interviewers_for_roles(job_id):
     rounds_list = []
     interviewer_list_for_roles = Interviewers.query.join(Jobinterviewer, Interviewers.interviewer_id == Jobinterviewer.interviewer_id).filter(
         Jobinterviewer.job_id == job_id).values(Interviewers.interviewer_name)
-    db_round_list = db.session.query(Jobs, Jobround, Rounds).filter(Rounds.round_id == Jobround.round_id,Jobs.job_id == Jobround.job_id).group_by(Rounds.round_id).values(
+    db_round_list = db.session.query(Jobs, Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
         Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
 
     for each_interviewer in interviewer_list_for_roles:

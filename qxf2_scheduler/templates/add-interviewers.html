@@ -16,26 +16,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script>
-            $(document).ready(function () {
-                $(".show-modal").click(function () {
-                    $("#myModal").modal({
-                        backdrop: 'static',
-                        keyboard: false
-                    });
-                });
-            });
-        </script>
 
     <style>
         .bs-example {
             margin: 20px;
         }
-
         textarea {
             display: inline
         }
     </style>
+    
 </head>
 
 <body>
@@ -117,7 +107,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="save"></label>
                 <div class="col-md-8">
-                    <input class="btn btn-success show-modal" type='button' id='submit' value='Add'>
+                    <input class="btn btn-success" type='button' id='submit' value='Save'>
                     <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
@@ -139,7 +129,6 @@
                 timeObject.starttime.push($("#starttime" + index).val())
                 timeObject.endtime.push($("#endtime" + index).val())
             }           
-
             //Validation of name email and designation starts here
             if(name == "")
             {
@@ -230,27 +219,22 @@
         var newTextBoxDiv = document.createElement('div');
         newTextBoxDiv.id = 'Tools';
         document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
-
-        newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-            '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
+        newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-6 control-label" for="starttime">Start time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+            '<div class="form-group bfh-timepicker"><label class="col-md-6 control-label" for="endtime">End time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div><div class="col-md-4" id="resultDiv' + count + '"></div></form>' +
             '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
-        console.log("Iam count", count);
        $('#Tools input').timepicker({
            timeFormat: 'HH:mm',
            interval: 30,
            use24hours: true,
            scrollbar: true,
        });
-
     };
-
         function removeTextArea(inputElement) {
             var el = inputElement;
             while (el.tagName != 'DIV') el = el.parentElement;
             el.parentElement.removeChild(el);
             count--;
         }
-
     </script>
     <script>
         $(document).ready(function () {
@@ -280,6 +264,3 @@
 </body>
 
 </html>
-
-
-

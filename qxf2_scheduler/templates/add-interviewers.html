@@ -116,15 +116,21 @@
 
     </div>
     <script>
-        timeObject = {
+        var timeObject = {
             starttime: [],
             endtime: []
-        };
+            };
         $("#submit").click(function () {
             var validValue = true;
             var email = $("#email").val();
             var name = $("#fname").val();
             var designation = $("#designation").val();
+            timeObject = {
+            starttime: [],
+            endtime: []
+            };
+            console.log(timeObject.starttime);
+            console.log(timeObject.endtime);
             for (var index = 0; index < count + 1; index++) {
                 timeObject.starttime.push($("#starttime" + index).val())
                 timeObject.endtime.push($("#endtime" + index).val())

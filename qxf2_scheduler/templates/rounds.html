@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>jQuery UI Dialog - Modal form</title>
+    <title>Add,Edit,Delete rounds</title>
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
@@ -27,31 +27,45 @@
                     <input class="btn btn-info" type="button" id="create-user" value="Add rounds">
                 </div>
                 <br />
-                <div class="row-fluid top-space-20">
+                <h3 class="grey_text text-center">Round details</h3>
+                <div class="container col-md-offset-1">
                     <table class="table table-striped">
-                        <thead>
-                            <th>Round duration</th>
-                            <th>Round Description</th>
-                            <th>Round requirements</th>
-                            <th>Actions</th>
+                        <thead> 
+                            <tr>                          
+                                <th scope="col">Round Name</th>
+                                <th scope="col">Time Duration</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Requirements</th>
+                                <th scope="col col-md-4">Actions</th>
+                                </tr>                            
                         </thead>
                         <tbody>
-                            <td>{{result.round_time}}</td>
-                            <td>{{result.round_description}}</td>
-                            <td>{{result.round_requirements}}</td>
-                            <td>
-                                <input type="button" class="btn btn-info" value="Edit round">
-                                <input type="button" class="btn btn-info" value="Delete round">
-                            </td>
-                        </tbody>
+                            {% for each_round in rounds %}
+                            
+                                <td>{{ each_round.round_name }}</td>
+                                <td>{{ each_round.round_time }}</td>
+                                <td>{{ each_round.round_description }}</td>
+                                <td>{{ each_round.round_requirement }}</td>
 
+                                {% endfor %}
+                                <td>
+                                    <input type="button" class="btn btn-info" value="Edit round">
+                                    <input type="button" class="btn btn-info" value="Delete round">
+                                </td>
+                                                        
+                        </tbody>
                     </table>
                 </div>
+
+
                 <div id="dialog-form" title="Create new round">
                     <p class="validateTips">All form fields are required.</p>
 
                     <form>
                         <fieldset>
+                            <label for="roundname">Round name</label>
+                            <input type="text" name="roundname" id="roundname"
+                                class="text ui-widget-content ui-corner-all">
                             <label for="duration">Duration</label>
                             <input type="text" name="duration" id="duration"
                                 class="text ui-widget-content ui-corner-all">
@@ -61,7 +75,7 @@
                             <label for="requirements">Requirements</label>
                             <input type="requirements" name="requirements" id="requirements"
                                 class="text ui-widget-content ui-corner-all">
-                            <input type="hidden" id='jobId' ,value="{{result.job_id}}" <!-- Allow form submission with
+                            <input type="hidden" id='jobId' ,value="{{rounds.job_id}}" <!-- Allow form submission with
                                 keyboard without duplicating the dialog button -->
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                         </fieldset>
@@ -71,10 +85,11 @@
                 <script>
                     $(function () {
                         var dialog, form,
+                            roundname = $("#roundname"),
                             duration = $("#duration"),
                             description = $("#description"),
                             requirements = $("#requirements"),
-                            allFields = $([]).add(duration).add(description).add(requirements),
+                            allFields = $([]).add(roundname).add(duration).add(description).add(requirements),
                             tips = $(".validateTips");
 
                         function updateTips(t) {
@@ -100,16 +115,19 @@
                         function addUser() {
                             var valid = true;
                             allFields.removeClass("ui-state-error");
+                            var roundname = $("#roundname").val();
                             var duration = $("#duration").val();
                             var description = $("#description").val();
                             var requirements = $("#requirements").val();
                             var JobId = document.getElementById("jobId").value;
                             console.log(duration, description, requirements);
+                            valid = valid && checkLength(roundname, "roundname", 3, 16);
                             valid = valid && checkLength(duration, "duration", 3, 16);
                             valid = valid && checkLength(description, "description", 3, 300);
                             valid = valid && checkLength(requirements, "requirments", 5, 300);
                             if (valid) {
                                 $("#users tbody").append("<tr>" +
+                                    "<td>" + roundname + "</td>" +
                                     "<td>" + duration + "</td>" +
                                     "<td>" + description + "</td>" +
                                     "<td>" + requirements + "</td>" +
@@ -118,6 +136,7 @@
                                     type: 'POST',
                                     url: '/job/%d/rounds' % jobId,
                                     data: {
+                                        'roundname': roundname,
                                         'duration': duration,
                                         'description': description,
                                         'requirements': requirements
@@ -140,7 +159,7 @@
                             width: 350,
                             modal: true,
                             buttons: {
-                                "Create an account": addUser,
+                                "Create Rounds": addUser,
                                 Cancel: function () {
                                     dialog.dialog("close");
                                 }
@@ -154,8 +173,8 @@
                         form = dialog.find("form").on("submit", function (event) {
                             event.preventDefault();
                             addUser();
-                           
-                            
+
+
                         });
 
                         $("#create-user").button().on("click", function () {

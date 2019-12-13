@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json,ast,sys
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround
 DOMAIN = 'qxf2.com'
 
 
@@ -187,6 +187,7 @@ def edit_interviewer(interviewer_id):
     if request.method == "POST":
         # Updating the interviewers table
         interviewer_name = request.form.get('name')
+        time_object = request.form.get('timeObject')
         data = {'interviewer_name': interviewer_name}
         edit_interviewers = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).update({'interviewer_name': request.form.get(
             'name'), 'interviewer_email': request.form.get('email'), 'interviewer_designation': request.form.get('designation')})
@@ -246,14 +247,24 @@ def jobs_page():
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id"
     interviewers_list = []
+    rounds_list = []
     interviewer_list_for_roles = Interviewers.query.join(Jobinterviewer, Interviewers.interviewer_id == Jobinterviewer.interviewer_id).filter(
         Jobinterviewer.job_id == job_id).values(Interviewers.interviewer_name)
+    db_round_list = db.session.query(Jobs, Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
+        Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
 
     for each_interviewer in interviewer_list_for_roles:
         interviewers_list.append(
             {'interviewers_name': each_interviewer.interviewer_name})
+    
+    for each_round in db_round_list:
+        rounds_list.append(
+            {'round_time' : each_round.round_time,
+            'round_description' : each_round.round_description,
+            'round_requirement' : each_round.round_requirement}
+        )
 
-    return render_template("role-for-interviewers.html", result=interviewers_list)
+    return render_template("role-for-interviewers.html", result=interviewers_list, round=rounds_list)
 
 
 def check_jobs_exists(job_role):

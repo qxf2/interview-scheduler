@@ -7,7 +7,7 @@ import json,ast,sys
 from qxf2_scheduler.models import Jobs, Rounds
 
 @app.route("/job/<job_id>/rounds",methods=["GET","POST"])
-def read_round_details(job_id):
+def add_round_details(job_id):
     "read round details"
     if request.method == 'GET':
         round_details = db.session.query(Rounds).values(Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
@@ -20,9 +20,14 @@ def read_round_details(job_id):
     if request.method == "POST":
         print("I am coming here",file=sys.stderr)
         round_time = request.form.get('duration')
-        round_description = request.form.get('round_description')
-        round_requirements = request.form.get('round_requirements')
-        add_round_object = Rounds({'round_time':round_time,'round_description':round_description,'round_requirement':round_requirements})
+        round_description = request.form.get('description')
+        round_requirements = request.form.get('requirements')        
+        print(round_time,round_description,round_requirements,file=sys.stderr)
+        add_round_object = Rounds(round_time=round_time,round_description=round_description,round_requirement=round_requirements)
         db.session.add(add_round_object)
         db.session.commit()
+        msg = "The round has been added"
+
+        return jsonify(msg)
+    
 

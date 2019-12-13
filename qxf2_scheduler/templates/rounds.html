@@ -104,7 +104,7 @@
                             var description = $("#description").val();
                             var requirements = $("#requirements").val();
                             var JobId = document.getElementById("jobId").value;
-                            console.log(duration.length, description.length, requirements.length);
+                            console.log(duration, description, requirements);
                             valid = valid && checkLength(duration, "duration", 3, 16);
                             valid = valid && checkLength(description, "description", 3, 300);
                             valid = valid && checkLength(requirements, "requirments", 5, 300);
@@ -124,7 +124,7 @@
                                     },
                                     success: function (result) {
                                         console.log(result);
-                                        alert("The job has been added");
+                                        alert("The round has been added");
                                         document.location.href = "/jobs";
                                     },
                                 })

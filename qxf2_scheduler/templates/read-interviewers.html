@@ -5,13 +5,11 @@
     <title>Interviewer Details</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!--Stylesheets-->
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
-
     <!--JS files-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -20,29 +18,17 @@
 
 <body> 
         <div class="container col-md-offset-1">
-   
         <table class="table table-striped">
             <h2 class="grey_text text-center">Interviewer Details</h2>
             <thead>
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col col-md-2">Interviewers work hours</th>
-                   
+                    <th scope="col col-md-2">Interviewers work hours</th>                   
 
                 </tr>
             </thead>
-            <tbody>
-                {% if result is mapping  %}
-                <tr>
-                    <td>{{ result.interviewers_name }}</td>
-                    <td>{{ result.interviewers_email }}</td>
-                    <td>---</td>
-                    <td><input class="btn btn-info" type="button" value="Edit" id="edit"
-                        onclick="editinterviewer({{ result.interviewers_id }})"></td>
-
-                </tr>
-                {% else %}
+            <tbody>              
 
                 {% for each_detail in result %}
                 <tr>
@@ -53,13 +39,12 @@
                         <p>{{each_time['starttime'] }}-{{ each_time['endtime']}}</p>
                         {% endfor %}
                     </td>
-                    
                 </tr>
                 {% endfor %}
-                {% endif %}
+               
             </tbody>
         </table>
-        </div>
+    </div>
 </body>
 
 </html>

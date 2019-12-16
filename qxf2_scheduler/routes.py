@@ -41,7 +41,6 @@ def confirm():
     response_value = request.args['value']
     return render_template("confirmation.html", value=json.loads(response_value))
 
-
 @app.route("/confirmation", methods=['GET', 'POST'])
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
@@ -365,6 +364,7 @@ def get_interviewers_name_for_jobupdate(fetched_job_id):
         print(interviewer_name_for_role)
         interviewers_name_list.append(interviewer_name_for_role)
         print(interviewers_name_list)
+    
     return interviewers_name_list
 
 

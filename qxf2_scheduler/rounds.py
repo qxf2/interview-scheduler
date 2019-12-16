@@ -10,8 +10,8 @@ from qxf2_scheduler.models import Jobs, Rounds,Jobround
 def add_round_details(job_id):
     "read round details"
     if request.method == 'GET':
-        rounds_list = []        
-        db_round_list = db.session.query(Jobs, Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
+        rounds_list = []               
+        db_round_list = db.session.query(Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
         Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
         for each_round in db_round_list:
             rounds_list.append(
@@ -21,10 +21,9 @@ def add_round_details(job_id):
             'round_description' : each_round.round_description,
             'round_requirement' : each_round.round_requirement}
         )
-        rounds_list.append({'job_id':job_id})
-        print(rounds_list,file=sys.stderr)
-    
-        return render_template("rounds.html",rounds=rounds_list)
+        job_id={'job_id':job_id}
+                  
+        return render_template("rounds.html",rounds=rounds_list,result=job_id)
 
     if request.method == "POST":
         print("I am coming here",file=sys.stderr)

@@ -22,22 +22,23 @@
         <h2 class="grey_text text-center">Rounds List</h2>
         <div>
             <div class="container col-md-offset-1">
-
                 <div>
                     <input class="btn btn-info" type="button" id="create-user" value="Add rounds">
                 </div>
                 <br />
-                <h3 class="grey_text text-center">Round details</h3>
+
                 <div class="container col-md-offset-1">
                     <table class="table table-striped">
-                        <thead> 
-                            <tr>                          
+                        {% if rounds | length >= 1 %}
+                        <h3 class="grey_text text-center">Round details</h3>
+                        <thead>
+                            <tr>
                                 <th scope="col">Round Name</th>
                                 <th scope="col">Time Duration</th>
                                 <th scope="col">Description</th>
                                 <th scope="col">Requirements</th>
                                 <th scope="col col-md-4">Actions</th>
-                                </tr>                            
+                            </tr>
                         </thead>
                         <tbody>
                             {% for each_round in rounds %}
@@ -45,13 +46,20 @@
                                 <td>{{ each_round.round_name }}</td>
                                 <td>{{ each_round.round_time }}</td>
                                 <td>{{ each_round.round_description }}</td>
-                                <td>{{ each_round.round_requirement }}</td>                                
+                                <td>{{ each_round.round_requirement }}</td>
                                 <td>
                                     <input type="button" class="btn btn-info" value="Edit round">
                                     <input type="button" class="btn btn-info" value="Delete round">
                                 </td>
-                             </tr>
-                             {% endfor %}                           
+                            </tr>
+                            {% endfor %}
+
+                            {% else %}
+                            <div>
+                                <p>There are no rounds been added for this job now. If you want to add click 'Add
+                                    rounds' button.Thank you.</p>
+                            </div>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -74,7 +82,7 @@
                             <label for="requirements">Requirements</label>
                             <input type="requirements" name="requirements" id="requirements"
                                 class="text ui-widget-content ui-corner-all">
-                            <input type="hidden" id='jobId' ,value="{{rounds.job_id}}" <!-- Allow form submission with
+                            <input type="hidden" id='jobId' ,value="{{result.job_id}}" <!-- Allow form submission with
                                 keyboard without duplicating the dialog button -->
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                         </fieldset>

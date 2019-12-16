@@ -23,7 +23,7 @@ def add_round_details(job_id):
         )
         job_id={'job_id':job_id}
                   
-        return render_template("rounds.html",rounds=rounds_list,result=job_id)
+        return render_template("add-rounds.html",rounds=rounds_list,result=job_id)
 
     if request.method == "POST":
         print("I am coming here",file=sys.stderr)

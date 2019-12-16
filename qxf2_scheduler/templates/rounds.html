@@ -15,11 +15,12 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <!--JS files-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     
-    <!--Confirmation message for deleteing round-->
+    
   
 </head>
 
@@ -29,13 +30,11 @@
     </div>
     <div class="container col-md-offset-1">
         <h2 class="grey_text text-center">Rounds List</h2>
-        <div>
             <div class="row-fluid top-space-20">
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>Add rounds</th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -56,44 +55,56 @@
                         <th>Round requirements</th>
                         <th>Actions</th>
                     </thead>
+                    {% for each_item in result %}
                     <tbody>
-                        {% for each_item in result %}
                         <td>{{each_item.round_time}}</td>
                         <td>{{each_item.round_description}}</td>
-                        <td>{{each_item.round_requirements}}</td>
+                        <td>{{each_item.round_requirement}}</td>
                         <td>
-                            <input type="button" class="btn btn-info" value="Edit round" id="edit-button"><sapn display="none">{{each_item.round_id}}</sapn>
-                            <input type="button" class="btn btn-info" value="Delete round" id="delete-button">
-                        </td>
-                        {% endfor %}
+                            <input type="button" class="btn btn-info" value="Edit" id="edit-button" data-edit-round-id="{{each_item.round_id}}" />
+                            <input type="button" class="btn btn-info" onclick="delete_round(this)" value="Delete" id="delete-button{{each_item.round_id}}" data-delete-round-id="{{each_item.round_id}}" data-delete-job-id="{{each_item.job_id}}" />
+                        </td>   
                     </tbody>
-
+                    {% endfor %}
                 </table>
             </div>
+            </div>
             
-            <script>
-                    var dialog = $("#dialog-confirm").dialog({
-                    resizable: false,
-                    height: "auto",
-                    autoOpen: false,
-                    width: 400,
-                    modal: true,
-                    buttons: {
-                    "Delete": function() {
-
-                    
-                    $( this ).dialog( "close" );
-                    },
-                    Cancel: function() {
-                    $( this ).dialog( "close" );
-                    }
-                    }
-                    });
-                    $('#delete-button').on('click',function()
-                    {     
-                    dialog.dialog( "open" );
-                    });
-                </script> 
+    <script>
+        //Confirmation message for deleteing round
+        var round_id;
+        var job_id;
+        var dialog = $("#dialog-confirm").dialog({
+        resizable: false,
+        height: "auto",
+        autoOpen: false,
+        width: 400,
+        modal: true,
+        buttons: {         
+        "Delete": function() {
+        console.log("round_id"+round_id)
+        $.ajax({
+        type: 'GET',
+        url: '/rounds/'+ job_id +'/'+ round_id +'/delete',
+        data: {'round_id':round_id},
+        success: function (data) {
+        window.location.reload();
+        console.log("successfully deleted the data")
+        }
+        })
+        $( this ).dialog( "close" );
+        },
+        Cancel: function() {
+        $( this ).dialog( "close" );
+        }
+        }
+        });
+        function delete_round(action_delete){
+        round_id = action_delete.getAttribute("data-delete-round-id");
+        job_id = action_delete.getAttribute("data-delete-job-id");
+        dialog.dialog( "open" );
+        }
+    </script> 
      
 </body>
 </html>

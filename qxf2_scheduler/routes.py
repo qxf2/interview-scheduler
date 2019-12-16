@@ -41,7 +41,6 @@ def confirm():
     response_value = request.args['value']
     return render_template("confirmation.html", value=json.loads(response_value))
 
-
 @app.route("/confirmation", methods=['GET', 'POST'])
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
@@ -267,7 +266,9 @@ def interviewers_for_roles(job_id):
     
     for each_round in db_round_list:
         rounds_list.append(
-            {'round_time' : each_round.round_time,
+            {
+            'round_id' : each_round.round_id,
+            'round_time' : each_round.round_time,
             'round_description' : each_round.round_description,
             'round_requirement' : each_round.round_requirement}
         )
@@ -374,6 +375,7 @@ def get_interviewers_name_for_jobupdate(fetched_job_id):
         print(interviewer_name_for_role)
         interviewers_name_list.append(interviewer_name_for_role)
         print(interviewers_name_list)
+    
     return interviewers_name_list
 
 

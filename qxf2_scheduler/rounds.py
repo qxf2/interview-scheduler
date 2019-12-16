@@ -4,7 +4,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json,ast,sys
 
-from qxf2_scheduler.models import Jobs, Rounds,Jobround
+from qxf2_scheduler.models import Jobs, Rounds, Jobround
 
 @app.route("/job/<job_id>/rounds",methods=["GET","POST"])
 def add_round_details(job_id):
@@ -50,6 +50,17 @@ def add_round_details(job_id):
             msg = "The round has been added"
         
 
-        return jsonify(msg)
-    
+        return jsonify(msg) 
 
+    
+@app.route("/rounds/<job_id>/<round_id>/delete")
+def delete_round_details(job_id,round_id):
+    "delete round details"
+    delete_round = Rounds.query.filter(Rounds.round_id == round_id).first()
+    db.session.delete(delete_round)
+    db.session.commit()
+    delete_job_round = Jobround.query.filter(Jobround.job_id == job_id,Jobround.round_id == round_id).first()
+    db.session.delete(delete_job_round)
+    db.session.commit()
+
+    return jsonify(data="Deleted")

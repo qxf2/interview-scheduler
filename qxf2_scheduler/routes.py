@@ -393,7 +393,7 @@ def update_job_interviewer_in_database(job_id,job_role,interviewers_list):
         db.session.commit()
 
 
-@app.route("/job/edit/<job_id>", methods=["GET", "POST"])
+@app.route("/job/<job_id>/edit", methods=["GET", "POST"])
 def edit_job(job_id):
     "Editing the already existing job"
     if request.method == 'GET':

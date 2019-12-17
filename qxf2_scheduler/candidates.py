@@ -47,7 +47,7 @@ def delete_candidate():
 
     
 #Passing the optional parameter through URL
-@app.route('/candidate/add/<job_role>')
+@app.route('/candidate/<job_role>/add')
 @app.route("/candidate/add",defaults={'job_role': None},methods=["GET","POST"])
 def add_candidate(job_role):
     "Add a candidate"

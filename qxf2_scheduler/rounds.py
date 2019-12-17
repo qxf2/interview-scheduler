@@ -6,8 +6,9 @@ import json,ast,sys
 
 from qxf2_scheduler.models import Jobs, Rounds, Jobround
 
+
 @app.route("/job/<job_id>/rounds",methods=["GET","POST"])
-def add_round_details(job_id):
+def read_round_details(job_id):
     "read round details"
     if request.method == 'GET':
         rounds_list = []               
@@ -23,10 +24,9 @@ def add_round_details(job_id):
         )
         job_id={'job_id':job_id}
                   
-        return render_template("add-rounds.html",rounds=rounds_list,result=job_id)
+        return render_template("rounds.html",result=rounds_list,job_id=job_id)
 
-    if request.method == "POST":
-        print("I am coming here",file=sys.stderr)
+    if request.method == "POST":        
         round_time = request.form.get('duration')
         round_description = request.form.get('description')
         round_requirements = request.form.get('requirements')
@@ -41,8 +41,7 @@ def add_round_details(job_id):
             db.session.add(add_round_object)
             db.session.commit()
             #getting the unique round id for new rounds
-            round_id = Rounds.query.filter(Rounds.round_name==round_name).value(Rounds.round_id)
-            print(round_id,file=sys.stderr)
+            round_id = Rounds.query.filter(Rounds.round_name==round_name).value(Rounds.round_id)            
             #storing the round id and job id in roundjob table
             add_job_round_object = Jobround(round_id=round_id,job_id=job_id)
             db.session.add(add_job_round_object)
@@ -53,7 +52,7 @@ def add_round_details(job_id):
         return jsonify(msg) 
 
     
-@app.route("/rounds/<job_id>/<round_id>/delete")
+@app.route("/rounds/<round_id>/jobs/<job_id>/delete")
 def delete_round_details(job_id,round_id):
     "delete round details"
     delete_round = Rounds.query.filter(Rounds.round_id == round_id).first()

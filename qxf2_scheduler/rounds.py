@@ -13,18 +13,19 @@ def read_round_details(job_id):
     if request.method == 'GET':
         rounds_list = []               
         db_round_list = db.session.query(Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
-        Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
+        Rounds.round_id,Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
         for each_round in db_round_list:
             rounds_list.append(
             {
+            'round_id':each_round.round_id,
             'round_name':each_round.round_name,
             'round_time' : each_round.round_time,
             'round_description' : each_round.round_description,
             'round_requirement' : each_round.round_requirement}
         )
-        job_id={'job_id':job_id}
+            job_id_to_pass={'job_id':job_id}
                   
-        return render_template("rounds.html",result=rounds_list,job_id=job_id)
+        return render_template("rounds.html",result=rounds_list,jobs=job_id_to_pass)
 
     if request.method == "POST":        
         round_time = request.form.get('duration')
@@ -53,7 +54,7 @@ def read_round_details(job_id):
 
     
 @app.route("/rounds/<round_id>/jobs/<job_id>/delete")
-def delete_round_details(job_id,round_id):
+def delete_round_details(round_id,job_id):
     "delete round details"
     delete_round = Rounds.query.filter(Rounds.round_id == round_id).first()
     db.session.delete(delete_round)

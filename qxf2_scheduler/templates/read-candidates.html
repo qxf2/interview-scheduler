@@ -59,7 +59,7 @@
                         <td>{{ each_candidate.candidate_id }}</td>
                         <!-- change href-->
                         <td><a
-                                href="/candidate/{{ each_candidate.job_id}}/{{each_candidate.candidate_id}}">{{ each_candidate.candidate_name }}</a>
+                                href="/candidate/candidateid/{{each_candidate.candidate_id}}/jobid/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
                         </td>
                         <td>{{ each_candidate.candidate_email }}</td>
                         <!--change each_candidate.job_applied-->
@@ -131,7 +131,7 @@
     </script>
     <script>
         function editCandidates(candidate_id){
-            document.location.href = '/candidate/edit/'+candidate_id;
+            document.location.href = '/candidate/'+ candidate_id + '/edit';
         }
     </script>
 

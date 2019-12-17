@@ -477,3 +477,8 @@ def add_interviewers():
             return jsonify(data=data)
         else:
             return jsonify(error='Interviewer already exists'),500    
+
+
+@app.route("/<id1>/<id2>/<url>/welcome")
+def show_welcome(id1,id2,url):
+    return render_template("welcome.html")

@@ -54,7 +54,7 @@
                         <td>{{each_item.round_requirement}}</td>
                         <td>
                             <input type="button" class="btn btn-info" value="Edit" id="edit-button" data-edit-round-id="{{each_item.round_id}}" />
-                            <input type="button" class="btn btn-info" onclick="delete_round(this)" value="Delete" id="delete-button{{each_item.round_id}}" data-delete-round-id="{{each_item.round_id}}" data-delete-job-id="{{job_id}}" />
+                            <input type="button" class="btn btn-info" onclick="delete_round(this)" value="Delete" id="delete-button{{each_item.round_id}}" data-delete-round-id="{{each_item.round_id}}" data-delete-job-id="{{jobs.job_id}}" />
                         </td>   
                     </tbody>
                     {% endfor %}
@@ -207,11 +207,10 @@
         modal: true,
         buttons: {         
         "Delete": function() {
-        console.log("round_id"+round_id)
         $.ajax({
         type: 'GET',
-        url: '/rounds/'+ round_id +'/jobs'+ job_id +'/delete',
-        data: {'round_id':round_id},
+        url: '/rounds/'+ round_id +'/jobs/'+ job_id +'/delete',
+        data: {'round_id':round_id,'job_id':job_id},
         success: function (data) {
         window.location.reload();
         console.log("successfully deleted the data")

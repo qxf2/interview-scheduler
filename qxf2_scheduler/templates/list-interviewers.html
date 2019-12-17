@@ -56,7 +56,7 @@
                 <tr>
                     <td>{{ each_interviewer.interviewer_id }}</td>
                     <td><a
-                            href="/interviewer/{{ each_interviewer.interviewer_id }}">{{ each_interviewer.interviewer_name }}</a>
+                            href="/{{ each_interviewer.interviewer_id }}/interviewer">{{ each_interviewer.interviewer_name }}</a>
                     </td>
                     <td><input class="btn btn-info" type="button" value="Edit" id="edit"
                             onclick="editinterviewer({{ each_interviewer.interviewer_id }})"> <button type="button"
@@ -129,7 +129,7 @@
     <script>
         function editinterviewer(interviewer_id) {
             console.log(interviewer_id);
-            document.location.href = "/interviewer/edit/"+interviewer_id
+            document.location.href = "/interviewer/"+interviewer_id+"/edit";
 
         }
     </script>

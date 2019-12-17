@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json,ast,sys
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround, Candidates
 DOMAIN = 'qxf2.com'
 
 
@@ -479,6 +479,25 @@ def add_interviewers():
             return jsonify(error='Interviewer already exists'),500    
 
 
-@app.route("/<id1>/<id2>/<url>/welcome")
-def show_welcome(id1,id2,url):
-    return render_template("welcome.html")
+@app.route("/<candidate_id>/<job_id>/<url>/welcome")
+def show_welcome(candidate_id,job_id,url):
+    data = {'job_id':job_id}
+
+    return render_template("welcome.html",result=data)
+
+@app.route("/welcome/valid",methods=["GET","POST"])
+def welcome_valid():
+    candidate_name = request.form.get('name')
+    candidate_email = request.form.get('email')
+    candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
+    if candidate_data == None:
+        return jsonify(error="error"), 500
+    elif candidate_data.lower() == candidate_name.lower():
+        return jsonify(data="success")
+    else:
+        return jsonify(error="error"), 500
+        
+
+@app.route("/<jobid>/get-schedule")
+def show_schedule(jobid):
+    return render_template("get-schedule.html")

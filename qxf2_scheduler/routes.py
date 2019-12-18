@@ -491,11 +491,14 @@ def welcome_valid():
     candidate_email = request.form.get('email')
     candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
     if candidate_data == None:
-        return jsonify(error="error"), 500
+        err={'err':'email'}
     elif candidate_data.lower() == candidate_name.lower():
         return jsonify(data="success")
+    elif candidate_data.lower() != candidate_name.lower():
+        err={'err':'name'}
     else:
-        return jsonify(error="error"), 500
+        err={'err':'other'}
+    return jsonify(error=err), 500
         
 
 @app.route("/<jobid>/get-schedule")

@@ -99,6 +99,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+interviewsch/
 
 # Spyder project settings
 .spyderproject

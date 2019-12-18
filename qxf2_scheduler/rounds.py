@@ -13,10 +13,11 @@ def read_round_details(job_id):
     if request.method == 'GET':
         rounds_list = []               
         db_round_list = db.session.query(Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
-        Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
+        Rounds.round_id,Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
         for each_round in db_round_list:
             rounds_list.append(
             {
+            'round_id':each_round.round_id,
             'round_name':each_round.round_name,
             'round_time' : each_round.round_time,
             'round_description' : each_round.round_description,
@@ -63,3 +64,26 @@ def delete_round_details(job_id,round_id):
     db.session.commit()
 
     return jsonify(data="Deleted")
+
+
+@app.route("/job/<job_id>/round/<round_id>/edit",methods=["GET,POST"])
+def edit_round_details(round_id):
+    "Edit the round details"
+    if request.method=="POST":
+        round_time = request.form.get('duration')
+        round_description = request.form.get('description')
+        round_requirements = request.form.get('requirements')
+        round_name = request.form.get('roundname')        
+        print(round_time,round_description,round_requirements,file=sys.stderr)
+        #Check the round has been already added or not
+        check_round_exists = db.session.query(db.exists().where(Rounds.round_name==round_name)).scalar()
+        if check_round_exists == True:
+            msg = "The round is already added for the role"            
+        else:
+            edit_round_object = Rounds.query.filter(Rounds.round_id==round_id).update({'round_name':round_name,'round_time':round_time,'round_description':round_description,'round_requirement':round_requirements})            
+            db.session.commit()            
+            #getting the unique round id for new rounds
+            round_id = Rounds.query.filter(Rounds.round_name==round_name).value(Rounds.round_id)
+            msg = "The round has been added"
+        
+

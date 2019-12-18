@@ -59,7 +59,7 @@
                         <td>{{ each_candidate.candidate_id }}</td>
                         <!-- change href-->
                         <td><a
-                                href="/candidate/candidateid/{{each_candidate.candidate_id}}/jobid/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
+                                href="/candidate/{{each_candidate.candidate_id}}/job/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
                         </td>
                         <td>{{ each_candidate.candidate_email }}</td>
                         <!--change each_candidate.job_applied-->
@@ -100,13 +100,14 @@
             $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
             console.log("This is in confirm delete" + $(e.relatedTarget).data('href'));
             var modal = $(this)
+            var candidateId = $(e.relatedTarget).data('candidateid');
             modal.find('.modal-body').text('Are you sure you wish to delete this ' + triggeringElement.data("candidatename") + '  candidate? ')
             $("#remove-button").on('click', function () {
                 var jobid = triggeringElement.data('href');
                 console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
                 $.ajax({
                     type: 'POST',
-                    url: '/candidate/delete',
+                    url: '/candidate/'+ candidateId +'/delete',
                     data: { 'candidateId': $(e.relatedTarget).data('candidateid'), 'jobId': $(e.relatedTarget).data('jobid') },
                     success: function (data) {
                         var msg = "The  deleted candidate is " + data.candidate_name;

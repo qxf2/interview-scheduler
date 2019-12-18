@@ -221,11 +221,12 @@ def delete_interviewer(interviewer_id):
     "Deletes a job"
     if request.method == 'POST':
         # interviewer_to_delete = request.form.get('interviewer-id')
-        deleted_user = Interviewers.query.filter(
-            Interviewers.interviewer_id == interviewer_id).first()
+        deleted_user = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).first()
         data = {'interviewer_name': deleted_user.interviewer_name,
                 'interviewer_id': deleted_user.interviewer_id}
         db.session.delete(deleted_user)
+        db.session.commit()
+        delete_user_timeslot = Interviewertimeslots.query.filter(Interviewertimeslots.interviewer_id == interviewer_id).delete()
         db.session.commit()
 
     return jsonify(data)

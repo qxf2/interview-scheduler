@@ -79,7 +79,7 @@
                             <label for="requirements">Requirements</label>
                             <input type="requirements" name="requirements" id="requirements"
                                 class="text ui-widget-content ui-corner-all">
-                            <input type="hidden" id='jobId' ,value="{{job_id}}">
+                            <input type="hidden" id='jobId' value="{{job_id}}">
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                         </fieldset>
                     </form>
@@ -96,7 +96,6 @@
                                 tips = $(".validateTips");
     
                             function updateTips(t) {
-                                console.log(t);
                                 tips
                                     .text(t)
                                     .addClass("ui-state-highlight");
@@ -153,7 +152,6 @@
                                             'requirements': requirements
                                         },
                                         success: function (result) {
-                                            console.log(result);
                                             alert("The round has been added");
                                             document.location.href = "/jobs";
                                         },
@@ -189,7 +187,6 @@
                             });
     
                             $("#create-user").button().on("click", function () {
-                                console.log("I am first");
                                 dialog.dialog("open");
                             });
                         });

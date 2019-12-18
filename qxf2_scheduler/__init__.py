@@ -12,3 +12,4 @@ db = SQLAlchemy(app)
 
 from qxf2_scheduler import routes
 from qxf2_scheduler import candidates
+from qxf2_scheduler import rounds

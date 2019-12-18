@@ -86,12 +86,20 @@
                     {
                         document.location.href = "/" + jobid + "/get-schedule";
                     },
-                    error:function()
+                    error:function(error)
                     {
-                        alert("The email id or name is not matched. Please enter the same email id and name that you used when applied for this role");
+                        console.log(error.responseJSON.error.err)
+                        if(error.responseJSON.error.err=="name"){
+                        alert("Name not found, please enter the same name that you used when applied for this role");
+                        }
+                        else if(error.responseJSON.error.err=="email"){
+                        alert("Email not found, please enter the same email that you used when applied for this role"); 
+                        }
+                        else{}
+                        alert("Something is wrong, contact admin"); 
+                        }
                     }
-                    }
-                    );
+                );
             }
             })
         </script>

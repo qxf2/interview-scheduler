@@ -23,9 +23,8 @@ def read_round_details(job_id):
             'round_description' : each_round.round_description,
             'round_requirement' : each_round.round_requirement}
         )
-            job_id_to_pass={'job_id':job_id}
                   
-        return render_template("rounds.html",result=rounds_list,jobs=job_id_to_pass)
+        return render_template("rounds.html",result=rounds_list,jobs=job_id)
 
     if request.method == "POST":        
         round_time = request.form.get('duration')

@@ -28,8 +28,8 @@ def read_candidates():
     return render_template("read-candidates.html",result=my_candidates_list)
 
 
-@app.route("/candidate/delete",methods=["POST"]) 
-def delete_candidate():
+@app.route("/candidate/<candidate_id>/delete",methods=["POST"]) 
+def delete_candidate(candidate_id):
     "Deletes a candidate"
     if request.method == 'POST':
         candidate_id_to_delete = request.form.get('candidateId')
@@ -109,7 +109,7 @@ def generate_unique_url():
     return jsonify(api_response)
     
         
-@app.route("/candidate/candidateid/<candidate_id>/jobid/<job_id>") 
+@app.route("/candidate/<candidate_id>/job/<job_id>") 
 def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"     
     candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url)

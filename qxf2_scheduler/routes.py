@@ -218,7 +218,7 @@ def edit_interviewer(interviewer_id):
 
 @app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
 def delete_interviewer(interviewer_id):
-    "Deletes a job"
+    "Deletes an interviewer"
     if request.method == 'POST':
         # interviewer_to_delete = request.form.get('interviewer-id')
         deleted_user = Interviewers.query.filter(

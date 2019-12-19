@@ -55,6 +55,7 @@ class Candidates(db.Model):
 class Rounds(db.Model):
     "Adding the rounds"
     round_id = db.Column(db.Integer,primary_key=True)
+    round_name = db.Column(db.String,nullable=False)
     round_time = db.Column(db.String,nullable=False)
     round_description = db.Column(db.String,nullable=False)
     round_requirement = db.Column(db.String,nullable=False)
@@ -71,3 +72,12 @@ class Jobcandidate(db.Model):
 
     def __repr__(self):
         return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}')"
+
+class Jobround(db.Model):
+    "Combine Job id and Round id"
+    combo_id = db.Column(db.Integer,primary_key=True)
+    job_id = job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
+    round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
+    
+    def __repr__(self):
+        return f"Jobround('{self.job_id}','{self.round_id}','{self.round_number}')"

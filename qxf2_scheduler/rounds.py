@@ -23,7 +23,6 @@ def read_round_details(job_id):
             'round_description' : each_round.round_description,
             'round_requirement' : each_round.round_requirement}
         )
-        #job_id={'job_id':job_id}
                   
         return render_template("rounds.html",result=rounds_list,job_id=job_id)
 

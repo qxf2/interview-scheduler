@@ -77,11 +77,26 @@
                         }
                         else {
                             var jobName = $("#role").val();
-                            var interviewersList = $("#interviewers").val().split(',');
+                            var interviewersList = $("#interviewers").val();
                             var jobId = document.getElementById("idHidden").value;
-                            interviewersList.pop();
-                            console.log(interviewersList,jobId);
+                            var lastString = interviewersList.charAt(interviewersList.length - 1);
+                            var lastlistChar = isLetter(lastString)
+                            console.log(lastlistChar);
+                            if (lastlistChar=='true') {
+                                var interviewersList = $("#interviewers").val().split(',');                                
+                            }
+                            else {                                
+                                var interviewersList = $("#interviewers").val().split(',');
+                                interviewersList.pop();                               
 
+                            }
+                            function isLetter (lastString){
+                                console.log("iam coming here");
+                                if (lastString.length === 1 && lastString.match(/[a-z]/i)){
+                                    return 'true';
+                                }
+                                
+                            }
                             $.ajax({
                                 type: 'POST',
                                 url: '/jobs/edit/%d'%jobId,

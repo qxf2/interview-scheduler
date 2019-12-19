@@ -30,6 +30,7 @@
                 {% else %}
                 <div class="col-md-8">URL:
                     <input id="generate-url" value="{{ result.url }}" size="40%" readonly/>
+                    <button class="btn btn-info" id="sendButton" onclick="sendmail()" type="submit">Send Mail</button>
                     <button class="btn btn-info" id="welcomeButton" onclick="welcome()" type="submit">Click Me</button> 
                 </div>
                 {% endif %}
@@ -73,9 +74,30 @@
     <script>
     function welcome(){
         var url = $("#generate-url").val();
-        console.log("url is : "+url);
         document.location.href ="/"+ url + "/welcome";
     }
+    </script>
+    <script>
+        function sendmail(){
+        var candidateId="{{ result.candidate_id }}";
+        var jobId="{{ result.job_id }}";
+        console.log("job id : "+jobId)
+            $.ajax({
+                    type: 'GET',
+                    url: '/candidates/'+candidateId+'/jobs/'+jobId+'/email',
+                    data: { 
+                        'candidateId': candidateId, 
+                        'jobId': jobId 
+                        },
+                    success: function (data) {
+                        alert("Mail successfully sent to"+data.data);  
+                    },
+                    error: function(error){
+                        alert("Candidate does not exist");
+                        document.location.href = "/candidates";
+                    }
+                })
+            }
     </script>
 </body>
 </html>   

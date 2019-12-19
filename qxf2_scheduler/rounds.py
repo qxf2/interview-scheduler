@@ -23,7 +23,7 @@ def read_round_details(job_id):
             'round_description' : each_round.round_description,
             'round_requirement' : each_round.round_requirement}
         )
-        job_id={'job_id':job_id}
+        #job_id={'job_id':job_id}
                   
         return render_template("rounds.html",result=rounds_list,job_id=job_id)
 
@@ -66,24 +66,36 @@ def delete_round_details(job_id,round_id):
     return jsonify(data="Deleted")
 
 
-@app.route("/job/<job_id>/round/<round_id>/edit",methods=["GET,POST"])
-def edit_round_details(round_id):
+@app.route("/rounds/<round_id>/job/<job_id>/edit",methods=["GET","POST"])
+def edit_round_details(round_id,job_id):
     "Edit the round details"
+    if request.method == "GET":
+        rounds_list = []               
+        db_round_list = db.session.query(Rounds).filter(Rounds.round_id == round_id).values(
+        Rounds.round_id,Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
+        for each_round in db_round_list:
+            rounds_list.append(
+            {
+            'round_id':each_round.round_id,
+            'round_name':each_round.round_name,
+            'round_time' : each_round.round_time,
+            'round_description' : each_round.round_description,
+            'round_requirement' : each_round.round_requirement}
+        )
+        edit_round_job_id = job_id
+                  
+        return render_template("edit-rounds.html",result=rounds_list,job_id=edit_round_job_id)
+
     if request.method=="POST":
-        round_time = request.form.get('duration')
-        round_description = request.form.get('description')
-        round_requirements = request.form.get('requirements')
-        round_name = request.form.get('roundname')        
-        print(round_time,round_description,round_requirements,file=sys.stderr)
-        #Check the round has been already added or not
-        check_round_exists = db.session.query(db.exists().where(Rounds.round_name==round_name)).scalar()
-        if check_round_exists == True:
-            msg = "The round is already added for the role"            
-        else:
-            edit_round_object = Rounds.query.filter(Rounds.round_id==round_id).update({'round_name':round_name,'round_time':round_time,'round_description':round_description,'round_requirement':round_requirements})            
-            db.session.commit()            
-            #getting the unique round id for new rounds
-            round_id = Rounds.query.filter(Rounds.round_name==round_name).value(Rounds.round_id)
-            msg = "The round has been added"
-        
+        data = {}
+        round_time = request.form.get('roundTime')
+        round_description = request.form.get('roundDescription')
+        round_requirements = request.form.get('roundRequirements')
+        round_name = request.form.get('roundName')        
+        data = {'round_name':round_name}
+        edit_round_object = Rounds.query.filter(Rounds.round_id==round_id).update({'round_name':round_name,'round_time':round_time,'round_description':round_description,'round_requirement':round_requirements})            
+        db.session.commit()            
+        api_response = {'data':data}
+        return (jsonify(api_response))
+    
 

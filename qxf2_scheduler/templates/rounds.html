@@ -54,7 +54,10 @@
                     <td>{{each_item.round_description}}</td>
                     <td>{{each_item.round_requirement}}</td>
                     <td>
-                            <input class="editround btn btn-info" type="button" value="Edit" data-round-id = "{{each_item.round_id}}" data-round-name="{{each_item.round_name}}" data-round-description="{{each_item.round_description}}" data-round-requirement="{{each_item.round_requirement}}" data-round-duration="{{each_item.round_time}}">
+                        <input class="btn btn-info" id="editround{{each_item.round_id}}" onclick="editRound(this)" type="button" value="Edit" data-round-id="{{each_item.round_id}}" data-round-name="{{each_item.round_name}}"
+                            data-round-description="{{each_item.round_description}}"
+                            data-round-requirement="{{each_item.round_requirement}}"
+                            data-round-duration="{{each_item.round_time}}" data-job-id="{{job_id}}">
                         <input type="button" class="btn btn-info" onclick="delete_round(this)" value="Delete"
                             id="delete-button{{each_item.round_id}}" data-delete-round-id="{{each_item.round_id}}"
                             data-delete-job-id="{{job_id}}" />
@@ -65,6 +68,7 @@
             </table>
         </div>
     </div>
+
     <div id="dialog-form" title="Create new round">
         <p class="validateTips">All form fields are required.</p>
 
@@ -79,7 +83,7 @@
                 <label for="requirements">Requirements</label>
                 <input type="requirements" name="requirements" id="requirements"
                     class="text ui-widget-content ui-corner-all">
-                <input type="hidden" id='jobId' ,value="{{job_id}}">
+                <input type="hidden" id='jobId' value="{{job_id}}">
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
@@ -87,8 +91,8 @@
 
     <script>
         $(function () {
-            var dialog, form,
-                roundname = $("#roundname"),
+            var dialog;
+            roundname = $("#roundname"),
                 duration = $("#duration"),
                 description = $("#description"),
                 requirements = $("#requirements"),
@@ -170,7 +174,7 @@
                 width: 350,
                 modal: true,
                 buttons: {
-                    "Create Rounds": addUser,
+                    "Add Rounds": addUser,
                     Cancel: function () {
                         dialog.dialog("close");
                     }
@@ -186,33 +190,14 @@
                 addUser();
 
 
-            });
+            })
 
             $("#create-user").button().on("click", function () {
                 console.log("I am first");
                 dialog.dialog("open");
             });
-            $(".editround").button().on("click", function () {
-                var id = $(this).attr("data-round-id");
-                var roundName=$(this).attr("data-round-name");
-                var roundDuration=$(this).attr("data-round-duration");
-                var roundDescription=$(this).attr("data-round-description");
-                var roundRequirements=$(this).attr("data-round-requirement");
 
-                console.log(id,roundName);
-                /*var tempRound;
-                for (var round in results) {
-                    if (round.id == id) {
-                        tempRound = round;
-                    }
-                }*/
-                $("#roundname").val(roundName);
-                $("#duration").val(roundDuration);
-                $("#description").val(roundDescription);
-                $("#requirements").val(roundRequirements);
 
-                dialog.dialog("open");
-            });
         });
     </script>
 
@@ -251,11 +236,13 @@
             dialog.dialog("open");
         }
     </script>
-
-
-
+    <script>
+        function editRound(action_edit){
+            round_id = action_edit.getAttribute("data-round-id");
+            var jobId = document.getElementById("jobId").value;            
+            document.location.href = "/rounds/" + round_id +  '/job/'+ jobId +'/edit';
+        }
+    </script>
 
 </body>
-
-
 </html>

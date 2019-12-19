@@ -119,7 +119,7 @@ def form_interviewer_details(interviewer_details):
     return parsed_interviewer_details
 
 
-@app.route("/interviewer/<interviewer_id>")
+@app.route("/<interviewer_id>/interviewer")
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
@@ -161,7 +161,7 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
         db.session.commit()
 
 
-@app.route("/interviewer/edit/<interviewer_id>", methods=['GET', 'POST'])
+@app.route("/interviewer/<interviewer_id>/edit", methods=['GET', 'POST'])
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
     # This query fetch the interviewer details by joining the time slots table and interviewers table.
@@ -217,14 +217,15 @@ def edit_interviewer(interviewer_id):
 
 @app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
 def delete_interviewer(interviewer_id):
-    "Deletes a job"
+    "Deletes an interviewer"
     if request.method == 'POST':
         # interviewer_to_delete = request.form.get('interviewer-id')
-        deleted_user = Interviewers.query.filter(
-            Interviewers.interviewer_id == interviewer_id).first()
+        deleted_user = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).first()
         data = {'interviewer_name': deleted_user.interviewer_name,
                 'interviewer_id': deleted_user.interviewer_id}
         db.session.delete(deleted_user)
+        db.session.commit()
+        delete_user_timeslot = Interviewertimeslots.query.filter(Interviewertimeslots.interviewer_id == interviewer_id).delete()
         db.session.commit()
 
     return jsonify(data)
@@ -416,7 +417,7 @@ def update_job_interviewer_in_database(job_id,job_role,interviewers_list):
         db.session.commit()
 
 
-@app.route("/job/edit/<job_id>", methods=["GET", "POST"])
+@app.route("/job/<job_id>/edit", methods=["GET", "POST"])
 def edit_job(job_id):
     "Editing the already existing job"
     if request.method == 'GET':

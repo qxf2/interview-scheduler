@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json,ast,sys
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround, Candidates
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround, Candidates, Jobcandidate
 DOMAIN = 'qxf2.com'
 
 
@@ -479,20 +479,24 @@ def add_interviewers():
             return jsonify(error='Interviewer already exists'),500    
 
 
-@app.route("/<candidate_id>/<job_id>/<url>/welcome")
-def show_welcome(candidate_id,job_id,url):
-    data = {'job_id':job_id}
+@app.route("/<candidateId>/<jobId>/<url>/welcome")
+def show_welcome(candidateId,jobId,url):
+    data = {'job_id':jobId}
 
     return render_template("welcome.html",result=data)
 
 @app.route("/welcome/valid",methods=["GET","POST"])
 def welcome_valid():
-    candidate_name = request.form.get('name')
-    candidate_email = request.form.get('email')
+    candidate_name = request.form.get('candidateName')
+    candidate_email = request.form.get('candidateEmail')
+    job_id = request.form.get('jobId')
+    candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
     candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
     if candidate_data == None:
         err={'err':'email'}
     elif candidate_data.lower() == candidate_name.lower():
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Qxf2'})
+        db.session.commit()
         return jsonify(data="success")
     elif candidate_data.lower() != candidate_name.lower():
         err={'err':'name'}
@@ -501,6 +505,14 @@ def welcome_valid():
     return jsonify(error=err), 500
         
 
-@app.route("/<jobid>/get-schedule")
-def show_schedule(jobid):
-    return render_template("get-schedule.html")
+@app.route("/<jobId>/get-schedule")
+def show_schedule(jobId):
+    candidate_name = request.form.get('candidateName')
+    candidate_email = request.form.get('candidateEmail')
+    data ={'candidate_name':candidate_name,
+            'candidate_email':candidate_email,
+            'job_id':jobId
+    }
+    print(data)
+
+    return render_template("get-schedule.html",result=data)

@@ -95,8 +95,6 @@ def add_candidate(job_role):
 def generate_unique_url():
     candidate_id = request.form.get('candidateId')
     job_id = request.form.get('jobId')
-    print("inside generate unique url")
-    print(f"Job id :{job_id} Candidate id :{candidate_id} ")
     url_exists = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).value(Jobcandidate.url)
     if (url_exists != ''):
         url=url_exists

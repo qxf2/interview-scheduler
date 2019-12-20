@@ -479,40 +479,43 @@ def add_interviewers():
             return jsonify(error='Interviewer already exists'),500    
 
 
+
 @app.route("/<candidateId>/<jobId>/<url>/welcome")
 def show_welcome(candidateId,jobId,url):
+    "Opening welcome page for candidate"
     data = {'job_id':jobId}
 
     return render_template("welcome.html",result=data)
 
-@app.route("/welcome/valid",methods=["GET","POST"])
-def welcome_valid():
+
+@app.route("/<jobId>/get-schedule",methods=['GET','POST'])
+def schedule_interview(jobId):
+    "Validating candidate name and email"
     candidate_name = request.form.get('candidateName')
     candidate_email = request.form.get('candidateEmail')
-    job_id = request.form.get('jobId')
-    candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
-    candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
-    if candidate_data == None:
-        err={'err':'email'}
-    elif candidate_data.lower() == candidate_name.lower():
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Qxf2'})
-        db.session.commit()
-        return jsonify(data="success")
-    elif candidate_data.lower() != candidate_name.lower():
-        err={'err':'name'}
-    else:
-        err={'err':'other'}
-    return jsonify(error=err), 500
-        
+    print('I am inside POST, Name : ',candidate_name)
+    if request.method=='GET':
+    #     print('I am inside GET, Name : ',candidate_name)
+    #     candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
+    #     candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
+    #     data = {'candidate_id':candidate_id,
+    #     'candidate_name':candidate_name,
+    #     'candidate_email':candidate_email,
+    #     'job_id':jobId
+    #     }
+    #     if candidate_data.lower() == candidate_name.lower():
+    #         print('I am inside success')
+        return render_template("get-schedule.html")
 
-@app.route("/<jobId>/get-schedule")
-def show_schedule(jobId):
-    candidate_name = request.form.get('candidateName')
-    candidate_email = request.form.get('candidateEmail')
-    data ={'candidate_name':candidate_name,
-            'candidate_email':candidate_email,
-            'job_id':jobId
-    }
-    print(data)
+    if request.method == 'POST':
+        candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
+        if candidate_data == None:
+            err={'err':'email'}
+        elif candidate_data.lower() != candidate_name.lower():
+            err={'err':'name'}
+        elif candidate_data.lower() == candidate_name.lower():
+            return jsonify(result='success')
+        else:
+            err={'err':'other'}
+        return jsonify(error=err), 500
 
-    return render_template("get-schedule.html",result=data)

@@ -18,7 +18,7 @@ app.config.update(
 	MAIL_PORT=465,
 	MAIL_USE_SSL=True,
 	MAIL_USERNAME = 'test@qxf2.com',
-	MAIL_PASSWORD = 'Qxf2Services@12'
+	MAIL_PASSWORD = ''
 	)
 
 from qxf2_scheduler import routes

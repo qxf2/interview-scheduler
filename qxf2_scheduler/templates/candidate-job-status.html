@@ -39,11 +39,13 @@
         </div>
         {% endif %}
         <table class="table table-striped">
+            {{result}}
             <thead>
                 <tr>
                     <th scope="col">Candidate Name</th>
                     <th>Job Applied</th>
                     <th>Actions</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,6 +57,7 @@
                             data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
                             data-candidate-email="{{result.candidate_email}}"
                             data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"></td>
+                    <td>{{result.candidate_status}}</td>
                 </tr>
                 {% endif %}
             </tbody>

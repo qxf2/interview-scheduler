@@ -84,7 +84,7 @@ def add_candidate(job_role):
             #getting the unique candidate id for new candidate
             candidate_id = Candidates.query.filter(Candidates.candidate_email==candidate_email).value(Candidates.candidate_id)
             #storing the candidate id and job id in jobcandidate table
-            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='')
+            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status='Resume Filtered')
             db.session.add(add_job_candidate_object)
             db.session.commit()
             error = "Success"
@@ -111,9 +111,10 @@ def generate_unique_url():
 @app.route("/candidate/<candidate_id>/job/<job_id>") 
 def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"     
-    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url)
+    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url,Jobcandidate.candidate_status)
     for each_data in candidate_job_data:
-        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email} 
+        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'candidate_status':each_data.candidate_status} 
+    print(each_data,file=sys.stderr)
     return render_template("candidate-job-status.html",result=data)
 
 

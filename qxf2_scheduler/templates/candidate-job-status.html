@@ -1,103 +1,176 @@
 <html>
-    <head>
-        <title>
-            Candidate job status
-        </title>
+
+<head>
+    <title>
+        Candidate job status
+    </title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Stylesheets-->
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    
+    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
+
     <!--JS-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-    </head>
 
-    <body>
-        <h2 class="grey_text text-center">Candidate Details</h2>
-        
-        <div class="container col-md-offset-1">
-                {% if result.url=="" %}
-                <div class="col-md-8">
-                    <input id="generate-url" value="generate url" size="40%" readonly/>
-                    <button class="btn btn-info" id="urlbutton" type="submit">Generate URL</button>
-                </div>
-                {% else %}
-                <div class="col-md-8">URL:
-                    <input id="generate-url" value="{{ result.url }}" size="40%" readonly/>
-                    <button class="btn btn-info" id="sendButton" onclick="sendmail()" type="submit">Send Mail</button>
-                    <button class="btn btn-info" id="welcomeButton" onclick="welcome()" type="submit">Click Me</button> 
-                </div>
+</head>
+
+<body>
+    <h2 class="grey_text text-center">Candidate Details</h2>
+    <div class="container col-md-offset-1">
+        {% if result.url=="" %}
+        <div class="col-md-8">
+            <input id="generate-url" value="generate url" size="40%" readonly />
+            <button class="btn btn-info" id="urlbutton" type="submit">Generate URL</button>
+        </div>
+        {% else %}
+        <div class="col-md-8">URL:
+            <input id="generate-url" value="{{ result.url }}" size="40%" readonly />
+            <button class="btn btn-info" id="welcomeButton" onclick="welcome()" type="submit">Click Me</button>
+        </div>
+        {% endif %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Candidate Name</th>
+                    <th>Job Applied</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if result!="" %}
+                <tr>
+                    <td>{{ result.candidate_name }}</td>
+                    <td>{{ result.job_applied }}</td>
+                    <td><input class="btn btn-info" type="button" id="sendEmail" value="Send Invite"
+                            data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
+                            data-candidate-email="{{result.candidate_email}}"
+                            data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"></td>
+                </tr>
                 {% endif %}
-                <table class="table table-striped">
-                <thead>
-                   <tr> 
-                        <th scope="col">Candidate Name</th>
-                        <th>Job Applied</th>      
-                    </tr>
-                </thead>
-                <tbody>
-                   {% if result!="" %}
-                    <tr>
-                        <td>{{ result.candidate_name }}</td>
-                        <td>{{ result.job_applied }}</td>
-                    </tr>
-                    {% endif %}
-                </tbody>
+            </tbody>
         </table>
+
     </div>
-    
+
     <script>
-        var candidateId="{{ result.candidate_id }}";
-        var jobId="{{ result.job_id }}";
-            $("#urlbutton").on('click', function () {
+        var candidateId = "{{ result.candidate_id }}";
+        var jobId = "{{ result.job_id }}";
+        $("#urlbutton").on('click', function () {
             $.ajax({
-                    type: 'POST',
-                    url: '/candidate/url',
-                    data: { 
-                        'candidateId': candidateId, 
-                        'jobId': jobId 
-                        },
-                    success: function (data) {
-                        var url_textbox = document.getElementById("generate-url"); 
-                        url_textbox.setAttribute('value', data.url);  
-                    }
-                })
-            location.reload(forcedReload);   
+                type: 'POST',
+                url: '/candidate/url',
+                data: {
+                    'candidateId': candidateId,
+                    'jobId': jobId
+                },
+                success: function (data) {
+                    var url_textbox = document.getElementById("generate-url");
+                    url_textbox.setAttribute('value', data.url);
+                }
+            })
+            location.reload(forcedReload);
         }) 
     </script>
     <script>
-    function welcome(){
-        var url = $("#generate-url").val();
-        document.location.href ="/"+ url + "/welcome";
-    }
+        function welcome() {
+            var url = $("#generate-url").val();
+            document.location.href = "/" + url + "/welcome";
+        }
     </script>
+    <div id="dialog-form" title="Send Email Invite">
+        <p class="validateTips">All form fields are required.</p>
+
+        <form>
+            <fieldset>
+
+                <label for="generateurl">Generated URL</label>
+                <input type="text" name="generatedURL" id="generatedUrl" class="text ui-widget-content ui-corner-all"
+                    readonly>
+                <input type="hidden" id="candidateName" value="{{result.candidate_name}}">
+                <input type="hidden" id="candidateEmail" value="{{result.candidate_email}}">
+                <input type="hidden" id="candidateId" value="{{result.candidate_id}}">
+                <input type="hidden" id="jobId" value="{{result.job_id}}">
+               
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+
     <script>
-        function sendmail(){
-        var candidateId="{{ result.candidate_id }}";
-        var jobId="{{ result.job_id }}";
-        console.log("job id : "+jobId)
+        var form, dialog
+        function sendEmail() {
+
+            var generatedUrl = $("#generatedUrl").val();
+            var candidateName = document.getElementById("candidateName").value;
+            var candidateEmail = document.getElementById("candidateEmail").value;
+            var candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            console.log(candidateName, generatedUrl);
             $.ajax({
-                    type: 'GET',
-                    url: '/candidates/'+candidateId+'/jobs/'+jobId+'/email',
-                    data: { 
-                        'candidateId': candidateId, 
-                        'jobId': jobId 
-                        },
-                    success: function (data) {
-                        alert("Mail successfully sent to"+data.data);  
-                    },
-                    error: function(error){
-                        alert("Candidate does not exist");
+                type: 'POST',
+                url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
+                data: {
+                    'generatedurl': generatedUrl,
+                    'candidatename': candidateName,
+                    'candidateid': candidateId,
+                    'candidateemail': candidateEmail,
+                    'jobid': jobId
+                },
+                success: function (result) {
+                    console.log(result.error);               
+
+                    if (result.error == "Success") {
+                        alert("The Invite has been sent");
+                        document.location.href = "/candidates";
+
+                    }
+                    else {
+                        alert("The invite cannot be sent");
                         document.location.href = "/candidates";
                     }
-                })
+
+                }
+            })
+
+            dialog.dialog("close");
+        }
+
+        dialog = $("#dialog-form").dialog({
+            autoOpen: false,
+            height: 400,
+            width: 350,
+            modal: true,
+            buttons: {
+                "Send Email": sendEmail,
+                Cancel: function () {
+                    dialog.dialog("close");
+                }
+            },
+            close: function () {
+                dialog.dialog("close");
+
             }
+        });
+
+
+        $("#sendEmail").button().on("click", function () {
+            console.log("I am first");
+            var generatedUrl = $(this).attr("data-generated-url");
+            $("#generatedUrl").val(generatedUrl);
+            console.log(generatedUrl);
+            dialog.dialog("open");
+        });
     </script>
 </body>
-</html>   
+
+</html>

@@ -6,10 +6,14 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json,ast,sys
+import json
+import ast
+import sys
+from flask_mail import Message,Mail
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround, Candidates, Jobcandidate
 DOMAIN = 'qxf2.com'
+mail = Mail(app)
 
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
@@ -40,6 +44,7 @@ def confirm():
     "Confirming the event message"
     response_value = request.args['value']
     return render_template("confirmation.html", value=json.loads(response_value))
+
 
 @app.route("/confirmation", methods=['GET', 'POST'])
 def scehdule_and_confirm():
@@ -141,7 +146,6 @@ def read_interviewer_details(interviewer_id):
                 'interviewers_designation': each_detail.interviewer_designation}
 
     return render_template("read-interviewers.html", result=parsed_interviewer_details)
-    
 
 
 def add_edit_interviewers_in_time_slot_table(interviewer_name):
@@ -220,12 +224,14 @@ def delete_interviewer(interviewer_id):
     "Deletes an interviewer"
     if request.method == 'POST':
         # interviewer_to_delete = request.form.get('interviewer-id')
-        deleted_user = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).first()
+        deleted_user = Interviewers.query.filter(
+            Interviewers.interviewer_id == interviewer_id).first()
         data = {'interviewer_name': deleted_user.interviewer_name,
                 'interviewer_id': deleted_user.interviewer_id}
         db.session.delete(deleted_user)
         db.session.commit()
-        delete_user_timeslot = Interviewertimeslots.query.filter(Interviewertimeslots.interviewer_id == interviewer_id).delete()
+        delete_user_timeslot = Interviewertimeslots.query.filter(
+            Interviewertimeslots.interviewer_id == interviewer_id).delete()
         db.session.commit()
 
     return jsonify(data)
@@ -250,54 +256,56 @@ def interviewers_for_roles(job_id):
     rounds_list = []
     candidates_list = []
 
-    #Fetch the interviewers list for the job role
+    # Fetch the interviewers list for the job role
     interviewer_list_for_roles = Interviewers.query.join(Jobinterviewer, Interviewers.interviewer_id == Jobinterviewer.interviewer_id).filter(
         Jobinterviewer.job_id == job_id).values(Interviewers.interviewer_name)
 
-    #Fetch the job list
+    # Fetch the job list
     db_round_list = db.session.query(Jobs, Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
-        Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
-    
-    #Fetch the candidate list
-    db_candidate_list = Candidates.query.join(Jobcandidate,Candidates.candidate_id == Jobcandidate.candidate_id).filter(Jobcandidate.job_id==job_id).values(Candidates.candidate_name)
+        Rounds.round_time, Rounds.round_description, Rounds.round_requirement)
+
+    # Fetch the candidate list
+    db_candidate_list = Candidates.query.join(Jobcandidate, Candidates.candidate_id == Jobcandidate.candidate_id).filter(
+        Jobcandidate.job_id == job_id).values(Candidates.candidate_name)
 
     for each_interviewer in interviewer_list_for_roles:
         interviewers_list.append(
             {'interviewers_name': each_interviewer.interviewer_name})
-    
+
     for each_round in db_round_list:
         rounds_list.append(
             {
-            'round_id' : each_round.round_id,
-            'round_time' : each_round.round_time,
-            'round_description' : each_round.round_description,
-            'round_requirement' : each_round.round_requirement}
+                'round_id': each_round.round_id,
+                'round_time': each_round.round_time,
+                'round_description': each_round.round_description,
+                'round_requirement': each_round.round_requirement}
         )
-    
-    for each_candidate in db_candidate_list:
-        candidates_list.append({'candidate_name':each_candidate.candidate_name})
 
-    return render_template("role-for-interviewers.html", result=interviewers_list, round=rounds_list,candidates=candidates_list)
+    for each_candidate in db_candidate_list:
+        candidates_list.append(
+            {'candidate_name': each_candidate.candidate_name})
+
+    return render_template("role-for-interviewers.html", result=interviewers_list, round=rounds_list, candidates=candidates_list)
 
 
 def check_jobs_exists(job_role):
     "Check the job already exists in the database"
     fetch_existing_job_role = Jobs.query.all()
     jobs_list = []
-    #Fetch the job role
-    for each_job in fetch_existing_job_role:           
+    # Fetch the job role
+    for each_job in fetch_existing_job_role:
         jobs_list.append(each_job.job_role.lower())
-    
-    #Compare the job with database job list
+
+    # Compare the job with database job list
     if job_role.lower() in jobs_list:
         check_job_exists = True
     else:
         check_job_exists = False
 
-    return check_job_exists   
+    return check_job_exists
 
 
-@app.route("/jobs/add",methods=["GET","POST"])
+@app.route("/jobs/add", methods=["GET", "POST"])
 def add_job():
     "Add ajob through UI"
     if request.method == 'GET':
@@ -310,34 +318,37 @@ def add_job():
 
     if request.method == 'POST':
         job_role = request.form.get("role")
-        data = {'jobrole':job_role}
-        check_job_exists = check_jobs_exists(job_role)       
-        #If the job is already in the database send failure
-        #If it's not there add the new job role and return success
+        data = {'jobrole': job_role}
+        check_job_exists = check_jobs_exists(job_role)
+        # If the job is already in the database send failure
+        # If it's not there add the new job role and return success
         if check_job_exists != True:
             #new_interviewers_list = []
-            interviewers = ast.literal_eval(request.form.get("interviewerlist"))
-            #I have to remove the duplicates and removing the whitespaces which will be 
-            #added repeatedly through UI
+            interviewers = ast.literal_eval(
+                request.form.get("interviewerlist"))
+            # I have to remove the duplicates and removing the whitespaces which will be
+            # added repeatedly through UI
             interviewers = remove_duplicate_interviewers(interviewers)
             """for each_interviewers in interviewers:
                 new_interviewers_list.append(each_interviewers.strip())
-            interviewers=list(set(new_interviewers_list))"""                        
+            interviewers=list(set(new_interviewers_list))"""
             job_object = Jobs(job_role=job_role)
             db.session.add(job_object)
             db.session.commit()
             job_id = job_object.job_id
-            #Get the id of the user from the interviewers table
-            for each_interviewer in interviewers:                
-                interviewer_id = db.session.query(Interviewers.interviewer_id).filter(Interviewers.interviewer_name==each_interviewer.strip()).scalar()                       
-                job_interviewer_object = Jobinterviewer(job_id=job_id,interviewer_id=interviewer_id)
+            # Get the id of the user from the interviewers table
+            for each_interviewer in interviewers:
+                interviewer_id = db.session.query(Interviewers.interviewer_id).filter(
+                    Interviewers.interviewer_name == each_interviewer.strip()).scalar()
+                job_interviewer_object = Jobinterviewer(
+                    job_id=job_id, interviewer_id=interviewer_id)
                 db.session.add(job_interviewer_object)
                 db.session.commit()
-                
+
         else:
-            return jsonify(message='The job already exists'),500           
-        data = {'jobrole':job_role,'interviewers':interviewers}       
-        
+            return jsonify(message='The job already exists'), 500
+        data = {'jobrole': job_role, 'interviewers': interviewers}
+
         return jsonify(data)
 
 
@@ -376,7 +387,7 @@ def get_interviewers_name_for_jobupdate(fetched_job_id):
         print(interviewer_name_for_role)
         interviewers_name_list.append(interviewer_name_for_role)
         print(interviewers_name_list)
-    
+
     return interviewers_name_list
 
 
@@ -390,13 +401,14 @@ def remove_duplicate_interviewers(interviewers_list):
     return interviewers
 
 
-def update_job_interviewer_in_database(job_id,job_role,interviewers_list):
+def update_job_interviewer_in_database(job_id, job_role, interviewers_list):
     "Update the Job and Interviewer in database based on the condition"
     edit_job = Jobs.query.filter(
         Jobs.job_id == job_id).update({'job_role': job_role})
     db.session.commit()
     # Fetch the combo id of each row which matches with job id
-    fetch_combo_id = Jobinterviewer.query.filter(Jobinterviewer.job_id == job_id).values(Jobinterviewer.combo_id)
+    fetch_combo_id = Jobinterviewer.query.filter(
+        Jobinterviewer.job_id == job_id).values(Jobinterviewer.combo_id)
     list_combo_id = []
     for each_id in fetch_combo_id:
         list_combo_id.append(each_id.combo_id)
@@ -424,7 +436,7 @@ def edit_job(job_id):
         # Fetch the Job role from the job table
         fetched_job_id = job_id
         get_job_role = Jobs.query.filter(
-            Jobs.job_id == fetched_job_id).scalar()       
+            Jobs.job_id == fetched_job_id).scalar()
         interviewers_name_list = get_interviewers_name_for_jobupdate(
             fetched_job_id)
         # I am repeating this code here to fetch all the interviewers list.
@@ -452,17 +464,20 @@ def edit_job(job_id):
         # Compare the two list which is fetched from UI and Database
         check_interviewer_list = is_equal(
             interviewers_name_list, interviewers_list)
-        # Check the job already exists in the database        
+        # Check the job already exists in the database
         check_job_exists = check_jobs_exists(job_role)
-        #These are all the four conditions to be tested for editing
+        # These are all the four conditions to be tested for editing
         if (check_job_exists != True and check_interviewer_list != True):
-            update_job_interviewer_in_database(job_id,job_role,interviewers_list)
-            return jsonify(data)       
+            update_job_interviewer_in_database(
+                job_id, job_role, interviewers_list)
+            return jsonify(data)
         elif (check_job_exists != True and check_interviewer_list == True):
-            update_job_interviewer_in_database(job_id,job_role,interviewers_list)
+            update_job_interviewer_in_database(
+                job_id, job_role, interviewers_list)
             return jsonify(data)
         elif (check_job_exists == True and check_interviewer_list != True):
-            update_job_interviewer_in_database(job_id,job_role,interviewers_list)
+            update_job_interviewer_in_database(
+                job_id, job_role, interviewers_list)
             return jsonify(data)
         else:
             return jsonify(message='The job already exists,Check before you edit the Jobs'), 500
@@ -474,57 +489,88 @@ def add_interviewers():
     "Adding the interviewers"
     if request.method == 'GET':
         return render_template("add-interviewers.html")
-    if request.method == 'POST':        
+    if request.method == 'POST':
         interviewer_name = request.form.get('name')
         interviewer_email = request.form.get('email').lower()
-        interviewer_designation = request.form.get('designation')      
-        #Check the candidate has been already added or not
-        check_interviewer_exists = db.session.query(db.exists().where(Interviewers.interviewer_email==interviewer_email)).scalar()        
+        interviewer_designation = request.form.get('designation')
+        # Check the candidate has been already added or not
+        check_interviewer_exists = db.session.query(db.exists().where(
+            Interviewers.interviewer_email == interviewer_email)).scalar()
         if check_interviewer_exists == False:
-            data={'interviewer_name':interviewer_name}
-            interviewer_object = Interviewers(interviewer_name=interviewer_name,interviewer_email=interviewer_email,interviewer_designation=interviewer_designation)
+            data = {'interviewer_name': interviewer_name}
+            interviewer_object = Interviewers(
+                interviewer_name=interviewer_name, interviewer_email=interviewer_email, interviewer_designation=interviewer_designation)
             db.session.add(interviewer_object)
             db.session.commit()
             add_edit_interviewers_in_time_slot_table(interviewer_name)
             return jsonify(data=data)
         else:
-            return jsonify(error='Interviewer already exists'),500    
+            return jsonify(error='Interviewer already exists'), 500
 
 
 @app.route("/<candidateId>/<jobId>/<url>/welcome")
-def show_welcome(candidateId,jobId,url):
-    data = {'job_id':jobId}
+def show_welcome(candidateId, jobId, url):
+    data = {'job_id': jobId}
 
-    return render_template("welcome.html",result=data)
+    return render_template("welcome.html", result=data)
 
-@app.route("/welcome/valid",methods=["GET","POST"])
+
+@app.route("/welcome/valid", methods=["GET", "POST"])
 def welcome_valid():
     candidate_name = request.form.get('candidateName')
     candidate_email = request.form.get('candidateEmail')
     job_id = request.form.get('jobId')
-    candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
-    candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
+    candidate_id = Candidates.query.filter(
+        Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
+    candidate_data = Candidates.query.filter(
+        Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
     if candidate_data == None:
-        err={'err':'email'}
+        err = {'err': 'email'}
     elif candidate_data.lower() == candidate_name.lower():
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Qxf2'})
+        candidate_status = Jobcandidate.query.filter(
+            Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status': 'Waiting on Qxf2'})
         db.session.commit()
         return jsonify(data="success")
     elif candidate_data.lower() != candidate_name.lower():
-        err={'err':'name'}
+        err = {'err': 'name'}
     else:
-        err={'err':'other'}
+        err = {'err': 'other'}
     return jsonify(error=err), 500
-        
+
 
 @app.route("/<jobId>/get-schedule")
 def show_schedule(jobId):
     candidate_name = request.form.get('candidateName')
     candidate_email = request.form.get('candidateEmail')
-    data ={'candidate_name':candidate_name,
-            'candidate_email':candidate_email,
-            'job_id':jobId
-    }
+    data = {'candidate_name': candidate_name,
+            'candidate_email': candidate_email,
+            'job_id': jobId
+            }
     print(data)
 
-    return render_template("get-schedule.html",result=data)
+    return render_template("get-schedule.html", result=data)
+
+
+@app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
+def send_invite(candidate_id, job_id):
+    "Send an invite to schedule an interview"
+    if request.method == 'POST':
+        candidate_email = request.form.get("candidateemail")
+        candidate_id = request.form.get("candidateid")
+        candidate_name = request.form.get("candidatename")
+        job_id = request.form.get("jobid")
+        generated_url = request.form.get("generatedurl")
+        print(candidate_name, candidate_email,
+              candidate_id, job_id, file=sys.stderr)
+        try:
+            msg = Message("Schedule an Interview with Qxf2 Services!",
+                          sender="test@qxf2.com", recipients=[candidate_email])
+            msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. Please use the URL '%s' to schedule an interview with us"%(candidate_name,generated_url)
+            mail.send(msg)
+            error="Success"
+        except Exception as e:
+            error="Failed"
+            return(str(e))
+        data = {'candidate_name':candidate_name,'error':error}
+        
+    return jsonify(data)

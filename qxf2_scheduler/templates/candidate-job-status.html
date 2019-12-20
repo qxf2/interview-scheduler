@@ -20,6 +20,7 @@
 
     <body>
         <h2 class="grey_text text-center">Candidate Details</h2>
+        
         <div class="container col-md-offset-1">
                 {% if result.url=="" %}
                 <div class="col-md-8">
@@ -29,10 +30,11 @@
                 {% else %}
                 <div class="col-md-8">URL:
                     <input id="generate-url" value="{{ result.url }}" size="40%" readonly/>
+                    <button class="btn btn-info" id="sendButton" onclick="sendmail()" type="submit">Send Mail</button>
+                    <button class="btn btn-info" id="welcomeButton" onclick="welcome()" type="submit">Click Me</button> 
                 </div>
                 {% endif %}
-                 
-            <table class="table table-striped">
+                <table class="table table-striped">
                 <thead>
                    <tr> 
                         <th scope="col">Candidate Name</th>
@@ -68,6 +70,34 @@
                 })
             location.reload(forcedReload);   
         }) 
+    </script>
+    <script>
+    function welcome(){
+        var url = $("#generate-url").val();
+        document.location.href ="/"+ url + "/welcome";
+    }
+    </script>
+    <script>
+        function sendmail(){
+        var candidateId="{{ result.candidate_id }}";
+        var jobId="{{ result.job_id }}";
+        console.log("job id : "+jobId)
+            $.ajax({
+                    type: 'GET',
+                    url: '/candidates/'+candidateId+'/jobs/'+jobId+'/email',
+                    data: { 
+                        'candidateId': candidateId, 
+                        'jobId': jobId 
+                        },
+                    success: function (data) {
+                        alert("Mail successfully sent to"+data.data);  
+                    },
+                    error: function(error){
+                        alert("Candidate does not exist");
+                        document.location.href = "/candidates";
+                    }
+                })
+            }
     </script>
 </body>
 </html>   

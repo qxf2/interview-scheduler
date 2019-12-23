@@ -45,7 +45,10 @@ def confirm():
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
     if request.method == 'GET':
+        
+
         return render_template("get-schedule.html")
+    
     if request.method == 'POST':
         slot = request.form.get('slot')
         email = request.form.get('interviewerEmails')
@@ -517,14 +520,16 @@ def schedule_interview(jobId):
             'candidate_email':candidate_email,
             'job_id':jobId 
             }
-            data = json.dumps(data)
+            print(data)
+            print("-------------------")
             return jsonify(result=data)
         else:
             err={'err':'other'}
         return jsonify(error=err), 500
 
     if request.method=='GET':
-        candidate_data = request.args['result']
-        print('i am candidate data :',candidate_data)
+        print(request.method)
+        candidate_data = request.get_data('data')
+        print(f'candidate data :{candidate_data}')
         return render_template("get-schedule.html",result=candidate_data)
 

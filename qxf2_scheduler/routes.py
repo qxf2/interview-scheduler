@@ -10,9 +10,6 @@ import json,ast,sys
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround, Candidates, Jobcandidate
 DOMAIN = 'qxf2.com'
-get_candidate_id = ''
-get_candidate_email = ''
-get_candidate_name = ''
 
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
@@ -51,11 +48,20 @@ def scehdule_and_confirm():
         return render_template("get-schedule.html")
     if request.method == 'POST':
         slot = request.form.get('slot')
-        email = request.form.get('emails')
+        email = request.form.get('interviewerEmails')
         date = request.form.get('date')
+        candidate_id = request.form.get('candidateId')
+        candidate_name = request.form.get('candidateName')
+        candidate_email = request.form.get('candidateEmail')
+        job_id = request.form.get('jobId')
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email, slot)
-        value = {'schedule_event': schedule_event, 'date': date}
+        value = {'schedule_event': schedule_event, 
+        'date': date,
+        'candidate_id':candidate_id,
+        'candidate_name':candidate_name,
+        'candidate_email':candidate_email,
+        'job_id':job_id}
         value = json.dumps(value)
 
         return redirect(url_for('confirm', value=value))
@@ -500,27 +506,25 @@ def schedule_interview(jobId):
         candidate_name = request.form.get('candidateName')
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
-        global get_candidate_id = str(candidate_id)
-        global get_candidate_name = candidate_name
-        global get_candidate_email = candidate_email
-        print(candidate_data, candidate_id)
         if candidate_data == None:
             err={'err':'email'}
         elif candidate_data.lower() != candidate_name.lower():
             err={'err':'name'}
         elif candidate_data.lower() == candidate_name.lower():
-            return jsonify(result='success')
+            data = {
+            'candidate_id':candidate_id,
+            'candidate_name':candidate_name,
+            'candidate_email':candidate_email,
+            'job_id':jobId 
+            }
+            data = json.dumps(data)
+            return jsonify(result=data)
         else:
             err={'err':'other'}
         return jsonify(error=err), 500
 
     if request.method=='GET':
-        data = {
-            'candidate_id':get_candidate_id,
-            'candidate_name':get_candidate_name,
-            'candidate_email':get_candidate_email,
-            'job_id':jobId 
-        }
-        print(data)
-        return render_template("get-schedule.html",result=data)
+        candidate_data = request.args['result']
+        print('i am candidate data :',candidate_data)
+        return render_template("get-schedule.html",result=candidate_data)
 

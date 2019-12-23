@@ -104,7 +104,7 @@
                                 console.log(candidateEmail, candidateName, jobApplied,existingJob);
                                 $.ajax({
                                     type: 'POST',
-                                    url: '/candidate/edit/%d'%candidateId,
+                                    url: '/candidate/%d/edit'%candidateId,
                                     data: {
                                         'candidateName': candidateName,
                                         'candidateEmail': candidateEmail,

@@ -54,7 +54,7 @@
                         <td>{{each_item.round_requirement}}</td>
                         <td>
                             <input type="button" class="btn btn-info" value="Edit" id="edit-button" data-edit-round-id="{{each_item.round_id}}" />
-                            <input type="button" class="btn btn-info" onclick="delete_round(this)" value="Delete" id="delete-button{{each_item.round_id}}" data-delete-round-id="{{each_item.round_id}}" data-delete-job-id="{{jobs.job_id}}" />
+                            <input type="button" class="btn btn-info" onclick="delete_round(this)" value="Delete" id="delete-button{{each_item.round_id}}" data-delete-round-id="{{each_item.round_id}}" data-delete-job-id="{{jobs}}" />
                         </td>   
                     </tbody>
                     {% endfor %}

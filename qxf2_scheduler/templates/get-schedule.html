@@ -46,7 +46,7 @@
     <script>
         $(function () {
             //holidays in yyyy-mm-dd format
-            var holidays = ['2019-01-01', '2019-01-15', '2019-03-04', '2019-05-01', '2019-08-15', '2019-09-02', '2019-10-02', '2019-10-08', '2019-11-01'];
+            var holidays = ['2020-01-01', '2020-01-15', '2020-02-21', '2020-03-25', '2020-05-01', '2020-10-02', '2020-10-26', '2020-10-30', '2020-12-25'];
             $("#datepicker").datepicker({
                 minDate: 0,
                 beforeShowDay: isHoliday
@@ -141,13 +141,22 @@
     </script>
     <script>
         function scheduleEvent(emails,date, slot) {
+            var candidateId = '{{result.candidate_id}}'
+            var candidateName = '{{result.candidate_name}}'
+            var candidateEmail = '{{result.candidate_email}}'
+            var jobId = '{{result.job_id}}'
             form = document.createElement("form");
             form.method = "POST";
             form.action = "/confirmation"; 
-            addHidden(form,'emails',emails)           
+            addHidden(form,'interviewerEmails',emails)           
             addHidden(form,'date',date);
-            addHidden(form,'slot',slot);            
+            addHidden(form,'slot',slot);
+            addHidden(form,'candidateId',candidateId)
+            addHidden(form,'candidateName',candidateName)
+            addHidden(form,'candidateEmail',candidateEmail)
+            addHidden(form,'jobId',jobId)     
             form.submit();
+            
         }
     </script>
 </body>

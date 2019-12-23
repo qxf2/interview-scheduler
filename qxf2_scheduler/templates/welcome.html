@@ -37,9 +37,9 @@
             </div>
         </div>
         <div class="form-group">
-            <input  id="hidden-id" hidden />
-            <input  id="hidden-name" hidden />
-            <input  id="hidden-email" hidden />
+            <div  id="hidden-id" hidden></div>
+            <div  id="hidden-name" hidden></div>
+            <div  id="hidden-email" hidden></div>
         </div>
         <div class="form-group">
             <label class="col-md-4 control-label" for="save"></label>
@@ -84,7 +84,11 @@
                         'candidateEmail': candidateEmail,
                         'jobId': jobId
                     },
-                    success: function (data) { 
+                    success: function (result) { 
+                        var data = result.result;
+                        //$.post(result.result.candidate_name)
+                        $.post(data);
+                        console.log(data)
                         document.location.href = "/" + jobId + "/get-schedule";
                         console.log('i am success, but render tamplete does not work');
                     },

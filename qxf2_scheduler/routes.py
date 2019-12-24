@@ -2,7 +2,7 @@
 This file contains all the endpoints exposed by the interview scheduler application
 """
 
-from flask import render_template, url_for, flash, redirect, jsonify, request, Response
+from flask import render_template, url_for, flash, redirect, jsonify, request, Response, session
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
@@ -516,8 +516,9 @@ def schedule_interview(jobId):
     "Validate candidate name and candidate email"
 
     if request.method == 'POST':
-        candidate_email = request.form.get('candidateEmail')
-        candidate_name = request.form.get('candidateName')
+        candidate_email = request.form.get('candidate-email')
+        candidate_name = request.form.get('candidate-name')
+        print("-----",candidate_email,candidate_name)
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
         if candidate_data == None:
@@ -525,32 +526,28 @@ def schedule_interview(jobId):
         elif candidate_data.lower() != candidate_name.lower():
             err={'err':'NameError'}
         elif candidate_data.lower() == candidate_name.lower():
-            # data = {
-            # 'candidate_id':candidate_id,
-            # 'candidate_name':candidate_name,
-            # 'candidate_email':candidate_email,
-            # 'job_id':jobId 
-            # }
-            return jsonify()
+            data = {
+            'candidate_id':candidate_id,
+            'candidate_name':candidate_name,
+            'candidate_email':candidate_email,
+            'job_id':jobId 
+            }
+            session['magic'] = data
+            return redirect(url_for('redirect_get_schedule',jobId=jobId))
         else:
             err={'err':'OtherError'}
 
         return jsonify(error=err), 500
 
+
 @app.route('/<jobId>/get-schedule')
 def redirect_get_schedule(jobId):
-    candidate_name = request.form.get('candidate-name')
-    #data = request.args['data']
-    print(candidate_name)
-    return render_template("get-schedule.html",result=candidate_name)
+    "Redirect to the get schedule page"
+    data = {
+    'candidate_id':1,
+    'candidate_name':2,
+    'candidate_email':session['magic']['candidate_email'],
+    'job_id':jobId 
+    }
 
-
-# value = json.dumps(value)
-
-#         return redirect(url_for('confirm', value=value))
-
-#         @app.route("/confirm")
-# def confirm():
-#     "Confirming the event message"
-#     response_value = request.args['value']
-#     return render_template("confirmation.html", value=json.loads(response_value))
+    return render_template("get-schedule.html",result=data)

@@ -51,7 +51,7 @@
         </div>
         <script>
             
-            $("#submit").on('click',function()
+            $("#submit").click(function ()
             {
                 var validValue = true;
                 //Valdidation for name and email field
@@ -78,26 +78,31 @@
                 if(validValue == true){
                     $.ajax({
                         type: 'POST',
-                        url: "/" + jobId + "/get-schedule",
+                        url: "/" + jobId + "/valid",
                         data: {
                         'candidateName': candidateName,
                         'candidateEmail': candidateEmail,
                         'jobId': jobId
                     },
-                    success: function (result) { 
-                        var data = result.result;
-                        //$.post(result.result.candidate_name)
-                        $.post(data);
-                        console.log(data)
-                        document.location.href = "/" + jobId + "/get-schedule";
-                        console.log('i am success, but render tamplete does not work');
+                    success: function () { 
+                        form = document.createElement("hidden_form");
+                        form.method = "POST";
+                        console.log("I am inside success blcok")
+                        //addHidden(form,'candidateId',candidateId)
+                        addHidden(form,'cName',candidateName)
+                        addHidden(form,'cEmail',candidateEmail)
+                        addHidden(form,'jobId',jobId)   
+                        form.action = "/" + jobId + "/get-schedule";   
+                        form.submit();
+            
+                       // document.location.href = "/" + jobId + "/get-schedule";
                     },
                     error:function(error)
                     {
-                        if(error.responseJSON.error.err=="name"){
+                        if(error.responseJSON.error.err=="NameError"){
                         alert("Name not found, please enter the same name that you used when applied for this role");
                         }
-                        else if(error.responseJSON.error.err=="email"){
+                        else if(error.responseJSON.error.err=="EmailError"){
                         alert("Email not found, please enter the same email that you used when applied for this role"); 
                         }
                         else{
@@ -108,6 +113,17 @@
                 );
                 }
             })
+        </script>
+        <script>
+            function addHidden(form,name,value)
+            { 
+                var hiddenField = document.createElement("input");
+                hiddenField.type = 'hidden';
+                hiddenField.name = name;
+                hiddenField.value = value;
+                form.appendChild(hiddenField)
+                document.body.appendChild(form);
+            }
         </script>
     </body>
 </html>

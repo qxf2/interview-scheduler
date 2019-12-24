@@ -141,10 +141,10 @@
     </script>
     <script>
         function scheduleEvent(emails,date, slot) {
-            var candidateId = '{{result.candidate_id}}'
-            var candidateName = '{{result.candidate_name}}'
-            var candidateEmail = '{{result.candidate_email}}'
-            var jobId = '{{result.job_id}}'
+            var candidateId = '{{ result.candidate_id }}'
+            var candidateName = '{{ result.candidate_name }}'
+            var candidateEmail = '{{ result.candidate_email }}'
+            var jobId = '{{ result.job_id }}'
             form = document.createElement("form");
             form.method = "POST";
             form.action = "/confirmation"; 

@@ -516,11 +516,12 @@ def schedule_interview(jobId):
     "Validate candidate name and candidate email"
 
     if request.method == 'POST':
+        print('I am inside post ')
         candidate_email = request.form.get('candidate-email')
         candidate_name = request.form.get('candidate-name')
-        print("-----",candidate_email,candidate_name)
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
+        print('I am here')
         if candidate_data == None:
             err={'err':'EmailError'}
         elif candidate_data.lower() != candidate_name.lower():
@@ -532,7 +533,7 @@ def schedule_interview(jobId):
             'candidate_email':candidate_email,
             'job_id':jobId 
             }
-            session['magic'] = data
+            session['candidate_info'] = data
             return redirect(url_for('redirect_get_schedule',jobId=jobId))
         else:
             err={'err':'OtherError'}
@@ -544,10 +545,9 @@ def schedule_interview(jobId):
 def redirect_get_schedule(jobId):
     "Redirect to the get schedule page"
     data = {
-    'candidate_id':1,
-    'candidate_name':2,
-    'candidate_email':session['magic']['candidate_email'],
+    'candidate_id':session['candidate_info']['candidate_id'],
+    'candidate_name':session['candidate_info']['candidate_name'],
+    'candidate_email':session['candidate_info']['candidate_email'],
     'job_id':jobId 
     }
-
     return render_template("get-schedule.html",result=data)

@@ -165,12 +165,3 @@ def edit_candidates(candidate_id):
         api_response = {'data':data}
         return jsonify(api_response)       
 
-@app.route("/candidates/<candidate_id>/jobs/<job_id>/email")
-def send_email(candidate_id,job_id):
-    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Candidate'})
-    db.session.commit()
-    candidate_name = Candidates.query.filter(Candidates.candidate_id == candidate_id).value(Candidates.candidate_name)
-    if candidate_name != None:
-        return jsonify(data=candidate_name)
-    else:
-        return jsonify(error="error"), 500

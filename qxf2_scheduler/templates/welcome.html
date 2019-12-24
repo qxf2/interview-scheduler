@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+    Welcome
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add Interviewers</title>
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+    <body>
+    <h3>Welcome to Qxf2</h3>
+    <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
+    <div class="bs-example">
+    <form>
+        <div class="form-group">
+            <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your name</label>
+            <div class="col-md-3">
+                <input id="candidate-name" name="candidate-name" type="text" placeholder="John" class="form-control input-md"
+                    required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your email</label>
+            <div class="col-md-3">
+                <input id="candidate-email" name="candidate-email" type="email" placeholder="johndoe@example.com"
+                    class="form-control input-md" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <div  id="hidden-id" hidden></div>
+            <div  id="hidden-name" hidden></div>
+            <div  id="hidden-email" hidden></div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="save"></label>
+            <div class="col-md-8">
+                <input class="btn btn-success show-modal" type='button' id='submit' value='Go for schedule'>
+            </div>
+        </div>
+        </form>
+        </div>
+        <script>
+            
+            $("#submit").click(function ()
+            {
+                var validValue = true;
+                //Valdidation for name and email field
+                var candidateName = $("#candidate-name").val();
+                var candidateEmail = $("#candidate-email").val();
+                validValue &= candidateName != "";
+                validValue &= candidateEmail != "";
+                var emailValid = (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(candidateEmail);
+                validValue &= emailValid;
+                //Printing appropriate message
+                $('#err-name').remove();
+                $('#err-email').remove();
+                if (candidateName == ""){
+                $('#candidate-name').after('<span id="err-name" class="error" style="color:red">Name can\'t be empty</span>');
+                }
+                if (candidateEmail == ""){
+                $('#candidate-email').after('<span id="err-email" class="error" style="color:red">Email can\'t be empty</span>');
+                }
+                if (emailValid == false && candidateEmail != ""){
+                    $('#candidate-email').after('<span id="err-email" class="error" style="color:red">Enter a valid email</span>');
+                }
+                var jobId = "{{ result.job_id }}";
+               // valid_value = false;
+                if(validValue == true){
+                    $.ajax({
+                        type: 'POST',
+                        url: "/" + jobId + "/valid",
+                        data: {
+                        'candidateName': candidateName,
+                        'candidateEmail': candidateEmail,
+                        'jobId': jobId
+                    },
+                    success: function () { 
+                        form = document.createElement("hidden_form");
+                        form.method = "POST";
+                        console.log("I am inside success blcok")
+                        //addHidden(form,'candidateId',candidateId)
+                        addHidden(form,'cName',candidateName)
+                        addHidden(form,'cEmail',candidateEmail)
+                        addHidden(form,'jobId',jobId)   
+                        form.action = "/" + jobId + "/get-schedule";   
+                        form.submit();
+            
+                       // document.location.href = "/" + jobId + "/get-schedule";
+                    },
+                    error:function(error)
+                    {
+                        if(error.responseJSON.error.err=="NameError"){
+                        alert("Name not found, please enter the same name that you used when applied for this role");
+                        }
+                        else if(error.responseJSON.error.err=="EmailError"){
+                        alert("Email not found, please enter the same email that you used when applied for this role"); 
+                        }
+                        else{
+                        alert("Something is wrong,Please contact admin"); 
+                        }
+                    }
+                    }
+                );
+                }
+            })
+        </script>
+        <script>
+            function addHidden(form,name,value)
+            { 
+                var hiddenField = document.createElement("input");
+                hiddenField.type = 'hidden';
+                hiddenField.name = name;
+                hiddenField.value = value;
+                form.appendChild(hiddenField)
+                document.body.appendChild(form);
+            }
+        </script>
+    </body>
+</html>

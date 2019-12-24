@@ -45,14 +45,25 @@ def confirm():
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
     if request.method == 'GET':
+
         return render_template("get-schedule.html")
+    
     if request.method == 'POST':
         slot = request.form.get('slot')
-        email = request.form.get('emails')
+        email = request.form.get('interviewerEmails')
         date = request.form.get('date')
+        candidate_id = request.form.get('candidateId')
+        candidate_name = request.form.get('candidateName')
+        candidate_email = request.form.get('candidateEmail')
+        job_id = request.form.get('jobId')
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email, slot)
-        value = {'schedule_event': schedule_event, 'date': date}
+        value = {'schedule_event': schedule_event, 
+        'date': date,
+        'candidate_id':candidate_id,
+        'candidate_name':candidate_name,
+        'candidate_email':candidate_email,
+        'job_id':job_id}
         value = json.dumps(value)
 
         return redirect(url_for('confirm', value=value))
@@ -489,3 +500,57 @@ def add_interviewers():
             return jsonify(data=data)
         else:
             return jsonify(error='Interviewer already exists'),500    
+
+
+
+@app.route("/<candidateId>/<jobId>/<url>/welcome")
+def show_welcome(candidateId,jobId,url):
+    "Opens a welcome page for candidates"
+    data = {'job_id':jobId}
+
+    return render_template("welcome.html",result=data)
+
+
+@app.route("/<jobId>/valid",methods=['GET','POST'])
+def schedule_interview(jobId):
+    "Validate candidate name and candidate email"
+
+    if request.method == 'POST':
+        candidate_email = request.form.get('candidateEmail')
+        candidate_name = request.form.get('candidateName')
+        candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
+        candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
+        if candidate_data == None:
+            err={'err':'EmailError'}
+        elif candidate_data.lower() != candidate_name.lower():
+            err={'err':'NameError'}
+        elif candidate_data.lower() == candidate_name.lower():
+            # data = {
+            # 'candidate_id':candidate_id,
+            # 'candidate_name':candidate_name,
+            # 'candidate_email':candidate_email,
+            # 'job_id':jobId 
+            # }
+            return jsonify()
+        else:
+            err={'err':'OtherError'}
+
+        return jsonify(error=err), 500
+
+@app.route('/<jobId>/get-schedule')
+def redirect_get_schedule(jobId):
+    candidate_name = request.form.get('candidate-name')
+    #data = request.args['data']
+    print(candidate_name)
+    return render_template("get-schedule.html",result=candidate_name)
+
+
+# value = json.dumps(value)
+
+#         return redirect(url_for('confirm', value=value))
+
+#         @app.route("/confirm")
+# def confirm():
+#     "Confirming the event message"
+#     response_value = request.args['value']
+#     return render_template("confirmation.html", value=json.loads(response_value))

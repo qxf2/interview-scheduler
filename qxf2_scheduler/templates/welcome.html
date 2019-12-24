@@ -37,11 +37,6 @@
             </div>
         </div>
         <div class="form-group">
-            <div  id="hidden-id" hidden></div>
-            <div  id="hidden-name" hidden></div>
-            <div  id="hidden-email" hidden></div>
-        </div>
-        <div class="form-group">
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
                 <input class="btn btn-success show-modal" type='submit' id='submit' value='Go for schedule'>
@@ -49,16 +44,5 @@
         </div>
         </form>
         </div>
-        <script>
-            function addHidden(form,name,value)
-            { 
-                var hiddenField = document.createElement("input");
-                hiddenField.type = 'hidden';
-                hiddenField.name = name;
-                hiddenField.value = value;
-                form.appendChild(hiddenField)
-                document.body.appendChild(form);
-            }
-        </script>
-    </body>
+        </body>
 </html>

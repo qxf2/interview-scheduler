@@ -45,7 +45,6 @@ def confirm():
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
     if request.method == 'GET':
-        
 
         return render_template("get-schedule.html")
     
@@ -494,15 +493,15 @@ def add_interviewers():
 
 @app.route("/<candidateId>/<jobId>/<url>/welcome")
 def show_welcome(candidateId,jobId,url):
-    "Opening welcome page for candidate"
+    "Opens a welcome page for candidates"
     data = {'job_id':jobId}
 
     return render_template("welcome.html",result=data)
 
 
-@app.route("/<jobId>/get-schedule",methods=['GET','POST'])
+@app.route("/<jobId>/valid",methods=['GET','POST'])
 def schedule_interview(jobId):
-    "Validating candidate name and email"
+    "Validate candidate name and candidate email"
 
     if request.method == 'POST':
         candidate_email = request.form.get('candidateEmail')
@@ -510,26 +509,36 @@ def schedule_interview(jobId):
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
         if candidate_data == None:
-            err={'err':'email'}
+            err={'err':'EmailError'}
         elif candidate_data.lower() != candidate_name.lower():
-            err={'err':'name'}
+            err={'err':'NameError'}
         elif candidate_data.lower() == candidate_name.lower():
-            data = {
-            'candidate_id':candidate_id,
-            'candidate_name':candidate_name,
-            'candidate_email':candidate_email,
-            'job_id':jobId 
-            }
-            print(data)
-            print("-------------------")
-            return jsonify(result=data)
+            # data = {
+            # 'candidate_id':candidate_id,
+            # 'candidate_name':candidate_name,
+            # 'candidate_email':candidate_email,
+            # 'job_id':jobId 
+            # }
+            return jsonify()
         else:
-            err={'err':'other'}
+            err={'err':'OtherError'}
+
         return jsonify(error=err), 500
 
-    if request.method=='GET':
-        print(request.method)
-        candidate_data = request.get_data('data')
-        print(f'candidate data :{candidate_data}')
-        return render_template("get-schedule.html",result=candidate_data)
+@app.route('/<jobId>/get-schedule')
+def redirect_get_schedule(jobId):
+    candidate_name = request.form.get('candidate-name')
+    #data = request.args['data']
+    print(candidate_name)
+    return render_template("get-schedule.html",result=candidate_name)
 
+
+# value = json.dumps(value)
+
+#         return redirect(url_for('confirm', value=value))
+
+#         @app.route("/confirm")
+# def confirm():
+#     "Confirming the event message"
+#     response_value = request.args['value']
+#     return render_template("confirmation.html", value=json.loads(response_value))

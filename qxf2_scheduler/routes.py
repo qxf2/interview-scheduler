@@ -39,6 +39,11 @@ def date_picker():
 def confirm():
     "Confirming the event message"
     response_value = request.args['value']
+    candidate_id = session['candidate_info']['candidate_id']
+    job_id = session['candidate_info']['job_id']
+    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Candidate'})
+    db.session.commit()
+
     return render_template("confirmation.html", value=json.loads(response_value))
 
 @app.route("/confirmation", methods=['GET', 'POST'])
@@ -52,18 +57,10 @@ def scehdule_and_confirm():
         slot = request.form.get('slot')
         email = request.form.get('interviewerEmails')
         date = request.form.get('date')
-        candidate_id = request.form.get('candidateId')
-        candidate_name = request.form.get('candidateName')
-        candidate_email = request.form.get('candidateEmail')
-        job_id = request.form.get('jobId')
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email, slot)
         value = {'schedule_event': schedule_event, 
-        'date': date,
-        'candidate_id':candidate_id,
-        'candidate_name':candidate_name,
-        'candidate_email':candidate_email,
-        'job_id':job_id}
+        'date': date}
         value = json.dumps(value)
 
         return redirect(url_for('confirm', value=value))
@@ -548,6 +545,6 @@ def redirect_get_schedule(jobId):
     'candidate_id':session['candidate_info']['candidate_id'],
     'candidate_name':session['candidate_info']['candidate_name'],
     'candidate_email':session['candidate_info']['candidate_email'],
-    'job_id':jobId 
+    'job_id':session['candidate_info']['job_id']
     }
     return render_template("get-schedule.html",result=data)

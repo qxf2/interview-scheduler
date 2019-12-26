@@ -6,23 +6,6 @@ import json,ast,sys
 
 from qxf2_scheduler.models import Jobs, Rounds, Jobround
 
-def check_round_name_exists(round_name):
-    "Check the round name already in the database"
-    fetch_existing_round_name = Rounds.query.all()
-    round_name_list = []
-    #Fetch the round names
-    for each_round_name in fetch_existing_round_name:           
-        round_name_list.append(each_round_name.round_name.lower())
-    
-    #Compare the job with database job list
-    if round_name.lower() in round_name_list:
-        check_round_name_exists = True
-    else:
-        check_round_name_exists = False
-
-    return check_round_name_exists   
-
-
 
 @app.route("/job/<job_id>/rounds",methods=["GET","POST"])
 def read_round_details(job_id):
@@ -45,32 +28,28 @@ def read_round_details(job_id):
 
 
 @app.route("/jobs/<job_id>/round/add",methods=["GET","POST"])
-def add_rounds(job_id):
-    "add rounds"
+def add_rounds_details(job_id):
+    "add rounds details"
     if request.method == "POST": 
         data = {}       
         round_time = request.form.get('roundTime')
         round_description = request.form.get('roundDescription')
         round_requirements = request.form.get('roundRequirements')
-        round_name = request.form.get('roundName')        
-        print(round_time,round_description,round_requirements,file=sys.stderr)
-        #Check the round has been already added or not
+        round_name = request.form.get('roundName')     
         data={'round_name':round_name,'job_id':job_id}
-        check_round_exists = check_round_name_exists(round_name)
-        if check_round_exists == True:
-            error = 'Failed'
-        else:            
-            add_round_object = Rounds(round_name=round_name,round_time=round_time,round_description=round_description,round_requirement=round_requirements)
-            db.session.add(add_round_object)
-            db.session.commit()
-            #getting the unique round id for new rounds
-            round_id = Rounds.query.filter(Rounds.round_name==round_name).value(Rounds.round_id)            
-            #storing the round id and job id in roundjob table
-            add_job_round_object = Jobround(round_id=round_id,job_id=job_id)
-            db.session.add(add_job_round_object)
-            db.session.commit()
-            error = 'Success'
-        api_response = {'data':data,'error':error}
+
+        #Adding the round details into the database        
+        add_round_object = Rounds(round_name=round_name,round_time=round_time,round_description=round_description,round_requirement=round_requirements)
+        db.session.add(add_round_object)
+        db.session.flush()
+        round_id = add_round_object.round_id
+        db.session.commit()
+        
+        #Adding the round and job id to the jobround table
+        add_job_round_object = Jobround(round_id=round_id,job_id=job_id)
+        db.session.add(add_job_round_object)
+        db.session.commit()
+        api_response = {'data':data}
 
         return jsonify(api_response) 
 

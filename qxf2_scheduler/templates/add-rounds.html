@@ -1,190 +1,137 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Add,Edit,Delete rounds</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add Rounds</title>
+
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="/resources/demos/style.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .bs-example {
+            margin: 20px;
+        }
+
+        textarea {
+            display: inline
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container col-md-offset-1">
-        
-                    <input class="btn btn-info" type="button" id="create-user" value="Add rounds">
+    <div>        
+        <h2 class="grey_text text-justify">Add Rounds</h2>
+        <form class="needs-validation">
+            <label class="col-md-4 control-label" for="rname">Round name</label>
+            <div class="col-md-4">
+               
+                <input id="rname" name="rname" type="text" placeholder="John" class="form-control"
+                    required>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+            </div>
+           
+            <label class="col-md-4 control-label" for="rtime">Round duration</label>
+            <div class="col-md-4">
+                <select name="Duration" id="rtime" style="width:380px; height:30px;"required>
+                    <option value="30 minutes">30 minutes</option>
+                    <option value="45 minutes">45 minutes</option>
+                    <option value="60 minutes">60 minutes</option>
+                </select>
+               
+                <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
-                <br />
-
-                <div class="container col-md-offset-1">
-                    <table class="table table-striped">
-                        {% if rounds | length >= 1 %}
-                        <h3 class="grey_text text-center">Round details</h3>
-                        <thead>
-                            <tr>
-                                <th scope="col">Round Name</th>
-                                <th scope="col">Time Duration</th>
-                                <th scope="col">Description</th>
-                                <th scope="col">Requirements</th>
-                                <th scope="col col-md-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for each_round in rounds %}
-                            <tr>
-                                <td>{{ each_round.round_name }}</td>
-                                <td>{{ each_round.round_time }}</td>
-                                <td>{{ each_round.round_description }}</td>
-                                <td>{{ each_round.round_requirement }}</td>
-                                <td>
-                                    <input type="button" class="btn btn-info" value="Edit round">
-                                    <input type="button" class="btn btn-info" value="Delete round">
-                                </td>
-                            </tr>
-                            {% endfor %}
-
-                            {% else %}
-                            <div>
-                                <p>There are no rounds been added for this job now. If you want to add click 'Add
-                                    rounds' button.Thank you.</p>
-                            </div>
-                            {% endif %}
-                        </tbody>
-                    </table>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+            </div>
+            <label class="col-md-4 control-label" for="rdescription">Round description</label>
+            <div class="col-md-4">
+                <!-----<input id="rdesc" name="rdesc" type="text" 
+                    class="form-control" required>----->
+                    <textarea name="rdesc" id="rdesc" style="width:380px; height:300px;" required></textarea>
+                <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
 
 
-                <div id="dialog-form" title="Create new round">
-                    <p class="validateTips">All form fields are required.</p>
-
-                    <form>
-                        <fieldset>
-                            <label for="roundname">Round name</label>
-                            <input type="text" name="roundname" id="roundname"
-                                class="text ui-widget-content ui-corner-all">
-                            <label for="duration">Duration</label>
-                            <input type="text" name="duration" id="duration"
-                                class="text ui-widget-content ui-corner-all">
-                            <label for="description">Description</label>
-                            <input type="text" name="description" id="description"
-                                class="text ui-widget-content ui-corner-all">
-                            <label for="requirements">Requirements</label>
-                            <input type="requirements" name="requirements" id="requirements"
-                                class="text ui-widget-content ui-corner-all">
-                            <input type="hidden" id='jobId' ,value="{{result.job_id}}">
-                            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                        </fieldset>
-                    </form>
+            </div>
+            <label class="col-md-4 control-label" for="rrequirements">Round requirements</label>
+            <div class="col-md-4">
+                <input id="rreq" name="rreq" type="text" placeholder="Laptop"
+                    class="form-control" required>
+                <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
 
-                <script>
-                    $(function () {
-                        var dialog, form,
-                            roundname = $("#roundname"),
-                            duration = $("#duration"),
-                            description = $("#description"),
-                            requirements = $("#requirements"),
-                            allFields = $([]).add(roundname).add(duration).add(description).add(requirements),
-                            tips = $(".validateTips");
-
-                        function updateTips(t) {
-                            tips
-                                .text(t)
-                                .addClass("ui-state-highlight");
-                            setTimeout(function () {
-                                tips.removeClass("ui-state-highlight", 1500);
-                            }, 500);
+            </div>
+            <input type="hidden" id="jobId" value="{{job_id}}">
+            <label class="col-md-4 control-label" for="save"></label>
+            <div class="col-md-8">
+                <button class="btn btn-info" type="submit">Add</button>
+                <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        function clearAdd() {
+            document.location.href = "/jobs"
+        }
+    </script>
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                console.log("I am inside function");
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $("#resultDiv").empty();
+                        if (form.checkValidity() === true) {
+                            console.log("I am coming here")
+                            var roundName = $("#rname").val();
+                            var roundDescription = $("#rdesc").val();
+                            var roundRequirements = $("#rreq").val();
+                            var dropdownValue = document.getElementById("rtime");
+                            var roundTime = dropdownValue.options[dropdownValue.selectedIndex].value;
+                            var jobId = document.getElementById("jobId").value;  
+                            
+                            $.ajax({
+                                type: 'POST',
+                                url: '/jobs/' + jobId + '/round/add',
+                                data: {
+                                    'roundName': roundName,
+                                    'roundTime': roundTime,
+                                    'roundDescription': roundDescription,
+                                    'roundRequirements': roundRequirements,
+                                },
+                                success: function (result) {
+                                    alert("The round has been added");
+                                    document.location.href = "/job/"+jobId+'/rounds';
+                                },
+                                
+                            })
                         }
-
-                        function checkLength(o, n, min, max) {
-                            if (o.length > max || o.length < min) {
-                                o.addClass("ui-state-error");
-                                updateTips("Length of " + n + " must be between " +
-                                    min + " and " + max + ".");
-                                return false;
-                            } else {
-                                return true;
-                            }
-                        }
-
-                        function addUser() {
-                            var valid = true;
-                            allFields.removeClass("ui-state-error");
-                            var roundname = $("#roundname").val();
-                            var duration = $("#duration").val();
-                            var description = $("#description").val();
-                            var requirements = $("#requirements").val();
-                            var JobId = document.getElementById("jobId").value;
-                            console.log(duration, description, requirements);
-                            valid = valid && checkLength(roundname, "roundname", 3, 16);
-                            valid = valid && checkLength(duration, "duration", 3, 16);
-                            valid = valid && checkLength(description, "description", 3, 300);
-                            valid = valid && checkLength(requirements, "requirments", 5, 300);
-                            if (valid) {
-                                $("#users tbody").append("<tr>" +
-                                    "<td>" + roundname + "</td>" +
-                                    "<td>" + duration + "</td>" +
-                                    "<td>" + description + "</td>" +
-                                    "<td>" + requirements + "</td>" +
-                                    "</tr>");
-                                $.ajax({
-                                    type: 'POST',
-                                    url: '/rounds/%d/add'%JobId,
-                                    data: {
-                                        'roundname': roundname,
-                                        'duration': duration,
-                                        'description': description,
-                                        'requirements': requirements
-                                    },
-                                    success: function (result) {
-                                        console.log(result);
-                                        alert("The round has been added");
-                                        document.location.href = "/jobs";
-                                    },
-                                })
-
-                                dialog.dialog("close");
-                            }
-                            return valid;
-                        }
-
-                        dialog = $("#dialog-form").dialog({
-                            autoOpen: false,
-                            height: 400,
-                            width: 350,
-                            modal: true,
-                            buttons: {
-                                "Create Rounds": addUser,
-                                Cancel: function () {
-                                    dialog.dialog("close");
-                                }
-                            },
-                            close: function () {
-                                form[0].reset();
-                                allFields.removeClass("ui-state-error");
-                            }
-                        });
-
-                        form = dialog.find("form").on("submit", function (event) {
-                            event.preventDefault();
-                            addUser();
+                    },
 
 
-                        });
+                        false);
+                });
+            }, false);
+        })();
+    </script>
 
-                        $("#create-user").button().on("click", function () {
-                            dialog.dialog("open");
-                        });
-                    });
-                </script>
 </body>
 
 </html>

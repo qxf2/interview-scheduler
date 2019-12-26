@@ -41,14 +41,18 @@ def read_round_details(job_id):
             'round_requirement' : each_round.round_requirement}
         )
                   
-        return render_template("rounds.html",result=rounds_list,jobs=job_id)
+        return render_template("rounds.html",result=rounds_list,job_id=job_id)
 
+
+@app.route("/jobs/<job_id>/round/add",methods=["GET","POST"])
+def add_rounds(job_id):
+    "add rounds"
     if request.method == "POST": 
         data = {}       
-        round_time = request.form.get('duration')
-        round_description = request.form.get('description')
-        round_requirements = request.form.get('requirements')
-        round_name = request.form.get('roundname')        
+        round_time = request.form.get('roundTime')
+        round_description = request.form.get('roundDescription')
+        round_requirements = request.form.get('roundRequirements')
+        round_name = request.form.get('roundName')        
         print(round_time,round_description,round_requirements,file=sys.stderr)
         #Check the round has been already added or not
         data={'round_name':round_name,'job_id':job_id}
@@ -66,9 +70,13 @@ def read_round_details(job_id):
             db.session.add(add_job_round_object)
             db.session.commit()
             error = 'Success'
-    api_response = {'data':data,'error':error}
+        api_response = {'data':data,'error':error}
 
-    return jsonify(api_response) 
+        return jsonify(api_response) 
+
+    return render_template("add-rounds.html",job_id=job_id)
+
+
 
     
 @app.route("/rounds/<round_id>/jobs/<job_id>/delete")
@@ -100,9 +108,8 @@ def edit_round_details(round_id,job_id):
             'round_description' : each_round.round_description,
             'round_requirement' : each_round.round_requirement}
         )
-        edit_round_job_id = job_id
-                  
-        return render_template("edit-rounds.html",result=rounds_list,job_id=edit_round_job_id)
+                 
+        return render_template("edit-rounds.html",result=rounds_list,job_id=job_id)
 
     if request.method=="POST":
         data = {}

@@ -8,8 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Add,Edit,Delete rounds</title>
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
-    <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
-    <link href="//resources/demos/style.css" rel="stylesheet">
+    <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">    
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
@@ -30,7 +29,7 @@
     <div class="container col-md-offset-1">
         <h2 class="grey_text text-center">Rounds List</h2>
 
-        <input class="btn btn-info" type="button" id="create-user" value="Add rounds">
+        <input class="btn btn-info" type="button" onclick="addRound(this)" value="Add rounds" data-job-id="{{job_id}}">
 
 
         <div class="row-fluid top-space-20">
@@ -67,145 +66,7 @@
                 {% endif %}
             </table>
         </div>
-    </div>
-    <div id="dialog-form" title="Create new round">
-        <p class="validateTips">All form fields are required.</p>
-
-        <form>
-            <fieldset>
-                <label for="roundname">Round name</label>
-                <input type="text" name="roundname" id="roundname" class="text ui-widget-content ui-corner-all"
-                    placeholder="Jobrole/Roundnumber(QAM/R1)">
-                <label for="duration">Duration</label>
-                <input type="text" name="duration" id="duration" class="text ui-widget-content ui-corner-all">
-                <label for="description">Description</label>
-                <input type="text" name="description" id="description" class="text ui-widget-content ui-corner-all">
-                <label for="requirements">Requirements</label>
-                <input type="requirements" name="requirements" id="requirements"
-                    class="text ui-widget-content ui-corner-all">
-                <input type="hidden" id='jobId' value="{{job_id}}">
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </fieldset>
-        </form>
-    </div>
-
-    <script>
-        $(function () {
-            var dialog, form,
-                roundname = $("#roundname"),
-                duration = $("#duration"),
-                description = $("#description"),
-                requirements = $("#requirements"),
-                allFields = $([]).add(roundname).add(duration).add(description).add(requirements),
-                tips = $(".validateTips");
-
-            function updateTips(t) {
-                tips
-                    .text(t)
-                    .addClass("ui-state-highlight");
-                setTimeout(function () {
-                    tips.removeClass("ui-state-highlight", 1500);
-                }, 500);
-            }
-
-            function checkLength(o, n, min, max) {
-
-                if (o.val().length > max || o.val().length < min) {
-                    o.addClass("ui-state-error");
-                    updateTips("Length of " + n + " must be between " +
-                        min + " and " + max + ".");
-
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-
-            function addUser() {
-                var valid = true;
-                allFields.removeClass("ui-state-error");
-                var roundname = $("#roundname");
-                var duration = $("#duration");
-                var description = $("#description");
-                var requirements = $("#requirements");
-                var jobId = document.getElementById("jobId").value;
-                valid = valid && checkLength(roundname, "roundname", 3, 16);
-                valid = valid && checkLength(duration, "duration", 3, 16);
-                valid = valid && checkLength(description, "description", 3, 300);
-                valid = valid && checkLength(requirements, "requirments", 5, 300);
-
-                if (valid) {
-                    var roundname = $("#roundname").val();
-                    var duration = $("#duration").val();
-                    var description = $("#description").val();
-                    var requirements = $("#requirements").val();
-                    var jobId = document.getElementById("jobId").value;
-                    $("#users tbody").append("<tr>" +
-                        "<td>" + roundname + "</td>" +
-                        "<td>" + duration + "</td>" +
-                        "<td>" + description + "</td>" +
-                        "<td>" + requirements + "</td>" +
-                        "</tr>");
-                    $.ajax({
-                        type: 'POST',
-                        url: '/job/%d/rounds' % jobId,
-                        data: {
-                            'roundname': roundname,
-                            'duration': duration,
-                            'description': description,
-                            'requirements': requirements
-                        },
-                        success: function (result) {
-                            var jobsId = result.data['job_id'];
-
-                            if (result.error == "Success") {
-                                alert("The round has been added");
-                                document.location.href = "/job/" + jobsId + '/rounds';
-
-                            }
-                            else {
-                                alert("The round already exists");
-                                document.location.href = "/job/" + jobsId + '/rounds';
-                            }
-
-
-                        }
-                    })
-
-                    dialog.dialog("close");
-                }
-                return valid;
-            }
-
-            dialog = $("#dialog-form").dialog({
-                autoOpen: false,
-                height: 400,
-                width: 350,
-                modal: true,
-                buttons: {
-                    "Create Rounds": addUser,
-                    Cancel: function () {
-                        dialog.dialog("close");
-                    }
-                },
-                close: function () {
-                    form[0].reset();
-                    allFields.removeClass("ui-state-error");
-                }
-            });
-
-            form = dialog.find("form").on("submit", function (event) {
-                event.preventDefault();
-                addUser();
-
-
-            });
-
-            $("#create-user").button().on("click", function () {
-                dialog.dialog("open");
-            });
-        });
-    </script>
+    </div>    
 
     <script>
         //Confirmation message for deleteing round
@@ -242,10 +103,17 @@
         }
     </script>
     <script>
-        function editRound(action_edit){
-            round_id = action_edit.getAttribute("data-round-id");
-            var jobId = document.getElementById("jobId").value;            
-            document.location.href = "/rounds/" + round_id +  '/job/'+ jobId +'/edit';
+        function editRound(actionEdit){
+            round_id = actionEdit.getAttribute("data-round-id");
+            jobId = actionEdit.getAttribute("data-job-id");            
+            document.location.href = "/rounds/" + round_id +  '/jobs/'+ jobId +'/edit';
+        }
+    </script>
+    <script>
+        function addRound(actionAdd){
+            jobId = actionAdd.getAttribute("data-job-id");
+            document.location.href = "/jobs/" + jobId + "/round/add";
+
         }
     </script>
 

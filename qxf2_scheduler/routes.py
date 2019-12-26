@@ -554,15 +554,12 @@ def show_schedule(jobId):
 @app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
 def send_invite(candidate_id, job_id):
     "Send an invite to schedule an interview"
-    result_flag = False
     if request.method == 'POST':
         candidate_email = request.form.get("candidateemail")
         candidate_id = request.form.get("candidateid")
         candidate_name = request.form.get("candidatename")
         job_id = request.form.get("jobid")
         generated_url = request.form.get("generatedurl")
-        print(candidate_name, candidate_email,
-              candidate_id, job_id, file=sys.stderr)
         try:
             msg = Message("Schedule an Interview with Qxf2 Services!",
                           sender="test@qxf2.com", recipients=[candidate_email])

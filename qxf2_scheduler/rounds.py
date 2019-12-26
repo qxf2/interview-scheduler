@@ -65,7 +65,7 @@ def delete_round_details(job_id,round_id):
     return jsonify(data="Deleted")
 
 
-@app.route("/rounds/<round_id>/job/<job_id>/edit",methods=["GET","POST"])
+@app.route("/rounds/<round_id>/jobs/<job_id>/edit",methods=["GET","POST"])
 def edit_round_details(round_id,job_id):
     "Edit the round details"
     if request.method == "GET":

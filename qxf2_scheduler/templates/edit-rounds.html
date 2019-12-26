@@ -108,7 +108,7 @@
                             console.log(roundName, roundTime, roundDescription, roundRequirements);
                             $.ajax({
                                 type: 'POST',
-                                url: '/rounds/' + roundId + '/job/' + jobId + '/edit',
+                                url: '/rounds/' + roundId + '/jobs/' + jobId + '/edit',
                                 data: {
                                     'roundName': roundName,
                                     'roundTime': roundTime,

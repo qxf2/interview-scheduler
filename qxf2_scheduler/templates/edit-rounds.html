@@ -27,7 +27,7 @@
 </head>
 
 <body>
-    <div>        
+    <div>
         <h2 class="grey_text text-justify">Edit Rounds</h2>
         <form class="needs-validation">
             <label class="col-md-4 control-label" for="rname">Round name</label>
@@ -43,17 +43,22 @@
 
             <label class="col-md-4 control-label" for="rtime">Round duration</label>
             <div class="col-md-4">
-                <input id="rtime" name="rtime" type="text" value="{{each_details.round_time}}" placeholder="45 minutes"
-                    class="form-control" required>
+                <select name="Duration" id="rtime" style="width:380px; height:30px;" required>
+                    <option value="{{each_details.round_time}}">{{each_details.round_time}}</option>
+                    <option value="30 minutes">30 minutes</option>
+                    <option value="45 minutes">45 minutes</option>
+                    <option value="60 minutes">60 minutes</option>
+
+                </select>
+
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
             <label class="col-md-4 control-label" for="rdescription">Round description</label>
-            <div class="col-md-4">
-                <input id="rdesc" name="rdesc" type="text" value="{{each_details.round_description}}"
-                    placeholder="45 minutes" class="form-control" required>
+            <div class="col-md-4">                
+                <textarea name="rdesc" id="rdesc" style="width:380px; height:300px;" required>{{each_details.round_description}}</textarea>
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
                 <div class="valid-feedback">Valid</div>
@@ -120,7 +125,7 @@
                                     alert("The round has been edited");
                                     document.location.href = "/jobs";
                                 },
-                                
+
                             })
                         }
                     },

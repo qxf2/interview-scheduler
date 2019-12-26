@@ -108,7 +108,6 @@ def edit_round_details(round_id,job_id):
             'round_description' : each_round.round_description,
             'round_requirement' : each_round.round_requirement}
         )
-                 
         return render_template("edit-rounds.html",result=rounds_list,job_id=job_id)
 
     if request.method=="POST":

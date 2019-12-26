@@ -9,7 +9,7 @@
     <title>Add,Edit,Delete rounds</title>
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
-    <link href="/resources/demos/style.css" rel="stylesheet">
+    <link href="//resources/demos/style.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
@@ -54,11 +54,13 @@
                     <td>{{each_item.round_description}}</td>
                     <td>{{each_item.round_requirement}}</td>
                     <td>
-                        <input type="button" class="btn btn-info" value="Edit" id="edit-button"
-                            data-edit-round-id="{{each_item.round_id}}" />
+                        <input class="btn btn-info" id="editround{{each_item.round_id}}" onclick="editRound(this)" type="button" value="Edit" data-round-id="{{each_item.round_id}}" data-round-name="{{each_item.round_name}}"
+                            data-round-description="{{each_item.round_description}}"
+                            data-round-requirement="{{each_item.round_requirement}}"
+                            data-round-duration="{{each_item.round_time}}" data-job-id="{{job_id}}">
                         <input type="button" class="btn btn-info" onclick="delete_round(this)" value="Delete"
                             id="delete-button{{each_item.round_id}}" data-delete-round-id="{{each_item.round_id}}"
-                            data-delete-job-id="{{jobs}}" />
+                            data-delete-job-id="{{job_id}}" />
                     </td>
                 </tbody>
                 {% endfor %}
@@ -239,9 +241,13 @@
             dialog.dialog("open");
         }
     </script>
-
+    <script>
+        function editRound(action_edit){
+            round_id = action_edit.getAttribute("data-round-id");
+            var jobId = document.getElementById("jobId").value;            
+            document.location.href = "/rounds/" + round_id +  '/job/'+ jobId +'/edit';
+        }
+    </script>
 
 </body>
-
-
 </html>

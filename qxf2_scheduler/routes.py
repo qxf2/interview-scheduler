@@ -553,34 +553,6 @@ def schedule_interview(jobId):
 
         return jsonify(error=err), 500
 
-@app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
-def send_invite(candidate_id, job_id):
-    "Send an invite to schedule an interview"
-    result_flag = False
-    if request.method == 'POST':
-        candidate_email = request.form.get("candidateemail")
-        candidate_id = request.form.get("candidateid")
-        candidate_name = request.form.get("candidatename")
-        job_id = request.form.get("jobid")
-        generated_url = request.form.get("generatedurl")
-        print(candidate_name, candidate_email,
-              candidate_id, job_id, file=sys.stderr)
-        try:
-            msg = Message("Schedule an Interview with Qxf2 Services!",
-                          sender="test@qxf2.com", recipients=[candidate_email])
-            msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. Please use the URL '%s' to schedule an interview with us" % (
-                candidate_name, generated_url)
-            mail.send(msg)
-            candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on candidate'})
-            db.session.commit()
-            error = 'Success'        
-           
-        except Exception as e:
-            error = "Failed"
-            print(e,file=sys.stderr)
-            return(str(e))
-        
-        data = {'candidate_name': candidate_name, 'error': error}
 
 @app.route('/<jobId>/get-schedule')
 def redirect_get_schedule(jobId):

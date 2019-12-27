@@ -166,6 +166,7 @@ def edit_candidates(candidate_id):
 
         api_response = {'data':data}
         return jsonify(api_response)
+        
 
 @app.route("/candidates/<candidate_id>/jobs/<job_id>/email")
 def send_email(candidate_id,job_id):

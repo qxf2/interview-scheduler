@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Add Rounds</title>
+    <title>Edit Rounds</title>
 
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
@@ -28,23 +28,27 @@
 
 <body>
     <div>
-        <h2 class="grey_text text-justify">Add Rounds</h2>
+        <h2 class="grey_text text-justify">Edit Rounds</h2>
         <form class="needs-validation">
             <label class="col-md-4 control-label" for="rname">Round name</label>
             <div class="col-md-4">
-
-                <input id="rname" name="rname" type="text" placeholder="John" class="form-control" required>
+                {% for each_details in result %}
+                <input id="rname" name="rname" type="text" placeholder="John" class="form-control"
+                    value="{{each_details.round_name}}" required>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
+            <input type="hidden" value="{{each_details.round_id}}" id="roundId">
+            <input type="hidden" value="{{job_id}}" id="jobId">
 
             <label class="col-md-4 control-label" for="rtime">Round duration</label>
             <div class="col-md-4">
                 <select name="Duration" id="rtime" style="width:380px; height:30px;" required>
-                    <option>Select the time duration</option>
+                    <option value="{{each_details.round_time}}">{{each_details.round_time}}</option>
                     <option value="30 minutes">30 minutes</option>
                     <option value="45 minutes">45 minutes</option>
                     <option value="60 minutes">60 minutes</option>
+
                 </select>
 
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
@@ -53,8 +57,8 @@
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
             <label class="col-md-4 control-label" for="rdescription">Round description</label>
-            <div class="col-md-4">
-                <textarea name="rdesc" id="rdesc" style="width:380px; height:300px;" required></textarea>
+            <div class="col-md-4">                
+                <textarea name="rdesc" id="rdesc" style="width:380px; height:300px;" required>{{each_details.round_description}}</textarea>
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
                 <div class="valid-feedback">Valid</div>
@@ -64,23 +68,26 @@
             </div>
             <label class="col-md-4 control-label" for="rrequirements">Round requirements</label>
             <div class="col-md-4">
-                <input id="rreq" name="rreq" type="text" placeholder="Laptop" class="form-control" required>
+                <input id="rreq" name="rreq" type="text" value="{{each_details.round_requirement}}" placeholder="Laptop"
+                    class="form-control" required>
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
 
+
+
             </div>
-            <input type="hidden" id="jobId" value="{{job_id}}">
+            {% endfor %}
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
-                <button class="btn btn-info" type="submit">Add</button>
-                <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
+                <button class="btn btn-info" type="submit">Edit</button>
+                <button name="clear" onclick="clearEdit()" class="btn btn-danger">Cancel</button>
             </div>
         </form>
     </div>
     <script>
-        function clearAdd() {
+        function clearEdit() {
             document.location.href = "/jobs"
         }
     </script>
@@ -98,24 +105,25 @@
                         if (form.checkValidity() === true) {
                             console.log("I am coming here")
                             var roundName = $("#rname").val();
+                            var roundTime = $("#rtime").val();
                             var roundDescription = $("#rdesc").val();
                             var roundRequirements = $("#rreq").val();
-                            var dropdownValue = document.getElementById("rtime");
-                            var roundTime = dropdownValue.options[dropdownValue.selectedIndex].value;
+                            var roundId = document.getElementById("roundId").value;
                             var jobId = document.getElementById("jobId").value;
-
+                            console.log(roundName, roundTime, roundDescription, roundRequirements);
                             $.ajax({
                                 type: 'POST',
-                                url: '/jobs/' + jobId + '/round/add',
+                                url: '/rounds/' + roundId + '/jobs/' + jobId + '/edit',
                                 data: {
                                     'roundName': roundName,
                                     'roundTime': roundTime,
                                     'roundDescription': roundDescription,
                                     'roundRequirements': roundRequirements,
+                                    'roundId': roundId
                                 },
                                 success: function (result) {
-                                    alert("The round has been added");
-                                    document.location.href = "/job/" + jobId + '/rounds';
+                                    alert("The round has been edited");
+                                    document.location.href = "/jobs";
                                 },
 
                             })

@@ -2,7 +2,7 @@
 This file contains all the endpoints exposed by the interview scheduler application
 """
 
-from flask import render_template, url_for, flash, redirect, jsonify, request, Response
+from flask import render_template, url_for, flash, redirect, jsonify, request, Response, session
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
@@ -11,7 +11,7 @@ import ast
 import sys
 from flask_mail import Message, Mail
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround, Candidates, Jobcandidate
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate
 DOMAIN = 'qxf2.com'
 mail = Mail(app)
 
@@ -43,6 +43,11 @@ def date_picker():
 def confirm():
     "Confirming the event message"
     response_value = request.args['value']
+    candidate_id = session['candidate_info']['candidate_id']
+    job_id = session['candidate_info']['job_id']
+    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Candidate'})
+    db.session.commit()
+
     return render_template("confirmation.html", value=json.loads(response_value))
 
 
@@ -50,14 +55,17 @@ def confirm():
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
     if request.method == 'GET':
+
         return render_template("get-schedule.html")
+    
     if request.method == 'POST':
         slot = request.form.get('slot')
-        email = request.form.get('emails')
+        email = request.form.get('interviewerEmails')
         date = request.form.get('date')
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email, slot)
-        value = {'schedule_event': schedule_event, 'date': date}
+        value = {'schedule_event': schedule_event, 
+        'date': date}
         value = json.dumps(value)
 
         return redirect(url_for('confirm', value=value))
@@ -508,73 +516,52 @@ def add_interviewers():
             return jsonify(error='Interviewer already exists'), 500
 
 
+
 @app.route("/<candidateId>/<jobId>/<url>/welcome")
 def show_welcome(candidateId, jobId, url):
+    "Opens a welcome page for candidates"
     data = {'job_id': jobId}
 
-    return render_template("welcome.html", result=data)
+    return render_template("welcome.html", result=data)    
 
 
-@app.route("/welcome/valid", methods=["GET", "POST"])
-def welcome_valid():
-    candidate_name = request.form.get('candidateName')
-    candidate_email = request.form.get('candidateEmail')
-    job_id = request.form.get('jobId')
-    candidate_id = Candidates.query.filter(
-        Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
-    candidate_data = Candidates.query.filter(
-        Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
-    if candidate_data == None:
-        err = {'err': 'email'}
-    elif candidate_data.lower() == candidate_name.lower():
-        candidate_status = Jobcandidate.query.filter(
-            Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status': 'Waiting on Qxf2'})
-        db.session.commit()
-        return jsonify(data="success")
-    elif candidate_data.lower() != candidate_name.lower():
-        err = {'err': 'name'}
-    else:
-        err = {'err': 'other'}
-    return jsonify(error=err), 500
+@app.route("/<jobId>/valid",methods=['GET','POST'])
+def schedule_interview(jobId):
+    "Validate candidate name and candidate email"
 
-
-@app.route("/<jobId>/get-schedule")
-def show_schedule(jobId):
-    candidate_name = request.form.get('candidateName')
-    candidate_email = request.form.get('candidateEmail')
-    data = {'candidate_name': candidate_name,
-            'candidate_email': candidate_email,
-            'job_id': jobId
-            }
-    print(data)
-
-    return render_template("get-schedule.html", result=data)
-
-
-@app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
-def send_invite(candidate_id, job_id):
-    "Send an invite to schedule an interview"
     if request.method == 'POST':
-        candidate_email = request.form.get("candidateemail")
-        candidate_id = request.form.get("candidateid")
-        candidate_name = request.form.get("candidatename")
-        job_id = request.form.get("jobid")
-        generated_url = request.form.get("generatedurl")
-        try:
-            msg = Message("Schedule an Interview with Qxf2 Services!",
-                          sender="test@qxf2.com", recipients=[candidate_email])
-            msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. Please use the URL '%s' to schedule an interview with us" % (
-                candidate_name, generated_url)
-            mail.send(msg)
-            candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on candidate'})
-            db.session.commit()
-            error = 'Success'        
-           
-        except Exception as e:
-            error = "Failed"
-            print(e,file=sys.stderr)
-            return(str(e))
-        
-        data = {'candidate_name': candidate_name, 'error': error}
+        print('I am inside post ')
+        candidate_email = request.form.get('candidate-email')
+        candidate_name = request.form.get('candidate-name')
+        candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
+        candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
+        print('I am here')
+        if candidate_data == None:
+            err={'err':'EmailError'}
+        elif candidate_data.lower() != candidate_name.lower():
+            err={'err':'NameError'}
+        elif candidate_data.lower() == candidate_name.lower():
+            data = {
+            'candidate_id':candidate_id,
+            'candidate_name':candidate_name,
+            'candidate_email':candidate_email,
+            'job_id':jobId 
+            }
+            session['candidate_info'] = data
+            return redirect(url_for('redirect_get_schedule',jobId=jobId))
+        else:
+            err={'err':'OtherError'}
 
-    return jsonify(data)
+        return jsonify(error=err), 500
+
+
+@app.route('/<jobId>/get-schedule')
+def redirect_get_schedule(jobId):
+    "Redirect to the get schedule page"
+    data = {
+    'candidate_id':session['candidate_info']['candidate_id'],
+    'candidate_name':session['candidate_info']['candidate_name'],
+    'candidate_email':session['candidate_info']['candidate_email'],
+    'job_id':session['candidate_info']['job_id']
+    }
+    return render_template("get-schedule.html",result=data)

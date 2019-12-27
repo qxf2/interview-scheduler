@@ -28,13 +28,15 @@ class Jobs(db.Model):
     "Adding the Job page"
     job_id = db.Column(db.Integer,primary_key=True,nullable=False)   
     job_role = db.Column(db.String,nullable=False)
+    job_interviewer = db.relationship('Jobinterviewer', backref='Jobs', 
+       lazy=True, cascade="delete")
 
     def __repr__(self):
         return f"Jobs('{self.job_id}','{self.job_role}')"
 
 class Jobinterviewer(db.Model):
     "Combine Job id and Interviewer ID"
-    combo_id = db.Column(db.Integer,primary_key=True)
+    combo_id = db.Column(db.Integer,primary_key=True,autoincrement=True)
     job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
     interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
 
@@ -43,9 +45,29 @@ class Jobinterviewer(db.Model):
 
 class Candidates(db.Model):
     "Adding the candidates"
-    candidate_id = db.Column(db.Integer,primary_key=True)
+    candidate_id = db.Column(db.Integer,primary_key=True,nullable=False)
     candidate_name = db.Column(db.String,nullable=False)
     candidate_email = db.Column(db.String,nullable=False)
-
+    
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"
+
+class Rounds(db.Model):
+    "Adding the rounds"
+    round_id = db.Column(db.Integer,primary_key=True)
+    round_time = db.Column(db.String,nullable=False)
+    round_description = db.Column(db.String,nullable=False)
+    round_requirement = db.Column(db.String,nullable=False)
+
+    def __repr__(self):
+        return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}')"
+        
+class Jobcandidate(db.Model):
+    "Combine Job id and Candidate ID"
+    combo_id = db.Column(db.Integer,primary_key=True)
+    candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
+    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
+    url = db.Column(db.String)
+
+    def __repr__(self):
+        return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}')"

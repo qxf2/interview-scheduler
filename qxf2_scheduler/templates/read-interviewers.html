@@ -24,10 +24,12 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col col-md-2">Interviewers work hours</th>
+                    <th scope="col col-md-2">Interviewers work hours</th>                   
+
                 </tr>
             </thead>
-            <tbody>
+            <tbody>              
+
                 {% for each_detail in result %}
                 <tr>
                     <td>{{ each_detail.interviewers_name }}</td>
@@ -39,6 +41,7 @@
                     </td>
                 </tr>
                 {% endfor %}
+               
             </tbody>
         </table>
     </div>

@@ -54,7 +54,7 @@
     <script>
         var candidateId="{{ result.candidate_id }}";
         var jobId="{{ result.job_id }}";
-            $("#urlbutton").on('click', function () {
+            $("#urlbutton").click(function () {
             $.ajax({
                     type: 'POST',
                     url: '/candidate/url',
@@ -64,10 +64,10 @@
                         },
                     success: function (data) {
                         var url_textbox = document.getElementById("generate-url"); 
-                        url_textbox.setAttribute('value', data.url);  
+                        url_textbox.setAttribute('value', data.url); 
+                        location.reload(); 
                     }
                 })
-            location.reload(forcedReload);   
         }) 
     </script>
     <script>

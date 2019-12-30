@@ -28,8 +28,8 @@ def read_candidates():
     return render_template("read-candidates.html",result=my_candidates_list)
 
 
-@app.route("/candidate/delete",methods=["POST"]) 
-def delete_candidate():
+@app.route("/candidate/<candidate_id>/delete",methods=["POST"]) 
+def delete_candidate(candidate_id):
     "Deletes a candidate"
     if request.method == 'POST':
         candidate_id_to_delete = request.form.get('candidateId')
@@ -47,7 +47,7 @@ def delete_candidate():
 
     
 #Passing the optional parameter through URL
-@app.route('/candidate/add/<job_role>')
+@app.route('/candidate/<job_role>/add')
 @app.route("/candidate/add",defaults={'job_role': None},methods=["GET","POST"])
 def add_candidate(job_role):
     "Add a candidate"
@@ -91,6 +91,7 @@ def add_candidate(job_role):
 
         return jsonify(api_response)
 
+
 @app.route("/candidate/url",methods=["GET","POST"])
 def generate_unique_url():
     candidate_id = request.form.get('candidateId')
@@ -108,7 +109,7 @@ def generate_unique_url():
     return jsonify(api_response)
     
         
-@app.route("/candidate/<job_id>/<candidate_id>") 
+@app.route("/candidate/<candidate_id>/job/<job_id>") 
 def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"     
     candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url)
@@ -116,7 +117,8 @@ def show_candidate_job(job_id,candidate_id):
         data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url} 
     return render_template("candidate-job-status.html",result=data)
 
-@app.route("/candidate/edit/<candidate_id>",methods=["GET","POST"])
+
+@app.route("/candidate/<candidate_id>/edit",methods=["GET","POST"])
 def edit_candidates(candidate_id):
     "Edit the candidtes"    
     #Fetch the candidate details and equal job id    
@@ -148,7 +150,6 @@ def edit_candidates(candidate_id):
         #Check the candidate has been already added or not
         """check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar() """       
         if (candidate_job_applied == candidate_old_job):
-            print("iam inside if",candidate_job_applied,candidate_old_job,file=sys.stderr)
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
             
             db.session.commit()            
@@ -163,6 +164,4 @@ def edit_candidates(candidate_id):
             db.session.commit()            
 
         api_response = {'data':data}
-        return jsonify(api_response)
-
-        
+        return jsonify(api_response)       

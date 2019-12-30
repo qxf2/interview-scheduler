@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add Rounds</title>
+
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .bs-example {
+            margin: 20px;
+        }
+
+        textarea {
+            display: inline
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h2 class="grey_text text-justify">Add Rounds</h2>
+        <form class="needs-validation">
+            <label class="col-md-4 control-label" for="rname">Round name</label>
+            <div class="col-md-4">
+
+                <input id="rname" name="rname" type="text" placeholder="John" class="form-control" required>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+            </div>
+
+            <label class="col-md-4 control-label" for="rtime">Round duration</label>
+            <div class="col-md-4">
+                <select name="Duration" id="rtime" style="width:380px; height:30px;" required>
+                    <option>Select the time duration</option>
+                    <option value="30 minutes">30 minutes</option>
+                    <option value="45 minutes">45 minutes</option>
+                    <option value="60 minutes">60 minutes</option>
+                </select>
+
+                <div class=" col-md-8 row top-space-30" id="resultDiv">
+                </div>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+            </div>
+            <label class="col-md-4 control-label" for="rdescription">Round description</label>
+            <div class="col-md-4">
+                <textarea name="rdesc" id="rdesc" style="width:380px; height:300px;" required></textarea>
+                <div class=" col-md-8 row top-space-30" id="resultDiv">
+                </div>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+
+
+            </div>
+            <label class="col-md-4 control-label" for="rrequirements">Round requirements</label>
+            <div class="col-md-4">
+                <input id="rreq" name="rreq" type="text" placeholder="Laptop" class="form-control" required>
+                <div class=" col-md-8 row top-space-30" id="resultDiv">
+                </div>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+
+            </div>
+            <input type="hidden" id="jobId" value="{{job_id}}">
+            <label class="col-md-4 control-label" for="save"></label>
+            <div class="col-md-8">
+                <button class="btn btn-info" type="submit">Add</button>
+                <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        function clearAdd() {
+            document.location.href = "/jobs"
+        }
+    </script>
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                console.log("I am inside function");
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $("#resultDiv").empty();
+                        if (form.checkValidity() === true) {
+                            console.log("I am coming here")
+                            var roundName = $("#rname").val();
+                            var roundDescription = $("#rdesc").val();
+                            var roundRequirements = $("#rreq").val();
+                            var dropdownValue = document.getElementById("rtime");
+                            var roundTime = dropdownValue.options[dropdownValue.selectedIndex].value;
+                            var jobId = document.getElementById("jobId").value;
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '/jobs/' + jobId + '/round/add',
+                                data: {
+                                    'roundName': roundName,
+                                    'roundTime': roundTime,
+                                    'roundDescription': roundDescription,
+                                    'roundRequirements': roundRequirements,
+                                },
+                                success: function (result) {
+                                    alert("The round has been added");
+                                    document.location.href = "/job/" + jobId + '/rounds';
+                                },
+
+                            })
+                        }
+                    },
+
+
+                        false);
+                });
+            }, false);
+        })();
+    </script>
+
+</body>
+
+</html>

@@ -81,48 +81,50 @@
                 </div>
             </div>
         </form>
-        <div class="form-group">
-            <form class="form-inline">
-                <table id="timeTable" style="width: 100%">
-                    {% for each_slot in each_details['time'] %}
-                    <tr id="time-slot-{{loop.index}}">
-                        <td>
-                            <label class="col-md-4 control-label" for="starttime">Starttime</label>
-                        </td>
-                        <td>
-                            <input type="time" class="form-control bfh-timepicker input-md" id="starttime{{loop.index}}"
-                                placeholder="starttime" value="{{each_slot['starttime']}}" required="">
+        <form class="form-inline">
+            <table id="timeTable">
+                {% for each_slot in each_details['time'] %}
+                <tr id="time-slot-{{loop.index}}">
+                    <td>
+                        <label class="col-md-10 control-label" for="starttime">Start&nbsp;time</label>
+                    </td>
+                    <td>
+                        <input type="time" class="form-control bfh-timepicker input-md" id="starttime{{loop.index}}"
+                            placeholder="starttime" value="{{each_slot['starttime']}}" required="">
 
 
-                        </td>
-                        <td>
-                            <label class="col-md-8 control-label" for="endtime">Endtime</label>
-                        </td>
-                        <td>
-                            <input type="time" class="form-control input-md bfh-timepicker" id="endtime{{loop.index}}"
-                                value="{{each_slot['endtime']}}" placeholder="endtime" required="">
-                        </td>
-                        <td>
-                            <input type="button" value="Remove" onclick="removeButton({{loop.index}})"
-                                class="btn btn-link">
-                        </td>
-                    </tr>
-                    <br />
-                    {% endfor %}
-        </div>
-        <tr>
-            <td>
-                {% set counter = each_details['time'] | length %}
-                <input type="hidden" id="TestHidden" value="{{counter}}"> </td>
-        </tr>
-        </table>
+                    </td>
+                    <td>
+                        <label class="col-md-10 control-label" for="endtime">End&nbsp;time</label>
+                    </td>
+                    <td>
+                        <input type="time" class="form-control bfh-timepicker input-md" id="endtime{{loop.index}}"
+                            value="{{each_slot['endtime']}}" placeholder="endtime" required="">
+                    </td>
+                    <td>
+                        {% if loop.index != 1 %}
+                        <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="btn btn-link">
+                        {% endif %}
+                    </td>
+                    
+                    <td><div id="resultDiv{{loop.index}}"></div></td>
+                </tr>
+                <br />
+                {% endfor %}
+
+                <tr>
+                    <td>
+                        {% set counter = each_details['time'] | length %}
+                        <input type="hidden" id="TestHidden" value="{{counter}}"> </td>
+                </tr>
+            </table>
         </form>
-    </div>
-    <div>
-        <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
-    </div>
-    <div id="ToolsGroup">
-    </div>
+        <div>
+            <input class="btn btn-link" onclick="addtextbox()" type="button" value="Add">
+        </div>
+        <div id="ToolsGroup">
+        </div>
+        
 
     <!-- Button (Double) -->
     <form class="form-horizontal">
@@ -150,16 +152,115 @@
             var designation = $("#designation").val();
             var timeSlotTable = document.getElementById("timeTable");
             var count = timeSlotTable.rows.length;
-            console.log("I am second",count);
+            validValue = true;
             for (var index = 1; index <= count; index++) {
                 var starttimeVal = $("#starttime" + index).val();
-                console.log(typeof starttimeVal, starttimeVal)
                 if (starttimeVal != undefined) {
                     timeObject.starttime.push($("#starttime" + index).val())
                     timeObject.endtime.push($("#endtime" + index).val())
                 }
             }
+            for (var index = 0; index <= 15; index++) {
+                if(document.getElementById("dstarttime"+index)==null)
+                {
+                    break;
+                }
+                var starttimeVal = $("#dstarttime" + index).val();
+                if (starttimeVal != undefined) {
+                    timeObject.starttime.push($("#dstarttime" + index).val())
+                    timeObject.endtime.push($("#dendtime" + index).val())
+                }
+            }
             console.log(timeObject);
+            //validation starts from here
+            if(name == "")
+            {
+                $('#name').remove();
+                $('#fname').after('<span id="name" class="error" style="color:red">Name field is required</span>');
+                validValue = false;
+            }
+            if(name != "")
+            {
+                $('#name').remove();
+                validValue &= true;
+            }
+            if (email == "")
+            {
+                $('#mail').remove();
+                $('#email').after('<span id="mail" class="error" style="color:red">Email field is required</span>');
+                validValue = false;
+            }
+            if(email != "")
+            {   
+                 if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
+                {
+                    $('#mail').remove();
+                    validValue &= true;
+                }
+                else
+                {
+                $('#mail').remove();
+                $('#email').after('<span id="mail" class="error" style="color:red">Please enter a valid email address</span>');
+                validValue = false;
+                }
+            }
+            //validation for timings
+            for(index = 0; index <= count; index++) {
+            starttime = $("#starttime"+index).val();
+            endtime = $("#endtime"+index).val();
+            var msg="";
+            if(starttime != "" || endtime != "") {
+                if (starttime >= endtime) {
+                    validValue = false;
+                    msg = "Start time can't be greater than or same as end time";
+                    $("#resultDiv"+index).css('color', 'red');
+                    $("#resultDiv"+index).html(msg);
+                }
+                else {
+                    validValue &= true;
+                    msg = "";                    
+                    $("#resultDiv"+index).html(msg);
+                }
+            }
+            else {
+                validValue = false;
+                msg = "Start time and end time can't be empty";
+                $("#resultDiv"+index).css('color', 'red');
+                $("#resultDiv"+index).html(msg);
+                }
+            }
+            //validation for dynamic time
+            for(index = 0; index < 20; index++) {
+            starttime = $("#dstarttime"+index).val();
+            endtime = $("#dendtime"+index).val();
+            var msg="";
+            if(starttime==null)
+            {
+                break;
+            }
+            if(starttime != "" || endtime != "") {
+                if (starttime >= endtime) {
+                    validValue = false;
+                    msg = "Start time can't be greater than or same as end time";
+                    $("#dresultDiv"+index).css('color', 'red');
+                    $("#dresultDiv"+index).html(msg);
+                }
+                else {
+                    validValue &= true;
+                    msg = "";                    
+                    $("#dresultDiv"+index).html(msg);
+                }
+            }
+            else {
+                validValue = false;
+                msg = "Start time and end time can't be empty";
+                $("#dresultDiv"+index).css('color', 'red');
+                $("#dresultDiv"+index).html(msg);
+                }
+            }
+            //validation end
+            if (validValue == true){
+
             $.ajax({
                 type: 'POST',
                 url: '/interviewers/%d/edit' % id,
@@ -177,6 +278,7 @@
                 }
 
             })
+            }
         })
     </script>
     <script>

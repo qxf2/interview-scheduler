@@ -15,16 +15,67 @@
 </head>
 
 <body>
+    <h3 class="grey_text text-center">Interviewers list for the Job role</h3>
     <div class="container col-md-offset-1">
-        <h3>Interviewer list for the Job role</h3>
-        <div>
+        <table class="table table-striped">
+            <thead>
+                <tr> 
+                    <th scope="col">Interviewers Name</th>      
+                </tr>
+            </thead>
+            <tbody>
             {% for each_job in result %}
-
-            <p>{{ each_job.interviewers_name }}</p>
+            <tr>
+            <td>{{ each_job.interviewers_name }}</td>
+            </tr>
             {% endfor %}
-
+            
+            </tbody>
+        </table>
+    </div><br/><br/>
+    <h3 class="grey_text text-center">Candidates list for the Job role</h3>
+    <div class="container col-md-offset-1">
+        <table class="table table-striped">
+            <thead>
+                <tr> 
+                    <th scope="col">Candidates Name</th>      
+                </tr>
+            </thead>
+            <tbody>
+            {% for each_candidate in candidates %}
+            <tr>
+            <td>{{ each_candidate.candidate_name }}</td>
+            </tr>
+            {% endfor %}
+            
+            </tbody>
+        </table>
+    </div><br></br>
+    <h3 class="grey_text text-center">Round details</h3>
+    <div class="container col-md-offset-1">
+            <table class="table table-striped">
+                <thead>
+                    <tr> 
+                        <th scope="col">Round Name</th>
+                        <th scope="col">Time Duration</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Requirements</th>      
+                    </tr>
+                </thead>
+                <tbody>
+                
+                {% for each_round in round %}
+                <tr>
+                <td>{{ each_round.round_name}}</td>
+                <td>{{ each_round.round_time }}</td>
+                <td>{{ each_round.round_description }}</td>
+                <td>{{ each_round.round_requirement }}</td>
+                </tr>
+                {% endfor %}
+                
+                </tbody>
+            </table>
         </div>
-
 </body>
 
 </html>

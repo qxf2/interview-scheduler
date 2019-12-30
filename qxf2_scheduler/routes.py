@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json,ast,sys
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate
 DOMAIN = 'qxf2.com'
 
 
@@ -40,7 +40,6 @@ def confirm():
     "Confirming the event message"
     response_value = request.args['value']
     return render_template("confirmation.html", value=json.loads(response_value))
-
 
 @app.route("/confirmation", methods=['GET', 'POST'])
 def scehdule_and_confirm():
@@ -120,7 +119,7 @@ def form_interviewer_details(interviewer_details):
     return parsed_interviewer_details
 
 
-@app.route("/interviewer/<interviewer_id>")
+@app.route("/<interviewer_id>/interviewer")
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
@@ -162,7 +161,7 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
         db.session.commit()
 
 
-@app.route("/interviewer/edit/<interviewer_id>", methods=['GET', 'POST'])
+@app.route("/interviewer/<interviewer_id>/edit", methods=['GET', 'POST'])
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
     # This query fetch the interviewer details by joining the time slots table and interviewers table.
@@ -218,14 +217,15 @@ def edit_interviewer(interviewer_id):
 
 @app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
 def delete_interviewer(interviewer_id):
-    "Deletes a job"
+    "Deletes an interviewer"
     if request.method == 'POST':
         # interviewer_to_delete = request.form.get('interviewer-id')
-        deleted_user = Interviewers.query.filter(
-            Interviewers.interviewer_id == interviewer_id).first()
+        deleted_user = Interviewers.query.filter(Interviewers.interviewer_id == interviewer_id).first()
         data = {'interviewer_name': deleted_user.interviewer_name,
                 'interviewer_id': deleted_user.interviewer_id}
         db.session.delete(deleted_user)
+        db.session.commit()
+        delete_user_timeslot = Interviewertimeslots.query.filter(Interviewertimeslots.interviewer_id == interviewer_id).delete()
         db.session.commit()
 
     return jsonify(data)
@@ -243,18 +243,41 @@ def jobs_page():
     return render_template("list-jobs.html", result=my_job_list)
 
 
-@app.route("/<job_id>/interviewers/")
+@app.route("/<job_id>/details/")
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id"
     interviewers_list = []
+    rounds_list = []
+    candidates_list = []
+
+    #Fetch the interviewers list for the job role
     interviewer_list_for_roles = Interviewers.query.join(Jobinterviewer, Interviewers.interviewer_id == Jobinterviewer.interviewer_id).filter(
         Jobinterviewer.job_id == job_id).values(Interviewers.interviewer_name)
+
+    #Fetch the job list
+    db_round_list = db.session.query(Jobs, Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
+        Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
+    
+    #Fetch the candidate list
+    db_candidate_list = Candidates.query.join(Jobcandidate,Candidates.candidate_id == Jobcandidate.candidate_id).filter(Jobcandidate.job_id==job_id).values(Candidates.candidate_name)
 
     for each_interviewer in interviewer_list_for_roles:
         interviewers_list.append(
             {'interviewers_name': each_interviewer.interviewer_name})
+    
+    for each_round in db_round_list:
+        rounds_list.append(
+            {
+            'round_name' : each_round.round_name,
+            'round_time' : each_round.round_time,
+            'round_description' : each_round.round_description,
+            'round_requirement' : each_round.round_requirement}
+        )
+    
+    for each_candidate in db_candidate_list:
+        candidates_list.append({'candidate_name':each_candidate.candidate_name})
 
-    return render_template("role-for-interviewers.html", result=interviewers_list)
+    return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list)
 
 
 def check_jobs_exists(job_role):
@@ -353,6 +376,7 @@ def get_interviewers_name_for_jobupdate(fetched_job_id):
         print(interviewer_name_for_role)
         interviewers_name_list.append(interviewer_name_for_role)
         print(interviewers_name_list)
+    
     return interviewers_name_list
 
 
@@ -393,7 +417,7 @@ def update_job_interviewer_in_database(job_id,job_role,interviewers_list):
         db.session.commit()
 
 
-@app.route("/job/edit/<job_id>", methods=["GET", "POST"])
+@app.route("/job/<job_id>/edit", methods=["GET", "POST"])
 def edit_job(job_id):
     "Editing the already existing job"
     if request.method == 'GET':

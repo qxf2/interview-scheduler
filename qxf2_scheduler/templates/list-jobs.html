@@ -54,12 +54,14 @@
                     {% for each_job in result %}
                     <tr>                        
                         <td>{{ each_job.job_id }}</td>
-                        <td><a href="/{{ each_job.job_id }}/interviewers">{{ each_job.job_role }}</a></td>                        
+                        <td><a href="/{{ each_job.job_id }}/details">{{ each_job.job_role }}</a></td>                        
                         <td><input class="btn btn-info" type="button" id="addCandidate" onclick="addCandidate('{{each_job.job_role}}')"value="Add Candidate">
                             <input class="btn btn-info" type="button" onclick="editJob('{{each_job.job_id}}')" id="edit" value="Edit">
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
                                 data-jobrole="{{ each_job.job_role }}" data-href="{{ each_job.job_id }}"
-                                data-toggle="modal">Delete</button></td>
+                                data-toggle="modal">Delete</button>
+                                <input class="btn btn-info" type="button" onclick="addRounds('{{ each_job.job_id }}')" value="Rounds"></button></td>
+                            
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -122,11 +124,17 @@
     <script>
     function editJob(jobId){
         console.log(jobId);
-        document.location.href = '/job/edit/'+jobId;
+        document.location.href = '/job/' + jobId + "/edit";
     }
         function addCandidate(jobRole){
             console.log(jobRole);
-            document.location.href = "/candidate/add/"+jobRole;
+            document.location.href = "/candidate/" + jobRole + "/add";
+        }
+    </script>
+    <script>
+        function addRounds(jobId){
+            document.location.href = "/job/" +jobId+ "/rounds";
+            console.log("job_id"+jobId)
         }
     </script>
 

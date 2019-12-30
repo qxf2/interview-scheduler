@@ -20,10 +20,36 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+        <!--
+<style>
+.loader {
+  border: 10px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 10px solid #03c6fc;
+  border-bottom: 10px solid #03c6fc;
+  width: 70px;
+  height: 70px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
 
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+-->
 </head>
 
 <body>
+    <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
     <div class="container col-md-offset-1">
         <div class="row top-space-30">
             <form>                
@@ -68,7 +94,8 @@
     </script>    
     <script>       
         $("document").ready(function () {
-            $('#submit').click(function () {                
+            $('#submit').click(function () {  
+                //$('#gif-loader').show();              
                 var date = $('#datepicker').val();
                 var elements = [];
                 $("#resultDiv").empty();
@@ -91,6 +118,7 @@
                         $("#resultDiv").css('color', 'black');
                         freeChunkSlots = result.free_slots_in_chunks
                         console.log(freeChunkSlots)
+                        //$('#gif-loader').hide();
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';
                         if (result.hasOwnProperty('error')) {
@@ -99,13 +127,16 @@
                         else {
                             if (freeChunkSlots.length == 0) {
                                 msg += 'There were no free slots for  on ' + result.date;
+                                //$('#gif-loader').hide();
                             } else {
                                 msg = 'The free slots on ' + result.date + ' are: <br>';
                                 for (index in freeChunkSlots) {
                                     slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;                                    
                                     var timeSlotButton = $('<div class="col-md-2 top-space-20 text-align:left"><input type="button" onclick="displayChosenSlot(\'' + freeChunkSlots[index].email +'\', \'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
                                     elements.push(timeSlotButton);
+                                    //$('#gif-loader').hide();
                                 }
+                                
                             }//end of if freeSlots is empty
                         }//end of no error key found
                         $("#resultDiv").html(msg);
@@ -151,5 +182,6 @@
             
         }
     </script>
+    
 </body>
 </html>

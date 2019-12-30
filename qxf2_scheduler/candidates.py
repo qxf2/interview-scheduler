@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, jsonify, request, Response
+from flask import render_template, url_for, flash, redirect, jsonify, request, Response,session
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
@@ -123,7 +123,7 @@ def show_candidate_job(job_id,candidate_id):
     round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
     for each_round_id in round_ids_for_job:
         round_detail = db.session.query(Rounds).filter(Rounds.round_id==each_round_id.round_id).scalar()
-        round_details = {'round_name': round_detail.round_name,'round_id':round_detail.round_id,'round_description':round_detail.round_description}
+        round_details = {'round_name':round_detail.round_name,'round_id':round_detail.round_id,'round_description':round_detail.round_description}
         round_names_list.append(round_details)
     return render_template("candidate-job-status.html",result=data,round_names=round_names_list)
 
@@ -196,13 +196,14 @@ def send_invite(candidate_id, job_id):
         candidate_name = request.form.get("candidatename")
         job_id = request.form.get("jobid")
         generated_url = request.form.get("generatedurl")
+        round_description = request.form.get("rounddescription")
         print(candidate_name, candidate_email,
               candidate_id, job_id, file=sys.stderr)
         try:
             msg = Message("Schedule an Interview with Qxf2 Services!",
                           sender="test@qxf2.com", recipients=[candidate_email])
-            msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. Please use the URL '%s' to schedule an interview with us" % (
-                candidate_name, generated_url)
+            msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. You can refer the round description here %s.Please use the URL '%s' to schedule an interview with us" % (
+                candidate_name, round_description,generated_url)
             mail.send(msg)
             candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on candidate'})
             db.session.commit()
@@ -215,4 +216,4 @@ def send_invite(candidate_id, job_id):
         
         data = {'candidate_name': candidate_name, 'error': error}
 
-        
+    return jsonify(data)       

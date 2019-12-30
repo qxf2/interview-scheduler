@@ -111,5 +111,3 @@ def get_round_description():
     print(round_description.round_description,file=sys.stderr)
     round_description = {'round_description':round_description.round_description}
     return jsonify(round_description)
-    
-

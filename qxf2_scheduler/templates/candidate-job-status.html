@@ -160,7 +160,8 @@
             var candidateEmail = document.getElementById("candidateEmail").value;
             var candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
-            console.log(candidateName, generatedUrl,results.round_description);
+            var roundDescription = document.getElementById("rdesc").value;
+            console.log(candidateName, generatedUrl,roundDescription);
             $.ajax({
                 type: 'POST',
                 url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
@@ -169,7 +170,8 @@
                     'candidatename': candidateName,
                     'candidateid': candidateId,
                     'candidateemail': candidateEmail,
-                    'jobid': jobId
+                    'jobid': jobId,
+                    'rounddescription':roundDescription
                 },
                 success: function (result) {
                     console.log(result.error);

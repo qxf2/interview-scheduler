@@ -103,7 +103,28 @@
                 <input type="hidden" id="candidateEmail" value="{{result.candidate_email}}">
                 <input type="hidden" id="candidateId" value="{{result.candidate_id}}">
                 <input type="hidden" id="jobId" value="{{result.job_id}}">
-               
+                <label for="select1">Round Level</label>
+                <div class="col-md-4">
+                    <select name="select1"class="form-control" id="select1" style="width:200px; height:30px;" required>
+                        <option value="">Select the below option</option>
+                        {% for each_round in round_names %}
+                        <option value="{{each_round}}">{{each_round}}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="valid-feedback">Valid</div>
+                    <div class="invalid-feedback">Please fill out this field</div>
+
+                </div>
+                <script>
+                    $("select[name='select1']").change(function(){
+                        var dropdownValue = document.getElementById("select1");
+                        var roundTime = dropdownValue.options[dropdownValue.selectedIndex].value;
+
+
+                    })
+                   
+                </script>
+
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
@@ -130,7 +151,7 @@
                     'jobid': jobId
                 },
                 success: function (result) {
-                    console.log(result.error);               
+                    console.log(result.error);
 
                     if (result.error == "Success") {
                         alert("The Invite has been sent");

@@ -122,7 +122,7 @@ def show_candidate_job(job_id,candidate_id):
     for each_round_id in round_ids_for_job:
         print(each_round_id.round_id,file=sys.stderr)
         round_name = db.session.query(Rounds).filter(Rounds.round_id==each_round_id.round_id).scalar()
-        print(round_name.round_name,file=sys.stderr)
+        print(round_name.round_name,round_name.round_id,file=sys.stderr)
         round_names_list.append(round_name.round_name)
     return render_template("candidate-job-status.html",result=data,round_names=round_names_list)
 

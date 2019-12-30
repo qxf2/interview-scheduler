@@ -100,5 +100,16 @@ def edit_round_details(round_id,job_id):
         db.session.commit()            
         api_response = {'data':data}
         return (jsonify(api_response))
+
+
+@app.route("/roundname/get-description",methods=["GET","POST"])
+def get_round_description():
+    "Get the round description"
+    round_details = request.form.get("round_name")
+    print(round_details[0],file=sys.stderr)
+    round_description = db.session.query(Rounds).filter(Rounds.round_id==round_details[1]).scalar()
+    print(round_description.round_description,file=sys.stderr)
+    round_description = {'round_description':round_description.round_description}
+    return jsonify(round_description)
     
 

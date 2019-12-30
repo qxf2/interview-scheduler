@@ -5,6 +5,9 @@ from qxf2_scheduler import db
 import json
 import string
 import random,sys
+from flask_mail import Message, Mail
+
+mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds
 DOMAIN = 'qxf2.com'
@@ -111,19 +114,17 @@ def generate_unique_url():
 @app.route("/candidate/<candidate_id>/job/<job_id>") 
 def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"
-    round_names_list = []     
+    round_names_list = []
+    round_details = {}     
     candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url,Jobcandidate.candidate_status)
     for each_data in candidate_job_data:
         data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'candidate_status':each_data.candidate_status} 
-    print(each_data,file=sys.stderr)
     #Fetch all the round details for a job
     round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
-    print(round_ids_for_job,file=sys.stderr)
     for each_round_id in round_ids_for_job:
-        print(each_round_id.round_id,file=sys.stderr)
-        round_name = db.session.query(Rounds).filter(Rounds.round_id==each_round_id.round_id).scalar()
-        print(round_name.round_name,round_name.round_id,file=sys.stderr)
-        round_names_list.append(round_name.round_name)
+        round_detail = db.session.query(Rounds).filter(Rounds.round_id==each_round_id.round_id).scalar()
+        round_details = {'round_name': round_detail.round_name,'round_id':round_detail.round_id,'round_description':round_detail.round_description}
+        round_names_list.append(round_details)
     return render_template("candidate-job-status.html",result=data,round_names=round_names_list)
 
 
@@ -163,7 +164,6 @@ def edit_candidates(candidate_id):
             
             db.session.commit()            
         else:
-            print("I am inside else",candidate_job_applied,candidate_old_job,file=sys.stderr)
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
             db.session.commit()
             edited_job_role = db.session.query(Jobs.job_id).filter(Jobs.job_role==candidate_job_applied).first()

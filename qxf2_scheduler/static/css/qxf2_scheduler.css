@@ -45,7 +45,10 @@ body {
     margin: 20px;
 }
 .textarea {
-    display: inline
+    display: inline;
+}
+.status-dropdown{
+    width: 04px;
 }
 label,
     input {

@@ -216,4 +216,22 @@ def send_invite(candidate_id, job_id):
         
         data = {'candidate_name': candidate_name, 'error': error}
 
-    return jsonify(data)       
+    return jsonify(data) 
+
+
+@app.route('/candidate/<candidate_id>/job/<job_id>/change-candidate-status',methods=["GET","POST"])
+def change_candidate_status(candidate_id,job_id):
+    "Change the candidate status after the interviewer change"
+    candidate_status = request.form.get("candidatestatus")
+    data={'candidate_status':candidate_status}
+    if candidate_status == "Hired" or candidate_status == "Accept":
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id==job_id).update({'candidate_status':'Waiting on Qxf2'})
+        db.session.commit()
+    elif candidate_status == "Reject":
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id==job_id).update({'candidate_status':'Rejected'})
+        db.session.commit()
+    elif candidate_status == "No response":
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id==job_id).update({'candidate_status':'No response'})
+        db.session.commit()
+
+    return jsonify(data)

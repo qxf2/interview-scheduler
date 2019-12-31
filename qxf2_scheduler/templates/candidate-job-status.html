@@ -20,9 +20,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-
-
+    
 </head>
 
 <body>
@@ -52,7 +50,17 @@
             <tbody>
                 {% if result!="" %}
                 <tr>
-                    <td>{{ result.candidate_name }}</td>
+                    <input type="hidden" id="jobId" value="{{result.job_id}}">
+                    <input type="hidden" id="candidateId" value="{{result.candidate_id}}">
+                    <td>{{ result.candidate_name }}
+                        <select class="status-dropdown" width="10px" name="status" id="status">
+                            <option value="">Select the below option</option>
+                            <option value="Reject">Reject</option>
+                            <option value="Accept">Accept</option>
+                            <option value="Hired">Hired</option>
+                            <option value="No response">No response</option>
+                        </select>
+                    </td>
                     <td>{{ result.job_applied }}</td>
                     <td><input class="btn btn-info" type="button" id="sendEmail" value="Send Invite"
                             data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
@@ -106,7 +114,7 @@
                 <input type="hidden" id="jobId" value="{{result.job_id}}">
                 <label for="select1">Round Level</label>
                 <div class="col-md-4">
-                    <select name="select1"class="form-control" id="select1" style="width:200px; height:30px;" required>
+                    <select name="select1" class="form-control" id="select1" style="width:200px; height:30px;" required>
                         <option value="">Select the below option</option>
                         {% for each_round in round_names %}
                         <option value="{{each_round.round_id,each_round.round_name}}">{{each_round.round_name}}</option>
@@ -115,24 +123,24 @@
                     <div class="valid-feedback">Valid</div>
                     <div class="invalid-feedback">Please fill out this field</div>
                     <div id="resultDiv">
-                        <textarea name="rdesc" id="rdesc" style="width:200px; height:300px;"required></textarea>
+                        <textarea name="rdesc" id="rdesc" style="width:200px; height:300px;" required></textarea>
                     </div>
-                
+
 
                 </div>
                 <script>
-                    $("select[name='select1']").change(function(){
+                    $("select[name='select1']").change(function () {
                         var dropdownValue = document.getElementById("select1");
                         var roundName = dropdownValue.options[dropdownValue.selectedIndex].value;
                         console.log(roundName);
-                        
+
                         $.ajax({
-                            type : 'POST',
-                            url : '/roundname/get-description',
-                            data : {
-                                'round_name':roundName
+                            type: 'POST',
+                            url: '/roundname/get-description',
+                            data: {
+                                'round_name': roundName
                             },
-                            success:function(results){
+                            success: function (results) {
                                 console.log(results);
                                 //$("#responds").prepend("<input type='textarea' value='" + results + "'/>");
 
@@ -143,13 +151,38 @@
 
 
                     })
-                   
+
                 </script>
 
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
     </div>
+    <script>
+        $("select[id='status']").change(function () {
+            var dropdownValue = document.getElementById("status");
+            var candidateStatus = dropdownValue.options[dropdownValue.selectedIndex].value;
+            console.log(candidateStatus);
+            var candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            $.ajax({
+                type: 'POST',
+                url: '/candidate/' + candidateId + '/job/' + jobId + '/change-candidate-status',
+                data: {
+                    'candidatestatus': candidateStatus
+                },
+                success: function (data) {
+                    console.log(data);
+                    window.location.reload();
+
+                }
+
+            })
+
+
+        })
+
+    </script>
 
     <script>
         var form, dialog
@@ -161,7 +194,7 @@
             var candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
             var roundDescription = document.getElementById("rdesc").value;
-            console.log(candidateName, generatedUrl,roundDescription);
+            console.log(candidateName, generatedUrl, roundDescription);
             $.ajax({
                 type: 'POST',
                 url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
@@ -171,7 +204,7 @@
                     'candidateid': candidateId,
                     'candidateemail': candidateEmail,
                     'jobid': jobId,
-                    'rounddescription':roundDescription
+                    'rounddescription': roundDescription
                 },
                 success: function (result) {
                     console.log(result.error);

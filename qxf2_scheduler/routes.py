@@ -45,7 +45,7 @@ def confirm():
     response_value = request.args['value']
     candidate_id = session['candidate_info']['candidate_id']
     job_id = session['candidate_info']['job_id']
-    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Candidate'})
+    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled'})
     db.session.commit()
 
     return render_template("confirmation.html", value=json.loads(response_value))

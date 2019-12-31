@@ -1,13 +1,17 @@
-from flask import render_template, url_for, flash, redirect, jsonify, request, Response
+from flask import render_template, url_for, flash, redirect, jsonify, request, Response,session
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json
 import string
 import random,sys
+from flask_mail import Message, Mail
 
-from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate
+mail = Mail(app)
+
+from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds
 DOMAIN = 'qxf2.com'
+base_url = 'http://localhost:6464/'
 
 
 def url_gen(candidate_id, job_id):
@@ -21,6 +25,7 @@ def url_gen(candidate_id, job_id):
 def read_candidates():
     "Read the candidates"      
     display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role)
+    
     my_candidates_list = []
     for each_candidate in display_candidates:
         my_candidates_list.append({'candidate_id':each_candidate.candidate_id,'candidate_name':each_candidate.candidate_name,'candidate_email':each_candidate.candidate_email,'job_id':each_candidate.job_id,'job_role':each_candidate.job_role})
@@ -83,7 +88,7 @@ def add_candidate(job_role):
             #getting the unique candidate id for new candidate
             candidate_id = Candidates.query.filter(Candidates.candidate_email==candidate_email).value(Candidates.candidate_id)
             #storing the candidate id and job id in jobcandidate table
-            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='')
+            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status='Resume Filtered')
             db.session.add(add_job_candidate_object)
             db.session.commit()
             error = "Success"
@@ -96,8 +101,6 @@ def add_candidate(job_role):
 def generate_unique_url():
     candidate_id = request.form.get('candidateId')
     job_id = request.form.get('jobId')
-    print("inside generate unique url")
-    print(f"Job id :{job_id} Candidate id :{candidate_id} ")
     url_exists = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).value(Jobcandidate.url)
     if (url_exists != ''):
         url=url_exists
@@ -111,11 +114,19 @@ def generate_unique_url():
         
 @app.route("/candidate/<candidate_id>/job/<job_id>") 
 def show_candidate_job(job_id,candidate_id):
-    "Show candidate name and job role"     
-    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url)
+    "Show candidate name and job role"
+    round_names_list = []
+    round_details = {}     
+    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url,Jobcandidate.candidate_status)
     for each_data in candidate_job_data:
-        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url} 
-    return render_template("candidate-job-status.html",result=data)
+        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'candidate_status':each_data.candidate_status} 
+    #Fetch all the round details for a job
+    round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
+    for each_round_id in round_ids_for_job:
+        round_detail = db.session.query(Rounds).filter(Rounds.round_id==each_round_id.round_id).scalar()
+        round_details = {'round_name':round_detail.round_name,'round_id':round_detail.round_id,'round_description':round_detail.round_description}
+        round_names_list.append(round_details)
+    return render_template("candidate-job-status.html",result=data,round_names=round_names_list)
 
 
 @app.route("/candidate/<candidate_id>/edit",methods=["GET","POST"])
@@ -154,7 +165,6 @@ def edit_candidates(candidate_id):
             
             db.session.commit()            
         else:
-            print("I am inside else",candidate_job_applied,candidate_old_job,file=sys.stderr)
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
             db.session.commit()
             edited_job_role = db.session.query(Jobs.job_id).filter(Jobs.job_role==candidate_job_applied).first()
@@ -164,4 +174,46 @@ def edit_candidates(candidate_id):
             db.session.commit()            
 
         api_response = {'data':data}
-        return jsonify(api_response)       
+        return jsonify(api_response)
+        
+
+@app.route("/candidates/<candidate_id>/jobs/<job_id>/email")
+def send_email(candidate_id,job_id):
+    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Candidate'})
+    db.session.commit()
+    candidate_name = Candidates.query.filter(Candidates.candidate_id == candidate_id).value(Candidates.candidate_name)
+    if candidate_name != None:
+        return jsonify(data=candidate_name)
+    else:
+        return jsonify(error="error"), 500
+
+
+@app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
+def send_invite(candidate_id, job_id):
+    "Send an invite to schedule an interview"
+    if request.method == 'POST':
+        candidate_email = request.form.get("candidateemail")
+        candidate_id = request.form.get("candidateid")
+        candidate_name = request.form.get("candidatename")
+        job_id = request.form.get("jobid")
+        generated_url = request.form.get("generatedurl")
+        round_description = request.form.get("rounddescription")       
+        generated_url = base_url + generated_url +'/welcome'
+        try:
+            msg = Message("Schedule an Interview with Qxf2 Services!",
+                          sender="test@qxf2.com", recipients=[candidate_email])
+            msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. You can refer the round description here %s.Please use the URL '%s' to schedule an interview with us" % (
+                candidate_name, round_description,generated_url)
+            mail.send(msg)
+            candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on candidate'})
+            db.session.commit()
+            error = 'Success'        
+           
+        except Exception as e:
+            error = "Failed"
+            print(e,file=sys.stderr)
+            return(str(e))
+        
+        data = {'candidate_name': candidate_name, 'error': error}
+
+    return jsonify(data)       

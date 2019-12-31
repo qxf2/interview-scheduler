@@ -99,4 +99,12 @@ label,
         padding: .3em;
     }
 
+    .divtext {
+        border: ridge 2px;
+        padding: 5px;
+        width: 20em;
+        min-height: 5em;
+        overflow: auto;
+    }
+
     

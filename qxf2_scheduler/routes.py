@@ -23,6 +23,8 @@ def date_picker():
         return render_template('get-schedule.html')
     if request.method == 'POST':
         date = request.form.get('date')
+        candidate_id = session['candidate_info']['candidate_id']
+        job_id = session['candidate_info']['job_id']
         new_slot = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).values(
             Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
         interviewer_work_time_slots = []
@@ -35,7 +37,8 @@ def date_picker():
             free_slots)
         api_response = {
             'free_slots_in_chunks': free_slots_in_chunks, 'date': date}
-
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled'})
+        db.session.commit()
         return jsonify(api_response)
 
 
@@ -43,10 +46,6 @@ def date_picker():
 def confirm():
     "Confirming the event message"
     response_value = request.args['value']
-    candidate_id = session['candidate_info']['candidate_id']
-    job_id = session['candidate_info']['job_id']
-    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled'})
-    db.session.commit()
 
     return render_template("confirmation.html", value=json.loads(response_value))
 

@@ -270,11 +270,18 @@ def interviewers_for_roles(job_id):
 
     # Fetch the job list
     db_round_list = db.session.query(Jobs, Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
+<<<<<<< HEAD
         Rounds.round_time, Rounds.round_description, Rounds.round_requirement)
 
     # Fetch the candidate list
     db_candidate_list = Candidates.query.join(Jobcandidate, Candidates.candidate_id == Jobcandidate.candidate_id).filter(
         Jobcandidate.job_id == job_id).values(Candidates.candidate_name)
+=======
+        Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
+    
+    #Fetch the candidate list
+    db_candidate_list = Candidates.query.join(Jobcandidate,Candidates.candidate_id == Jobcandidate.candidate_id).filter(Jobcandidate.job_id==job_id).values(Candidates.candidate_name)
+>>>>>>> master
 
     for each_interviewer in interviewer_list_for_roles:
         interviewers_list.append(
@@ -283,17 +290,28 @@ def interviewers_for_roles(job_id):
     for each_round in db_round_list:
         rounds_list.append(
             {
+<<<<<<< HEAD
                 'round_id': each_round.round_id,
                 'round_time': each_round.round_time,
                 'round_description': each_round.round_description,
                 'round_requirement': each_round.round_requirement}
+=======
+            'round_name' : each_round.round_name,
+            'round_time' : each_round.round_time,
+            'round_description' : each_round.round_description,
+            'round_requirement' : each_round.round_requirement}
+>>>>>>> master
         )
 
     for each_candidate in db_candidate_list:
         candidates_list.append(
             {'candidate_name': each_candidate.candidate_name})
 
+<<<<<<< HEAD
     return render_template("role-for-interviewers.html", result=interviewers_list, round=rounds_list, candidates=candidates_list)
+=======
+    return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list)
+>>>>>>> master
 
 
 def check_jobs_exists(job_role):

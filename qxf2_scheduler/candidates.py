@@ -150,7 +150,6 @@ def edit_candidates(candidate_id):
         #Check the candidate has been already added or not
         """check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar() """       
         if (candidate_job_applied == candidate_old_job):
-            print("iam inside if",candidate_job_applied,candidate_old_job,file=sys.stderr)
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
             
             db.session.commit()            

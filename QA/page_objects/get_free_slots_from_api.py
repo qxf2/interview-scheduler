@@ -10,7 +10,7 @@ import json
 from utils.results import Results
 
 
-url="http://127.0.0.1:6464/get-schedule"
+url="http://3.219.215.68//get-schedule"
 date=conf.date
 start_time_list=[]
 end_time_list=[]

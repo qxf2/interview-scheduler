@@ -24,14 +24,14 @@
     <div class="modal modal-megamenu" id="myModal">
         <div class="modal-dialog modal-megamenu">
             <div class="modal-content modal-megamenu">
-                <div class="modal-header modal-megamenu">                    
+                <div class="modal-header modal-megamenu">
                     <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
                 </div>
                 <div class="modal-body modal-megamenu">
                     <p>Success:</p>
                 </div>
                 <div class="modal-footer modal-megamenu">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" onclick="closeButton()" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -52,22 +52,25 @@
                 </thead>
                 <tbody>
                     {% for each_job in result %}
-                    <tr>                        
+                    <tr>
                         <td>{{ each_job.job_id }}</td>
-                        <td><a href="/{{ each_job.job_id }}/details">{{ each_job.job_role }}</a></td>                        
-                        <td><input class="btn btn-info" type="button" id="addCandidate" onclick="addCandidate('{{each_job.job_role}}')"value="Add Candidate">
-                            <input class="btn btn-info" type="button" onclick="editJob('{{each_job.job_id}}')" id="edit" value="Edit">
+                        <td><a href="/{{ each_job.job_id }}/details">{{ each_job.job_role }}</a></td>
+                        <td><input class="btn btn-info" type="button" id="addCandidate"
+                                onclick="addCandidate('{{each_job.job_role}}')" value="Add Candidate">
+                            <input class="btn btn-info" type="button" onclick="editJob('{{each_job.job_id}}')" id="edit"
+                                value="Edit">
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
                                 data-jobrole="{{ each_job.job_role }}" data-href="{{ each_job.job_id }}"
                                 data-toggle="modal">Delete</button>
-                                <input class="btn btn-info" type="button" onclick="addRounds('{{ each_job.job_id }}')" value="Rounds"></button></td>
-                            
+                            <input class="btn btn-info" type="button" onclick="addRounds('{{ each_job.job_id }}')"
+                                value="Rounds"></button></td>
+
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             <div class="modal modal-megamenu" id="confirmdeletemodal">
-                <div class="modal-dialog modal-megamenu" >
+                <div class="modal-dialog modal-megamenu">
                     <div class="modal-content modal-megamenu">
                         <div class="modal-header modal-megamenu">
                             <h4 class="modal-title">Remove Job?</h4>
@@ -109,32 +112,38 @@
 
                     }
                 })
-
+               
+                })
             })
-        })
 
     </script>
     <script>
-        
-            function addJob(){
-                document.location.href='/jobs/add'
+
+            function addJob() {
+                document.location.href = '/jobs/add'
             }
-       
+
     </script>
     <script>
-    function editJob(jobId){
-        console.log(jobId);
-        document.location.href = '/job/' + jobId + "/edit";
-    }
-        function addCandidate(jobRole){
-            console.log(jobRole);
-            document.location.href = "/candidate/" + jobRole + "/add";
-        }
+            function editJob(jobId) {
+                console.log(jobId);
+                document.location.href = '/job/' + jobId + "/edit";
+            }
+            function addCandidate(jobRole) {
+                console.log(jobRole);
+                document.location.href = "/candidate/" + jobRole + "/add";
+            }
     </script>
     <script>
-        function addRounds(jobId){
-            document.location.href = "/job/" +jobId+ "/rounds";
-            console.log("job_id"+jobId)
+            function addRounds(jobId) {
+                document.location.href = "/job/" + jobId + "/rounds";
+                console.log("job_id" + jobId)
+            }
+    </script>
+    <script>
+        function closeButton(){           
+                    window.location.reload();                    
+
         }
     </script>
 

@@ -17,6 +17,30 @@ body {
     height:10px     
   }
 
+.loader {
+    visibility: hidden;
+    position: relative;
+    left: 45%;
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid #03a5fc;
+    border-bottom: 10px solid #03a5fc;
+    width: 90px;
+    height: 90px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    }
+    
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+    }
+    
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+    }
+ 
 .modal-megamenu {
     max-height: calc(30vh - 20px);
     overflow-y: 10px;
@@ -47,6 +71,7 @@ body {
 .textarea {
     display: inline
 }
+
 label,
     input {
         display: block;
@@ -98,5 +123,20 @@ label,
     .ui-state-error {
         padding: .3em;
     }
+
+    .divtext {
+        border: ridge 2px;
+        padding: 5px;
+        width: 20em;
+        min-height: 5em;
+        overflow: auto;
+    }
+
+    
+
+
+
+
+
 
     

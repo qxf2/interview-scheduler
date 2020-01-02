@@ -12,7 +12,6 @@ class Interviewers(db.Model):
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"
 
-
 class Interviewertimeslots(db.Model):
     "Adding the timing for interviewer" 
     time_id = db.Column(db.Integer,primary_key=True)   
@@ -22,7 +21,6 @@ class Interviewertimeslots(db.Model):
 
     def __repr__(self):
         return f"Interviewertimeslots('{self.interviewer_id}', '{self.interviewer_start_time}','{self.interviewer_end_time}','{self.time_id}')"
-
 
 class Jobs(db.Model):
     "Adding the Job page"
@@ -69,9 +67,10 @@ class Jobcandidate(db.Model):
     candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
     job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
     url = db.Column(db.String)
+    candidate_status = db.Column(db.String)
 
     def __repr__(self):
-        return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}')"
+        return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}','{self.candidate_status}')"
 
 class Jobround(db.Model):
     "Combine Job id and Round id"

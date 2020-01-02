@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+    Welcome
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add Interviewers</title>
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+    <body>
+    <h3>Welcome to Qxf2</h3>
+    <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
+    <div class="bs-example">
+    <form action="/{{ result.job_id }}/valid" method="POST">
+        <div class="form-group">
+            <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your name</label>
+            <div class="col-md-3">
+                <input id="candidate-name" name="candidate-name" type="text" placeholder="John" class="form-control input-md"
+                    required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your email</label>
+            <div class="col-md-3">
+                <input id="candidate-email" name="candidate-email" type="email" placeholder="johndoe@example.com"
+                    class="form-control input-md" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="save"></label>
+            <div class="col-md-8">
+                <input class="btn btn-success show-modal" type='submit' id='submit' value='Go for schedule'>
+            </div>
+        </div>
+        </form>
+        </div>
+        </body>
+</html>

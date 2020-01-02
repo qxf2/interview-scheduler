@@ -534,7 +534,7 @@ def schedule_interview(jobId):
         candidate_email = request.form.get('candidate-email')
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
-        print('I am here')
+        print('I am here',candidate_name)
         if candidate_data == None:
             err={'err':'EmailError'}
         elif candidate_data.lower() != candidate_name.lower():
@@ -546,6 +546,7 @@ def schedule_interview(jobId):
             'candidate_email':candidate_email,
             'job_id':jobId 
             }
+            print("jobid",jobId)
             session['candidate_info'] = data
             return redirect(url_for('redirect_get_schedule',jobId=jobId))
         else:

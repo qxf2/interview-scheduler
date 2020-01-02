@@ -22,6 +22,7 @@
     <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
     <div class="bs-example">
     <form action="/{{result.job_id}}/valid" method="POST">
+       
         <div class="form-group">
             <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your name</label>
             <div class="col-md-3">
@@ -44,5 +45,61 @@
         </div>
         </form>
         </div>
+        <script>
+            $("#submit").click(function ()
+            {
+                var validValue = true;
+                console.log("clicking submit button");
+                var candidate_name = $("#candidate-name").val();
+                var candidate_email = $("#candidate-email").val();
+                validValue &= candidate_name != "";
+                validValue &= candidate_email != "";
+                var email_valid = (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(candidate_email);
+                validValue &= email_valid;
+                //Printing appropriate message
+                $('#err-name').remove();
+                $('#err-email').remove();
+                if (candidate_name == ""){
+                $('#candidate-name').after('<span id="err-name" class="error" style="color:red">Name can\'t be empty</span>');
+                }
+                if (candidate_email == ""){
+                $('#candidate-email').after('<span id="err-email" class="error" style="color:red">Email can\'t be empty</span>');
+                }
+                if (email_valid == false && candidate_email != ""){
+                    $('#candidate-email').after('<span id="err-email" class="error" style="color:red">Enter a valid email</span>');
+                }
+                var jobid = "{{ result.job_id }}";
+                //validValue = true;
+                //Valdidation for name and email field
+                if(validValue == true){
+                    $.ajax({
+                        type: 'POST',
+                        url: "/" + jobId + "/valid",
+                        data: {
+                        'candidate-name': candidateName,
+                        'candidate-email': candidateEmail,
+                        'jobId': jobId
+                    },
+                    success: function () { 
+                        console.log('I am inside success')
+                        return true;
+                    },
+                    error:function(error)
+                    {
+                        console.log(error)
+                        if(error.err=="NameError"){
+                        alert("Name not found, please enter the same name that you used when applied for this role");
+                        }
+                        else if(error.err=="EmailError"){
+                        alert("Email not found, please enter the same email that you used when applied for this role"); 
+                        }
+                        else{
+                        alert("Something is wrong, try reloading the page or contact admin"); 
+                        }
+                    }    
+                })
+            }
+            })
+        </script>
         </body>
 </html>

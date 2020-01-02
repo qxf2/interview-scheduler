@@ -43,9 +43,9 @@
             <thead>
                 <tr>
                     <th scope="col">Candidate Name</th>
-                    <th>Job Applied</th>
-                    <th>Actions</th>
+                    <th>Job Applied</th>                    
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -53,11 +53,17 @@
                 <tr>
                     <td>{{ result.candidate_name }}</td>
                     <td>{{ result.job_applied }}</td>
-                    <td><input class="btn btn-info" type="button" id="sendEmail" value="Send Invite"
+                    <!----<td><input class="btn btn-info" type="button" id="sendEmail" value="Send Invite"
                             data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
                             data-candidate-email="{{result.candidate_email}}"
-                            data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"></td>
+                            data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"></td>--->
                     <td>{{result.candidate_status}}</td>
+                    {% if result.candidate_status == 'Waiting on qxf2'%}
+                    <td><input type="button" value="Thumbs up" id=thumbsUp>
+                        <input type="button" value="Thumbs down" id="thumbsDown"></td>
+                    {% elif result.candidate_status == 'Interview Scheduled' %}
+                    <td><p>No action needed</p></td>
+                        {% endif %}
                 </tr>
                 {% endif %}
             </tbody>

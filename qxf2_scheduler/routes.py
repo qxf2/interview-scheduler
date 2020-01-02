@@ -530,8 +530,8 @@ def schedule_interview(jobId):
 
     if request.method == 'POST':
         print('I am inside post ')
-        candidate_email = request.form.get('candidateEmail')
-        candidate_name = request.form.get('candidateName')
+        candidate_name = request.form.get('candidate-name')
+        candidate_email = request.form.get('candidate-email')
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
         print('I am here')

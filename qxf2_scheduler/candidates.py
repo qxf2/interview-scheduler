@@ -114,7 +114,6 @@ def show_candidate_job(job_id,candidate_id):
     candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url,Jobcandidate.candidate_status)
     for each_data in candidate_job_data:
         data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'candidate_status':each_data.candidate_status} 
-    print(each_data,file=sys.stderr)
     return render_template("candidate-job-status.html",result=data)
 
 
@@ -146,7 +145,6 @@ def edit_candidates(candidate_id):
         candidate_job_applied = request.form.get('jobApplied')
         candidate_old_job = request.form.get('existJob')
         data = {'candidate_name':candidate_name}
-        print(candidate_name,candidate_old_job,candidate_email,candidate_job_applied)
         #Check the candidate has been already added or not
         """check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar() """       
         if (candidate_job_applied == candidate_old_job):
@@ -154,7 +152,6 @@ def edit_candidates(candidate_id):
             
             db.session.commit()            
         else:
-            print("I am inside else",candidate_job_applied,candidate_old_job,file=sys.stderr)
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
             db.session.commit()
             edited_job_role = db.session.query(Jobs.job_id).filter(Jobs.job_role==candidate_job_applied).first()

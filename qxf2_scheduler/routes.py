@@ -387,13 +387,10 @@ def get_interviewers_name_for_jobupdate(fetched_job_id):
         Jobinterviewer.job_id == fetched_job_id).all()
     for each_interviewer_id in get_interviewers_id:
         interviewer_id = each_interviewer_id.interviewer_id
-        print(interviewer_id, file=sys.stderr)
         # Fetch the interviewer name by using the parsed interviewer id in interviewers table
         interviewer_name_for_role = db.session.query(Interviewers.interviewer_name).filter(
             Interviewers.interviewer_id == interviewer_id).scalar()
-        print(interviewer_name_for_role)
         interviewers_name_list.append(interviewer_name_for_role)
-        print(interviewers_name_list)
 
     return interviewers_name_list
 
@@ -519,7 +516,7 @@ def add_interviewers():
 @app.route("/<candidateId>/<jobId>/<url>/welcome")
 def show_welcome(candidateId, jobId, url):
     "Opens a welcome page for candidates"
-    data = {'job_id': jobId}
+    data = {'candidate_id':candidateId,'job_id': jobId,'url':url}
 
     return render_template("welcome.html", result=data)    
 
@@ -529,16 +526,17 @@ def schedule_interview(jobId):
     "Validate candidate name and candidate email"
 
     if request.method == 'POST':
-        print('I am inside post ')
         candidate_name = request.form.get('candidate-name')
         candidate_email = request.form.get('candidate-email')
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
-        print('I am here',candidate_name)
         if candidate_data == None:
-            err={'err':'EmailError'}
+            err={'error':'EmailError'}
+            return jsonify(error=err), 500
+
         elif candidate_data.lower() != candidate_name.lower():
-            err={'err':'NameError'}
+            err={'error':'NameError'}
+            return jsonify(error=err), 500
         elif candidate_data.lower() == candidate_name.lower():
             data = {
             'candidate_id':candidate_id,
@@ -546,13 +544,11 @@ def schedule_interview(jobId):
             'candidate_email':candidate_email,
             'job_id':jobId 
             }
-            print("jobid",jobId)
             session['candidate_info'] = data
             return redirect(url_for('redirect_get_schedule',jobId=jobId))
         else:
-            err={'err':'OtherError'}
-
-        return jsonify(error=err), 500
+            err={'error':'OtherError'}
+            return jsonify(error=err), 500
 
 
 @app.route('/<jobId>/get-schedule')

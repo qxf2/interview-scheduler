@@ -49,7 +49,6 @@
             $("#submit").click(function ()
             {
                 var validValue = true;
-                console.log("clicking submit button");
                 var candidate_name = $("#candidate-name").val();
                 var candidate_email = $("#candidate-email").val();
                 validValue &= candidate_name != "";
@@ -68,7 +67,9 @@
                 if (email_valid == false && candidate_email != ""){
                     $('#candidate-email').after('<span id="err-email" class="error" style="color:red">Enter a valid email</span>');
                 }
-                var jobid = "{{ result.job_id }}";
+                var jobId = "{{ result.job_id }}";
+                var candidateId = "{{ result.candidate_id }}"
+                var url = "{{ result.url }}"
                 //validValue = true;
                 //Valdidation for name and email field
                 if(validValue == true){
@@ -76,25 +77,23 @@
                         type: 'POST',
                         url: "/" + jobId + "/valid",
                         data: {
-                        'candidate-name': candidateName,
-                        'candidate-email': candidateEmail,
+                        'candidate-name': candidate_name,
+                        'candidate-email': candidate_email,
                         'jobId': jobId
                     },
-                    success: function () { 
-                        console.log('I am inside success')
-                        return true;
-                    },
-                    error:function(error)
+                    error:function(errorMsg)
                     {
-                        console.log(error)
-                        if(error.err=="NameError"){
+                        if(errorMsg.responseJSON.error.error=="NameError"){
                         alert("Name not found, please enter the same name that you used when applied for this role");
+                        document.location.href="/"+candidateId+"/"+jobId+"/"+url+"/welcome";
                         }
-                        else if(error.err=="EmailError"){
+                        else if(errorMsg.responseJSON.error.error=="EmailError"){
                         alert("Email not found, please enter the same email that you used when applied for this role"); 
+                        document.location.href="/"+candidateId+"/"+jobId+"/"+url+"/welcome";
                         }
                         else{
                         alert("Something is wrong, try reloading the page or contact admin"); 
+                        document.location.href="/"+candidateId+"/"+jobId+"/"+url+"/welcome";
                         }
                     }    
                 })

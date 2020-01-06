@@ -516,14 +516,27 @@ def show_welcome(candidate_id, job_id, url):
     "Opens a welcome page for candidates"
     data = {'job_id': job_id}
     print(url,file=sys.stderr)
+    #Check the candidate status if it's interview scheduled
+    get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status)
+    for candidate_status in get_candidate_status:
+        candidate_status = candidate_status.candidate_status
+
+    if candidate_status == 'Waiting on Candidate':
+        return render_template("welcome.html",result=data)
+    elif candidate_status == 'Interview Scheduled':
+        get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
+        for candidate_detail in get_candidate_details:
+            data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
+    return render_template("welcome.html",result=data)
+
     #Check the URL is already exists in the database for the candidate
-    get_candidate_url = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.url)
+    """get_candidate_url = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.url)
     for each_url in get_candidate_url:
         db_url = each_url.url
     if db_url == url:
         return render_template("welcome.html", result=data)
     else:
-        return  jsonify(error="error"),500
+        return  jsonify(error="error"),500"""
 
 
 @app.route("/<jobId>/valid",methods=['GET','POST'])

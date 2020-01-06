@@ -88,7 +88,7 @@ def add_candidate(job_role):
             #getting the unique candidate id for new candidate
             candidate_id = Candidates.query.filter(Candidates.candidate_email==candidate_email).value(Candidates.candidate_id)
             #storing the candidate id and job id in jobcandidate table
-            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status='Resume Filtered')
+            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status='Waiting on qxf2')
             db.session.add(add_job_candidate_object)
             db.session.commit()
             error = "Success"

@@ -1,54 +1,69 @@
 <html>
-    <head>
-        <title>
-            Candidate job status
-        </title>
+
+<head>
+    <title>
+        Candidate job status
+    </title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Stylesheets-->
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    
+    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
+
     <!--JS-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-    </head>
 
-    <body>
-        <h2 class="grey_text text-center">Candidate Details</h2>
+
+</head>
+
+<body>
+    <h2 class="grey_text text-center">Candidate Details</h2>
+    <div class="container col-md-offset-1">
+        {% if result.url=="" %}
+        <div class="col-md-8">
+            <input id="generate-url" value="generate url" size="40%" readonly />
+            <button class="btn btn-info" id="urlbutton" type="submit">Generate URL</button>
+        </div>
+        {% else %}
+        <div class="col-md-8">URL:
+            <input id="generate-url" value="{{ result.url }}" size="40%" readonly />
+            <button class="btn btn-info" id="welcomeButton" onclick="welcome()" type="submit">Click Me</button>
+        </div>
+        {% endif %}
+        <table class="table table-striped">
         
-        <div class="container col-md-offset-1">
-                {% if result.url=="" %}
-                <div class="col-md-8">
-                    <input id="generate-url" value="generate url" size="40%" readonly/>
-                    <button class="btn btn-info" id="urlbutton" type="submit">Generate URL</button>
-                </div>
-                {% else %}
-                <div class="col-md-8">URL:
-                    <input id="generate-url" value="{{ result.url }}" size="40%" readonly/>
-                    <button class="btn btn-info" id="welcomeButton" onclick="welcome()" type="submit">Click Me</button> 
-                </div>
+            <thead>
+                <tr>
+                    <th scope="col">Candidate Name</th>
+                    <th>Job Applied</th>
+                    <th>Actions</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if result!="" %}
+                <tr>
+                    <td>{{ result.candidate_name }}</td>
+                    <td>{{ result.job_applied }}</td>
+                    <td><input class="btn btn-info" type="button" id="sendEmail" value="Send Invite"
+                            data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
+                            data-candidate-email="{{result.candidate_email}}"
+                            data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"></td>
+                    <td>{{result.candidate_status}}</td>
+                </tr>
                 {% endif %}
-                <table class="table table-striped">
-                <thead>
-                   <tr> 
-                        <th scope="col">Candidate Name</th>
-                        <th>Job Applied</th>      
-                    </tr>
-                </thead>
-                <tbody>
-                   {% if result!="" %}
-                    <tr>
-                        <td>{{ result.candidate_name }}</td>
-                        <td>{{ result.job_applied }}</td>
-                    </tr>
-                    {% endif %}
-                </tbody>
+            </tbody>
         </table>
+
     </div>
     
     <script>
@@ -71,11 +86,138 @@
         }) 
     </script>
     <script>
-    function welcome(){
-        var url = $("#generate-url").val();
-        document.location.href ="/"+ url + "/welcome";
-    }
+        function welcome() {
+            var url = $("#generate-url").val();
+            document.location.href = "/" + url + "/welcome";
+        }
     </script>
-    
+    <div id="dialog-form" title="Send Email Invite">
+        <p class="validateTips">All form fields are required.</p>
+
+        <form>
+            <fieldset>
+
+                <label for="generateurl">Generated URL</label>
+                <input type="text" name="generatedURL" id="generatedUrl" class="text ui-widget-content ui-corner-all"
+                    readonly>
+                <input type="hidden" id="candidateName" value="{{result.candidate_name}}">
+                <input type="hidden" id="candidateEmail" value="{{result.candidate_email}}">
+                <input type="hidden" id="candidateId" value="{{result.candidate_id}}">
+                <input type="hidden" id="jobId" value="{{result.job_id}}">
+                <label for="select1">Round Level</label>
+                <div class="col-md-4">
+                    <select name="select1"class="form-control" id="select1" style="width:200px; height:30px;" required>
+                        <option value="">Select the below option</option>
+                        {% for each_round in round_names %}
+                        <option value="{{each_round.round_id,each_round.round_name}}">{{each_round.round_name}}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="valid-feedback">Valid</div>
+                    <div class="invalid-feedback">Please fill out this field</div>
+                    <div id="resultDiv">
+                        <textarea name="rdesc" id="rdesc" style="width:200px; height:300px;"required></textarea>
+                    </div>
+                
+
+                </div>
+                <script>
+                    $("select[name='select1']").change(function(){
+                        var dropdownValue = document.getElementById("select1");
+                        var roundName = dropdownValue.options[dropdownValue.selectedIndex].value;
+                        console.log(roundName);
+                        
+                        $.ajax({
+                            type : 'POST',
+                            url : '/roundname/get-description',
+                            data : {
+                                'round_name':roundName
+                            },
+                            success:function(results){
+                                console.log(results);
+                                //$("#responds").prepend("<input type='textarea' value='" + results + "'/>");
+
+                                $("#rdesc").text(results.round_description);
+                            }
+
+                        })
+
+
+                    })
+                   
+                </script>
+
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+
+    <script>
+        var form, dialog
+        function sendEmail() {
+
+            var generatedUrl = $("#generatedUrl").val();
+            var candidateName = document.getElementById("candidateName").value;
+            var candidateEmail = document.getElementById("candidateEmail").value;
+            var candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            var roundDescription = document.getElementById("rdesc").value;
+            console.log(candidateName, generatedUrl,roundDescription);
+            $.ajax({
+                type: 'POST',
+                url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
+                data: {
+                    'generatedurl': generatedUrl,
+                    'candidatename': candidateName,
+                    'candidateid': candidateId,
+                    'candidateemail': candidateEmail,
+                    'jobid': jobId,
+                    'rounddescription':roundDescription
+                },
+                success: function (result) {
+                    console.log(result.error);
+
+                    if (result.error == "Success") {
+                        alert("The Invite has been sent");
+                        document.location.href = "/candidates";
+
+                    }
+                    else {
+                        alert("The invite cannot be sent");
+                        document.location.href = "/candidates";
+                    }
+
+                }
+            })
+
+            dialog.dialog("close");
+        }
+
+        dialog = $("#dialog-form").dialog({
+            autoOpen: false,
+            height: 400,
+            width: 350,
+            modal: true,
+            buttons: {
+                "Send Email": sendEmail,
+                Cancel: function () {
+                    dialog.dialog("close");
+                }
+            },
+            close: function () {
+                dialog.dialog("close");
+
+            }
+        });
+
+
+        $("#sendEmail").button().on("click", function () {
+            console.log("I am first");
+            var generatedUrl = $(this).attr("data-generated-url");
+            $("#generatedUrl").val(generatedUrl);
+            console.log(generatedUrl);
+            dialog.dialog("open");
+        });
+    </script>
 </body>
-</html>   
+
+</html>

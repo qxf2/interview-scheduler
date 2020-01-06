@@ -79,4 +79,4 @@ class Jobround(db.Model):
     round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
     
     def __repr__(self):
-        return f"Jobround('{self.job_id}','{self.round_id}','{self.round_number}')"
+        return f"Jobround('{self.job_id}','{self.round_id}')"

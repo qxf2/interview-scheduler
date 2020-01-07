@@ -161,12 +161,9 @@ def edit_candidates(candidate_id):
         candidate_job_applied = request.form.get('jobApplied')
         candidate_old_job = request.form.get('existJob')
         data = {'candidate_name':candidate_name}
-        print(candidate_name,candidate_old_job,candidate_email,candidate_job_applied)
-        #Check the candidate has been already added or not
-        """check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar() """       
+        #Check the candidate has been already added or not       
         if (candidate_job_applied == candidate_old_job):
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
-            
             db.session.commit()            
         else:
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
@@ -215,7 +212,6 @@ def send_invite(candidate_id, job_id):
            
         except Exception as e:
             error = "Failed"
-            print(e,file=sys.stderr)
             return(str(e))
         
         data = {'candidate_name': candidate_name, 'error': error}

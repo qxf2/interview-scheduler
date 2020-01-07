@@ -39,33 +39,65 @@
             <button class="btn btn-info" id="welcomeButton" onclick="welcome()" type="submit">Click Me</button>
         </div>
         {% endif %}
-        <table class="table table-striped">
-        
-            <thead>
-                <tr>
-                    <th scope="col">Candidate Name</th>
-                    <th>Job Applied</th>
-                    <th>Actions</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if result!="" %}
-                <tr>
-                    <td>{{ result.candidate_name }}</td>
-                    <td>{{ result.job_applied }}</td>
-                    <td><input class="btn btn-info" type="button" id="sendEmail" value="Send Invite"
-                            data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
-                            data-candidate-email="{{result.candidate_email}}"
-                            data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"></td>
-                    <td>{{result.candidate_status}}</td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
+        <div class="container col-md-offset-1">
+            <div id="form">
+                <form>
+                    <fieldset>
+                        {% if result!="" %}
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Candidate Name:">Candidate Name:</label>
+                            <label class="col-md-8" for="candidateName">{{result.candidate_name}}</label>
 
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Job Applied:">Job Applied:</label>
+                            <label class="col-md-8" for="jobApplied">{{result.job_applied}}</label>
+                        </div>
+                        <br>
+                        {% if result.candidate_status == 'Waiting on qxf2'%}
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Action:">Action:</label>
+                            <input class="btn btn-info" type="button" value="Thumbs up" id="sendEmail"
+                                data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
+                                data-candidate-email="{{result.candidate_email}}"
+                                data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}">
+                            <input type="button" value="Thumbs down" id="thumbsDown">
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-8" for="takeAction">Waiting on Qxf2</label>
+                        </div>
+                        {% elif result.candidate_status == 'Interview Scheduled' %}
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Action">Action:</label>
+                            <label class="col-md-8" for="interviewScheduled">No action needed from Qxf2</label>
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-8" for="interviewScheduled">Interview Scheduled</label>
+                        </div>
+                        {% elif result.candidate_status == 'Waiting on candidate' %}
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Action">Action:</label>
+                            <label class="col-md-8" for="action">No action needed from Qxf2</label>
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-8" for="inviteSent">Waiting on Candidate</label>
+                        </div>
+                        {% endif %}
+            </div>
+
+            {% endif %}
+            </fieldset>
+            </form>
+        </div>
     </div>
-    
+    </div>
     <script>
         var candidateId="{{ result.candidate_id }}";
         var jobId="{{ result.job_id }}";
@@ -106,7 +138,7 @@
                 <input type="hidden" id="jobId" value="{{result.job_id}}">
                 <label for="select1">Round Level</label>
                 <div class="col-md-4">
-                    <select name="select1"class="form-control" id="select1" style="width:200px; height:30px;" required>
+                    <select name="select1" class="form-control" id="select1" style="width:200px; height:30px;" required>
                         <option value="">Select the below option</option>
                         {% for each_round in round_names %}
                         <option value="{{each_round.round_id,each_round.round_name}}">{{each_round.round_name}}</option>
@@ -115,25 +147,23 @@
                     <div class="valid-feedback">Valid</div>
                     <div class="invalid-feedback">Please fill out this field</div>
                     <div id="resultDiv">
-                        <textarea name="rdesc" id="rdesc" style="width:200px; height:300px;"required></textarea>
+                        <textarea name="rdesc" id="rdesc" style="width:200px; height:300px;" required></textarea>
                     </div>
-                
+
 
                 </div>
                 <script>
-                    $("select[name='select1']").change(function(){
+                    $("select[name='select1']").change(function () {
                         var dropdownValue = document.getElementById("select1");
                         var roundName = dropdownValue.options[dropdownValue.selectedIndex].value;
-                        console.log(roundName);
-                        
+
                         $.ajax({
-                            type : 'POST',
-                            url : '/roundname/get-description',
-                            data : {
-                                'round_name':roundName
+                            type: 'POST',
+                            url: '/roundname/get-description',
+                            data: {
+                                'round_name': roundName
                             },
-                            success:function(results){
-                                console.log(results);
+                            success: function (results) {
                                 //$("#responds").prepend("<input type='textarea' value='" + results + "'/>");
 
                                 $("#rdesc").text(results.round_description);
@@ -143,7 +173,7 @@
 
 
                     })
-                   
+
                 </script>
 
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
@@ -161,7 +191,6 @@
             var candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
             var roundDescription = document.getElementById("rdesc").value;
-            console.log(candidateName, generatedUrl,roundDescription);
             $.ajax({
                 type: 'POST',
                 url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
@@ -171,10 +200,9 @@
                     'candidateid': candidateId,
                     'candidateemail': candidateEmail,
                     'jobid': jobId,
-                    'rounddescription':roundDescription
+                    'rounddescription': roundDescription
                 },
                 success: function (result) {
-                    console.log(result.error);
 
                     if (result.error == "Success") {
                         alert("The Invite has been sent");
@@ -211,10 +239,8 @@
 
 
         $("#sendEmail").button().on("click", function () {
-            console.log("I am first");
             var generatedUrl = $(this).attr("data-generated-url");
             $("#generatedUrl").val(generatedUrl);
-            console.log(generatedUrl);
             dialog.dialog("open");
         });
     </script>

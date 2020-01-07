@@ -523,6 +523,7 @@ def parse_interview_time(interview_time):
 @app.route("/<candidate_id>/<job_id>/<url>/welcome")
 def show_welcome(candidate_id, job_id, url):
     "Opens a welcome page for candidates"
+    interview_data = {}
     data = {'job_id': job_id}
     s = Serializer('WEBSITE_SECRET_KEY')
     try:

@@ -9,6 +9,8 @@ from qxf2_scheduler import db
 import json
 import ast
 import sys
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
 
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate
@@ -520,6 +522,12 @@ def add_interviewers():
 def show_welcome(candidateId, jobId, url):
     "Opens a welcome page for candidates"
     data = {'job_id': jobId}
+    s = Serializer('WEBSITE_SECRET_KEY')
+    try:
+        url = s.loads(url)
+    except:
+        return render_template("expiry.html")
+
 
     return render_template("welcome.html", result=data)    
 

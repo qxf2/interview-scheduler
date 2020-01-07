@@ -6,9 +6,11 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json
+import json,datetime
 import ast
 import sys
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
 
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate
@@ -34,7 +36,7 @@ def date_picker():
             free_slots)
         api_response = {
             'free_slots_in_chunks': free_slots_in_chunks, 'date': date}
-
+        
         return jsonify(api_response)
 
 
@@ -42,10 +44,6 @@ def date_picker():
 def confirm():
     "Confirming the event message"
     response_value = request.args['value']
-    candidate_id = session['candidate_info']['candidate_id']
-    job_id = session['candidate_info']['job_id']
-    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Candidate'})
-    db.session.commit()
 
     return render_template("confirmation.html", value=json.loads(response_value))
 
@@ -61,13 +59,17 @@ def scehdule_and_confirm():
         slot = request.form.get('slot')
         email = request.form.get('interviewerEmails')
         date = request.form.get('date')
+        candidate_id = session['candidate_info']['candidate_id']
         candidate_email = session['candidate_info']['candidate_email']
+        job_id = session['candidate_info']['job_id']
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email,candidate_email, slot)
         value = {'schedule_event': schedule_event, 
         'date': date}
+        print(value,schedule_event[0]['start']['dateTime'],type(schedule_event[0]['start']['dateTime']),file=sys.stderr)
         value = json.dumps(value)
-
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled','interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date})
+        db.session.commit()        
         return redirect(url_for('confirm', value=value))
     return render_template("get-schedule.html")
 
@@ -387,13 +389,10 @@ def get_interviewers_name_for_jobupdate(fetched_job_id):
         Jobinterviewer.job_id == fetched_job_id).all()
     for each_interviewer_id in get_interviewers_id:
         interviewer_id = each_interviewer_id.interviewer_id
-        print(interviewer_id, file=sys.stderr)
         # Fetch the interviewer name by using the parsed interviewer id in interviewers table
         interviewer_name_for_role = db.session.query(Interviewers.interviewer_name).filter(
             Interviewers.interviewer_id == interviewer_id).scalar()
-        print(interviewer_name_for_role)
         interviewers_name_list.append(interviewer_name_for_role)
-        print(interviewers_name_list)
 
     return interviewers_name_list
 
@@ -515,26 +514,56 @@ def add_interviewers():
             return jsonify(error='Interviewer already exists'), 500
 
 
+def parse_interview_time(interview_time):
+    "Parsing the string into time"
+    parsed_interview_time = datetime.datetime.strptime(interview_time,'%Y-%m-%dT%H:%M:%S+05:30')
+    return parsed_interview_time.strftime('%H') + ':' + parsed_interview_time.strftime('%M')
 
-@app.route("/<candidateId>/<jobId>/<url>/welcome")
-def show_welcome(candidateId, jobId, url):
+
+@app.route("/<candidate_id>/<job_id>/<url>/welcome")
+def show_welcome(candidate_id, job_id, url):
     "Opens a welcome page for candidates"
-    data = {'job_id': jobId}
+    interview_data = {}
+    data = {'job_id': job_id}
+    s = Serializer('WEBSITE_SECRET_KEY')
+    try:
+        url = s.loads(url)
+        get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status)
+        for candidate_status in get_candidate_status:
+            candidate_status = candidate_status.candidate_status
+        if candidate_status == 'Waiting on Candidate':
+            return render_template("welcome.html",result=data)
 
-    return render_template("welcome.html", result=data)    
+        elif candidate_status == 'Interview Scheduled':
+            #Fetch the candidate name and email
+            get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
 
+            #Fetch the interview date and time
+            get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date)
 
+            #Parsing candidate details
+            for candidate_detail in get_candidate_details:
+                data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
+
+            #Parsing Interview details
+            for interview_detail in get_interview_details:            
+                interview_start_time = parse_interview_time(interview_detail.interview_start_time)
+                interview_end_time = parse_interview_time(interview_detail.interview_end_time)
+                interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date}
+    except:
+        return render_template("expiry.html")
+
+    return render_template("welcome.html",result=data,interview_result=interview_data)
+
+    
 @app.route("/<jobId>/valid",methods=['GET','POST'])
 def schedule_interview(jobId):
     "Validate candidate name and candidate email"
-
     if request.method == 'POST':
-        print('I am inside post ')
         candidate_email = request.form.get('candidate-email')
         candidate_name = request.form.get('candidate-name')
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
-        print('I am here')
         if candidate_data == None:
             err={'err':'EmailError'}
         elif candidate_data.lower() != candidate_name.lower():

@@ -6,6 +6,8 @@ import json
 import string
 import random,sys
 from flask_mail import Message, Mail
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
 
 mail = Mail(app)
 
@@ -16,8 +18,10 @@ base_url = 'http://localhost:6464/'
 
 def url_gen(candidate_id, job_id):
     "generate random url for candidate"
-    KEY_LEN = random.randint(8,16)
-    urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]
+    s = Serializer('WEBSITE_SECRET_KEY', 60*5) # 60 secs by 30 mins
+    urllist = s.dumps({'candidate_id':candidate_id,'job_id': job_id}).decode('utf-8')
+    #KEY_LEN = random.randint(8,16)
+    #urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]
     return (f'{candidate_id}/{job_id}/{"".join(urllist)}')
 
 
@@ -157,12 +161,9 @@ def edit_candidates(candidate_id):
         candidate_job_applied = request.form.get('jobApplied')
         candidate_old_job = request.form.get('existJob')
         data = {'candidate_name':candidate_name}
-        print(candidate_name,candidate_old_job,candidate_email,candidate_job_applied)
-        #Check the candidate has been already added or not
-        """check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar() """       
+        #Check the candidate has been already added or not       
         if (candidate_job_applied == candidate_old_job):
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
-            
             db.session.commit()            
         else:
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
@@ -197,7 +198,8 @@ def send_invite(candidate_id, job_id):
         candidate_name = request.form.get("candidatename")
         job_id = request.form.get("jobid")
         generated_url = request.form.get("generatedurl")
-        round_description = request.form.get("rounddescription")       
+        round_description = request.form.get("rounddescription") 
+        print("generateurl",generated_url,file=sys.stderr)      
         generated_url = base_url + generated_url +'/welcome'
         try:
             msg = Message("Schedule an Interview with Qxf2 Services!",
@@ -211,7 +213,6 @@ def send_invite(candidate_id, job_id):
            
         except Exception as e:
             error = "Failed"
-            print(e,file=sys.stderr)
             return(str(e))
         
         data = {'candidate_name': candidate_name, 'error': error}

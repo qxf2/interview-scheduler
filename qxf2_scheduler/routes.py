@@ -66,7 +66,6 @@ def scehdule_and_confirm():
             date, email,candidate_email, slot)
         value = {'schedule_event': schedule_event, 
         'date': date}
-        print(value,schedule_event[0]['start']['dateTime'],type(schedule_event[0]['start']['dateTime']),file=sys.stderr)
         value = json.dumps(value)
         candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled','interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date})
         db.session.commit()        

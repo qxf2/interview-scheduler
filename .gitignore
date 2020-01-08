@@ -8,6 +8,9 @@ venv*
 data/
 migrations/
 
+#Config files
+email_config.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

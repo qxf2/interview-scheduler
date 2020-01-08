@@ -11,7 +11,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds
+from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
@@ -43,13 +43,18 @@ def delete_candidate(candidate_id):
     if request.method == 'POST':
         candidate_id_to_delete = request.form.get('candidateId')
         job_id_to_delete = request.form.get('jobId')
+        #Delete the candidates from candidate table
         candidate_to_delete = Candidates.query.filter(Candidates.candidate_id==candidate_id_to_delete).first()
         data = {'candidate_name':candidate_to_delete.candidate_name,'candidate_id':candidate_to_delete.candidate_id}       
         db.session.delete(candidate_to_delete)
-        db.session.commit()   
-
+        db.session.commit() 
+        #Delete candidate from Jobcandidate table
         job_candidate_to_delete = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id_to_delete, Jobcandidate.job_id==job_id_to_delete).first()
         db.session.delete(job_candidate_to_delete)
+        db.session.commit() 
+        #Delete candidate from candidateround table
+        round_candidate_to_delete = Candidateround.query.filter(Candidateround.candidate_id==candidate_id_to_delete, Candidateround.job_id==job_id_to_delete).first()
+        db.session.delete(round_candidate_to_delete)
         db.session.commit()     
         
     return jsonify(data)
@@ -95,6 +100,10 @@ def add_candidate(job_role):
             add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status='Waiting on qxf2')
             db.session.add(add_job_candidate_object)
             db.session.commit()
+            #Store the candidateid,jobid,roundid and round status in candidateround table
+            add_round_candidate_object = Candidateround(candidate_id=candidate_id,job_id=job_id,round_id='',round_status='')
+            db.session.add(add_round_candidate_object)
+            db.session.commit()
             error = "Success"
         api_response = {'data':data,'error':error}
 
@@ -114,20 +123,38 @@ def generate_unique_url():
         db.session.commit()
     api_response = {'url': url}
     return jsonify(api_response)
+
+
+def get_pending_round_id(job_id,candidate_id):
+    "Get the pending round id for the candidate"
+    pending_round_ids = [] 
+    #Fetch all the round details for a job
+    round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
+    for each_round_id in round_ids_for_job:
+        #Fetch the round id and round status from candidateround table
+        round_status = db.session.query(Candidateround).filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).values(Candidateround.round_status,Candidateround.round_id)
+        #Check the round has been completed or not
+        for each_round_status in round_status:
+            if(each_round_status.round_id==each_round_id.round_id and each_round_status.round_status=='Completed'):
+                break
+            else:
+                pending_round_ids.append(each_round_id.round_id)
+    
+    return pending_round_ids
     
         
 @app.route("/candidate/<candidate_id>/job/<job_id>") 
 def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"
     round_names_list = []
-    round_details = {}     
+    round_details = {}       
     candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url,Jobcandidate.candidate_status)
     for each_data in candidate_job_data:
-        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'candidate_status':each_data.candidate_status} 
-    #Fetch all the round details for a job
-    round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
-    for each_round_id in round_ids_for_job:
-        round_detail = db.session.query(Rounds).filter(Rounds.round_id==each_round_id.round_id).scalar()
+        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'candidate_status':each_data.candidate_status}
+    pending_round_ids = get_pending_round_id(job_id,candidate_id)
+    #Get the pending round id details from the table
+    for each_round_id in pending_round_ids:
+        round_detail = db.session.query(Rounds).filter(Rounds.round_id==each_round_id).scalar()
         round_details = {'round_name':round_detail.round_name,'round_id':round_detail.round_id,'round_description':round_detail.round_description}
         round_names_list.append(round_details)
     return render_template("candidate-job-status.html",result=data,round_names=round_names_list)
@@ -198,8 +225,8 @@ def send_invite(candidate_id, job_id):
         candidate_name = request.form.get("candidatename")
         job_id = request.form.get("jobid")
         generated_url = request.form.get("generatedurl")
-        round_description = request.form.get("rounddescription") 
-        print("generateurl",generated_url,file=sys.stderr)      
+        round_description = request.form.get("rounddescription")
+        round_id = request.form.get("roundid")
         generated_url = base_url + generated_url +'/welcome'
         try:
             msg = Message("Schedule an Interview with Qxf2 Services!",
@@ -207,8 +234,15 @@ def send_invite(candidate_id, job_id):
             msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. You can refer the round description here %s.Please use the URL '%s' to schedule an interview with us" % (
                 candidate_name, round_description,generated_url)
             mail.send(msg)
+            #Change the candidate status after the invite has been sent
             candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on candidate'})
             db.session.commit()
+
+            #Add the candidate round details in candidateround table
+            #As of now I am adding round status as completed we can change this to 'Invite sent'
+            candidate_round_detail = Candidateround.query.filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).update({'round_id':round_id,'round_status':'Completed'})
+            db.session.commit()
+
             error = 'Success'        
            
         except Exception as e:

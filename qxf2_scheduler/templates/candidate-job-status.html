@@ -112,6 +112,8 @@
                 <div id="resultDiv">
                     <textarea name="rdesc" id="rdesc" style="width:200px; height:300px; display:none;"
                         required></textarea>
+                    <input type="hidden" id="roundId">
+                    <input type="hidden" id="roundName">
                 </div>
 
 
@@ -128,9 +130,12 @@
                 data: {
                     'round_name': roundName
                 },
-                success: function (results) {
+                success: function (roundResults) {
                     $("#rdesc").show();
-                    $("#rdesc").text(results.round_description);
+                    $("#rdesc").text(roundResults.round_description);
+                    $("#roundId").val(roundResults.round_id);
+                    $("#roundName").val(roundResults.round_name);
+
                 }
 
             })
@@ -173,7 +178,8 @@
             var candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
             var roundDescription = document.getElementById("rdesc").value;
-
+            var roundId = document.getElementById("roundId").value;
+            var roundName = document.getElementById("roundName").value;
             $.ajax({
                 type: 'POST',
                 url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
@@ -183,7 +189,9 @@
                     'candidateid': candidateId,
                     'candidateemail': candidateEmail,
                     'jobid': jobId,
-                    'rounddescription': roundDescription
+                    'rounddescription': roundDescription,
+                    'roundid':roundId,
+                    'roundname':roundName
                 },
                 success: function (result) {
 

@@ -76,7 +76,7 @@ class Jobcandidate(db.Model):
     interview_start_time = db.Column(db.String)
     interview_end_time = db.Column(db.String)
     interview_date = db.Column(db.String)
-    candidate_status = db.Column(db.String)
+    candidate_status = db.Column(db.Integer)
 
     def __repr__(self):
         return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}','{self.candidate_status}')"
@@ -99,3 +99,9 @@ class Candidateround(db.Model):
     candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
     round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
     round_status = db.Column(db.String)
+
+
+class Candidatestatus(db.Model):
+    "Save the status list"
+    status_id = db.Column(db.Integer,primary_key=True)
+    status_name = db.Column(db.String)

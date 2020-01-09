@@ -11,7 +11,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround
+from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
@@ -96,8 +96,11 @@ def add_candidate(job_role):
             db.session.commit()
             #getting the unique candidate id for new candidate
             candidate_id = Candidates.query.filter(Candidates.candidate_email==candidate_email).value(Candidates.candidate_id)
+            # Fetch the id for the candidate status 'Waiting on Qxf2'
+            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name=='Waiting on Qxf2').scalar()
+           
             #storing the candidate id and job id in jobcandidate table
-            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status='Waiting on qxf2')
+            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= candidate_status_id.status_id)
             db.session.add(add_job_candidate_object)
             db.session.commit()
             #Store the candidateid,jobid,roundid and round status in candidateround table
@@ -150,7 +153,11 @@ def show_candidate_job(job_id,candidate_id):
     round_details = {}       
     candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url,Jobcandidate.candidate_status)
     for each_data in candidate_job_data:
-        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'candidate_status':each_data.candidate_status}
+        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email}
+        candidate_status_id = each_data.candidate_status
+    #fetch the candidate status name for the status id
+    candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
+    data['candidate_status']=candidate_status_name.status_name
     pending_round_ids = get_pending_round_id(job_id,candidate_id)
     #Get the pending round id details from the table
     for each_round_id in pending_round_ids:
@@ -234,8 +241,10 @@ def send_invite(candidate_id, job_id):
             msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. You can refer the round description here %s.Please use the URL '%s' to schedule an interview with us" % (
                 candidate_name, round_description,generated_url)
             mail.send(msg)
+            # Fetch the id for the candidate status 'Waiting on Qxf2'
+            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name=='Waiting on Candidate').scalar()
             #Change the candidate status after the invite has been sent
-            candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on candidate'})
+            candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id})
             db.session.commit()
 
             #Add the candidate round details in candidateround table

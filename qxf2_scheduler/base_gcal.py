@@ -130,7 +130,8 @@ def create_event_for_fetched_date_and_time(service,event_start_time,event_end_ti
                 'timeZone': TIMEZONE,
             },            
             'attendees': [
-                {'email': attendee},
+                {'email': attendee[0]},
+                {'email': attendee[1]}
                 
             ],
             'reminders': {
@@ -152,6 +153,6 @@ def create_event_for_fetched_date_and_time(service,event_start_time,event_end_ti
                 }
             }
             }
-    event = service.events().insert(calendarId=EMAIL, body=event).execute()
+    event = service.events().insert(calendarId=EMAIL,body=event,sendUpdates="all").execute()
     
     return event 

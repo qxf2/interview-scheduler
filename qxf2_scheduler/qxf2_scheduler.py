@@ -14,7 +14,7 @@ FMT='%H:%M'
 CHUNK_DURATION = '30'
 SUMMARY = 'Interview Scheduler'
 LOCATION =  'Google Hangout or Office',
-DESCRIPTION = 'Scheduling an interview',
+DESCRIPTION = 'A senior Qxf2 employee will talk to you and get to know your background. She/He will also give you a real application to test and look at how you break down testing at various levels. This stage is evaluating your communication skills and how you approach testing problems.',
 ATTENDEE = 'annapoorani@qxf2.com'
 DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
 
@@ -96,17 +96,20 @@ def convert_interviewer_time_into_string(interviewer_time):
     return interviewer_actual_time
 
    
-def create_event_for_fetched_date_and_time(date,emails,selected_slot):
+def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_email,selected_slot):
     "Create an event for fetched date and time"    
-    service = gcal.base_gcal()    
-    if ',' in emails:        
-        attendee_email_id = emails.split(',')       
+    service = gcal.base_gcal()   
+    interviewer_candidate_email = []
+    if ',' in interviewer_emails:        
+        attendee_email_id = interviewer_emails.split(',')       
         attendee_email_id = random.choice(attendee_email_id)        
     else:
-        attendee_email_id = emails    
+        attendee_email_id = interviewer_emails
+    interviewer_candidate_email.append(attendee_email_id)
+    interviewer_candidate_email.append(candidate_email)    
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
-    SUMMARY,LOCATION,DESCRIPTION,attendee_email_id)
+    SUMMARY,LOCATION,DESCRIPTION,interviewer_candidate_email)
     created_event_info = append_the_create_event_info(create_event)
 
     return created_event_info    

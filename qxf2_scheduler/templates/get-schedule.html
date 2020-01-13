@@ -7,23 +7,24 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.12.4.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet" type="text/css">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-    <!-- Optional theme -->
+        
+    <!-- Optional theme 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
         integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
+        -->
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-
+    
 </head>
-
 <body>
+    
+    
     <div class="container col-md-offset-1">
         <div class="row top-space-30">
             <form>                
@@ -31,7 +32,7 @@
                     <div id="holder" class='form-group'></div>
                     <label for='Date'>Choose the interview date:</label>
                     <!--Src for disable keyboard: https://stackoverflow.com/questions/153759/jquery-datepicker-with-text-input-that-doesnt-allow-user-input-->
-                    <input type='text' name='datefield' id='datepicker' readonly='true'>
+                    <input type='text' name='datefield' id='datepicker' readonly='true' placeholder="Select date...">
                 </div>
                 <div class='form-group'>
                     <input class="btn btn-success" type='button' id='submit' value='Submit'>
@@ -43,10 +44,11 @@
         <div class="row top-space-30" id="chosenSlot"></div>
         <div class="row top-space-30" id="scheduledEvent"></div>
     </div>    
+    <div class="loader" id="loader" visibility="hidden"></div>
     <script>
         $(function () {
             //holidays in yyyy-mm-dd format
-            var holidays = ['2019-01-01', '2019-01-15', '2019-03-04', '2019-05-01', '2019-08-15', '2019-09-02', '2019-10-02', '2019-10-08', '2019-11-01'];
+            var holidays = ['2020-01-01', '2020-01-15', '2020-02-21', '2020-03-25', '2020-05-01', '2020-10-02', '2020-10-26', '2020-10-30', '2020-12-25'];
             $("#datepicker").datepicker({
                 minDate: 0,
                 beforeShowDay: isHoliday
@@ -68,11 +70,13 @@
     </script>    
     <script>       
         $("document").ready(function () {
-            $('#submit').click(function () {                
+            $('#submit').click(function () {  
+                            
                 var date = $('#datepicker').val();
                 var elements = [];
                 $("#resultDiv").empty();
-                if (date == "") {
+                document.getElementById('loader').style.visibility = 'visible';
+                    if (date == "") {
                     $('#datepicker').css('border', 'solid 2px red');
                     $('#resultDiv').css('color', 'red');
                     $('#resultDiv').text('Invalid date')
@@ -91,6 +95,7 @@
                         $("#resultDiv").css('color', 'black');
                         freeChunkSlots = result.free_slots_in_chunks
                         console.log(freeChunkSlots)
+                        
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';
                         if (result.hasOwnProperty('error')) {
@@ -105,13 +110,16 @@
                                     slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;                                    
                                     var timeSlotButton = $('<div class="col-md-2 top-space-20 text-align:left"><input type="button" onclick="displayChosenSlot(\'' + freeChunkSlots[index].email +'\', \'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
                                     elements.push(timeSlotButton);
-                                }
+                                }   
                             }//end of if freeSlots is empty
                         }//end of no error key found
+                        
                         $("#resultDiv").html(msg);
                         if (elements.length > 0) {
                             $("#resultDiv").append(elements);
                         }
+                        
+                        document.getElementById('loader').style.visibility='hidden';
                     });
                 }
             });
@@ -144,11 +152,13 @@
             form = document.createElement("form");
             form.method = "POST";
             form.action = "/confirmation"; 
-            addHidden(form,'emails',emails)           
+            addHidden(form,'interviewerEmails',emails)           
             addHidden(form,'date',date);
-            addHidden(form,'slot',slot);            
+            addHidden(form,'slot',slot);     
             form.submit();
+            
         }
     </script>
+    
 </body>
 </html>

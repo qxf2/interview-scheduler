@@ -18,10 +18,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
     <body>
-    {% if result %}
-    <h3>Welcome to Qxf2</h3>
-    <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
     <div class="bs-example">
+        {% if 'job_id' in result %}
+        <h3>Welcome to Qxf2</h3>
+        <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
     <form action="/{{ result.job_id }}/valid" method="POST">
         <div class="form-group">
             <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your name</label>
@@ -46,7 +46,21 @@
         </form>
         </div>
         {% else %}
-        <p>The interview is scheduled already so you cannot schedule it again</p>
+        <div class="container col-md-offset-1">
+            <h3 align="center">Welcome to Qxf2</h3> 
+            <label class="col-md-4 control-label" for="candidatename">Candidate Name:</label>
+            <label class="col-md-4">{{result.candidate_name}}</label>
+            <label class="col-md-4 control-label" for="candidateemail">Candidate Email:</label>
+            <label class="col-md-4">{{result.candidate_email}}</label>
+            <label class="col-md-4 control-label" for="interviewStart">Interview Start time:</label>
+            <label class="col-md-4">{{interview_result.interview_start_time}}</label>
+            <label class="col-md-4 control-label" for="interviewEnd">Interview End Time:</label>
+            <label class="col-md-4">{{interview_result.interview_end_time}}</label>
+            <label class="col-md-4 control-label" for="interviewDate">Interview Date:</label>
+            <label class="col-md-4">{{interview_result.interview_date}}</label>
+            <p>Hi {{result.candidate_name}}, Your interview has been scheduled already.</p>
+        </div>
         {% endif %}
+
         </body>
 </html>

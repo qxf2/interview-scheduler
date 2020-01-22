@@ -67,6 +67,9 @@ class Jobcandidate(db.Model):
     candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
     job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
     url = db.Column(db.String)
+    interview_start_time = db.Column(db.String)
+    interview_end_time = db.Column(db.String)
+    interview_date = db.Column(db.String)
     candidate_status = db.Column(db.String)
 
     def __repr__(self):

@@ -9,11 +9,10 @@ from qxf2_scheduler import db
 import json
 import ast
 import sys
-from flask_mail import Message, Mail
+
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate
 DOMAIN = 'qxf2.com'
-mail = Mail(app)
 
 
 @app.route("/get-schedule", methods=['GET', 'POST'])

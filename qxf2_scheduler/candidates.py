@@ -11,6 +11,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds
 DOMAIN = 'qxf2.com'
+base_url = 'http://localhost:6464/'
 
 
 def url_gen(candidate_id, job_id):
@@ -193,7 +194,8 @@ def send_invite(candidate_id, job_id):
         candidate_name = request.form.get("candidatename")
         job_id = request.form.get("jobid")
         generated_url = request.form.get("generatedurl")
-        round_description = request.form.get("rounddescription")
+        round_description = request.form.get("rounddescription")       
+        generated_url = base_url + generated_url +'/welcome'
         try:
             msg = Message("Schedule an Interview with Qxf2 Services!",
                           sender="test@qxf2.com", recipients=[candidate_email])

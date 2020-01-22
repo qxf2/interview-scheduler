@@ -525,6 +525,7 @@ def parse_interview_time(interview_time):
 def show_welcome(candidate_id, job_id, url):
     "Opens a welcome page for candidates"
     data = {'job_id': job_id}
+    interview_data = {}
     
     #Check the candidate status if it's interview scheduled
     get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status)

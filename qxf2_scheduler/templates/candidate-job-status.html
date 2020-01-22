@@ -40,7 +40,7 @@
         </div>
         {% endif %}
         <table class="table table-striped">
-            {{result}}
+        
             <thead>
                 <tr>
                     <th scope="col">Candidate Name</th>
@@ -67,22 +67,22 @@
     </div>
     
     <script>
-        var candidateId = "{{ result.candidate_id }}";
-        var jobId = "{{ result.job_id }}";
-        $("#urlbutton").on('click', function () {
+        var candidateId="{{ result.candidate_id }}";
+        var jobId="{{ result.job_id }}";
+            $("#urlbutton").click(function () {
             $.ajax({
-                type: 'POST',
-                url: '/candidate/url',
-                data: {
-                    'candidateId': candidateId,
-                    'jobId': jobId
-                },
-                success: function (data) {
-                    var url_textbox = document.getElementById("generate-url");
-                    url_textbox.setAttribute('value', data.url);
-                }
-            })
-            location.reload(forcedReload);
+                    type: 'POST',
+                    url: '/candidate/url',
+                    data: { 
+                        'candidateId': candidateId, 
+                        'jobId': jobId 
+                        },
+                    success: function (data) {
+                        var url_textbox = document.getElementById("generate-url"); 
+                        url_textbox.setAttribute('value', data.url); 
+                        location.reload(); 
+                    }
+                })
         }) 
     </script>
     <script>

@@ -63,8 +63,9 @@ def scehdule_and_confirm():
         slot = request.form.get('slot')
         email = request.form.get('interviewerEmails')
         date = request.form.get('date')
+        candidate_email = session['candidate_info']['candidate_email']
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
-            date, email, slot)
+            date, email,candidate_email, slot)
         value = {'schedule_event': schedule_event, 
         'date': date}
         value = json.dumps(value)

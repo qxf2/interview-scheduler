@@ -34,7 +34,7 @@ def date_picker():
             free_slots)
         api_response = {
             'free_slots_in_chunks': free_slots_in_chunks, 'date': date}
-
+        
         return jsonify(api_response)
 
 
@@ -42,10 +42,6 @@ def date_picker():
 def confirm():
     "Confirming the event message"
     response_value = request.args['value']
-    candidate_id = session['candidate_info']['candidate_id']
-    job_id = session['candidate_info']['job_id']
-    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Candidate'})
-    db.session.commit()
 
     return render_template("confirmation.html", value=json.loads(response_value))
 
@@ -61,13 +57,16 @@ def scehdule_and_confirm():
         slot = request.form.get('slot')
         email = request.form.get('interviewerEmails')
         date = request.form.get('date')
+        candidate_id = session['candidate_info']['candidate_id']
         candidate_email = session['candidate_info']['candidate_email']
+        job_id = session['candidate_info']['job_id']
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email,candidate_email, slot)
         value = {'schedule_event': schedule_event, 
         'date': date}
         value = json.dumps(value)
-
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled'})
+        db.session.commit()
         return redirect(url_for('confirm', value=value))
     return render_template("get-schedule.html")
 

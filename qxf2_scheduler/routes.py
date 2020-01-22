@@ -536,10 +536,10 @@ def show_welcome(candidate_id, job_id, url):
         #Fetch the candidate status name from candidatestatus table
         candidate_status = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
         
-        if candidate_status.candidate_status == 'Waiting on Candidate':
+        if candidate_status.status_name == 'Waiting on Candidate':
             return render_template("welcome.html",result=data)
 
-        elif candidate_status.candidate_status == 'Interview Scheduled':
+        elif candidate_status.status_name == 'Interview Scheduled':
             #Fetch the candidate name and email
             get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
 

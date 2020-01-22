@@ -10,6 +10,7 @@ import json,datetime
 import ast
 import sys
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from datetime import datetime
 
 
 
@@ -64,8 +65,11 @@ def scehdule_and_confirm():
         job_id = session['candidate_info']['job_id']
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email,candidate_email, slot)
+        date_object = datetime.strptime(date, '%m/%d/%Y').date()
+        date = datetime.strftime(date_object, '%B %d, %Y')
         value = {'schedule_event': schedule_event, 
-        'date': date}
+        'date': date,
+        'slot' : slot}
         value = json.dumps(value)
         # Fetch the id for the candidate status 'Interview scheduled'
         candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name=='Interview Scheduled').scalar()

@@ -1,6 +1,7 @@
 from flask import render_template, url_for, flash, redirect, jsonify, request, Response,session
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
+import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json
 import string
@@ -18,7 +19,7 @@ base_url = 'http://localhost:6464/'
 
 def url_gen(candidate_id, job_id):
     "generate random url for candidate"
-    s = Serializer('WEBSITE_SECRET_KEY', 60*5) # 60 secs by 30 mins
+    s = Serializer('WEBSITE_SECRET_KEY', 60*3600) # 60 secs by 30 mins
     urllist = s.dumps({'candidate_id':candidate_id,'job_id': job_id}).decode('utf-8')
     #KEY_LEN = random.randint(8,16)
     #urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]
@@ -97,7 +98,8 @@ def add_candidate(job_role):
             #getting the unique candidate id for new candidate
             candidate_id = Candidates.query.filter(Candidates.candidate_email==candidate_email).value(Candidates.candidate_id)
             # Fetch the id for the candidate status 'Waiting on Qxf2'
-            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name=='Waiting on Qxf2').scalar()
+            #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
+            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[0]).scalar()
            
             #storing the candidate id and job id in jobcandidate table
             add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= candidate_status_id.status_id)
@@ -214,7 +216,11 @@ def edit_candidates(candidate_id):
 
 @app.route("/candidates/<candidate_id>/jobs/<job_id>/email")
 def send_email(candidate_id,job_id):
-    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Candidate'})
+    # Fetch the id for the candidate status 'Waiting on Candidate'
+    #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
+    candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[1]).scalar()
+           
+    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id})
     db.session.commit()
     candidate_name = Candidates.query.filter(Candidates.candidate_id == candidate_id).value(Candidates.candidate_name)
     if candidate_name != None:
@@ -242,7 +248,9 @@ def send_invite(candidate_id, job_id):
                 candidate_name, round_description,generated_url)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'
-            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name=='Waiting on Candidate').scalar()
+            #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
+            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[1]).scalar()
+           
             #Change the candidate status after the invite has been sent
             candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id})
             db.session.commit()

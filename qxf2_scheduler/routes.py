@@ -5,6 +5,7 @@ This file contains all the endpoints exposed by the interview scheduler applicat
 from flask import render_template, url_for, flash, redirect, jsonify, request, Response, session
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
+import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json,datetime
 import ast
@@ -71,8 +72,10 @@ def scehdule_and_confirm():
         'date': date,
         'slot' : slot}
         value = json.dumps(value)
-        # Fetch the id for the candidate status 'Interview scheduled'
-        candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name=='Interview Scheduled').scalar()
+        # Fetch the id for the candidate status 'Interview scheduled'        '
+        #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
+        candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[2]).scalar()
+        
         candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date})
         db.session.commit()        
         return redirect(url_for('confirm', value=value))
@@ -539,11 +542,10 @@ def show_welcome(candidate_id, job_id, url):
             candidate_status_id = candidate_status.candidate_status
         #Fetch the candidate status name from candidatestatus table
         candidate_status = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
-        
-        if candidate_status.candidate_status == 'Waiting on Candidate':
+        if(candidate_status.status_name == status.CANDIDTATE_STATUS[1]):
             return render_template("welcome.html",result=data)
 
-        elif candidate_status.candidate_status == 'Interview Scheduled':
+        elif (candidate_status.status_name == status.CANDIDTATE_STATUS[2]):
             #Fetch the candidate name and email
             get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
 

@@ -69,8 +69,8 @@ def scehdule_and_confirm():
         'date': date,
         'slot' : slot}
         value = json.dumps(value)
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled'})
-        db.session.commit()
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled','url':''})
+        db.session.commit()        
         return redirect(url_for('confirm', value=value))
     return render_template("get-schedule.html")
 
@@ -515,12 +515,19 @@ def add_interviewers():
             return jsonify(error='Interviewer already exists'), 500
 
 
-
-@app.route("/<candidateId>/<jobId>/<url>/welcome")
-def show_welcome(candidateId, jobId, url):
+@app.route("/<candidate_id>/<job_id>/<url>/welcome")
+def show_welcome(candidate_id, job_id, url):
     "Opens a welcome page for candidates"
-    data = {'job_id': jobId}
-    return render_template("welcome.html", result=data)    
+    data = {'job_id': job_id}
+    print(url,file=sys.stderr)
+    #Check the URL is already exists in the database for the candidate
+    get_candidate_url = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.url)
+    for each_url in get_candidate_url:
+        db_url = each_url.url
+    if db_url == url:
+        return render_template("welcome.html", result=data)
+    else:
+        return  jsonify(error="error"),500
 
 
 @app.route("/<jobId>/valid",methods=['GET','POST'])

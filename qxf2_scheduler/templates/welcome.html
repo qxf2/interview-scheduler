@@ -18,6 +18,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
     <body>
+    {% if result %}
     <h3>Welcome to Qxf2</h3>
     <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
     <div class="bs-example">
@@ -44,5 +45,8 @@
         </div>
         </form>
         </div>
+        {% else %}
+        <p>The interview is scheduled already so you cannot schedule it again</p>
+        {% endif %}
         </body>
 </html>

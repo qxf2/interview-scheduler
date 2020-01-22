@@ -71,6 +71,12 @@ body {
 .textarea {
     display: inline
 }
+.form-display {
+    display:flex; 
+    flex-direction: row; 
+    justify-content: left; 
+    align-items: center"
+}
 
 label,
     input {

@@ -12,11 +12,13 @@ import ast
 import sys
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
+from flask_mail import Message, Mail
 
+mail = Mail(app)
 
-
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround
 DOMAIN = 'qxf2.com'
+base_url = 'http://localhost:6464/'
 
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
@@ -26,6 +28,8 @@ def date_picker():
         return render_template('get-schedule.html')
     if request.method == 'POST':
         date = request.form.get('date')
+        round_duration = request.form.get('roundtime')
+        chunk_duration = round_duration.split(' ')[0]
         new_slot = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).values(
             Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
         interviewer_work_time_slots = []
@@ -35,7 +39,7 @@ def date_picker():
         free_slots = my_scheduler.get_free_slots_for_date(
             date, interviewer_work_time_slots)
         free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(
-            free_slots)
+            free_slots,chunk_duration)
         api_response = {
             'free_slots_in_chunks': free_slots_in_chunks, 'date': date}
         
@@ -527,12 +531,6 @@ def parse_interview_time(interview_time):
     parsed_interview_time = datetime.datetime.strptime(interview_time,'%Y-%m-%dT%H:%M:%S+05:30')
     return parsed_interview_time.strftime('%H') + ':' + parsed_interview_time.strftime('%M')
 
-@app.route("/<candidateId>/<jobId>/<url>/welcome")
-def show_welcome(candidateId, jobId, url):
-    "Opens a welcome page for candidates"
-    data = {'candidate_id':candidateId,'job_id': jobId,'url':url}
-
-    return render_template("welcome.html", result=data)    
 
 @app.route("/<candidate_id>/<job_id>/<url>/welcome")
 def show_welcome(candidate_id, job_id, url):
@@ -567,7 +565,7 @@ def show_welcome(candidate_id, job_id, url):
                 interview_start_time = parse_interview_time(interview_detail.interview_start_time)
                 interview_end_time = parse_interview_time(interview_detail.interview_end_time)
                 interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date}
-    except:
+    except Exception as e:
         return render_template("expiry.html")
 
     return render_template("welcome.html",result=data,interview_result=interview_data)
@@ -605,10 +603,57 @@ def schedule_interview(jobId):
 @app.route('/<jobId>/get-schedule')
 def redirect_get_schedule(jobId):
     "Redirect to the get schedule page"
+    round_time = session.get('round_time')
     data = {
     'candidate_id':session['candidate_info']['candidate_id'],
     'candidate_name':session['candidate_info']['candidate_name'],
     'candidate_email':session['candidate_info']['candidate_email'],
-    'job_id':session['candidate_info']['job_id']
+    'job_id':session['candidate_info']['job_id'],
+    'round_time': round_time
     }
     return render_template("get-schedule.html",result=data)
+
+
+@app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
+def send_invite(candidate_id, job_id):
+    "Send an invite to schedule an interview"
+    if request.method == 'POST':
+        candidate_email = request.form.get("candidateemail")
+        candidate_id = request.form.get("candidateid")
+        candidate_name = request.form.get("candidatename")
+        job_id = request.form.get("jobid")
+        generated_url = request.form.get("generatedurl")
+        round_description = request.form.get("rounddescription")
+        round_id = request.form.get("roundid")
+        round_time = request.form.get("roundtime")
+        session['round_time'] = round_time
+        generated_url = base_url + generated_url +'/welcome'
+        try:
+            msg = Message("Schedule an Interview with Qxf2 Services!",
+                          sender="test@qxf2.com", recipients=[candidate_email])
+            msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. You can refer the round description here %s.Please use the URL '%s' to schedule an interview with us" % (
+                candidate_name, round_description,generated_url)
+            mail.send(msg)
+            # Fetch the id for the candidate status 'Waiting on Qxf2'
+            #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
+            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[1]).scalar()
+           
+            #Change the candidate status after the invite has been sent
+            candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id})
+            db.session.commit()
+
+            #Add the candidate round details in candidateround table
+            #As of now I am adding round status as completed we can change this to 'Invite sent'
+            candidate_round_detail = Candidateround.query.filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).update({'round_id':round_id,'round_status':'Completed'})
+            db.session.commit()
+
+            error = 'Success'        
+           
+        except Exception as e:
+            error = "Failed"
+            return(str(e))
+        
+        data = {'candidate_name': candidate_name, 'error': error}
+
+    return jsonify(data)       
+

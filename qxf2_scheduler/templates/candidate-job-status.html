@@ -132,11 +132,12 @@
                     'round_name': roundName
                 },
                 success: function (roundResults) {
+                    console.log(roundResults.round_time);
                     $("#rdesc").show();
                     $("#rdesc").text(roundResults.round_description);
                     $("#roundId").val(roundResults.round_id);
                     $("#roundName").val(roundResults.round_name);
-                    $("#roundTime").val(roundResults.round_time)
+                    $("#roundTime").val(roundResults.round_time);
 
                 }
 
@@ -182,7 +183,7 @@
             var roundDescription = document.getElementById("rdesc").value;
             var roundId = document.getElementById("roundId").value;
             var roundName = document.getElementById("roundName").value;
-            var roundTime = document.getElementById("rondTime").value;
+            var roundTime = document.getElementById("roundTime").value;
             $.ajax({
                 type: 'POST',
                 url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',

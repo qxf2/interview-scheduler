@@ -527,6 +527,12 @@ def parse_interview_time(interview_time):
     parsed_interview_time = datetime.datetime.strptime(interview_time,'%Y-%m-%dT%H:%M:%S+05:30')
     return parsed_interview_time.strftime('%H') + ':' + parsed_interview_time.strftime('%M')
 
+@app.route("/<candidateId>/<jobId>/<url>/welcome")
+def show_welcome(candidateId, jobId, url):
+    "Opens a welcome page for candidates"
+    data = {'candidate_id':candidateId,'job_id': jobId,'url':url}
+
+    return render_template("welcome.html", result=data)    
 
 @app.route("/<candidate_id>/<job_id>/<url>/welcome")
 def show_welcome(candidate_id, job_id, url):
@@ -571,14 +577,17 @@ def show_welcome(candidate_id, job_id, url):
 def schedule_interview(jobId):
     "Validate candidate name and candidate email"
     if request.method == 'POST':
-        candidate_email = request.form.get('candidate-email')
         candidate_name = request.form.get('candidate-name')
+        candidate_email = request.form.get('candidate-email')
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
         if candidate_data == None:
-            err={'err':'EmailError'}
+            err={'error':'EmailError'}
+            return jsonify(error=err), 500
+
         elif candidate_data.lower() != candidate_name.lower():
-            err={'err':'NameError'}
+            err={'error':'NameError'}
+            return jsonify(error=err), 500
         elif candidate_data.lower() == candidate_name.lower():
             data = {
             'candidate_id':candidate_id,
@@ -589,9 +598,8 @@ def schedule_interview(jobId):
             session['candidate_info'] = data
             return redirect(url_for('redirect_get_schedule',jobId=jobId))
         else:
-            err={'err':'OtherError'}
-
-        return jsonify(error=err), 500
+            err={'error':'OtherError'}
+            return jsonify(error=err), 500
 
 
 @app.route('/<jobId>/get-schedule')

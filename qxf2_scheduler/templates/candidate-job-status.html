@@ -114,6 +114,7 @@
                         required></textarea>
                     <input type="hidden" id="roundId">
                     <input type="hidden" id="roundName">
+                    <input type="hidden" id="roundTime">
                 </div>
 
 
@@ -135,6 +136,7 @@
                     $("#rdesc").text(roundResults.round_description);
                     $("#roundId").val(roundResults.round_id);
                     $("#roundName").val(roundResults.round_name);
+                    $("#roundTime").val(roundResults.round_time)
 
                 }
 
@@ -180,6 +182,7 @@
             var roundDescription = document.getElementById("rdesc").value;
             var roundId = document.getElementById("roundId").value;
             var roundName = document.getElementById("roundName").value;
+            var roundTime = document.getElementById("rondTime").value;
             $.ajax({
                 type: 'POST',
                 url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
@@ -191,7 +194,8 @@
                     'jobid': jobId,
                     'rounddescription': roundDescription,
                     'roundid':roundId,
-                    'roundname':roundName
+                    'roundname':roundName,
+                    'roundtime':roundTime
                 },
                 success: function (result) {
 

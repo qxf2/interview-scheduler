@@ -164,7 +164,7 @@ def show_candidate_job(job_id,candidate_id):
     #Get the pending round id details from the table
     for each_round_id in pending_round_ids:
         round_detail = db.session.query(Rounds).filter(Rounds.round_id==each_round_id).scalar()
-        round_details = {'round_name':round_detail.round_name,'round_id':round_detail.round_id,'round_description':round_detail.round_description}
+        round_details = {'round_name':round_detail.round_name,'round_id':round_detail.round_id,'round_description':round_detail.round_description,'round_time':round_detail.round_time}
         round_names_list.append(round_details)
     return render_template("candidate-job-status.html",result=data,round_names=round_names_list)
 

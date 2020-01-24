@@ -105,3 +105,8 @@ class Candidatestatus(db.Model):
     "Save the status list"
     status_id = db.Column(db.Integer,primary_key=True)
     status_name = db.Column(db.String)
+
+class Updatetable(db.Model):
+    "Store the last updated date of Jobcandidate"
+    table_id = db.Column(db.Integer,primary_key=True)
+    last_updated_date = db.Column(db.Integer)

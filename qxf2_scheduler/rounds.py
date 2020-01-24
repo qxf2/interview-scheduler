@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json,ast,sys
+import json,ast,sys,os,datetime
 
 from qxf2_scheduler.models import Jobs, Rounds, Jobround
 

@@ -1,6 +1,7 @@
 from flask import render_template, url_for, flash, redirect, jsonify, request, Response,session
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
+import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json
 import string
@@ -97,7 +98,8 @@ def add_candidate(job_role):
             #getting the unique candidate id for new candidate
             candidate_id = Candidates.query.filter(Candidates.candidate_email==candidate_email).value(Candidates.candidate_id)
             # Fetch the id for the candidate status 'Waiting on Qxf2'
-            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name=='Waiting on Qxf2').scalar()
+            #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
+            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[0]).scalar()
            
             #storing the candidate id and job id in jobcandidate table
             add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= candidate_status_id.status_id)
@@ -162,7 +164,7 @@ def show_candidate_job(job_id,candidate_id):
     #Get the pending round id details from the table
     for each_round_id in pending_round_ids:
         round_detail = db.session.query(Rounds).filter(Rounds.round_id==each_round_id).scalar()
-        round_details = {'round_name':round_detail.round_name,'round_id':round_detail.round_id,'round_description':round_detail.round_description}
+        round_details = {'round_name':round_detail.round_name,'round_id':round_detail.round_id,'round_description':round_detail.round_description,'round_time':round_detail.round_time}
         round_names_list.append(round_details)
     return render_template("candidate-job-status.html",result=data,round_names=round_names_list)
 
@@ -214,50 +216,14 @@ def edit_candidates(candidate_id):
 
 @app.route("/candidates/<candidate_id>/jobs/<job_id>/email")
 def send_email(candidate_id,job_id):
-    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Waiting on Candidate'})
+    # Fetch the id for the candidate status 'Waiting on Candidate'
+    #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
+    candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[1]).scalar()
+           
+    candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id})
     db.session.commit()
     candidate_name = Candidates.query.filter(Candidates.candidate_id == candidate_id).value(Candidates.candidate_name)
     if candidate_name != None:
         return jsonify(data=candidate_name)
     else:
         return jsonify(error="error"), 500
-
-
-@app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
-def send_invite(candidate_id, job_id):
-    "Send an invite to schedule an interview"
-    if request.method == 'POST':
-        candidate_email = request.form.get("candidateemail")
-        candidate_id = request.form.get("candidateid")
-        candidate_name = request.form.get("candidatename")
-        job_id = request.form.get("jobid")
-        generated_url = request.form.get("generatedurl")
-        round_description = request.form.get("rounddescription")
-        round_id = request.form.get("roundid")
-        generated_url = base_url + generated_url +'/welcome'
-        try:
-            msg = Message("Schedule an Interview with Qxf2 Services!",
-                          sender="test@qxf2.com", recipients=[candidate_email])
-            msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. You can refer the round description here %s.Please use the URL '%s' to schedule an interview with us" % (
-                candidate_name, round_description,generated_url)
-            mail.send(msg)
-            # Fetch the id for the candidate status 'Waiting on Qxf2'
-            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name=='Waiting on Candidate').scalar()
-            #Change the candidate status after the invite has been sent
-            candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id})
-            db.session.commit()
-
-            #Add the candidate round details in candidateround table
-            #As of now I am adding round status as completed we can change this to 'Invite sent'
-            candidate_round_detail = Candidateround.query.filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).update({'round_id':round_id,'round_status':'Completed'})
-            db.session.commit()
-
-            error = 'Success'        
-           
-        except Exception as e:
-            error = "Failed"
-            return(str(e))
-        
-        data = {'candidate_name': candidate_name, 'error': error}
-
-    return jsonify(data)       

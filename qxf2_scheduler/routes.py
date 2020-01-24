@@ -9,10 +9,12 @@ from qxf2_scheduler import db
 import json,datetime
 import ast
 import sys
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate
+
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus
 DOMAIN = 'qxf2.com'
 
 
@@ -69,7 +71,9 @@ def scehdule_and_confirm():
         'date': date,
         'slot' : slot}
         value = json.dumps(value)
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled','interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date})
+        # Fetch the id for the candidate status 'Interview scheduled'
+        candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name=='Interview Scheduled').scalar()
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date})
         db.session.commit()        
         return redirect(url_for('confirm', value=value))
     return render_template("get-schedule.html")
@@ -524,33 +528,40 @@ def parse_interview_time(interview_time):
 @app.route("/<candidate_id>/<job_id>/<url>/welcome")
 def show_welcome(candidate_id, job_id, url):
     "Opens a welcome page for candidates"
-    data = {'job_id': job_id}
     interview_data = {}
-    
-    #Check the candidate status if it's interview scheduled
-    get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status)
-    for candidate_status in get_candidate_status:
-        candidate_status = candidate_status.candidate_status
-    if candidate_status == 'Waiting on Candidate':
-        return render_template("welcome.html",result=data)
+    data = {'job_id': job_id}
+    s = Serializer('WEBSITE_SECRET_KEY')
+    try:
+        url = s.loads(url)
+        #This query fetches the candidate status id
+        get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status)
+        for candidate_status in get_candidate_status:
+            candidate_status_id = candidate_status.candidate_status
+        #Fetch the candidate status name from candidatestatus table
+        candidate_status = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
+        
+        if candidate_status.status_name == 'Waiting on Candidate':
+            return render_template("welcome.html",result=data)
 
-    elif candidate_status == 'Interview Scheduled':
-        #Fetch the candidate name and email
-        get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
+        elif candidate_status.status_name == 'Interview Scheduled':
+            #Fetch the candidate name and email
+            get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
 
-        #Fetch the interview date and time
-        get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date)
+            #Fetch the interview date and time
+            get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date)
 
-        #Parsing candidate details
-        for candidate_detail in get_candidate_details:
-            data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
+            #Parsing candidate details
+            for candidate_detail in get_candidate_details:
+                data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
 
-        #Parsing Interview details
-        for interview_detail in get_interview_details:            
-            interview_start_time = parse_interview_time(interview_detail.interview_start_time)
-            interview_end_time = parse_interview_time(interview_detail.interview_end_time)
-            interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date}
-            
+            #Parsing Interview details
+            for interview_detail in get_interview_details:            
+                interview_start_time = parse_interview_time(interview_detail.interview_start_time)
+                interview_end_time = parse_interview_time(interview_detail.interview_end_time)
+                interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date}
+    except:
+        return render_template("expiry.html")
+
     return render_template("welcome.html",result=data,interview_result=interview_data)
 
     

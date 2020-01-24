@@ -8,6 +8,8 @@ from googleapiclient.errors import HttpError
 import datetime
 from datetime import timedelta
 import random,sys
+from qxf2_scheduler import db
+from apscheduler.schedulers.background import BackgroundScheduler
 
 TIMEZONE_STRING = '+05:30'
 FMT='%H:%M'
@@ -17,6 +19,32 @@ LOCATION =  'Google Hangout or Office',
 DESCRIPTION = 'A senior Qxf2 employee will talk to you and get to know your background. She/He will also give you a real application to test and look at how you break down testing at various levels. This stage is evaluating your communication skills and how you approach testing problems.',
 ATTENDEE = 'annapoorani@qxf2.com'
 DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
+
+from qxf2_scheduler.models import Jobcandidate,Updatetable
+
+
+def check_with_current_time(end_time):
+    "Compare the interview end time with current time"
+    print(end_time,file=sys.stderr)
+    parsed_end_time = datetime.datetime.strptime(end_time,'%Y-%m-%dT%H:%M:%S+05:30')
+    if parsed_end_time <= datetime.datetime.now():
+        return True
+    else:
+        return False
+
+
+def scheduler_job():
+    "Runs this job in the background"
+    last_inserted_id = db.session.query(Updatetable).order_by(Updatetable.table_id.desc()).first()    
+    fetch_interview_end_time = Jobcandidate.query.filter(last_inserted_id.last_updated_date<=Jobcandidate.interview_end_time).update({'candidate_status':1}) 
+    db.session.commit()   
+    
+
+#Running the task in the background to update the jobcandidate table
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(scheduler_job,'cron',day_of_week='mon-sun', hour=15, minute=26)
+sched.start()
+
 
 def convert_string_into_time(alloted_slots):
     "Converting the given string into time"
@@ -361,7 +389,7 @@ def process_time_to_gcal(given_date,hour_offset=None):
     return processed_date
         
 
-def process_only_time_from_str(date):
+def process_only_time_from_str(date): 
     "Process and return only the time stamp from a given string"
     #Typical date string: 2019-07-29T15:30:00+05:30
     timestamp = datetime.datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+05:30')

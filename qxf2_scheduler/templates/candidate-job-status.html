@@ -44,7 +44,6 @@
                             <label class="col-md-8" for="jobApplied">{{result.job_applied}}</label>
                         </div>
                         <br>
-<<<<<<< HEAD
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Interviewer details:">Interviewer Email:</label>
                             {% if result.interviewer_email_id == ''%}
@@ -54,10 +53,13 @@
                             {% endif %}
                         </div>
                         <br>
-                        {% if result.candidate_status == 'Waiting on qxf2'%}
-=======
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Date Applied:">Date Applied:</label>
+                            <label class="col-md-8" for="dateApplied">{{result.date_applied}}</label>
+                        </div>
+                        <br>
                         {% if result.candidate_status == 'Waiting on Qxf2'%}
->>>>>>> 6757af37c236c49fdce43eb5b16450bf3a0d9e03
+
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Action:">Action:</label>
                             <input class="btn btn-info" type="button" value="Thumbs up" id="sendEmail"

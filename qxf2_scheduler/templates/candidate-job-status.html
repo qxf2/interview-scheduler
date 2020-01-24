@@ -55,6 +55,15 @@
                             <label class="col-md-8" for="jobApplied">{{result.job_applied}}</label>
                         </div>
                         <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Interviewer details:">Interviewer Email:</label>
+                            {% if result.interviewer_email_id == ''%}
+                            <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
+                            {% else %}
+                            <label class="col-md-8" for="interviewerDetails">{{result.interviewer_email_id}}</label>
+                            {% endif %}
+                        </div>
+                        <br>
                         {% if result.candidate_status == 'Waiting on qxf2'%}
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Action:">Action:</label>
@@ -79,7 +88,7 @@
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="interviewScheduled">Interview Scheduled</label>
                         </div>
-                        {% elif result.candidate_status == 'Waiting on candidate' %}
+                        {% elif result.candidate_status == 'Waiting on Candidate' %}
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Action">Action:</label>
                             <label class="col-md-8" for="action">No action needed from Qxf2</label>

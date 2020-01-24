@@ -70,6 +70,7 @@ class Jobcandidate(db.Model):
     interview_start_time = db.Column(db.String)
     interview_end_time = db.Column(db.String)
     interview_date = db.Column(db.String)
+    interviewer_email = db.Column(db.String)
     candidate_status = db.Column(db.String)
 
     def __repr__(self):

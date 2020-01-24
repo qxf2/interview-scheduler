@@ -63,13 +63,14 @@ def scehdule_and_confirm():
         job_id = session['candidate_info']['job_id']
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email,candidate_email, slot)
+        
         date_object = datetime.strptime(date, '%m/%d/%Y').date()
         date = datetime.strftime(date_object, '%B %d, %Y')
         value = {'schedule_event': schedule_event, 
         'date': date,
         'slot' : slot}
-        value = json.dumps(value)
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled','interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date})
+        value = json.dumps(value)        
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled','interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':schedule_event[3]['interviewer_email']})
         db.session.commit()        
         return redirect(url_for('confirm', value=value))
     return render_template("get-schedule.html")

@@ -108,5 +108,5 @@ def get_round_description():
     round_details = ast.literal_eval(request.form.get("round_name"))
     data={'round_id':round_details[0],'round_name':round_details[1]}
     round_description = db.session.query(Rounds).filter(Rounds.round_id==data['round_id']).scalar()
-    round_descriptions = {'round_description':round_description.round_description,'round_id':round_details[0],'round_name':round_details[1]}
+    round_descriptions = {'round_description':round_description.round_description,'round_id':round_details[0],'round_name':round_details[1],'round_time':round_description.round_time}
     return jsonify(round_descriptions)

@@ -26,7 +26,6 @@ from qxf2_scheduler.models import Jobcandidate,Updatetable
 
 def check_with_current_time(end_time):
     "Compare the interview end time with current time"
-    print(end_time,file=sys.stderr)
     parsed_end_time = datetime.datetime.strptime(end_time,'%Y-%m-%dT%H:%M:%S+05:30')
     if parsed_end_time <= datetime.datetime.now():
         return True
@@ -147,13 +146,26 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
 
 def get_modified_free_slot_start(free_slot_start,marker):
     "Modifiying the free slot start to 00 or 30"
-    if free_slot_start[-2:]=='00':
-        modified_free_slot_start = free_slot_start
+    """if free_slot_start[-2:]=='00':
+        print("I am inside 00")
+        modified_free_slot_start = free_slot_start"""
     if marker == '60' or marker == '90':
         free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
         modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
-        modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
-    else:
+        modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)    
+    if marker == '45':
+        if free_slot_start[-2:]=='00':
+            print("I am inside 00")
+            modified_free_slot_start = free_slot_start
+        elif free_slot_start[-2:] <= '30' and free_slot_start[-2] != '00':            
+            modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '30')
+        elif free_slot_start[-2:] > '30'or free_slot_start[-2:] < '45':
+            modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], marker)
+        else:
+            free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
+            modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
+            modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
+    if marker == '30':
         if free_slot_start[-2:] <= marker:
             modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], marker)
         elif free_slot_start[-2:] > marker:
@@ -167,8 +179,14 @@ def get_modified_free_slot_start(free_slot_start,marker):
 def get_modified_free_slot_end(free_slot_end,marker):
     "Modifiying the free slot start to 00 or 30"
     if free_slot_end[-2:]=='00' or free_slot_end[-2:]==marker :
-        modified_free_slot_end = free_slot_end                    
-
+        modified_free_slot_end = free_slot_end 
+    if marker == '45':
+        if free_slot_end[-2:] < '30' and free_slot_end[-2] != '00':            
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
+        elif free_slot_end[-2:] >= '30'or free_slot_end[-2:] < '45':
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], 30)
+        elif free_slot_end[-2:] > marker:
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], marker)
     elif free_slot_end[-2:] < marker:                    
         modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
         
@@ -190,7 +208,7 @@ def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_betw
         chunk_slot_list.append(modified_free_slot_start)
         chunk_slot_list.append(modified_free_slot_end)
         chunk_time_interval.append({'start':modified_free_slot_start,'end':modified_free_slot_end,'email':interviewer_email_id})         
-        
+        print("I am inside if",chunk_time_interval)
     else:          
         while result_flag:                        
             chunk_slots = convert_string_into_time(chunk_slots)
@@ -202,18 +220,22 @@ def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_betw
                 chunk_slot_start = chunk_slot_list[idx]
                 chunk_slot_end = chunk_slot_list[idx+1]                
                 chunk_time_interval.append({'start':chunk_slot_start,'end':chunk_slot_end,'email':interviewer_email_id})
+                print("I am unside else",chunk_time_interval)
             else:                                              
                 chunk_slot_list.append(chunk_slots)                          
                 chunk_slot_start = chunk_slot_list[idx]
                 chunk_slot_end = chunk_slot_list[idx+1]                
                 chunk_time_interval.append({'start':chunk_slot_start,'end':chunk_slot_end,'email':interviewer_email_id})
+                print("I am inside onemore else",chunk_time_interval)
             idx = idx+1 
             modified_free_slot_start = convert_string_into_time(modified_free_slot_start)                       
             modified_free_slot_start = modified_free_slot_start + timedelta(minutes=int(CHUNK_DURATION))
             modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
-            
+            diff_between_slot_start_and_end = convert_string_into_time(modified_free_slot_end) - convert_string_into_time(modified_free_slot_start)
+            print(modified_free_slot_start,modified_free_slot_end,diff_between_slot_start_and_end)
             #While loop should stop if both time become equal                                 
-            if modified_free_slot_end == modified_free_slot_start or modified_free_slot_end <= modified_free_slot_start:                    
+            if modified_free_slot_end == modified_free_slot_start or modified_free_slot_end <= modified_free_slot_start or diff_between_slot_start_and_end < timedelta(minutes=int(CHUNK_DURATION)): 
+                print("I am coming inside result flag")                   
                 result_flag = False
 
     return chunk_time_interval
@@ -240,7 +262,8 @@ def get_free_slots_in_chunks(free_slots,CHUNK_DURATION):
     divided_chunk_slots = []
     if free_slots == None:
         print("There are no more free slots available for this user")    
-    else: 
+    else:
+        print(free_slots,'i am free slots') 
         for free_slot in  free_slots:
             #Initializing the free slot start            
             free_slot_start = free_slot['start']
@@ -251,9 +274,11 @@ def get_free_slots_in_chunks(free_slots,CHUNK_DURATION):
             
             #Find the difference between start and end slot
             diff_between_slots = convert_string_into_time(free_slot_end) - convert_string_into_time(free_slot_start)
-            
+            print(diff_between_slots,"I am difference")
+            print(CHUNK_DURATION,"I am cheunk duration")
             if diff_between_slots >= timedelta(minutes=int(CHUNK_DURATION)):
                 modified_free_slot_start = get_modified_free_slot_start(free_slot_start,marker=CHUNK_DURATION)
+                print(modified_free_slot_start,'I am modified free slot start')
                 modified_free_slot_end = get_modified_free_slot_end(free_slot_end,marker=CHUNK_DURATION)
                 diff_between_slots_after_modified =  convert_string_into_time(modified_free_slot_end) - convert_string_into_time(modified_free_slot_start)
                 divided_chunk_slots += get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_between_slots_after_modified,interviewer_email_id,CHUNK_DURATION) 

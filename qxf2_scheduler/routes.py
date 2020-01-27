@@ -21,23 +21,6 @@ DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
 
-def fetch_email_list():
-    "Fetch the email id of the interviewers which is mathcing with candidate job"
-    #Get the job id of the candidate
-    candidate_job_id = session['candidate_info']['job_id']
-    #Fetch the matching interviewers id of the job from the jobcandidate table
-    interviewers_id_list =  db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id == candidate_job_id).all()
-    #interviewers_email_object_list = []
-    interviewers_list = []
-    #Fetch the interviewers email matching with interviewers id list
-    for each_interviewer_id in interviewers_id_list:
-        interviewers_email_object = db.session.query(Interviewers).filter(Interviewers.interviewer_id==each_interviewer_id.interviewer_id).values(Interviewers.interviewer_email)
-        for each_interviewer_email in interviewers_email_object:
-            interviewers_list.append(each_interviewer_email.interviewer_email)
-    
-    return interviewers_list
-
-
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
     "Dummy page to let you see a schedule"
@@ -47,16 +30,13 @@ def date_picker():
         date = request.form.get('date')
         round_duration = request.form.get('roundtime')
         chunk_duration = round_duration.split(' ')[0]
-        #Fetch the interviewers email only matching with the candidate jobs
-        fetch_interviewer_email_for_job = fetch_email_list()
-        for each_interviewer_email in fetch_interviewer_email_for_job:
-            interviewer_id = db.session.query(Interviewers).filter(Interviewers.interviewer_email==each_interviewer_email).first()
-            new_slot = Interviewers.query.join(Interviewertimeslots, interviewer_id.interviewer_id == Interviewertimeslots.interviewer_id).values(
+        new_slot = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).values(
             Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
         interviewer_work_time_slots = []
         for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
             interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,
                                                 'interviewer_end_time': interviewer_end_time})
+        print(interviewer_work_time_slots,file=sys.stderr)
         free_slots = my_scheduler.get_free_slots_for_date(
             date, interviewer_work_time_slots)
         free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(

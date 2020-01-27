@@ -149,10 +149,21 @@ def get_modified_free_slot_start(free_slot_start,marker):
     """if free_slot_start[-2:]=='00':
         print("I am inside 00")
         modified_free_slot_start = free_slot_start"""
-    if marker == '60' or marker == '90':
+    if marker == '60':
+        if free_slot_start[-2:]=='00' or free_slot_start[-2:]=='30' or free_slot_start[-2:]=='45':
+            modified_free_slot_start = free_slot_start
+        elif free_slot_start[-2:] <= '30' and free_slot_start[-2] != '00':            
+            modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '30')
+        else:
+            free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
+            modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
+            modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
+
+    if marker == '90':
         free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
         modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
-        modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)    
+        modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start) 
+
     if marker == '45':
         if free_slot_start[-2:]=='00':
             print("I am inside 00")
@@ -166,7 +177,10 @@ def get_modified_free_slot_start(free_slot_start,marker):
             modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
             modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
     if marker == '30':
-        if free_slot_start[-2:] <= marker:
+        if free_slot_start[-2:]=='00':
+            print("I am inside 00")
+            modified_free_slot_start = free_slot_start
+        elif free_slot_start[-2:] <= marker:
             modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], marker)
         elif free_slot_start[-2:] > marker:
             free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
@@ -178,20 +192,33 @@ def get_modified_free_slot_start(free_slot_start,marker):
 
 def get_modified_free_slot_end(free_slot_end,marker):
     "Modifiying the free slot start to 00 or 30"
-    if free_slot_end[-2:]=='00' or free_slot_end[-2:]==marker :
-        modified_free_slot_end = free_slot_end 
+    """if free_slot_end[-2:]=='00' or free_slot_end[-2:]==marker :
+        modified_free_slot_end = free_slot_end """
     if marker == '45':
-        if free_slot_end[-2:] < '30' and free_slot_end[-2] != '00':            
+        if free_slot_end[-2:]=='00' or free_slot_end[-2:]==marker :
+            modified_free_slot_end = free_slot_end
+        elif free_slot_end[-2:] < '30' and free_slot_end[-2] != '00':            
             modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
         elif free_slot_end[-2:] >= '30'or free_slot_end[-2:] < '45':
             modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], 30)
         elif free_slot_end[-2:] > marker:
             modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], marker)
-    elif free_slot_end[-2:] < marker:                    
+
+    if marker == '60':
+        if free_slot_end[-2:]=='00' or free_slot_end[-2:]=='30' or free_slot_end[-2]=='45':
+            modified_free_slot_end = free_slot_end
+        elif free_slot_end[-2:] <'30' and free_slot_end[-2] != '00':            
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
+        elif free_slot_end[-2:] > '30':
+            free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
+            modified_free_slot_end = convert_string_into_time(free_slot_end) + timedelta(hours=1)
+            modified_free_slot_end = get_datetime_in_time_format(modified_free_slot_end)    
+        
+    """elif free_slot_end[-2:] < marker:                    
         modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
         
     elif free_slot_end[-2:] > marker:
-        modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], marker)
+        modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], marker)"""
 
     return modified_free_slot_end
 

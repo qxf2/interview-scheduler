@@ -36,7 +36,6 @@ def date_picker():
         for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
             interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,
                                                 'interviewer_end_time': interviewer_end_time})
-        print(interviewer_work_time_slots,file=sys.stderr)
         free_slots = my_scheduler.get_free_slots_for_date(
             date, interviewer_work_time_slots)
         free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(
@@ -77,8 +76,9 @@ def scehdule_and_confirm():
         value = {'schedule_event': schedule_event, 
         'date': date,
         'slot' : slot}
-        value = json.dumps(value)        
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled','interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':schedule_event[3]['interviewer_email']})
+        value = json.dumps(value)
+        candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[2]).scalar()        
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':schedule_event[3]['interviewer_email']})
         db.session.commit()        
         return redirect(url_for('confirm', value=value))
     return render_template("get-schedule.html")

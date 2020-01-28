@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 import qxf2_scheduler.db_config as conf
+import qxf2_scheduler.email_config as email_conf
 import os
 
 app = Flask(__name__)
@@ -17,9 +18,10 @@ app.config.update(
 	MAIL_SERVER='smtp.gmail.com',
 	MAIL_PORT=465,
 	MAIL_USE_SSL=True,
-	MAIL_USERNAME = 'test@qxf2.com',
-	MAIL_PASSWORD = 'Qxf2Services@12'
+	MAIL_USERNAME = email_conf.MAIL_USERNAME,
+	MAIL_PASSWORD = email_conf.MAIL_PASSWORD
 	)
+
 
 from qxf2_scheduler import routes
 from qxf2_scheduler import candidates

@@ -93,6 +93,16 @@
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Waiting on Candidate</label>
                         </div>
+                        {% elif result.candidate_status == 'Waiting for new opening' %}
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Action">Action:</label>
+                            <label class="col-md-8" for="action">No action needed from Qxf2</label>
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-8" for="inviteSent">Waiting for new opening</label>
+                        </div>
                         {% endif %}
             </div>
 

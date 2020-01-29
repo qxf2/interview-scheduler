@@ -530,7 +530,8 @@ def show_welcome(candidate_id, job_id, url):
     data = {'job_id': job_id}
     s = Serializer('WEBSITE_SECRET_KEY')
     try:
-        url = s.loads(url)
+        url = s.loads(url)    
+        #Check the candidate status if it's interview scheduled
         get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status)
         for candidate_status in get_candidate_status:
             candidate_status = candidate_status.candidate_status

@@ -198,8 +198,7 @@ def send_invite(candidate_id, job_id):
         candidate_name = request.form.get("candidatename")
         job_id = request.form.get("jobid")
         generated_url = request.form.get("generatedurl")
-        round_description = request.form.get("rounddescription") 
-        print("generateurl",generated_url,file=sys.stderr)      
+        round_description = request.form.get("rounddescription")       
         generated_url = base_url + generated_url +'/welcome'
         try:
             msg = Message("Schedule an Interview with Qxf2 Services!",

@@ -11,6 +11,7 @@ import ast
 import sys
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
+from datetime import datetime
 
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate
@@ -64,9 +65,11 @@ def scehdule_and_confirm():
         job_id = session['candidate_info']['job_id']
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email,candidate_email, slot)
+        date_object = datetime.strptime(date, '%m/%d/%Y').date()
+        date = datetime.strftime(date_object, '%B %d, %Y')
         value = {'schedule_event': schedule_event, 
-        'date': date}
-        print(value,schedule_event[0]['start']['dateTime'],type(schedule_event[0]['start']['dateTime']),file=sys.stderr)
+        'date': date,
+        'slot' : slot}
         value = json.dumps(value)
         candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':'Interview Scheduled','interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date})
         db.session.commit()        

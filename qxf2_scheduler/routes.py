@@ -554,9 +554,9 @@ def show_welcome(candidate_id, job_id, url):
                 interview_start_time = parse_interview_time(interview_detail.interview_start_time)
                 interview_end_time = parse_interview_time(interview_detail.interview_end_time)
                 interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date}
-    except Exception as e:
+    except:
         return render_template("expiry.html")
-            
+
     return render_template("welcome.html",result=data,interview_result=interview_data)
 
     

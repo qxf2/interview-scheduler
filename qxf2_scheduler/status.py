@@ -32,3 +32,44 @@ def delete_status(status_id):
         db.session.commit() 
                 
     return jsonify(data)
+
+
+def check_status_exists(status_name):
+    "Check the status already exists in the database"
+    fetch_existing_status_name = Candidatestatus.query.all()
+    status_list = []
+    # Fetch the status name
+    for each_status in fetch_existing_status_name:
+        status_list.append(each_status.status_name.lower())
+
+    # Compare the job with database job list
+    if status_name.lower() in status_list:
+        check_status_exists = True
+    else:
+        check_status_exists = False
+
+    return check_status_exists
+
+
+
+@app.route("/status/add",methods=["GET","POST"])
+def add_status():
+    "Add a status through UI"
+    if request.method == 'GET':
+        return render_template("add-status.html")
+    if request.method == 'POST':
+        data ={}
+        status_name = request.form.get("statusname")
+        data = {'status_name':status_name}
+        status_exists = check_status_exists(status_name)
+        if status_exists == True:
+            error = "Failed"            
+        else:
+            add_status_object = Candidatestatus(status_name=status_name)
+            db.session.add(add_status_object)
+            db.session.commit()
+            error = "Success"
+
+        api_response = {'data':data,'error':error}
+
+        return jsonify(api_response)

@@ -21,6 +21,21 @@
 </head>
 
 <body>
+    <div class="modal modal-megamenu" id="myModal">
+        <div class="modal-dialog modal-megamenu">
+            <div class="modal-content modal-megamenu">
+                <div class="modal-header modal-megamenu">
+                    <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+                </div>
+                <div class="modal-body modal-megamenu">
+                    <p>Success:</p>
+                </div>
+                <div class="modal-footer modal-megamenu">
+                    <button type="button" id="close-button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container col-md-offset-1">
         <h2 class="grey_text text-center">Status List</h2>
         <div>
@@ -48,14 +63,69 @@
                         <td>{{each_status.status_name}}</td>
                         <td>
                             <input class="btn btn-info" type="button" id="editStatus" value="Edit">
-                            <input class="btn btn-info" type="button" id="deleteStatus" value="Delete">
+                            <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
+                                data-statusname="{{ each_status.status_name }}"
+                                data-statusid="{{ each_status.status_id }}" data-toggle="modal">Delete</button>
                         </td>
                     </tr>
-                   
+
                     {% endfor %}
                     {% endif %}
                 </tbody>
             </table>
+            <div class="modal modal-megamenu" id="confirmdeletemodal">
+                <div class="modal-dialog modal-megamenu">
+                    <div class="modal-content modal-megamenu">
+                        <div class="modal-header modal-megamenu">
+                            <h4 class="modal-title">Remove status?</h4>
+                        </div>
+                        <div class="modal-body modal-megamenu">
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="modal-footer modal-megamenu">
+                            <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                            <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
+                                type="submit">Remove</button>
+                        </div>
+                    </div><!-- end modal-content -->
+                </div><!-- end modal-dialog -->
+            </div>
+        </div>
+    </div>
+    <script>
+        // Remove button event trigger
+        $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
+            var triggeringElement = $(e.relatedTarget);
+            console.log("Triggering element is: ", triggeringElement.data('href'));
+            $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
+            console.log("This is in confirm delete" + $(e.relatedTarget).data('href'));
+            var modal = $(this)
+            var statusId = $(e.relatedTarget).data('statusid');
+            modal.find('.modal-body').text('Are you sure you wish to delete this ' + triggeringElement.data("statusname") + '  status? ')
+            $("#remove-button").on('click', function () {
+                var jobid = triggeringElement.data('href');
+                console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
+                $.ajax({
+                    type: 'POST',
+                    url: '/status/' + statusId + '/delete',
+                    data: {
+                        'statusid': $(e.relatedTarget).data('statusid'),
+                        'statusname': $(e.relatedTarget).data('statusname')
+                    },
+                    success: function (data) {
+                        var msg = "The  deleted status is " + data.status_name;
+                        console.log(msg, data);
+                        $('#myModal').modal('show');
+                        $('#myModal .modal-body p').html(msg);
+                    }
+                })
+            })
+            $("#close-button").on('click', function () {
+                location.reload();
+            })
+        })
+
+    </script>
 
 </body>
 

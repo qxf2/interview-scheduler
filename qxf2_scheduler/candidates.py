@@ -18,7 +18,7 @@ base_url = 'http://localhost:6464/'
 
 def url_gen(candidate_id, job_id):
     "generate random url for candidate"
-    s = Serializer('WEBSITE_SECRET_KEY', 60*5) # 60 secs by 30 mins
+    s = Serializer('WEBSITE_SECRET_KEY', 60*3600) # 60 secs by 30 mins
     urllist = s.dumps({'candidate_id':candidate_id,'job_id': job_id}).decode('utf-8')
     #KEY_LEN = random.randint(8,16)
     #urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]

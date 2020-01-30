@@ -39,6 +39,8 @@
                 </div>
             </form>
         </div>
+        {{result['round_time']}}
+        <input type="hidden" id="roundDuration" value="{{result['round_time']}}">
         <div class="row top-space-30" id="resultDiv">
         </div>
         <div class="row top-space-30" id="chosenSlot"></div>
@@ -74,6 +76,8 @@
                             
                 var date = $('#datepicker').val();
                 var elements = [];
+                var roundTime = document.getElementById("roundDuration").value;
+                console.log(roundTime);
                 $("#resultDiv").empty();
                 document.getElementById('loader').style.visibility = 'visible';
                     if (date == "") {
@@ -86,7 +90,8 @@
                         type: 'POST',
                         url: '/get-schedule',
                         data: {                            
-                            'date': date
+                            'date': date,
+                            'roundtime':roundTime
                         }
                     };
                     $.ajax(callDetails).done(function (result) {

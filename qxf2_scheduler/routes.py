@@ -522,12 +522,6 @@ def parse_interview_time(interview_time):
     parsed_interview_time = datetime.datetime.strptime(interview_time,'%Y-%m-%dT%H:%M:%S+05:30')
     return parsed_interview_time.strftime('%H') + ':' + parsed_interview_time.strftime('%M')
 
-@app.route("/<candidateId>/<jobId>/<url>/welcome")
-def show_welcome(candidateId, jobId, url):
-    "Opens a welcome page for candidates"
-    data = {'candidate_id':candidateId,'job_id': jobId,'url':url}
-
-    return render_template("welcome.html", result=data)    
 
 @app.route("/<candidate_id>/<job_id>/<url>/welcome")
 def show_welcome(candidate_id, job_id, url):

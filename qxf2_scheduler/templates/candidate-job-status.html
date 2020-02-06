@@ -58,7 +58,7 @@
                             <label class="col-md-8" for="dateApplied">{{result.date_applied}}</label>
                         </div>
                         <br>
-                        {% if result.candidate_status == 'Waiting on Qxf2'%}
+                        {% if result.candidate_status == 'Waiting on Qxf2' %}
 
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Action:">Action:</label>
@@ -67,6 +67,8 @@
                                 data-candidate-email="{{result.candidate_email}}"
                                 data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}">
                             <input type="button" value="Thumbs down" id="thumbsDown">
+                            <br> 
+                            
                         </div>
                         <br>
                         <div class="col-md-4 form-display">
@@ -104,12 +106,15 @@
                             <label class="col-md-8" for="inviteSent">Waiting for new opening</label>
                         </div>
                         {% endif %}
+                        <div>
+                            {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}                           
+                            <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()" value="No opening">
+                           {% endif %}
+                        </div>
             </div>
 
             {% endif %}
-            <div id="loader" visibility="visible">
-                <input type="button" id="hideButton" onclick="noOpening()" value="No opening">
-            </div>
+            
             </fieldset>
             </form>
         </div>

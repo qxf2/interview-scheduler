@@ -69,7 +69,9 @@
                 var candidate_email = $("#candidate-email").val();
                 validValue &= candidate_name != "";
                 validValue &= candidate_email != "";
-                var email_valid = (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(candidate_email);
+                //var email_valid = (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(candidate_email);
+                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                var email_valid = re.test(candidate_email)
                 validValue &= email_valid;
                 //Printing appropriate message
                 $('#err-name').remove();

@@ -63,7 +63,7 @@
 
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
-                <button class="btn btn-info" type="submit">Submit</button>
+                <button class="btn btn-info" id="addSubmit" type="submit">Submit</button>
                 <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
             </div>
         </form>
@@ -97,6 +97,7 @@
                             var dropdownValue = document.getElementById("select1");
                             var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
                             console.log(candidateEmail, candidateName, jobApplied);
+                            $("#addSubmit").attr("disabled",true);
                             $.ajax({
                                 type: 'POST',
                                 url: '/candidate/add',

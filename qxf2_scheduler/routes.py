@@ -30,19 +30,35 @@ def date_picker():
         date = request.form.get('date')
         round_duration = request.form.get('roundtime')
         chunk_duration = round_duration.split(' ')[0]
-        new_slot = Interviewers.query.join(Interviewertimeslots, Interviewers.interviewer_id == Interviewertimeslots.interviewer_id).values(
-            Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+        job_id = session['candidate_info']['job_id']
+        #Fetch the interviewers for the candidate job
+        job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
+        interviewer_id = []
+        for each_interviewer_id in job_interviewer_id:
+            interviewer_id.append(each_interviewer_id.interviewer_id)
+        
+        interviewer_email_generator_list = []
+        #Fetch the interviewer emails for the candidate job
+        for each_interviewer in interviewer_id:
+            interviewer_email = db.session.query(Interviewers).filter(Interviewers.interviewer_id==each_interviewer).values(Interviewers.interviewer_email)
+            for each_email in interviewer_email:
+                interviewer_email_generator_list.append(each_email.interviewer_email)
         interviewer_work_time_slots = []
-        for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
-            interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,
+        for each_id in interviewer_id:
+            new_slot = db.session.query(Interviewers,Interviewertimeslots).filter(each_id==Interviewers.interviewer_id,each_id==Interviewertimeslots.interviewer_id).values(
+            Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+           
+            for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
+                interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,
                                                 'interviewer_end_time': interviewer_end_time})
         free_slots = my_scheduler.get_free_slots_for_date(
             date, interviewer_work_time_slots)
         free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(
             free_slots,chunk_duration)
+        print(free_slots_in_chunks)
         api_response = {
             'free_slots_in_chunks': free_slots_in_chunks, 'date': date}
-        
+            
         return jsonify(api_response)
 
 

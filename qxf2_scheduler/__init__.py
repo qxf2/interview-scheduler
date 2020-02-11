@@ -4,8 +4,7 @@ from flask_mail import Mail, Message
 import qxf2_scheduler.db_config as conf
 import qxf2_scheduler.email_config as email_conf
 import os
-
-#from flask_seeder import FlaskSeeder
+from flask_seeder import FlaskSeeder
 
 
 app = Flask(__name__)
@@ -14,8 +13,8 @@ app.secret_key = "qxf2-database"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///%s"%db_file
 db = SQLAlchemy(app)
-#seeder = FlaskSeeder()
-#seeder.init_app(app, db)
+seeder = FlaskSeeder()
+seeder.init_app(app, db)
 
 
 app.config.update(

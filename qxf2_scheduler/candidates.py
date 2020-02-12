@@ -12,7 +12,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus
+from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus,Candidateinterviewer
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
@@ -55,8 +55,12 @@ def delete_candidate(candidate_id):
         db.session.commit() 
         #Delete candidate from candidateround table
         round_candidate_to_delete = Candidateround.query.filter(Candidateround.candidate_id==candidate_id_to_delete, Candidateround.job_id==job_id_to_delete).first()
-        db.session.delete(round_candidate_to_delete)
-        db.session.commit()     
+        db.session.delete(round_candidate_to_delete)        
+        db.session.commit()   
+        #Delete candidate from Candidateinterviewer table
+        interviewer_candidate_to_delete = Candidateinterviewer.query.filter(Candidateinterviewer.candidate_id==candidate_id_to_delete).first()
+        db.session.delete(interviewer_candidate_to_delete)
+        db.session.commit()  
         
     return jsonify(data)
 
@@ -157,12 +161,10 @@ def show_candidate_job(job_id,candidate_id):
     for each_data in candidate_job_data:
         data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'interviewer_email_id':each_data.interviewer_email,'date_applied':each_data.date_applied}
         candidate_status_id = each_data.candidate_status
-        print("I am status id",candidate_status_id)
     #fetch the candidate status name for the status id
     candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
     data['candidate_status']=candidate_status_name.status_name
     pending_round_ids = get_pending_round_id(job_id,candidate_id)
-    print("data",data)
     #Get the pending round id details from the table
     for each_round_id in pending_round_ids:
         round_detail = db.session.query(Rounds).filter(Rounds.round_id==each_round_id).scalar()

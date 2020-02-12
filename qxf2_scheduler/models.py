@@ -109,7 +109,19 @@ class Candidatestatus(db.Model):
     status_id = db.Column(db.Integer,primary_key=True)
     status_name = db.Column(db.String)
 
+
 class Updatetable(db.Model):
     "Store the last updated date of Jobcandidate"
     table_id = db.Column(db.Integer,primary_key=True)
     last_updated_date = db.Column(db.Integer)
+
+
+class Candidateinterviewer(db.Model):
+    "Combine candidate id ,interviewer id and round id,job id"
+    combo_id = db.Column(db.Integer,primary_key=True)
+    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
+    candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
+    interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
+
+    def __repr__(self):
+        return f"Candidateinterviewer('{self.job_id}','{self.candidate_id}','{self.interviewer_id}')"

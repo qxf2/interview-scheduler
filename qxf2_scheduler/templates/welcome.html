@@ -3,7 +3,7 @@
 
 <head>
     <title>
-    Welcome
+        Welcome
     </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -17,36 +17,37 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
-    <body>
+
+<body>
     <div class="bs-example">
         {% if 'job_id' in result %}
         <h3>Welcome to Qxf2</h3>
         <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
-    <form action="/{{ result.job_id }}/valid" method="POST">
-        <div class="form-group">
-            <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your name</label>
-            <div class="col-md-3">
-                <input id="candidate-name" name="candidate-name" type="text" placeholder="John" class="form-control input-md"
-                    required>
+        <form action="/{{ result.job_id }}/{{result.url}}/{{result.candidate_id}}/valid" method="POST">
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your name</label>
+                <div class="col-md-3">
+                    <input id="candidate-name" name="candidate-name" type="text" placeholder="John"
+                        class="form-control input-md" required>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your email</label>
-            <div class="col-md-3">
-                <input id="candidate-email" name="candidate-email" type="email" placeholder="johndoe@example.com"
-                    class="form-control input-md" required>
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your email</label>
+                <div class="col-md-3">
+                    <input id="candidate-email" name="candidate-email" type="email" placeholder="johndoe@example.com"
+                        class="form-control input-md" required>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="save"></label>
-            <div class="col-md-8">
-                <input class="btn btn-success show-modal" type='submit' id='submit' value='Go for schedule'>
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="save"></label>
+                <div class="col-md-8">
+                    <input class="btn btn-success show-modal" type='submit' id='submit' value='Go for schedule'>
+                </div>
             </div>
-        </div>
         </form>
         {% else %}
         <div class="container col-md-offset-1">
-            <h3 align="center">Welcome to Qxf2</h3> 
+            <h3 align="center">Welcome to Qxf2</h3>
             <label class="col-md-4 control-label" for="candidatename">Candidate Name:</label>
             <label class="col-md-4">{{result.candidate_name}}</label>
             <label class="col-md-4 control-label" for="candidateemail">Candidate Email:</label>
@@ -60,63 +61,64 @@
             <p>Hi {{result.candidate_name}}, Your interview has been scheduled already.</p>
         </div>
         {% endif %}
-        </div>
-        <script>
-            $("#submit").click(function ()
-            {
-                var validValue = true;
-                var candidate_name = $("#candidate-name").val();
-                var candidate_email = $("#candidate-email").val();
-                validValue &= candidate_name != "";
-                validValue &= candidate_email != "";
-                //var email_valid = (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(candidate_email);
-                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                var email_valid = re.test(candidate_email)
-                validValue &= email_valid;
-                //Printing appropriate message
-                $('#err-name').remove();
-                $('#err-email').remove();
-                if (candidate_name == ""){
+    </div>
+    <script>
+        $("#submit").click(function () {
+            var validValue = true;
+            var candidate_name = $("#candidate-name").val();
+            var candidate_email = $("#candidate-email").val();
+            validValue &= candidate_name != "";
+            validValue &= candidate_email != "";
+            //var email_valid = (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(candidate_email);
+            var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            var email_valid = re.test(candidate_email)
+            validValue &= email_valid;
+            //Printing appropriate message
+            $('#err-name').remove();
+            $('#err-email').remove();
+            if (candidate_name == "") {
                 $('#candidate-name').after('<span id="err-name" class="error" style="color:red">Name can\'t be empty</span>');
-                }
-                if (candidate_email == ""){
+            }
+            if (candidate_email == "") {
                 $('#candidate-email').after('<span id="err-email" class="error" style="color:red">Email can\'t be empty</span>');
-                }
-                if (email_valid == false && candidate_email != ""){
-                    $('#candidate-email').after('<span id="err-email" class="error" style="color:red">Enter a valid email</span>');
-                }
-                var jobId = "{{ result.job_id }}";
-                var candidateId = "{{ result.candidate_id }}"
-                var url = "{{ result.url }}"
-                //validValue = true;
-                //Valdidation for name and email field
-                if(validValue == true){
-                    $.ajax({
-                        type: 'POST',
-                        url: "/" + jobId + "/valid",
-                        data: {
+            }
+            if (email_valid == false && candidate_email != "") {
+                $('#candidate-email').after('<span id="err-email" class="error" style="color:red">Enter a valid email</span>');
+            }
+            var jobId = "{{ result.job_id }}";
+            var candidateId = "{{ result.candidate_id }}"
+            var url = "{{ result.url }}"
+            //validValue = true;
+            //Valdidation for name and email field
+            if (validValue == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: "/" + jobId + "/" + url + "/" + candidateId + "/valid",
+                    data: {
                         'candidate-name': candidate_name,
-                        'candidate-email': candidate_email,
-                        'jobId': jobId
+                        'candidate-email': candidate_email
+
                     },
-                    error:function(errorMsg)
-                    {
-                        if(errorMsg.responseJSON.error.error=="NameError"){
-                        alert("Name not found, please enter the same name that you used when applied for this role");
-                        document.location.href="/"+candidateId+"/"+jobId+"/"+url+"/welcome";
+                    success: function (result) {
+                        console.log(result);
+                        if (result.error == "NameError") {
+                            alert("Name not found, please enter the same name that you used when applied for this role");
+                            document.location.href = "/" + result.return_data['candidate_id'] + "/" + result.return_data['job_id'] + "/" + result.return_data['url'] + "/welcome";
                         }
-                        else if(errorMsg.responseJSON.error.error=="EmailError"){
-                        alert("Email not found, please enter the same email that you used when applied for this role"); 
-                        document.location.href="/"+candidateId+"/"+jobId+"/"+url+"/welcome";
+                        if (result.error == "EmailError") {
+                            alert("Email not found, please enter the same email that you used when applied for this role");
+                            window.location.href = "/" + result.return_data['candidate_id'] + "/" + result.return_data['job_id'] + "/" + result.return_data['url'] + "/welcome";
                         }
-                        else{
-                        alert("Something is wrong, try reloading the page or contact admin"); 
-                        document.location.href="/"+candidateId+"/"+jobId+"/"+url+"/welcome";
+                        else {
+                            alert("Something is wrong, try reloading the page or contact admin");
+                            window.location.href = "/" + result.return_data['candidate_id'] + "/" + result.return_data['job_id'] + "/" + result.return_data['url'] + "/welcome";
                         }
-                    }    
+                    }
                 })
             }
-            })
-        </script>
-        </body>
+            return false;
+        })
+    </script>
+</body>
+
 </html>

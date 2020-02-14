@@ -76,7 +76,7 @@
             <input type="hidden" id="jobId" value="{{job_id}}">
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
-                <button class="btn btn-info" type="submit">Add</button>
+                <button class="btn btn-info" id="addRound" type="submit">Add</button>
                 <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
             </div>
         </form>
@@ -105,7 +105,7 @@
                             var dropdownValue = document.getElementById("rtime");
                             var roundTime = dropdownValue.options[dropdownValue.selectedIndex].value;
                             var jobId = document.getElementById("jobId").value;
-
+                            $("#addRound").attr("disabled",true);
                             $.ajax({
                                 type: 'POST',
                                 url: '/jobs/' + jobId + '/round/add',

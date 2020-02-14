@@ -44,7 +44,22 @@
                             <label class="col-md-8" for="jobApplied">{{result.job_applied}}</label>
                         </div>
                         <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Interviewer details:">Interviewer Email:</label>
+                            {% if result.interviewer_email_id == None%}
+                            <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
+                            {% else %}
+                            <label class="col-md-8" for="interviewerDetails">{{result.interviewer_email_id}}</label>
+                            {% endif %}
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Date Applied:">Date Applied:</label>
+                            <label class="col-md-8" for="dateApplied">{{result.date_applied}}</label>
+                        </div>
+                        <br>
                         {% if result.candidate_status == 'Waiting on Qxf2'%}
+
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Action:">Action:</label>
                             <input class="btn btn-info" type="button" value="Thumbs up" id="sendEmail"
@@ -78,10 +93,23 @@
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Waiting on Candidate</label>
                         </div>
+                        {% elif result.candidate_status == 'Waiting for new opening' %}
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Action">Action:</label>
+                            <label class="col-md-8" for="action">No action needed from Qxf2</label>
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-8" for="inviteSent">Waiting for new opening</label>
+                        </div>
                         {% endif %}
             </div>
 
             {% endif %}
+            <div class="container col-md-offset-1">
+                <input type="button" onclick="noOpening()" value="No opening">
+            </div>
             </fieldset>
             </form>
         </div>
@@ -132,11 +160,12 @@
                     'round_name': roundName
                 },
                 success: function (roundResults) {
+                    console.log(roundResults.round_time);
                     $("#rdesc").show();
                     $("#rdesc").text(roundResults.round_description);
                     $("#roundId").val(roundResults.round_id);
                     $("#roundName").val(roundResults.round_name);
-                    $("#roundTime").val(roundResults.round_time)
+                    $("#roundTime").val(roundResults.round_time);
 
                 }
 
@@ -182,7 +211,7 @@
             var roundDescription = document.getElementById("rdesc").value;
             var roundId = document.getElementById("roundId").value;
             var roundName = document.getElementById("roundName").value;
-            var roundTime = document.getElementById("rondTime").value;
+            var roundTime = document.getElementById("roundTime").value;
             $.ajax({
                 type: 'POST',
                 url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
@@ -193,9 +222,9 @@
                     'candidateemail': candidateEmail,
                     'jobid': jobId,
                     'rounddescription': roundDescription,
-                    'roundid':roundId,
-                    'roundname':roundName,
-                    'roundtime':roundTime
+                    'roundid': roundId,
+                    'roundname': roundName,
+                    'roundtime': roundTime
                 },
                 success: function (result) {
 
@@ -238,6 +267,38 @@
             $("#generatedUrl").val(generatedUrl);
             dialog.dialog("open");
         });
+    </script>
+    <script>
+        function noOpening() {
+            var candidateName = document.getElementById("candidateName").value;
+            var candidateEmail = document.getElementById("candidateEmail").value;
+            var candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            $.ajax({
+                type: 'POST',
+                url: "/noopening/email",
+                data: {
+                    'candidatename': candidateName,
+                    'candidateid': candidateId,
+                    'candidateemail': candidateEmail,
+                    'candidatejob': jobId
+                },
+                success: function (result) {
+                    if (result.error == "Success") {
+                        alert("The no opening email has been sent");
+                        document.location.href = "/candidates";
+
+                    }
+                    else {
+                        alert("The no opening email cannot be sent");
+                        document.location.href = "/candidates";
+                    }
+
+                }
+
+
+            })
+        }
     </script>
 
 </body>

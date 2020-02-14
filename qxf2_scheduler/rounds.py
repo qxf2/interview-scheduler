@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect, jsonify, request, R
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
-import json,ast,sys
+import json,ast,sys,os,datetime
 
 from qxf2_scheduler.models import Jobs, Rounds, Jobround
 
@@ -108,6 +108,5 @@ def get_round_description():
     round_details = ast.literal_eval(request.form.get("round_name"))
     data={'round_id':round_details[0],'round_name':round_details[1]}
     round_description = db.session.query(Rounds).filter(Rounds.round_id==data['round_id']).scalar()
-    round_descriptions = {'round_description':round_description.round_description,'round_id':round_details[0],'round_name':round_details[1],'round_time':round_details[2]}
-    print(round_descriptions,file=sys.stderr)
+    round_descriptions = {'round_description':round_description.round_description,'round_id':round_details[0],'round_name':round_details[1],'round_time':round_description.round_time}
     return jsonify(round_descriptions)

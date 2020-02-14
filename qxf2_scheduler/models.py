@@ -12,6 +12,7 @@ class Interviewers(db.Model):
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"
 
+
 class Interviewertimeslots(db.Model):
     "Adding the timing for interviewer" 
     time_id = db.Column(db.Integer,primary_key=True)   
@@ -21,6 +22,7 @@ class Interviewertimeslots(db.Model):
 
     def __repr__(self):
         return f"Interviewertimeslots('{self.interviewer_id}', '{self.interviewer_start_time}','{self.interviewer_end_time}','{self.time_id}')"
+
 
 class Jobs(db.Model):
     "Adding the Job page"
@@ -32,6 +34,7 @@ class Jobs(db.Model):
     def __repr__(self):
         return f"Jobs('{self.job_id}','{self.job_role}')"
 
+
 class Jobinterviewer(db.Model):
     "Combine Job id and Interviewer ID"
     combo_id = db.Column(db.Integer,primary_key=True,autoincrement=True)
@@ -41,6 +44,7 @@ class Jobinterviewer(db.Model):
     def __repr__(self):
         return f"Jobinterviewer('{self.job_id}','{self.interviewer_id}')"
 
+
 class Candidates(db.Model):
     "Adding the candidates"
     candidate_id = db.Column(db.Integer,primary_key=True,nullable=False)
@@ -49,6 +53,7 @@ class Candidates(db.Model):
     
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"
+
 
 class Rounds(db.Model):
     "Adding the rounds"
@@ -60,6 +65,7 @@ class Rounds(db.Model):
 
     def __repr__(self):
         return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}')"
+
         
 class Jobcandidate(db.Model):
     "Combine Job id and Candidate ID"
@@ -70,16 +76,32 @@ class Jobcandidate(db.Model):
     interview_start_time = db.Column(db.String)
     interview_end_time = db.Column(db.String)
     interview_date = db.Column(db.String)
-    candidate_status = db.Column(db.String)
+    candidate_status = db.Column(db.Integer)
 
     def __repr__(self):
         return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}','{self.candidate_status}')"
 
+
 class Jobround(db.Model):
     "Combine Job id and Round id"
     combo_id = db.Column(db.Integer,primary_key=True)
-    job_id = job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
+    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
     round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
     
     def __repr__(self):
         return f"Jobround('{self.job_id}','{self.round_id}')"
+
+
+class Candidateround(db.Model):
+    "Combine candidate id and round id"
+    combo_id = db.Column(db.Integer,primary_key=True)
+    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
+    candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
+    round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
+    round_status = db.Column(db.String)
+
+
+class Candidatestatus(db.Model):
+    "Save the status list"
+    status_id = db.Column(db.Integer,primary_key=True)
+    status_name = db.Column(db.String)

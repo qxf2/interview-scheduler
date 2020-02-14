@@ -5,7 +5,7 @@ import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json
 import string
-import random,sys
+import random,sys,re
 
 from qxf2_scheduler.models import Candidatestatus
 
@@ -51,7 +51,6 @@ def check_status_exists(status_name):
     return check_status_exists
 
 
-
 @app.route("/status/add",methods=["GET","POST"])
 def add_status():
     "Add a status through UI"
@@ -85,7 +84,10 @@ def edit_status(status_id):
         return render_template("edit-status.html",result=data)
     
     if request.method == "POST":
+        data = {}
         edit_status_name = request.form.get('statusname')
+        edit_status_name = re.sub('[^A-Za-z0-9]+',' ',edit_status_name)
+        edit_status_name = edit_status_name.strip()
         check_edited_status_exists = check_status_exists(edit_status_name)
         if check_edited_status_exists == True:
             error ="Failed"

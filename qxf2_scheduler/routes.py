@@ -576,17 +576,16 @@ def schedule_interview(job_id,url,candidate_id):
         candidate_name = request.form.get('candidate-name')
         candidate_email = request.form.get('candidate-email')
         #url = request.form.get('url')
-        print("hello",candidate_id,url,job_id)
         return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}       
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
         if candidate_data == None:
             err={'error':'EmailError'}
-            return jsonify(error=err,result=return_data)
+            #return jsonify(error=err,result=return_data)
 
         elif candidate_data.lower() != candidate_name.lower():
             err={'error':'NameError'}
-            return jsonify(error=err,result=return_data)
+            #return jsonify(error=err,result=return_data)
         elif candidate_data.lower() == candidate_name.lower():
             data = {
             'candidate_id':candidate_id,
@@ -598,8 +597,9 @@ def schedule_interview(job_id,url,candidate_id):
             return redirect(url_for('redirect_get_schedule',job_id=job_id))
         else:
             err={'error':'OtherError'}
-        #api_response = {'error':err,'result':return_data}
-        #return jsonify(api_response)
+        api_response = {'error':err,'result':return_data}
+        return jsonify(api_response)
+
 
 
 @app.route('/<job_id>/get-schedule')

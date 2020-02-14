@@ -105,8 +105,10 @@
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Waiting for new opening</label>
                         </div>
+
                         {% endif %}
-                        <div>
+                        <br>
+                        <div class="container col-md-14">
                             {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}                           
                             <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()" value="No opening">
                            {% endif %}
@@ -302,11 +304,7 @@
 
                 }
             })
-            //localStorage.removeItem()
-            //localStorage.setItem('hideButton',document.getElementById('loader').style.visibility="none");
-            //localStorage.getItem('hideButton');
-            //storeValue="none"
-            //document.getElementById('loader').style.visibility=localStorage.storeValue;
+            $("#hideButton").attr("disabled",true);
         }
     </script>
 

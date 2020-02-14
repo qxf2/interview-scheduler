@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add status</title>
+
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .bs-example {
+            margin: 20px;
+        }
+
+        textarea {
+            display: inline
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h2 class="grey_text text-justify">Add Status</h2>
+        <form class="needs-validation">
+            <label class="col-md-4 control-label" for="statusname">Status name</label>
+            <div class="col-md-4">
+                <input id="sname" name="sname" type="text" placeholder="Status Name" class="form-control" required>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+            </div>               
+            <div class="col-md-8">
+                <button class="btn btn-info" type="submit">Add</button>
+                <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        function clearAdd() {
+            document.location.href = "/status"
+        }
+    </script>
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                console.log("I am inside function");
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $("#resultDiv").empty();
+                        if (form.checkValidity() === true) {
+                            console.log("I am coming here")
+                            var statusName = $("#sname").val();
+                            $.ajax({
+                                type: 'POST',
+                                url: '/status/add',
+                                data: {
+                                    'statusname': statusName,
+                                    
+                                },
+                                success: function (result) {                               
+
+                                    if (result.error == "Success") {
+                                        alert("The status has been added");
+                                        document.location.href = "/status";
+
+                                    }
+                                    else{
+                                        alert("The status already exists");
+                                        document.location.href = "/status";
+                                    }
+
+                            }
+                            })
+                        }
+                    },
+
+
+                        false);
+                });
+            }, false);
+        })();
+    </script>
+
+</body>
+
+</html>

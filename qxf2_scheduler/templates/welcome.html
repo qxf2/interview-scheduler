@@ -112,9 +112,22 @@
                         else {
                             alert("Something is wrong, try reloading the page or contact admin");
                             window.location.href = "/" + result.return_data['candidate_id'] + "/" + result.return_data['job_id'] + "/" + result.return_data['url'] + "/welcome";
+                        }}
+                    /*error: function (errorMsg) {
+                        if (errorMsg.responseJSON.error.error == "NameError") {
+                            alert("Name not found, please enter the same name that you used when applied for this role");
+                            document.location.href = "/" + candidateId + "/" + jobId + "/" + url + "/welcome";
                         }
+                        else if (errorMsg.responseJSON.error.error == "EmailError") {
+                            alert("Email not found, please enter the same email that you used when applied for this role");
+                            document.location.href = "/" + candidateId + "/" + jobId + "/" + url + "/welcome";
+                        }
+                        else {
+                            alert("Something is wrong, try reloading the page or contact admin");
+                            document.location.href = "/" + candidateId + "/" + jobId + "/" + url + "/welcome";
+                        }*/
                     }
-                })
+                )
             }
             return false;
         })

@@ -22,6 +22,8 @@ app.config.update(
 	MAIL_PASSWORD = email_conf.MAIL_PASSWORD
 	)
 
+
 from qxf2_scheduler import routes
 from qxf2_scheduler import candidates
 from qxf2_scheduler import rounds
+from qxf2_scheduler import status

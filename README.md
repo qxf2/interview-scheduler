@@ -78,7 +78,16 @@ To verify your Google calendar setup, try the following command
 
 If all went well, you should see 10 upcoming events for the email id you provided.
 
-__f) Start the application__
+
+__f) Adding Email Configuration__
+
+For this application user need to add email_config.py, under qxf2_scheduler folder with details as below:
+
+MAIL_USERNAME = "name@email.com"
+MAIL_PASSWORD = "password"
+
+
+__g) Start the application__
 
 To start the application, run
 

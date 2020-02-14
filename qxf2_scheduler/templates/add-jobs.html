@@ -103,6 +103,7 @@
                                 document.location.href = "/jobs/add";
                             }
                             else {
+                                $("#submit").attr("disabled",true);
                                 $.ajax({
                                     type: 'POST',
                                     url: '/jobs/add',

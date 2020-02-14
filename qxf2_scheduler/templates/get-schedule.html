@@ -11,7 +11,7 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        
+
     <!-- Optional theme 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
         integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
@@ -20,14 +20,15 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-    
+
 </head>
+
 <body>
-    
-    
+
+
     <div class="container col-md-offset-1">
         <div class="row top-space-30">
-            <form>                
+            <form>
                 <div class='form-group'>
                     <div id="holder" class='form-group'></div>
                     <label for='Date'>Choose the interview date:</label>
@@ -45,16 +46,40 @@
         </div>
         <div class="row top-space-30" id="chosenSlot"></div>
         <div class="row top-space-30" id="scheduledEvent"></div>
-    </div>    
+    </div>
     <div class="loader" id="loader" visibility="hidden"></div>
     <script>
         $(function () {
             //holidays in yyyy-mm-dd format
             var holidays = ['2020-01-01', '2020-01-15', '2020-02-21', '2020-03-25', '2020-05-01', '2020-10-02', '2020-10-26', '2020-10-30', '2020-12-25'];
+            // src https://stackoverflow.com/questions/21669950/jquery-ui-datpicker-excluding-weekends-mindate
+            // Calculate the next working day manually
+            var startDate = new Date(),
+                noOfDaysToAdd = 3,
+                count = 1;
+
+            while (count <= noOfDaysToAdd) {
+                startDate.setDate(startDate.getDate() + 1);
+                if (startDate.getDay() != 0 && startDate.getDay() != 6) {
+                    count++;
+                }
+            }
+            var endDate = new Date(),
+                noOfDaysToAdd = 15,
+                count = 1;
+
+            while (count <= noOfDaysToAdd) {
+                endDate.setDate(endDate.getDate() + 1);
+                if (endDate.getDay() != 0 && endDate.getDay() != 6) {
+                    count++;
+                }
+            }
             $("#datepicker").datepicker({
-                minDate: 3,
-                maxDate:15,
-                beforeShowDay: isHoliday
+
+                beforeShowDay: isHoliday,
+                //beforeShowDay: $.datepicker.noWeekends,
+                minDate: startDate,
+                maxDate: endDate,
             });
             function isHoliday(date) {
                 //Src: https://stackoverflow.com/questions/501943/can-the-jquery-ui-datepicker-be-made-to-disable-saturdays-and-sundays-and-holid
@@ -70,18 +95,18 @@
                 return [holidays.indexOf(string) == -1]
             }
         });
-    </script>    
-    <script>       
+    </script>
+    <script>
         $("document").ready(function () {
-            $('#submit').click(function () {  
-                            
+            $('#submit').click(function () {
+
                 var date = $('#datepicker').val();
                 var elements = [];
                 var roundTime = document.getElementById("roundDuration").value;
                 console.log(roundTime);
                 $("#resultDiv").empty();
                 document.getElementById('loader').style.visibility = 'visible';
-                    if (date == "") {
+                if (date == "") {
                     $('#datepicker').css('border', 'solid 2px red');
                     $('#resultDiv').css('color', 'red');
                     $('#resultDiv').text('Invalid date')
@@ -90,9 +115,9 @@
                     var callDetails = {
                         type: 'POST',
                         url: '/get-schedule',
-                        data: {                            
+                        data: {
                             'date': date,
-                            'roundtime':roundTime
+                            'roundtime': roundTime
                         }
                     };
                     $.ajax(callDetails).done(function (result) {
@@ -101,7 +126,7 @@
                         $("#resultDiv").css('color', 'black');
                         freeChunkSlots = result.free_slots_in_chunks
                         console.log(freeChunkSlots)
-                        
+
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';
                         if (result.hasOwnProperty('error')) {
@@ -113,19 +138,19 @@
                             } else {
                                 msg = 'The free slots on ' + result.date + ' are: <br>';
                                 for (index in freeChunkSlots) {
-                                    slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;                                    
-                                    var timeSlotButton = $('<div class="col-md-2 top-space-20 text-align:left"><input type="button" onclick="displayChosenSlot(\'' + freeChunkSlots[index].email +'\', \'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
+                                    slot = freeChunkSlots[index].start + ' - ' + freeChunkSlots[index].end;
+                                    var timeSlotButton = $('<div class="col-md-2 top-space-20 text-align:left"><input type="button" onclick="displayChosenSlot(\'' + freeChunkSlots[index].email + '\', \'' + date + '\',\'' + slot + '\')" class="btn" value="' + slot + '"></div>');
                                     elements.push(timeSlotButton);
-                                }   
+                                }
                             }//end of if freeSlots is empty
                         }//end of no error key found
-                        
+
                         $("#resultDiv").html(msg);
                         if (elements.length > 0) {
                             $("#resultDiv").append(elements);
                         }
-                        
-                        document.getElementById('loader').style.visibility='hidden';
+
+                        document.getElementById('loader').style.visibility = 'hidden';
                     });
                 }
             });
@@ -133,17 +158,16 @@
     </script>
 
     <script>
-        function displayChosenSlot(emails,date, slot) {
+        function displayChosenSlot(emails, date, slot) {
             console.log(emails)
             var msg = "The chosen slot for the interviewer   on " + date + " is: " + slot;
-            var timeSlotButton = $('<div class="top-space-20"><input class="btn btn-info" type="button" onclick="scheduleEvent(\''+ emails + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');        
+            var timeSlotButton = $('<div class="top-space-20"><input class="btn btn-info" type="button" onclick="scheduleEvent(\'' + emails + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');
             $("#chosenSlot").html(msg);
             $("#chosenSlot").append(timeSlotButton);
         } 
     </script>
     <script>
-        function addHidden(form,name,value)
-        { 
+        function addHidden(form, name, value) {
             var hiddenField = document.createElement("input");
             hiddenField.type = 'hidden';
             hiddenField.name = name;
@@ -154,17 +178,18 @@
         }
     </script>
     <script>
-        function scheduleEvent(emails,date, slot) { 
+        function scheduleEvent(emails, date, slot) {
             form = document.createElement("form");
             form.method = "POST";
-            form.action = "/confirmation"; 
-            addHidden(form,'interviewerEmails',emails)           
-            addHidden(form,'date',date);
-            addHidden(form,'slot',slot);     
+            form.action = "/confirmation";
+            addHidden(form, 'interviewerEmails', emails)
+            addHidden(form, 'date', date);
+            addHidden(form, 'slot', slot);
             form.submit();
-            
+
         }
     </script>
-    
+
 </body>
+
 </html>

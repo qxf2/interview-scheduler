@@ -23,8 +23,8 @@ from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobi
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
-event.listen(Candidatestatus.__table__, 'after_create',
-            DDL(""" INSERT INTO Candidatestatus (status_id, status_name) VALUES (1, 'low'), (2, 'medium'), (3, 'high') """))
+'''event.listen(Candidatestatus.__table__, 'after_create',
+            DDL(""" INSERT INTO Candidatestatus (status_id, status_name) VALUES (1, 'low'), (2, 'medium'), (3, 'high') """))'''
 
 
 

@@ -12,7 +12,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus
+from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus,Candidateinterviewer
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
@@ -55,8 +55,12 @@ def delete_candidate(candidate_id):
         db.session.commit() 
         #Delete candidate from candidateround table
         round_candidate_to_delete = Candidateround.query.filter(Candidateround.candidate_id==candidate_id_to_delete, Candidateround.job_id==job_id_to_delete).first()
-        db.session.delete(round_candidate_to_delete)
-        db.session.commit()     
+        db.session.delete(round_candidate_to_delete)        
+        db.session.commit()   
+        #Delete candidate from Candidateinterviewer table
+        interviewer_candidate_to_delete = Candidateinterviewer.query.filter(Candidateinterviewer.candidate_id==candidate_id_to_delete).first()
+        db.session.delete(interviewer_candidate_to_delete)
+        db.session.commit()  
         
     return jsonify(data)
 

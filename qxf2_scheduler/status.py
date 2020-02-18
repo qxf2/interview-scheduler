@@ -73,3 +73,26 @@ def add_status():
         api_response = {'data':data,'error':error}
 
         return jsonify(api_response)
+
+
+@app.route("/status/<status_id>/edit",methods=["GET","POST"])
+def edit_status(status_id):
+    "Edit the status through UI"
+    if request.method == "GET":
+        data = {}
+        get_edit_status_details = Candidatestatus.query.filter(Candidatestatus.status_id==status_id).first()
+        data = {'status_name':get_edit_status_details.status_name,'status_id':get_edit_status_details.status_id}
+        return render_template("edit-status.html",result=data)
+    
+    if request.method == "POST":
+        edit_status_name = request.form.get('statusname')
+        check_edited_status_exists = check_status_exists(edit_status_name)
+        if check_edited_status_exists == True:
+            error ="Failed"
+        else:
+            edit_status_object = Candidatestatus.query.filter(Candidatestatus.status_id==status_id).update({"status_name":edit_status_name})
+            db.session.commit()
+            data = {'status_name':edit_status_name,'status_id':status_id}
+            error = "Success"
+        api_response = {'data':data,'error':error}
+        return (jsonify(api_response))

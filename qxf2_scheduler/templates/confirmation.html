@@ -17,9 +17,9 @@
     <div class="container col-md-offset-1">
         <div class="row top-space-30" id="resultDiv">
             {% if value != "" %}
-            <p>You have scheduled an interview,Please check the below details</p>            
-            Your time slot is between {{value['schedule_event'][0]['start']['dateTime']}} and {{value['schedule_event'][1]['end']['dateTime']}}
-            .Please use the below link to join the interview  {{value['schedule_event'][2]['Link']}}
+            <p>You have scheduled an interview, Please check the below details.           
+            </br>Date :  {{ value['date'] }}</br> Time : {{value['slot']}}
+            </br>Please use the below link to open your calendar and check for interview event :</br><a href="{{value['schedule_event'][2]['Link']}}" target="_blank">{{value['schedule_event'][2]['Link']}}</a></p>
             
             {% else %}
             <p>Something went wrong please check it</p>

@@ -59,6 +59,8 @@ def add_status():
     if request.method == 'POST':
         data ={}
         status_name = request.form.get("statusname")
+        status_name = re.sub('[^A-Za-z]+',' ',status_name)
+        status_name = status_name.strip()
         data = {'status_name':status_name}
         status_exists = check_status_exists(status_name)
         if status_exists == True:

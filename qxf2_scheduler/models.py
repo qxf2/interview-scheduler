@@ -1,5 +1,6 @@
 from qxf2_scheduler import db
-from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint
+import datetime
+from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint,DateTime
 
 class Interviewers(db.Model):
     "Adding the interviewer" 
@@ -50,6 +51,7 @@ class Candidates(db.Model):
     candidate_id = db.Column(db.Integer,primary_key=True,nullable=False)
     candidate_name = db.Column(db.String,nullable=False)
     candidate_email = db.Column(db.String,nullable=False)
+    date_applied = db.Column(DateTime, default=datetime.datetime.utcnow)
     
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"
@@ -76,6 +78,7 @@ class Jobcandidate(db.Model):
     interview_start_time = db.Column(db.String)
     interview_end_time = db.Column(db.String)
     interview_date = db.Column(db.String)
+    interviewer_email = db.Column(db.String)
     candidate_status = db.Column(db.String)
 
     def __repr__(self):
@@ -99,3 +102,26 @@ class Candidateround(db.Model):
     candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
     round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
     round_status = db.Column(db.String)
+
+
+class Candidatestatus(db.Model):
+    "Save the status list"
+    status_id = db.Column(db.Integer,primary_key=True)
+    status_name = db.Column(db.String)
+
+
+class Updatetable(db.Model):
+    "Store the last updated date of Jobcandidate"
+    table_id = db.Column(db.Integer,primary_key=True)
+    last_updated_date = db.Column(db.Integer)
+
+
+class Candidateinterviewer(db.Model):
+    "Combine candidate id ,interviewer id and round id,job id"
+    combo_id = db.Column(db.Integer,primary_key=True)
+    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
+    candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
+    interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
+
+    def __repr__(self):
+        return f"Candidateinterviewer('{self.job_id}','{self.candidate_id}','{self.interviewer_id}')"

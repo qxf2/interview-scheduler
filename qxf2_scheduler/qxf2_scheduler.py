@@ -4,19 +4,38 @@ We use this extensively in the routes.py of the qxf2_scheduler application
 """
 
 import qxf2_scheduler.base_gcal as gcal
+#import base_gcal as gcal
 from googleapiclient.errors import HttpError
 import datetime
 from datetime import timedelta
 import random,sys
+from qxf2_scheduler import db
+from apscheduler.schedulers.background import BackgroundScheduler
 
 TIMEZONE_STRING = '+05:30'
 FMT='%H:%M'
-CHUNK_DURATION = '30'
+#CHUNK_DURATION = '60'
 SUMMARY = 'Interview Scheduler'
 LOCATION =  'Google Hangout or Office',
 DESCRIPTION = 'A senior Qxf2 employee will talk to you and get to know your background. She/He will also give you a real application to test and look at how you break down testing at various levels. This stage is evaluating your communication skills and how you approach testing problems.',
 ATTENDEE = 'annapoorani@qxf2.com'
 DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
+
+from qxf2_scheduler.models import Jobcandidate,Updatetable
+
+
+def scheduler_job():
+    "Runs this job in the background"
+    last_inserted_id = db.session.query(Updatetable).order_by(Updatetable.table_id.desc()).first()    
+    fetch_interview_end_time = Jobcandidate.query.filter(last_inserted_id.last_updated_date<=Jobcandidate.interview_end_time).update({'candidate_status':1}) 
+    db.session.commit()   
+    
+
+#Running the task in the background to update the jobcandidate table
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(scheduler_job,'cron',day_of_week='1-5', hour='*', minute='1,31')
+sched.start()
+
 
 def convert_string_into_time(alloted_slots):
     "Converting the given string into time"
@@ -79,12 +98,13 @@ def combine_date_and_time(date,selected_slot):
     return create_event_start_time,create_event_end_time
 
 
-def append_the_create_event_info(create_event):
+def append_the_create_event_info(create_event,interviewer_email_id):
     "Appends the created event information into list"
     created_event_info = [] 
     created_event_info.append({'start':create_event['start']})    
     created_event_info.append({'end':create_event['end']})     
     created_event_info.append({'Link':create_event['htmlLink']})
+    created_event_info.append({'interviewer_email':interviewer_email_id})
     
     return created_event_info
 
@@ -110,57 +130,98 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
     SUMMARY,LOCATION,DESCRIPTION,interviewer_candidate_email)
-    created_event_info = append_the_create_event_info(create_event)
+    created_event_info = append_the_create_event_info(create_event,attendee_email_id)
 
     return created_event_info    
 
 
 def get_modified_free_slot_start(free_slot_start,marker):
-    "Modifiying the free slot start to 00 or 30"
-    if free_slot_start[-2:]=='00':
-        modified_free_slot_start = free_slot_start
-    elif free_slot_start[-2:] <= marker:
-        modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], marker)
-        
-    elif free_slot_start[-2:] > marker:
-        free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
-        modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
-        modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)   
+    "Modifiying the free slot start to 00 or 30"   
+    if marker == '60' or marker == '90':
+        if free_slot_start[-2:]=='00' or free_slot_start[-2:]=='30' or free_slot_start[-2:]=='45':
+            modified_free_slot_start = free_slot_start
+        elif free_slot_start[-2:] <= '30' and free_slot_start[-2] != '00':            
+            modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '30')
+        else:
+            free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
+            modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
+            modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
+   
+    if marker == '45':
+        if free_slot_start[-2:]=='00' or free_slot_start[-2:]=='30' or free_slot_start[-2:]=='45':
+            modified_free_slot_start = free_slot_start
+        elif free_slot_start[-2:] <= '30' and free_slot_start[-2] != '00':            
+            modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '30')
+        elif free_slot_start[-2:] > '30'or free_slot_start[-2:] < '45':
+            modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], marker)
+        else:
+            free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
+            modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
+            modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
 
+    if marker == '30':
+        if free_slot_start[-2:]=='00':
+            modified_free_slot_start = free_slot_start
+        elif free_slot_start[-2:] <= marker:
+            modified_free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], marker)
+        elif free_slot_start[-2:] > marker:
+            free_slot_start = '{}:{}'.format(free_slot_start.split(':')[0], '00')
+            modified_free_slot_start = convert_string_into_time(free_slot_start) + timedelta(hours=1)
+            modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
+    
     return modified_free_slot_start
 
 
 def get_modified_free_slot_end(free_slot_end,marker):
-    "Modifiying the free slot start to 00 or 30"
-    if free_slot_end[-2:]=='00' or free_slot_end[-2:]==marker :
-        modified_free_slot_end = free_slot_end                    
+    "Modifiying the free slot start to 00 or 30"    
+    if marker == '45':
+        if free_slot_end[-2:]=='00' or free_slot_end[-2:]==marker :
+            modified_free_slot_end = free_slot_end
+        elif free_slot_end[-2:] < '30' and free_slot_end[-2] != '00':            
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
+        elif free_slot_end[-2:] >= '30'or free_slot_end[-2:] < '45':
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], 30)
+        elif free_slot_end[-2:] > marker:
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], marker)
 
-    elif free_slot_end[-2:] < marker:                    
-        modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
-        
-    elif free_slot_end[-2:] > marker:
-        modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], marker)
+    if marker == '60' or marker == '90':
+        if free_slot_end[-2:]=='00' or free_slot_end[-2:]=='30' or free_slot_end[-2]=='45':
+            modified_free_slot_end = free_slot_end
+        elif free_slot_end[-2:] <'30' and free_slot_end[-2] != '00':            
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
+        elif free_slot_end[-2:] > '30':
+            free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
+            modified_free_slot_end = convert_string_into_time(free_slot_end) + timedelta(hours=1)
+            modified_free_slot_end = get_datetime_in_time_format(modified_free_slot_end)
+    
+    if marker == '30':
+        if free_slot_end[-2:]=='00' or free_slot_end[-2:]==marker :
+            modified_free_slot_end = free_slot_end
+        elif free_slot_end[-2:] < marker:
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], '00')
+        elif free_slot_end[-2:] > marker:
+            modified_free_slot_end = '{}:{}'.format(free_slot_end.split(':')[0], marker)
 
     return modified_free_slot_end
 
 
-def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_between_slots_after_modified,interviewer_email_id):
+def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_between_slots_after_modified,interviewer_email_id,CHUNK_DURATION):
     "Divides the free slots into chunks"    
-    chunk_slots = modified_free_slot_start               
+    chunk_slots = modified_free_slot_start      
     result_flag = True
     idx=0 
+    time_delta=timedelta(minutes=int(CHUNK_DURATION))
     chunk_slot_list = [] 
-    chunk_time_interval = []   
-    if diff_between_slots_after_modified <= timedelta(minutes=int(CHUNK_DURATION)):
+    chunk_time_interval = []      
+    if diff_between_slots_after_modified == timedelta(minutes=int(CHUNK_DURATION)):
         chunk_slot_list.append(modified_free_slot_start)
         chunk_slot_list.append(modified_free_slot_end)
         chunk_time_interval.append({'start':modified_free_slot_start,'end':modified_free_slot_end,'email':interviewer_email_id})         
-        
     else:          
         while result_flag:                        
             chunk_slots = convert_string_into_time(chunk_slots)
             chunk_slots = chunk_slots +  timedelta(minutes=int(CHUNK_DURATION))
-            chunk_slots =  get_datetime_in_time_format(chunk_slots)                
+            chunk_slots =  get_datetime_in_time_format(chunk_slots) 
             if idx==0:                           
                 chunk_slot_list.append(modified_free_slot_start)
                 chunk_slot_list.append(chunk_slots)                               
@@ -176,9 +237,9 @@ def get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_betw
             modified_free_slot_start = convert_string_into_time(modified_free_slot_start)                       
             modified_free_slot_start = modified_free_slot_start + timedelta(minutes=int(CHUNK_DURATION))
             modified_free_slot_start = get_datetime_in_time_format(modified_free_slot_start)
-            
+            diff_between_slot_start_and_end = convert_string_into_time(modified_free_slot_end) - convert_string_into_time(modified_free_slot_start)
             #While loop should stop if both time become equal                                 
-            if modified_free_slot_end == modified_free_slot_start:                    
+            if modified_free_slot_end == modified_free_slot_start or modified_free_slot_end <= modified_free_slot_start or diff_between_slot_start_and_end < timedelta(minutes=int(CHUNK_DURATION)): 
                 result_flag = False
 
     return chunk_time_interval
@@ -199,13 +260,13 @@ def combine_multiple_chunks(divided_chunk_slots):
     return divided_chunk_slots
 
 
-def get_free_slots_in_chunks(free_slots):
+def get_free_slots_in_chunks(free_slots,CHUNK_DURATION):
     "Return the free slots in 30 minutes interval"
     #Appending the 30 minutes slot into list
     divided_chunk_slots = []
     if free_slots == None:
         print("There are no more free slots available for this user")    
-    else: 
+    else:
         for free_slot in  free_slots:
             #Initializing the free slot start            
             free_slot_start = free_slot['start']
@@ -216,12 +277,11 @@ def get_free_slots_in_chunks(free_slots):
             
             #Find the difference between start and end slot
             diff_between_slots = convert_string_into_time(free_slot_end) - convert_string_into_time(free_slot_start)
-            
             if diff_between_slots >= timedelta(minutes=int(CHUNK_DURATION)):
                 modified_free_slot_start = get_modified_free_slot_start(free_slot_start,marker=CHUNK_DURATION)
-                modified_free_slot_end = get_modified_free_slot_end(free_slot_end,marker=CHUNK_DURATION)                                
+                modified_free_slot_end = get_modified_free_slot_end(free_slot_end,marker=CHUNK_DURATION)
                 diff_between_slots_after_modified =  convert_string_into_time(modified_free_slot_end) - convert_string_into_time(modified_free_slot_start)
-                divided_chunk_slots += get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_between_slots_after_modified,interviewer_email_id)                
+                divided_chunk_slots += get_chunks_in_slot(modified_free_slot_start,modified_free_slot_end,diff_between_slots_after_modified,interviewer_email_id,CHUNK_DURATION) 
                 divided_chunk_slots = sorted(divided_chunk_slots, key=lambda k: k['start'])
         divided_chunk_slots = combine_multiple_chunks(divided_chunk_slots)
 
@@ -361,7 +421,7 @@ def process_time_to_gcal(given_date,hour_offset=None):
     return processed_date
         
 
-def process_only_time_from_str(date):
+def process_only_time_from_str(date): 
     "Process and return only the time stamp from a given string"
     #Typical date string: 2019-07-29T15:30:00+05:30
     timestamp = datetime.datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+05:30')
@@ -373,6 +433,8 @@ if __name__ == '__main__':
     email = 'test@qxf2.com'
     date = '8/13/2019'
     selected_slot = '9:30-10:00'
+    candidate_email = 'annapoorani@qxf2.com'
+    chunk_duration = '30'
     interviewer_work_time_slots = [{'interviewer_start_time': '14:00', 'interviewer_end_time': '20:00'}, 
     {'interviewer_start_time': '21:00', 'interviewer_end_time': '23:00'}]
     emails='test@qxf2.com'
@@ -387,7 +449,7 @@ if __name__ == '__main__':
     for slot in free_slots:
         print(slot['start'],'-',slot['end'])
     print("\n=====HOW TO GET FREE SLOTS IN CHUNKS=====")    
-    free_slots_in_chunks = get_free_slots_in_chunks(free_slots)      
+    free_slots_in_chunks = get_free_slots_in_chunks(free_slots,chunk_duration)      
     print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
-    event_created_slot = create_event_for_fetched_date_and_time(date,emails,selected_slot)
+    event_created_slot = create_event_for_fetched_date_and_time(date,emails,candidate_email,selected_slot)
     print("The event created,The details are",event_created_slot)  

@@ -58,7 +58,7 @@
                             <label class="col-md-8" for="dateApplied">{{result.date_applied}}</label>
                         </div>
                         <br>
-                        {% if result.candidate_status == 'Waiting on Qxf2'%}
+                        {% if result.candidate_status == 'Waiting on Qxf2' %}
 
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Action:">Action:</label>
@@ -67,6 +67,8 @@
                                 data-candidate-email="{{result.candidate_email}}"
                                 data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}">
                             <input type="button" value="Thumbs down" id="thumbsDown">
+                            <br> 
+                            
                         </div>
                         <br>
                         <div class="col-md-4 form-display">
@@ -103,13 +105,18 @@
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Waiting for new opening</label>
                         </div>
+
                         {% endif %}
+                        <br>
+                        <div class="container col-md-14">
+                            {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}                           
+                            <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()" value="No opening">
+                           {% endif %}
+                        </div>
             </div>
 
             {% endif %}
-            <div class="container col-md-offset-1">
-                <input type="button" onclick="noOpening()" value="No opening">
-            </div>
+            
             </fieldset>
             </form>
         </div>
@@ -296,6 +303,7 @@
                     if (result.error == "Success") {
                         alert("The no opening email has been sent");
                         document.location.href = "/candidates";
+                        ('#noOpening').attr("disabled",true)
 
                     }
                     else {
@@ -304,9 +312,8 @@
                     }
 
                 }
-
-
             })
+            $("#hideButton").attr("disabled",true);
         }
     </script>
 

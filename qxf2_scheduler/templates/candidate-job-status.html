@@ -132,8 +132,8 @@
                 <input type="hidden" id="jobId" value="{{result.job_id}}">
                 <label for="select1">Round Level</label>
                 <div class="col-md-4">
-                    <select name="select1" class="form-control" id="select1" style="width:200px; height:30px;" required>
-                        <option value="">Select the below option</option>
+                    <select required name="select1" id="select1" style="width:200px; height:30px;">
+                        <option value=" ">Select the below option</option>
                         {% for each_round in round_names %}
                         <option value="{{each_round.round_id,each_round.round_name}}">{{each_round.round_name}}</option>
                         {% endfor %}
@@ -156,6 +156,7 @@
     </div>
     <script>
         $("#select1").on('change', function () {
+            $('#err-name').empty();
             $("#urlbutton").click()
             var dropdownValue = document.getElementById("select1");
             var roundName = dropdownValue.options[dropdownValue.selectedIndex].value;
@@ -210,6 +211,7 @@
     <script>
         var form, dialog
         function sendEmail() {
+            var isValid = true;
             var generatedUrl = $("#generateUrl").val();
             var candidateName = document.getElementById("candidateName").value;
             var candidateEmail = document.getElementById("candidateEmail").value;
@@ -219,38 +221,45 @@
             var roundId = document.getElementById("roundId").value;
             var roundName = document.getElementById("roundName").value;
             var roundTime = document.getElementById("roundTime").value;
-            $.ajax({
-                type: 'POST',
-                url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
-                data: {
-                    'generatedurl': generatedUrl,
-                    'candidatename': candidateName,
-                    'candidateid': candidateId,
-                    'candidateemail': candidateEmail,
-                    'jobid': jobId,
-                    'rounddescription': roundDescription,
-                    'roundid': roundId,
-                    'roundname': roundName,
-                    'roundtime': roundTime
-                },
-                success: function (result) {
+            $('#err-name').empty();
+            if (roundDescription == '') {
+                isValid = false;
+                console.log("I am coming here");                              
+                $("#select1").after('<span id="err-name" class="error" style="color:red">Please select the round</span>')
+            }
+            if (isValid == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/candidate/' + candidateId + '/job/' + jobId + '/invite',
+                    data: {
+                        'generatedurl': generatedUrl,
+                        'candidatename': candidateName,
+                        'candidateid': candidateId,
+                        'candidateemail': candidateEmail,
+                        'jobid': jobId,
+                        'rounddescription': roundDescription,
+                        'roundid': roundId,
+                        'roundname': roundName,
+                        'roundtime': roundTime
+                    },
+                    success: function (result) {
 
-                    if (result.error == "Success") {
-                        alert("The Invite has been sent");
-                        document.location.href = "/candidates";
+                        if (result.error == "Success") {
+                            alert("The Invite has been sent");
+                            document.location.href = "/candidates";
+
+                        }
+                        else {
+                            alert("The invite cannot be sent");
+                            document.location.href = "/candidates";
+                        }
 
                     }
-                    else {
-                        alert("The invite cannot be sent");
-                        document.location.href = "/candidates";
-                    }
+                })
 
-                }
-            })
-
-            dialog.dialog("close");
+                dialog.dialog("close");
+            }
         }
-
         dialog = $("#dialog-form").dialog({
             autoOpen: false,
             height: 400,

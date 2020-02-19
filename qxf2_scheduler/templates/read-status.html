@@ -62,7 +62,7 @@
                         <td>{{each_status.status_id}}</td>
                         <td>{{each_status.status_name}}</td>
                         <td>
-                            <input class="btn btn-info" type="button" id="editStatus" value="Edit">
+                            <input class="btn btn-info" type="button" id="edit" onclick="editStatus({{each_status.status_id}})" value="Edit">
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
                                 data-statusname="{{ each_status.status_name }}"
                                 data-statusid="{{ each_status.status_id }}" data-toggle="modal">Delete</button>
@@ -130,6 +130,13 @@
         function addStatus(){
             document.location.href = '/status/add'
         }
+    </script>
+    <script>
+        function editStatus(statusId){
+            document.location.href = '/status/'+statusId+'/edit'
+
+        }
+
     </script>
 
 </body>

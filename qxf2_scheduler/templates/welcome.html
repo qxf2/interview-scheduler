@@ -108,8 +108,23 @@
                             alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
                             window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
                         }
-                        if 
-                        
+                        if (result.error['error'] == "EmailError")
+                         {                                                             
+                         
+                            alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
+                            window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
+                        }
+                        if (result.error['error'] == "OtherError")
+                         {                                                             
+                         
+                            alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
+                            window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
+                        }
+                        if (result.error['error'] == "Success")
+                         {                                                             
+                         
+                            window.location.href = "/" + result.result['job_id'] +"/get-schedule";
+                        }
                        
                     }
 

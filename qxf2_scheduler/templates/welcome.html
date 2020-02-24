@@ -100,18 +100,17 @@
 
                     },
                     success: function (result) {
-                        if (result.error['error'] == "NameError") {
-                            alert("Name not found, please enter the same name that you used when applied for this role");
-                            document.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
-                        }
-                        if (result.error['error'] == "EmailError") {
-                            alert("Email not found, please enter the same email that you used when applied for this role");
+                        //if (result.responseJSON.error.error == "NameError")
+                        console.log(result)
+                        if (result.error['error'] == "NameError")
+                         {                                                             
+                         
+                            alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
                             window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
                         }
-                        if (result.error['error'] == 'OtherError') {
-                            alert("Something is wrong, try reloading the page or contact admin");
-                            window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
-                        }
+                        if 
+                        
+                       
                     }
 
                 }

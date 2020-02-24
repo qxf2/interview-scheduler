@@ -621,33 +621,29 @@ def schedule_interview(job_id,url,candidate_id):
         return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}       
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
-        if candidate_data == None:
-            err={'error':'EmailError'}
-            #return jsonify(error=err,result=return_data)
-
-        elif candidate_data.lower() != candidate_name.lower():
+        print(candidate_data,"I m candidate data")        
+        if candidate_data.lower() != candidate_name.lower():
             err={'error':'NameError'}
-            #return jsonify(error=err,result=return_data)
-        elif candidate_data.lower() == candidate_name.lower():
+            #return jsonify(error=err), 500
+            return jsonify(error=err,result=return_data)            
+        else: 
+            #candidate_data.lower() == candidate_name.lower():
             data = {
             'candidate_id':candidate_id,
             'candidate_name':candidate_name,
             'candidate_email':candidate_email,
             'job_id':job_id 
             }
-            session['candidate_info'] = data
-            return redirect(url_for('redirect_get_schedule',job_id=job_id))
-        else:
-            err={'error':'OtherError'}
-        api_response = {'error':err,'result':return_data}
-        return jsonify(api_response)
-
-
+            print(" ia m data",data)
+            session['candidate_info'] = data            
+            return redirect(url_for('redirect_get_schedule',job_id=job_id))  
+        
 
 @app.route('/<job_id>/get-schedule')
 def redirect_get_schedule(job_id):
     "Redirect to the get schedule page"
     round_time = session.get('round_time')
+    print("ia m round time",round_time)
     data = {
     'candidate_id':session['candidate_info']['candidate_id'],
     'candidate_name':session['candidate_info']['candidate_name'],
@@ -655,6 +651,7 @@ def redirect_get_schedule(job_id):
     'job_id':session['candidate_info']['job_id'],
     'round_time': round_time
     }
+    print("I am data inside redirect",data)
     return render_template("get-schedule.html",result=data)
 
 

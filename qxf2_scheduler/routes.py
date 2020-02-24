@@ -684,7 +684,9 @@ def send_invite(candidate_id, job_id):
 
             #Add the candidate round details in candidateround table
             #As of now I am adding round status as completed we can change this to 'Invite sent'
-            candidate_round_detail = Candidateround.query.filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).update({'round_id':round_id,'round_status':'Completed'})
+            """candidate_round_detail = Candidateround.query.filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).update({'round_id':round_id,'round_status':'Completed'})"""
+            candidate_round_detail = Candidateround(candidate_id=candidate_id,job_id=job_id,round_id=round_id,round_status='Completed')
+            db.session.add(candidate_round_detail)
             db.session.commit()
 
             error = 'Success'        

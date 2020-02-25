@@ -13,27 +13,12 @@ import sys
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 from flask_mail import Message, Mail
-from sqlalchemy.event import listen
-from sqlalchemy import event, DDL
-
 
 mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
-
-'''event.listen(Candidatestatus.__table__, 'after_create',
-            DDL(""" INSERT INTO Candidatestatus (status_id, status_name) VALUES (1, 'low'), (2, 'medium'), (3, 'high') """))'''
-
-
-
-"""@event.listens_for(Candidatestatus.__table__, 'after_create')
-def insert_initial_values(*args, **kwargs):
-	db.session.add(Candidatestatus(status_name='Waiting on Qxf2'))
-	db.session.add(Candidatestatus(status_name='Waiting on Candidate'))
-	db.session.add(Candidatestatus(status_name='Interview Scheduled'))
-	db.session.commit()"""
 
 
 @app.route("/get-schedule", methods=['GET', 'POST'])

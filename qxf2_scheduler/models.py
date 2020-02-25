@@ -1,7 +1,6 @@
 from qxf2_scheduler import db
 import datetime
 from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint,DateTime
-#from alembic import op
 from sqlalchemy.sql import table, column
 
 
@@ -116,17 +115,6 @@ class Updatetable(db.Model):
     "Store the last updated date of Jobcandidate"
     table_id = db.Column(db.Integer,primary_key=True)
     last_updated_date = db.Column(db.Integer)
-
-"""record_for_candidate_status = Candidatestatus(status_name="Waiting on Qxf2")
-db.session.add(record_for_candidate_status)
-db.session.commit()
-print(record_for_candidate_status)"""
-
-
-"""if __name__ == "__main__":
-    candidate_status = table('Candidatestatus',column('status_id', Integer),column('status_name', String))
-    op.bulk_insert(candidate_status,[{'status_id':1, 'status_name':'Waiting on Qxf2'}])"""
-
 
 class Candidateinterviewer(db.Model):
     "Combine candidate id ,interviewer id and round id,job id"

@@ -7,7 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
-import json,datetime
+import json
 import ast
 import sys
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -16,7 +16,7 @@ from flask_mail import Message, Mail
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
@@ -31,18 +31,31 @@ def date_picker():
         round_duration = request.form.get('roundtime')
         chunk_duration = round_duration.split(' ')[0]
         job_id = session['candidate_info']['job_id']
+        candidate_id = session['candidate_info']['candidate_id']
+        #Check who are all the interviewers interviewed the candidate
+        alloted_interviewers_id_list = []
+        try:
+            alloted_interviewers_id = db.session.query(Candidateinterviewer).filter(Candidateinterviewer.candidate_id==candidate_id,Candidateinterviewer.job_id==job_id).values(Candidateinterviewer.interviewer_id)
+            alloted_interviewers_id_list = []
+            for each_interviewer_id in alloted_interviewers_id:
+                alloted_interviewers_id_list.append(each_interviewer_id.interviewer_id)
+        except Exception as e:
+            print("The candidate is scheduling an interview for the first time",e)        
+        
+
         #Fetch the interviewers for the candidate job
         job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
         interviewer_id = []
         for each_interviewer_id in job_interviewer_id:
             interviewer_id.append(each_interviewer_id.interviewer_id)
         
-        interviewer_email_generator_list = []
-        #Fetch the interviewer emails for the candidate job
-        for each_interviewer in interviewer_id:
-            interviewer_email = db.session.query(Interviewers).filter(Interviewers.interviewer_id==each_interviewer).values(Interviewers.interviewer_email)
-            for each_email in interviewer_email:
-                interviewer_email_generator_list.append(each_email.interviewer_email)
+        if len(alloted_interviewers_id_list) == 0:
+            pass
+        else:
+            #Compare the alloted and fetched interviewers id
+            interviewer_id = list(set(interviewer_id)-set(alloted_interviewers_id_list))
+        
+        #Fetch the interviewer emails for the candidate job       
         interviewer_work_time_slots = []
         for each_id in interviewer_id:
             new_slot = db.session.query(Interviewers,Interviewertimeslots).filter(each_id==Interviewers.interviewer_id,each_id==Interviewertimeslots.interviewer_id).values(
@@ -84,8 +97,7 @@ def scehdule_and_confirm():
         candidate_email = session['candidate_info']['candidate_email']
         job_id = session['candidate_info']['job_id']
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
-            date, email,candidate_email, slot)
-        
+            date, email,candidate_email, slot)        
         date_object = datetime.strptime(date, '%m/%d/%Y').date()
         date = datetime.strftime(date_object, '%B %d, %Y')
         value = {'schedule_event': schedule_event, 
@@ -94,8 +106,23 @@ def scehdule_and_confirm():
         value = json.dumps(value)
         candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[2]).scalar()        
         candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':schedule_event[3]['interviewer_email']})
-        db.session.commit()        
+        db.session.commit()  
+
+        #Get the interviewer email from the form 
+        alloted_interviewer_email = schedule_event[3]['interviewer_email'] 
+        #Fetch the interviewer id of the interviewer
+        fetch_interviewer_id = db.session.query(Interviewers).filter(Interviewers.interviewer_email==alloted_interviewer_email).values(Interviewers.interviewer_id)
+        for each_interviewer in fetch_interviewer_id:
+            fetch_interviewer_id_value=each_interviewer.interviewer_id
+
+        #Add the interviewer id, candidateid and job id to the table
+        add_interviewer_candidate_object = Candidateinterviewer(job_id=job_id,candidate_id=candidate_id,interviewer_id=fetch_interviewer_id_value)
+        db.session.add(add_interviewer_candidate_object)
+        db.session.commit()
+
         return redirect(url_for('confirm', value=value))
+
+        
     return render_template("get-schedule.html")
 
 

@@ -12,7 +12,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus
+from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus,Candidateinterviewer
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
@@ -54,9 +54,15 @@ def delete_candidate(candidate_id):
         db.session.delete(job_candidate_to_delete)
         db.session.commit() 
         #Delete candidate from candidateround table
-        round_candidate_to_delete = Candidateround.query.filter(Candidateround.candidate_id==candidate_id_to_delete, Candidateround.job_id==job_id_to_delete).first()
-        db.session.delete(round_candidate_to_delete)
-        db.session.commit()     
+        round_candidate_to_delete = db.session.query(Candidateround).filter(Candidateround.candidate_id==candidate_id_to_delete).delete()             
+        db.session.commit()   
+        #Delete candidate from Candidateinterviewer table
+        exists = db.session.query(db.exists().where(Candidateinterviewer.candidate_id == candidate_id_to_delete)).scalar()
+        if exists == False:
+            pass
+        else:            
+            interviewer_candidate_to_delete = db.session.query(Candidateinterviewer).filter(Candidateinterviewer.candidate_id==candidate_id_to_delete).delete()
+            db.session.commit()  
         
     return jsonify(data)
 
@@ -157,12 +163,10 @@ def show_candidate_job(job_id,candidate_id):
     for each_data in candidate_job_data:
         data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'interviewer_email_id':each_data.interviewer_email,'date_applied':each_data.date_applied}
         candidate_status_id = each_data.candidate_status
-        print("I am status id",candidate_status_id)
     #fetch the candidate status name for the status id
     candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
     data['candidate_status']=candidate_status_name.status_name
     pending_round_ids = get_pending_round_id(job_id,candidate_id)
-    print("data",data)
     #Get the pending round id details from the table
     for each_round_id in pending_round_ids:
         round_detail = db.session.query(Rounds).filter(Rounds.round_id==each_round_id).scalar()
@@ -229,3 +233,34 @@ def send_email(candidate_id,job_id):
         return jsonify(data=candidate_name)
     else:
         return jsonify(error="error"), 500
+
+
+@app.route("/noopening/email",methods=["POST"])
+def no_opening():
+    "Send a no opening email to the candidates"
+    candidate_name = request.form.get('candidatename')
+    candidate_email = request.form.get('candidateemail')
+    candidate_job_applied = request.form.get('candidatejob')
+    candidate_id = request.form.get('candidateid')
+    try:
+        msg = Message("Currently we don't have an opening!",sender="test@qxf2.com", recipients=[candidate_email])
+        msg.body = "Hi %s ,We have received your resume and thanks for applying for the job.Currently we don't have an opening for the job position.We will get back to you once we have a opening"%(candidate_name)
+        mail.send(msg)
+        #Update the candidate status to 'Waiting for new opening'
+        candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[6]).scalar()
+        #Change the candidate status after the invite has been sent
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == candidate_job_applied).update({'candidate_status':candidate_status_id.status_id})
+        db.session.commit()
+        error = 'Success'
+             
+    except Exception as e:
+        error = "Failed"
+        return(str(e))
+
+    data = {'candidate_name': candidate_name, 'error': error}
+    return jsonify(data)       
+
+        
+
+
+

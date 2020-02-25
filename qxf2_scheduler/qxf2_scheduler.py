@@ -24,18 +24,8 @@ DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
 from qxf2_scheduler.models import Jobcandidate,Updatetable
 
 
-"""def check_with_current_time(end_time):
-    "Compare the interview end time with current time"
-    parsed_end_time = datetime.datetime.strptime(end_time,'%Y-%m-%dT%H:%M:%S+05:30')
-    if parsed_end_time <= datetime.datetime.now():
-        return True
-    else:
-        return False"""
-
-
 def scheduler_job():
     "Runs this job in the background"
-    print("I am here")
     last_inserted_id = db.session.query(Updatetable).order_by(Updatetable.table_id.desc()).first()    
     fetch_interview_start_time = Jobcandidate.query.filter(last_inserted_id.last_updated_date<=Jobcandidate.interview_start_time).update({'candidate_status':1}) 
     db.session.commit()   

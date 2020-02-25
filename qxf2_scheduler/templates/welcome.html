@@ -23,7 +23,7 @@
         {% if 'job_id' in result %}
         <h3>Welcome to Qxf2</h3>
         <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
-        <form action="/{{ result.job_id }}/valid" method="POST">
+        <form action="/{{ result.job_id }}/{{result.url}}/{{result.candidate_id}}/valid" method="POST">
             <div class="form-group">
                 <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your name</label>
                 <div class="col-md-3">
@@ -45,23 +45,23 @@
                 </div>
             </div>
         </form>
+        {% else %}
+        <div class="container col-md-offset-1">
+            <h3 align="center">Welcome to Qxf2</h3>
+            <label class="col-md-4 control-label" for="candidatename">Candidate Name:</label>
+            <label class="col-md-4">{{result.candidate_name}}</label>
+            <label class="col-md-4 control-label" for="candidateemail">Candidate Email:</label>
+            <label class="col-md-4">{{result.candidate_email}}</label>
+            <label class="col-md-4 control-label" for="interviewStart">Interview Start time:</label>
+            <label class="col-md-4">{{interview_result.interview_start_time}}</label>
+            <label class="col-md-4 control-label" for="interviewEnd">Interview End Time:</label>
+            <label class="col-md-4">{{interview_result.interview_end_time}}</label>
+            <label class="col-md-4 control-label" for="interviewDate">Interview Date:</label>
+            <label class="col-md-4">{{interview_result.interview_date}}</label>
+            <p>Hi {{result.candidate_name}}, Your interview has been scheduled already.</p>
+        </div>
+        {% endif %}
     </div>
-    {% else %}
-    <div class="container col-md-offset-1">
-        <h3 align="center">Welcome to Qxf2</h3>
-        <label class="col-md-4 control-label" for="candidatename">Candidate Name:</label>
-        <label class="col-md-4">{{result.candidate_name}}</label>
-        <label class="col-md-4 control-label" for="candidateemail">Candidate Email:</label>
-        <label class="col-md-4">{{result.candidate_email}}</label>
-        <label class="col-md-4 control-label" for="interviewStart">Interview Start time:</label>
-        <label class="col-md-4">{{interview_result.interview_start_time}}</label>
-        <label class="col-md-4 control-label" for="interviewEnd">Interview End Time:</label>
-        <label class="col-md-4">{{interview_result.interview_end_time}}</label>
-        <label class="col-md-4 control-label" for="interviewDate">Interview Date:</label>
-        <label class="col-md-4">{{interview_result.interview_date}}</label>
-        <p>Hi {{result.candidate_name}}, Your interview has been scheduled already.</p>
-    </div>
-    {% endif %}
     <script>
         $("#submit").click(function () {
             var validValue = true;
@@ -69,7 +69,9 @@
             var candidate_email = $("#candidate-email").val();
             validValue &= candidate_name != "";
             validValue &= candidate_email != "";
-            var email_valid = (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(candidate_email);
+            //var email_valid = (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(candidate_email);
+            var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            var email_valid = re.test(candidate_email)
             validValue &= email_valid;
             //Printing appropriate message
             $('#err-name').remove();
@@ -91,28 +93,45 @@
             if (validValue == true) {
                 $.ajax({
                     type: 'POST',
-                    url: "/" + jobId + "/valid",
+                    url: "/" + jobId + "/" + url + "/" + candidateId + "/valid",
                     data: {
                         'candidate-name': candidate_name,
-                        'candidate-email': candidate_email,
-                        'jobId': jobId
+                        'candidate-email': candidate_email
+
                     },
-                    error: function (errorMsg) {
-                        if (errorMsg.responseJSON.error.error == "NameError") {
-                            alert("Name not found, please enter the same name that you used when applied for this role");
-                            document.location.href = "/" + candidateId + "/" + jobId + "/" + url + "/welcome";
+                    success: function (result) {
+                        //if (result.responseJSON.error.error == "NameError")
+                        console.log(result)
+                        if (result.error['error'] == "NameError")
+                         {                                                             
+                         
+                            alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
+                            window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
                         }
-                        else if (errorMsg.responseJSON.error.error == "EmailError") {
-                            alert("Email not found, please enter the same email that you used when applied for this role");
-                            document.location.href = "/" + candidateId + "/" + jobId + "/" + url + "/welcome";
+                        if (result.error['error'] == "EmailError")
+                         {                                                             
+                         
+                            alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
+                            window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
                         }
-                        else {
-                            alert("Something is wrong, try reloading the page or contact admin");
-                            document.location.href = "/" + candidateId + "/" + jobId + "/" + url + "/welcome";
+                        if (result.error['error'] == "OtherError")
+                         {                                                             
+                         
+                            alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
+                            window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
                         }
+                        if (result.error['error'] == "Success")
+                         {                                                             
+                         
+                            window.location.href = "/" + result.result['job_id'] +"/get-schedule";
+                        }
+                       
                     }
-                })
+
+                }
+                )
             }
+            return false;
         })
     </script>
 </body>

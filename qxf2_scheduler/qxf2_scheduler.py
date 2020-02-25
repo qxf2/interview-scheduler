@@ -365,10 +365,8 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
                         break
             if pto_flag:
                 busy_slots = gcal.make_day_busy(fetch_date)
-                print("I am busy slots pto flag",busy_slots)
             else:
                 busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
-                print("I am busy slots",busy_slots,pto_flag)
         except HttpError:            
             pass
         
@@ -398,7 +396,8 @@ def process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_intervie
 
 
 def get_free_slots_for_date(fetch_date,interviewer_work_time_slots,debug=False):
-    "Return a list of free slots for a given date and email"    
+    "Return a list of free slots for a given date and email"
+    final_processed_free_slots = []    
     for each_slot in interviewer_work_time_slots:
         individual_interviewer_email_id = each_slot['interviewer_email']
         day_start_hour = each_slot['interviewer_start_time']
@@ -407,11 +406,10 @@ def get_free_slots_for_date(fetch_date,interviewer_work_time_slots,debug=False):
         len_of_busy_slots= len(busy_slots)
         #If the calendar is empty and no pto
         if len_of_busy_slots == 0 and pto_flag == False:
-            processed_free_slots = process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_interviewer_email_id,busy_slots)           
+            final_processed_free_slots += process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_interviewer_email_id,busy_slots)                   
         if len_of_busy_slots >=1: 
-            processed_free_slots = process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_interviewer_email_id,busy_slots)       
-            
-    return processed_free_slots
+            final_processed_free_slots += process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_interviewer_email_id,busy_slots)       
+    return final_processed_free_slots
 
 
 def get_events_for_date(email_id, fetch_date, maxResults=240,debug=False):

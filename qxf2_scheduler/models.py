@@ -112,7 +112,6 @@ class Candidatestatus(db.Model):
     status_id = db.Column(db.Integer,primary_key=True)
     status_name = db.Column(db.String)
 
-    
 class Updatetable(db.Model):
     "Store the last updated date of Jobcandidate"
     table_id = db.Column(db.Integer,primary_key=True)
@@ -128,3 +127,13 @@ print(record_for_candidate_status)"""
     candidate_status = table('Candidatestatus',column('status_id', Integer),column('status_name', String))
     op.bulk_insert(candidate_status,[{'status_id':1, 'status_name':'Waiting on Qxf2'}])"""
 
+
+class Candidateinterviewer(db.Model):
+    "Combine candidate id ,interviewer id and round id,job id"
+    combo_id = db.Column(db.Integer,primary_key=True)
+    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
+    candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
+    interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
+
+    def __repr__(self):
+        return f"Candidateinterviewer('{self.job_id}','{self.candidate_id}','{self.interviewer_id}')"

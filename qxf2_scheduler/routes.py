@@ -55,7 +55,6 @@ def date_picker():
             date, interviewer_work_time_slots)
         free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(
             free_slots,chunk_duration)
-        print(free_slots_in_chunks)
         api_response = {
             'free_slots_in_chunks': free_slots_in_chunks, 'date': date}
             

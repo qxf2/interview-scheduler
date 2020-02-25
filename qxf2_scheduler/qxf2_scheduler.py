@@ -27,7 +27,7 @@ from qxf2_scheduler.models import Jobcandidate,Updatetable
 def scheduler_job():
     "Runs this job in the background"
     last_inserted_id = db.session.query(Updatetable).order_by(Updatetable.table_id.desc()).first()    
-    fetch_interview_end_time = Jobcandidate.query.filter(last_inserted_id.last_updated_date<=Jobcandidate.interview_end_time).update({'candidate_status':1}) 
+    fetch_interview_start_time = Jobcandidate.query.filter(last_inserted_id.last_updated_date<=Jobcandidate.interview_start_time).update({'candidate_status':1}) 
     db.session.commit()   
     
 
@@ -369,8 +369,9 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
                 busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
         except HttpError:            
             pass
+        
            
-        return busy_slots
+        return busy_slots,pto_flag
 
 
 def get_interviewer_email_id(interviewer_work_time_slots):
@@ -382,22 +383,33 @@ def get_interviewer_email_id(interviewer_work_time_slots):
     return interviewers_email_id
 
 
+def process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_interviewer_email_id,busy_slots):
+    "Process the time"
+    processed_free_slots = []    
+    day_start = process_time_to_gcal(fetch_date,day_start_hour)
+    day_end = process_time_to_gcal(fetch_date,day_end_hour)
+    free_slots = get_free_slots(busy_slots,day_start,day_end)
+    for i in range(0,len(free_slots),2):
+        processed_free_slots.append({'start':process_only_time_from_str(free_slots[i]),'end':process_only_time_from_str(free_slots[i+1]),'email_id':individual_interviewer_email_id})
+
+    return processed_free_slots
+
+
 def get_free_slots_for_date(fetch_date,interviewer_work_time_slots,debug=False):
-    "Return a list of free slots for a given date and email"    
-    processed_free_slots = []
+    "Return a list of free slots for a given date and email"
+    final_processed_free_slots = []    
     for each_slot in interviewer_work_time_slots:
         individual_interviewer_email_id = each_slot['interviewer_email']
-        busy_slots = get_busy_slots_for_date(individual_interviewer_email_id,fetch_date,debug=debug)        
+        day_start_hour = each_slot['interviewer_start_time']
+        day_end_hour = each_slot['interviewer_end_time']
+        busy_slots,pto_flag = get_busy_slots_for_date(individual_interviewer_email_id,fetch_date,debug=debug)        
         len_of_busy_slots= len(busy_slots)
-        if len_of_busy_slots >=1:        
-            day_start_hour = each_slot['interviewer_start_time']
-            day_end_hour = each_slot['interviewer_end_time']
-            day_start = process_time_to_gcal(fetch_date,day_start_hour)
-            day_end = process_time_to_gcal(fetch_date,day_end_hour)
-            free_slots = get_free_slots(busy_slots,day_start,day_end)
-            for i in range(0,len(free_slots),2):
-                processed_free_slots.append({'start':process_only_time_from_str(free_slots[i]),'end':process_only_time_from_str(free_slots[i+1]),'email_id':individual_interviewer_email_id})
-    return processed_free_slots
+        #If the calendar is empty and no pto
+        if len_of_busy_slots == 0 and pto_flag == False:
+            final_processed_free_slots += process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_interviewer_email_id,busy_slots)                   
+        if len_of_busy_slots >=1: 
+            final_processed_free_slots += process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_interviewer_email_id,busy_slots)       
+    return final_processed_free_slots
 
 
 def get_events_for_date(email_id, fetch_date, maxResults=240,debug=False):

@@ -7,7 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
-import json,datetime
+import json
 import ast
 import sys
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer

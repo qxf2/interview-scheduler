@@ -54,16 +54,14 @@ def delete_candidate(candidate_id):
         db.session.delete(job_candidate_to_delete)
         db.session.commit() 
         #Delete candidate from candidateround table
-        round_candidate_to_delete = Candidateround.query.filter(Candidateround.candidate_id==candidate_id_to_delete, Candidateround.job_id==job_id_to_delete).first()
-        db.session.delete(round_candidate_to_delete)        
+        round_candidate_to_delete = db.session.query(Candidateround).filter(Candidateround.candidate_id==candidate_id_to_delete).delete()             
         db.session.commit()   
         #Delete candidate from Candidateinterviewer table
         exists = db.session.query(db.exists().where(Candidateinterviewer.candidate_id == candidate_id_to_delete)).scalar()
         if exists == False:
             pass
-        else:
-            interviewer_candidate_to_delete = Candidateinterviewer.query.filter(Candidateinterviewer.candidate_id==candidate_id_to_delete).first()
-            db.session.delete(interviewer_candidate_to_delete)
+        else:            
+            interviewer_candidate_to_delete = db.session.query(Candidateinterviewer).filter(Candidateinterviewer.candidate_id==candidate_id_to_delete).delete()
             db.session.commit()  
         
     return jsonify(data)

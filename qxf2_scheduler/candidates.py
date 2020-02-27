@@ -54,16 +54,14 @@ def delete_candidate(candidate_id):
         db.session.delete(job_candidate_to_delete)
         db.session.commit() 
         #Delete candidate from candidateround table
-        round_candidate_to_delete = Candidateround.query.filter(Candidateround.candidate_id==candidate_id_to_delete, Candidateround.job_id==job_id_to_delete).first()
-        db.session.delete(round_candidate_to_delete)        
+        round_candidate_to_delete = db.session.query(Candidateround).filter(Candidateround.candidate_id==candidate_id_to_delete).delete()             
         db.session.commit()   
         #Delete candidate from Candidateinterviewer table
         exists = db.session.query(db.exists().where(Candidateinterviewer.candidate_id == candidate_id_to_delete)).scalar()
         if exists == False:
             pass
-        else:
-            interviewer_candidate_to_delete = Candidateinterviewer.query.filter(Candidateinterviewer.candidate_id==candidate_id_to_delete).first()
-            db.session.delete(interviewer_candidate_to_delete)
+        else:            
+            interviewer_candidate_to_delete = db.session.query(Candidateinterviewer).filter(Candidateinterviewer.candidate_id==candidate_id_to_delete).delete()
             db.session.commit()  
         
     return jsonify(data)
@@ -121,9 +119,9 @@ def add_candidate(job_role):
             db.session.add(add_job_candidate_object)
             db.session.commit()
             #Store the candidateid,jobid,roundid and round status in candidateround table
-            add_round_candidate_object = Candidateround(candidate_id=candidate_id,job_id=job_id,round_id='',round_status='')
+            """add_round_candidate_object = Candidateround(candidate_id=candidate_id,job_id=job_id,round_id='',round_status='')
             db.session.add(add_round_candidate_object)
-            db.session.commit()
+            db.session.commit()"""
             error = "Success"
         api_response = {'data':data,'error':error}
 
@@ -148,17 +146,21 @@ def generate_unique_url():
 def get_pending_round_id(job_id,candidate_id):
     "Get the pending round id for the candidate"
     pending_round_ids = [] 
-    #Fetch all the round details for a job
-    round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
-    for each_round_id in round_ids_for_job:
-        #Fetch the round id and round status from candidateround table
-        round_status = db.session.query(Candidateround).filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).values(Candidateround.round_status,Candidateround.round_id)
-        #Check the round has been completed or not
-        for each_round_status in round_status:
-            if(each_round_status.round_id==each_round_id.round_id and each_round_status.round_status=='Completed'):
-                break
-            else:
-                pending_round_ids.append(each_round_id.round_id)
+    #Check the round is already alloted for the candidates
+    exists = db.session.query(db.exists().where(Candidateround.candidate_id == candidate_id)).scalar()
+    if exists == True:
+        #Fetch all the round details for a job
+        round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
+        for each_round_id in round_ids_for_job:
+            #Fetch the round id and round status from candidateround table
+            #Check the round id is already existing in the candidateround table
+            check_round_exists_for_candidate = db.session.query(db.exists().where(Candidateround.round_id==each_round_id.round_id)).scalar()
+            if check_round_exists_for_candidate == False:
+                pending_round_ids.append(each_round_id.round_id)           
+    else:
+        round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
+        for each_round_id in round_ids_for_job:
+            pending_round_ids.append(each_round_id.round_id)
     
     return pending_round_ids
     

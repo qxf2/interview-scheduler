@@ -7,7 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
-import json,datetime
+import json
 import ast
 import sys
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -576,7 +576,7 @@ def parse_interview_time(interview_time):
 def show_welcome(candidate_id, job_id, url):
     "Opens a welcome page for candidates"
     interview_data = {}
-    data = {'job_id': job_id}
+    data = {'job_id': job_id,'candidate_id':candidate_id,'url':url}
     s = Serializer('WEBSITE_SECRET_KEY')
     try:
         url = s.loads(url)
@@ -611,37 +611,38 @@ def show_welcome(candidate_id, job_id, url):
     return render_template("welcome.html",result=data,interview_result=interview_data)
 
     
-@app.route("/<jobId>/valid",methods=['GET','POST'])
-def schedule_interview(jobId):
+@app.route("/<job_id>/<url>/<candidate_id>/valid",methods=['GET','POST'])
+def schedule_interview(job_id,url,candidate_id):
     "Validate candidate name and candidate email"
     if request.method == 'POST':
         candidate_name = request.form.get('candidate-name')
         candidate_email = request.form.get('candidate-email')
+        #url = request.form.get('url')
+        return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}       
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
         candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
         if candidate_data == None:
             err={'error':'EmailError'}
-            return jsonify(error=err), 500
-
+            return jsonify(error=err,result=return_data)
         elif candidate_data.lower() != candidate_name.lower():
             err={'error':'NameError'}
-            return jsonify(error=err), 500
+            return jsonify(error=err,result=return_data)
         elif candidate_data.lower() == candidate_name.lower():
-            data = {
+            return_data = {
             'candidate_id':candidate_id,
             'candidate_name':candidate_name,
             'candidate_email':candidate_email,
-            'job_id':jobId 
+            'job_id':job_id 
             }
-            session['candidate_info'] = data
-            return redirect(url_for('redirect_get_schedule',jobId=jobId))
+            session['candidate_info'] = return_data            
+            err={'error':'Success'}
+            return jsonify(error=err,result=return_data)
         else:
             err={'error':'OtherError'}
-            return jsonify(error=err), 500
+            return jsonify(error=err,result=return_data)
 
-
-@app.route('/<jobId>/get-schedule')
-def redirect_get_schedule(jobId):
+@app.route('/<job_id>/get-schedule')
+def redirect_get_schedule(job_id):
     "Redirect to the get schedule page"
     round_time = session.get('round_time')
     data = {
@@ -684,7 +685,9 @@ def send_invite(candidate_id, job_id):
 
             #Add the candidate round details in candidateround table
             #As of now I am adding round status as completed we can change this to 'Invite sent'
-            candidate_round_detail = Candidateround.query.filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).update({'round_id':round_id,'round_status':'Completed'})
+            """candidate_round_detail = Candidateround.query.filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).update({'round_id':round_id,'round_status':'Completed'})"""
+            candidate_round_detail = Candidateround(candidate_id=candidate_id,job_id=job_id,round_id=round_id,round_status='Completed')
+            db.session.add(candidate_round_detail)
             db.session.commit()
 
             error = 'Success'        

@@ -133,7 +133,7 @@
                 <label for="select1">Round Level</label>
                 <div class="col-md-4">
                     <select required name="select1" id="select1" style="width:200px; height:30px;">
-                        <option value=" ">Select the below option</option>
+                        <option value="Select the round">Select the round</option>
                         {% for each_round in round_names %}
                         <option value="{{each_round.round_id,each_round.round_name}}">{{each_round.round_name}}</option>
                         {% endfor %}

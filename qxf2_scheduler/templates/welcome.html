@@ -20,9 +20,21 @@
 
 <body>
     <div class="bs-example">
+        <div class="header">
+            <a href="https://qxf2.com">
+                <img src="/static/img/qxf2_logo.png" class="col-md-12" alt="Qxf2 Services">
+            </a>        
         {% if 'job_id' in result %}
-        <h3>Welcome to Qxf2</h3>
-        <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
+        
+            <h1 class="banner-brown text-center col-md-12">Welcome to Qxf2</h1>
+            <br>
+            <p> Thank you for applying with us. Qxf2 provides testing services for startups. We have been an integral part of several startup success stories. </p>
+            <br>
+            <h4>Interview scheduling process</h4>
+            <p>We use this scheduler application to schedule an interview. Use the same name and email which you have used for applying in Qxf2 to fill the below form. Please choose the date and time as per your convenient. Once the interview is scheduled it cannot be rescheduled again.All the best.</p>
+        </div>
+       
+        <p>Please fill the below fields and submit your details to schedule next round of your Interview</p></div>
         <form action="/{{ result.job_id }}/{{result.url}}/{{result.candidate_id}}/valid" method="POST">
             <div class="form-group">
                 <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your name</label>

@@ -34,8 +34,8 @@
 
         <div class="row top-space-30">
             <form class="needs-validation">
-                <div class="form-group row">
-                    <label class="col-md-4 col-form-label text-md-right" for="jobrole">Job role:</label>
+                <div class="input-group">
+                    <label class="col-md-3 col-form-label text-md-right" for="jobrole">Job role:</label>
                     <div class="col-md-6">
                         <input id="role" name="jobrole" type="text" placeholder="QA" class="form-control input-md"
                             required>
@@ -43,19 +43,20 @@
                         <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
                 </div>
-
-                <div class="form-group row">
-                    <label class="col-md-4 col-form-label text-md-right" for="interviewers">Interviewers:</label>
-                    <div class="col-md-8">
+                <br>               
+                <div class="input-group">
+                    <label class="col-md-3 col-form-label text-md-right" for="interviewers">Interviewers:</label>
+                    <div class="col-md-6">
                         <input class="form-control" type="text" id="interviewers" required>
                         <input type="hidden" id="TestHidden" value="{{result}}" required>
                         <div class="valid-feedback">Valid.</div>
                         <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
-                </div>
+                
 
-                <div class="col-md-6 offset-md-4 top-space-30">
+                <div class="col-md-2">
                     <button type="submit" id="submit">Submit</button>
+                </div>
                 </div>
             </form>
         </div>

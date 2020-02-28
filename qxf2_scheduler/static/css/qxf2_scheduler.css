@@ -149,11 +149,48 @@ label,
         top: 18px;
         left: 10px;
       }
-    
+      .navbar img {
+        float: left;
+        width: 80px;
+        height: 80px;
+        position: relative;
+        top: -12px;
 
-
-
-
-
-
-    
+    }
+    .navbar h1 {
+        top: 18px;
+        font-size: 30px;
+        color: brown;
+        text-align: center;
+    }
+    .navbar {
+        min-height: 80px;
+    }
+    .wor_copyright {
+        font-family: "Abel", Arial, sans-serif;
+        font-size: 12px;
+    }
+    .margin-base-vertical {
+        margin: 40px 0;
+    }
+    .footer{        
+        overflow: hidden;
+        background-color: #333;
+        position: fixed;
+        bottom: 0;
+        width: 100%;           
+    }
+    .footer p {
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+      .footer a.active {
+        background-color: #4CAF50;
+        color: white;
+      }
+      
+      

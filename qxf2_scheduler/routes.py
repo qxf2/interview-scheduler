@@ -644,14 +644,16 @@ def schedule_interview(job_id,url,candidate_id):
 @app.route('/<job_id>/get-schedule')
 def redirect_get_schedule(job_id):
     "Redirect to the get schedule page"
-    round_time = session.get('round_time')
+    round_info = session.get('round_details')    
     data = {
     'candidate_id':session['candidate_info']['candidate_id'],
     'candidate_name':session['candidate_info']['candidate_name'],
     'candidate_email':session['candidate_info']['candidate_email'],
     'job_id':session['candidate_info']['job_id'],
-    'round_time': round_time
+    'round_time': round_info['round_time'],
+    'round_description':round_info['round_description'],
     }
+    
     return render_template("get-schedule.html",result=data)
 
 
@@ -667,7 +669,11 @@ def send_invite(candidate_id, job_id):
         round_description = request.form.get("rounddescription")
         round_id = request.form.get("roundid")
         round_time = request.form.get("roundtime")
-        session['round_time'] = round_time
+        round_info = {'round_time':round_time,
+                        'round_description':round_description}
+        session['round_details'] = round_info
+        #session['round_time'] = round_time
+        #session['round_description'] = round_description
         generated_url = base_url + generated_url +'/welcome'
         try:
             msg = Message("Schedule an Interview with Qxf2 Services!",

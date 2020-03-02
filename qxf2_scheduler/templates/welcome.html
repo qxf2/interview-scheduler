@@ -17,6 +17,7 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Abel|Open+Sans:400,600" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
    
 </head>
 
@@ -64,19 +65,15 @@
     </div>
 
     {% else %}
-    <div class="container col-md-offset-1">
-        <h3 align="center">Welcome to Qxf2</h3>
-        <label class="col-md-4 control-label" for="candidatename">Candidate Name:</label>
-        <label class="col-md-4">{{result.candidate_name}}</label>
-        <label class="col-md-4 control-label" for="candidateemail">Candidate Email:</label>
-        <label class="col-md-4">{{result.candidate_email}}</label>
-        <label class="col-md-4 control-label" for="interviewStart">Interview Start time:</label>
-        <label class="col-md-4">{{interview_result.interview_start_time}}</label>
-        <label class="col-md-4 control-label" for="interviewEnd">Interview End Time:</label>
-        <label class="col-md-4">{{interview_result.interview_end_time}}</label>
-        <label class="col-md-4 control-label" for="interviewDate">Interview Date:</label>
-        <label class="col-md-4">{{interview_result.interview_date}}</label>
-        <p>Hi {{result.candidate_name}}, Your interview has been scheduled already.</p>
+    <div class="w3-panel w3-blue w3-round-xsmall">
+        <p>
+            Hi {{result.candidate_name}}, Your interview has been scheduled already.<br><br>
+            Candidate Name:{{result.candidate_name}} <br><br>
+            Candidate Email:{{result.candidate_email}}<br><br>
+            Interview Start time:{{interview_result.interview_start_time}}<br><br>
+            Interview End Time:{{interview_result.interview_end_time}}<br><br>
+        </p>        
+        {% include "footer.html" %}
     </div>
     {% endif %}
     </div>

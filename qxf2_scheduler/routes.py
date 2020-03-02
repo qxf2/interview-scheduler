@@ -9,9 +9,8 @@ import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json
 import ast
-import sys
+import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from datetime import datetime
 from flask_mail import Message, Mail
 
 mail = Mail(app)
@@ -599,7 +598,6 @@ def show_welcome(candidate_id, job_id, url):
             #Parsing candidate details
             for candidate_detail in get_candidate_details:
                 data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
-
             #Parsing Interview details
             for interview_detail in get_interview_details:            
                 interview_start_time = parse_interview_time(interview_detail.interview_start_time)

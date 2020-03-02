@@ -20,34 +20,44 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-
+      
 </head>
-
-<body>
-
-
-    <div class="container col-md-offset-1">
-        <div class="row top-space-30">
-            <form>
-                <div class='form-group'>
-                    <div id="holder" class='form-group'></div>
-                    <label for='Date'>Choose the interview date:</label>
-                    <!--Src for disable keyboard: https://stackoverflow.com/questions/153759/jquery-datepicker-with-text-input-that-doesnt-allow-user-input-->
-                    <input type='text' name='datefield' id='datepicker' readonly='true' placeholder="Select date...">
-                </div>
-                <div class='form-group'>
-                    <input class="btn btn-success" type='button' id='submit' value='Submit'>
-                </div>
-            </form>
+<body style="background-color:powderblue;">  
+    <header class="header header-default header">
+        <div class="container-fluid">
+            <div class="header-header">
+                <a class="header-brand" href="#">
+                    <img class="row top-space-2 logo img-responsive header"
+                        src="/static/img/qxf2_logo.png"
+                        alt="Qxf2 Services"></img></a>
+                </a>
+                <h1>Qxf2 Services-Interview Scheduler</h1>
+            </div>
         </div>
-        {{result['round_time']}}
-        <input type="hidden" id="roundDuration" value="{{result['round_time']}}">
-        <div class="row top-space-30" id="resultDiv">
-        </div>
-        <div class="row top-space-30" id="chosenSlot"></div>
-        <div class="row top-space-30" id="scheduledEvent"></div>
+    </header>
+    <section>
+        <nav>           
+            <label for='Date'>Choose the interview date:</label>
+            <!--Src for disable keyboard: https://stackoverflow.com/questions/153759/jquery-datepicker-with-text-input-that-doesnt-allow-user-input-->
+            <input type='text' name='datefield' id='datepicker' readonly='true' placeholder="Select date...">           
+            <input class="btn btn-success" type='button' id='submit' value='Submit'>           
+        </nav>
+        <article>
+            <div>
+                <p>These are all round details. Please go through the round details before selecting the round.</p>
+            </div>
+        </article>
+
+    </section>
+   
+    <input type="hidden" id="roundDuration" value="{{result['round_time']}}">
+    <div class="row top-space-30" style="marigin-left:15px;"id="resultDiv">
+    </div>
+    <div class="row top-space-30" style="left:15px;"id="chosenSlot"></div>
+    <div class="row top-space-30" style="left:15px;" id="scheduledEvent"></div>
     </div>
     <div class="loader" id="loader" visibility="hidden"></div>
+
     <script>
         $(function () {
             //holidays in yyyy-mm-dd format
@@ -189,7 +199,7 @@
 
         }
     </script>
-
+    {% include "footer.html" %}
 </body>
 
 </html>

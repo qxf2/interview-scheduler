@@ -27,9 +27,9 @@
         {% if 'job_id' in result %}
        
             <div class="panel panel-default" style="max-width:700px;margin-left:auto;margin-right:auto;">
-                <div class="panel-heading ">Interview Scheduler</div>
+                <div class="panel-heading " style="text-align: center;">Interview Scheduler</div>
                 <div class="panel-body">
-                    <p>Thankyou for applying with us. To schedule an interview please fill the below details </p>
+                    <p>Thank you for applying with us. To schedule an interview please fill the below details </p>
                     <form action="/{{ result.job_id }}/{{result.url}}/{{result.candidate_id}}/valid" method="POST">
                         <div class="form-group">
                             <div class="row">

@@ -29,13 +29,13 @@
 <body>
     <div class="container col-md-offset-1">
         <div class="row top-space-30">
-            <h2>Add the job role and Interviewers</h2>
+            <h2>Add the Job role and Interviewers</h2>
         </div>
 
         <div class="row top-space-30">
             <form class="needs-validation">
-                <div class="form-group row">
-                    <label class="col-md-4 col-form-label text-md-right" for="jobrole">Job role:</label>
+                <div class="input-group">
+                    <label class="col-md-3 col-form-label text-md-right" for="jobrole">Job role:</label>
                     <div class="col-md-6">
                         <input id="role" name="jobrole" type="text" placeholder="QA" class="form-control input-md"
                             required>
@@ -43,19 +43,20 @@
                         <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
                 </div>
-
-                <div class="form-group row">
-                    <label class="col-md-4 col-form-label text-md-right" for="interviewers">Interviewers:</label>
-                    <div class="col-md-8">
+                <br>               
+                <div class="input-group">
+                    <label class="col-md-3 col-form-label text-md-right" for="interviewers">Interviewers:</label>
+                    <div class="col-md-6">
                         <input class="form-control" type="text" id="interviewers" required>
                         <input type="hidden" id="TestHidden" value="{{result}}" required>
                         <div class="valid-feedback">Valid.</div>
                         <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
-                </div>
+                
 
-                <div class="col-md-6 offset-md-4 top-space-30">
+                <div class="col-md-2">
                     <button type="submit" id="submit">Submit</button>
+                </div>
                 </div>
             </form>
         </div>
@@ -72,38 +73,33 @@
                         event.preventDefault();
                         event.stopPropagation();
                         if (form.checkValidity() === false) {
-                            console.log("I am inside true");
 
                         }
                         else {
                             var jobName = $("#role").val();
                             var interviewersList = $("#interviewers").val();
-                            console.log(interviewersList);
                             var lastString = interviewersList.charAt(interviewersList.length - 1);
                             var lastlistChar = isLetter(lastString)
-                            console.log(lastlistChar);
-                            if (lastlistChar=='true') {
-                                var interviewersList = $("#interviewers").val().split(',');                               
-                            }
-                            else {                                
+                            if (lastlistChar == 'true') {
                                 var interviewersList = $("#interviewers").val().split(',');
-                                interviewersList.pop();                            
                             }
-                            function isLetter (lastString){
-                                console.log("iam coming here");
-                                if (lastString.length === 1 && lastString.match(/[a-z]/i)){
+                            else {
+                                var interviewersList = $("#interviewers").val().split(',');
+                                interviewersList.pop();
+                            }
+                            function isLetter(lastString) {
+                                if (lastString.length === 1 && lastString.match(/[a-z]/i)) {
                                     return 'true';
                                 }
-                                
+
                             }
                             var interviewerslistLength = interviewersList.length
-                            console.log(interviewerslistLength);
                             if (interviewerslistLength === 0) {
                                 alert("The interviewers should be chosen from the list");
                                 document.location.href = "/jobs/add";
                             }
                             else {
-                                $("#submit").attr("disabled",true);
+                                $("#submit").attr("disabled", true);
                                 $.ajax({
                                     type: 'POST',
                                     url: '/jobs/add',
@@ -112,12 +108,10 @@
                                         'interviewerlist': JSON.stringify(interviewersList)
                                     },
                                     success: function (result) {
-                                        console.log(result);
                                         alert("The job has been added");
                                         document.location.href = "/jobs";
                                     },
                                     error: function (request, status, message) {
-                                        console.log(request);
                                         alert(request.responseJSON.message);
                                         document.location.href = "/jobs/add";
                                     }
@@ -165,15 +159,15 @@
                     select: function (event, ui) {
                         var terms = split(this.value);
                         // remove the current input
-                        console.log("i am terms", terms);
                         terms.pop();
-                        console.log("i am second terms", terms);
                         // add the selected item
                         terms.push(ui.item.value);
-                        console.log("i am third terms", terms);
+                        const index = availableTags.indexOf(ui.item.value);
+                        if (index > -1) {
+                            availableTags.splice(index, 1);
+                        }
                         // add placeholder to get the comma-and-space at the end
                         terms.push("");
-                        console.log("i am fourth terms", terms);
                         this.value = terms.join(", ");
                         return false;
                     }

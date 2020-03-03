@@ -26,30 +26,22 @@ from qxf2_scheduler.models import Jobcandidate,Updatetable
 
 def scheduler_job():
     "Runs this job in the background"
-    print("I am second")
-    interview_start_time_list = []
     last_inserted_id = db.session.query(Updatetable).order_by(Updatetable.table_id.desc()).first() 
     fetch_interview_time = Jobcandidate.query.all()
-    interview_start_time_list.append(fetch_interview_time)
-    print(fetch_interview_time)
-    for each_interview_time in interview_start_time_list:
-        print(each_interview_time.interview_start_time,each_interview_time.candidate_id)
-        
-        if each_interview_time.interview_start_time >= last_inserted_id.last_updated_date:
-            print("inside if")
-            update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
-            db.session.commit()
-
-    
-    #fetch_interview_start_time = Jobcandidate.query.filter(last_inserted_id.last_updated_date>=Jobcandidate.interview_start_time).update({'candidate_status':1}) 
-    #db.session.commit()   
-    
+    for each_interview_time in fetch_interview_time:
+        if each_interview_time.interview_start_time == None:
+            pass
+        else:            
+            interview_start_time = datetime.datetime.strptime(each_interview_time.interview_start_time,'%Y-%m-%dT%H:%M:%S+05:30')            
+            last_updated_date = datetime.datetime.strptime(last_inserted_id.last_updated_date,'%Y-%m-%d %H:%M:%S')
+            if interview_start_time <= last_updated_date:
+                update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
+                db.session.commit()
+                
 
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)
-print("I am first")
-sched.add_job(scheduler_job,'cron',minute='*')
-#sched.add_job(scheduler_job,'cron',day_of_week='1-5', hour='*', minute='1,31')
+sched.add_job(scheduler_job,'cron',day_of_week='1-5', hour='*', minute='1,31')
 sched.start()
 
 

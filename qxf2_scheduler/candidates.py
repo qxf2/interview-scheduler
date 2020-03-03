@@ -87,7 +87,8 @@ def add_candidate(job_role):
             
         return render_template("add-candidates.html",data=available_job_list)
 
-    if request.method == 'POST':        
+    if request.method == 'POST': 
+        result_flag = True       
         candidate_name = request.form.get('candidateName')
         candidate_email = request.form.get('candidateEmail').lower()
         candidate_job_applied = request.form.get('jobApplied')  
@@ -96,13 +97,19 @@ def add_candidate(job_role):
         #Check the candidate has been already added or not
         check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar()        
         if check_candidate_exists == True:
-            error = "Failed"            
+            #check the job of the candidates if the emails are same
+            candidate_applied_job = db.session.query(db.exists().where(Candidates.job_applied==candidate_job_applied)).scalar()
+            if candidate_applied_job == True:
+                result_flag = False 
+        if result_flag == False:
+            error = "Failed"           
         else:
-            add_candidate_object = Candidates(candidate_name=candidate_name,candidate_email=candidate_email)
+            add_candidate_object = Candidates(candidate_name=candidate_name,candidate_email=candidate_email,job_applied=candidate_job_applied)
             db.session.add(add_candidate_object)
+            db.session.flush()
+            candidate_id = add_candidate_object.candidate_id
             db.session.commit()
-            #getting the unique candidate id for new candidate
-            candidate_id = Candidates.query.filter(Candidates.candidate_email==candidate_email).value(Candidates.candidate_id)
+            
             # Fetch the id for the candidate status 'Waiting on Qxf2'
             #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file           
             candidate_status_id = Candidatestatus.query.filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[0]).values(Candidatestatus.status_id)

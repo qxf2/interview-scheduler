@@ -255,7 +255,7 @@ def no_opening():
     candidate_id = request.form.get('candidateid')
     try:
         msg = Message("Currently we don't have an opening!",sender="test@qxf2.com", recipients=[candidate_email])
-        msg.body = "Hi %s ,We have received your resume and thanks for applying for the job.Currently we don't have an opening for the job position.We will get back to you once we have a opening"%(candidate_name)
+        msg.body = "Hi %s ,\n\nWe have received your resume and thanks for applying for the job. Currently we don't have an opening for the job position. We will get back to you once we have an opening.\n\nThanks,\nQxf2 Services"%(candidate_name)
         mail.send(msg)
         #Update the candidate status to 'Waiting for new opening'
         candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[6]).scalar()

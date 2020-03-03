@@ -9,7 +9,7 @@ import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json
 import ast
-import sys
+import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 from flask_mail import Message, Mail

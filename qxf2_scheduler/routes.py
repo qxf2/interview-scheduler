@@ -676,7 +676,7 @@ def send_invite(candidate_id, job_id):
         try:
             msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
                           sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])
-            msg.body = "Hi %s ,\n\nWe have received your resume using our Interview Scheduler application. You can refer to the details as below.\n\nRound Details: %s. \nPlease use the URL to schedule an interview with us : '%s' \nAll the Very Best!!! \n\nThanks, \nQxf2 Services"% (
+            msg.body = "Hi %s ,\n\nThank you for choosing to interview with Qxf2 Services. You have been selected for the(round name)round of our interview. Please self-schedule your interview with us by visiting <a href='%s'> this link</a>.\n\nThe link above will have the details about what to expect in this round. Choose a convenient date for your interview to see a list all the time slots we have available for your interview. Select a time slot that suits you and your interview with us will be scheduled automatically. Once you schedule your interview, you will receive a calendar invite confirming the interview.\n\nThanks, \nQxf2 Services"% (
                 candidate_name, round_description, generated_url)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'

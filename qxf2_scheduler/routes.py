@@ -678,8 +678,8 @@ def send_invite(candidate_id, job_id):
         try:
             msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
                           sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])
-            msg.body = "Hi %s ,\n\nThank you for choosing to interview with Qxf2 Services. You have been selected for the %s round of our interview. Please self-schedule your interview with us by visiting <a href='%s'> this link</a>.\n\nThe link above will have the details about what to expect in this round. Choose a convenient date for your interview to see a list all the time slots we have available for your interview. Select a time slot that suits you and your interview with us will be scheduled automatically. Once you schedule your interview, you will receive a calendar invite confirming the interview.\n\nThanks, \nQxf2 Services"% (
-                candidate_name, round_name, generated_url)
+            msg.body = "Hi %s ,\n\nThank you for choosing to interview with Qxf2 Services. You have been selected for the '%s' of our interview. Please self-schedule your interview with us by visiting '%s' this link. \n\nThe link above will have the details about what to expect in this round. Choose a convenient date for your interview to see a list all the time slots we have available for your interview. Select a time slot that suits you and your interview with us will be scheduled automatically. Once you schedule your interview, you will receive a calendar invite confirming the interview.\n\nThanks, \nQxf2 Services"% (
+            candidate_name, round_name, generated_url)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'
             #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file

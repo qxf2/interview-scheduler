@@ -577,6 +577,7 @@ def show_welcome(candidate_id, job_id, url):
     interview_data = {}
     data = {'job_id': job_id,'candidate_id':candidate_id,'url':url}
     s = Serializer('WEBSITE_SECRET_KEY')
+    round_info = session.get('round_details')
     try:
         url = s.loads(url)
         #This query fetches the candidate status id
@@ -593,7 +594,7 @@ def show_welcome(candidate_id, job_id, url):
             get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
 
             #Fetch the interview date and time
-            get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date)
+            get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date,Jobcandidate.interviewer_email)
 
             #Parsing candidate details
             for candidate_detail in get_candidate_details:
@@ -602,7 +603,7 @@ def show_welcome(candidate_id, job_id, url):
             for interview_detail in get_interview_details:            
                 interview_start_time = parse_interview_time(interview_detail.interview_start_time)
                 interview_end_time = parse_interview_time(interview_detail.interview_end_time)
-                interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date}
+                interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date,'interviewer_email':interview_detail.interviewer_email,'round_time': round_info['round_time'],'round_description':round_info['round_description'],}
     except Exception as e:
         return render_template("expiry.html")
 
@@ -667,9 +668,9 @@ def send_invite(candidate_id, job_id):
         round_description = request.form.get("rounddescription")
         round_id = request.form.get("roundid")
         round_time = request.form.get("roundtime")
-        round_name = request.form.get('roundName')
+        round_name = request.form.get("roundname")
         round_info = {'round_time':round_time,
-                        'round_description':round_description}
+                        'round_description':round_description,'round_name':round_name}
         session['round_details'] = round_info
         #session['round_time'] = round_time
         #session['round_description'] = round_description

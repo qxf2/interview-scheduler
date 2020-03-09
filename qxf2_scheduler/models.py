@@ -67,7 +67,7 @@ class Rounds(db.Model):
     round_requirement = db.Column(db.String,nullable=False)
 
     def __repr__(self):
-        return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}')"
+        return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}','{self.round_name}')"
 
         
 class Jobcandidate(db.Model):

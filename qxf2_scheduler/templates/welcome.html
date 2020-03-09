@@ -28,7 +28,7 @@
         {% if 'job_id' in result %}
        
             <div class="panel panel-default" style="max-width:700px;margin-left:auto;margin-right:auto;">
-                <div class="panel-heading " style="text-align: center;">Interview Scheduler</div>
+                <div class="panel-heading " style="text-align: center;"></div>
                 <div class="panel-body">
                     <p>Thank you for applying with us. To schedule an interview please fill the below details </p>
                     <form action="/{{ result.job_id }}/{{result.url}}/{{result.candidate_id}}/valid" method="POST">
@@ -65,18 +65,47 @@
     </div>
 
     {% else %}
-    <div class="w3-panel w3-blue w3-round-xsmall">
-        <p>
-            Hi {{result.candidate_name}}, Your interview has been scheduled already.<br><br>
-            Candidate Name:{{result.candidate_name}} <br><br>
-            Candidate Email:{{result.candidate_email}}<br><br>
-            Interview Start time:{{interview_result.interview_start_time}}<br><br>
-            Interview End Time:{{interview_result.interview_end_time}}<br><br>
-        </p>        
-        {% include "footer.html" %}
+    <div class="panel panel-default" style="max-width:1000px;max-height: 800px;margin-left:auto;margin-right:auto;">
+        <div class="panel-heading " style="text-align: center;">Scheduled Interview details</div>
+        <div class="panel-body" id="resultDiv">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="intervieweremail:">Interviewer
+                            Email:{{interview_result.interviewer_email}}</label>
+
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="interviewerstarttime:">
+                            Interview date:{{interview_result.interview_date}}<br></br>
+                            Interview start time:{{interview_result.interview_start_time}}<br><br>
+                            Interview end time:{{interview_result.interview_end_time}}</label>
+
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="roundduration:">Round
+                            Duration:{{interview_result.round_time}}</label>
+
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="rounddescription:">Round
+                            Description:{{interview_result.round_description}}</label>
+
+                    </div>
+                </div>
+            </div>      
+            
     </div>
     {% endif %}
-    </div>
+</div>  
+    
+   
     <script>
         $("#submit").click(function () {
             var validValue = true;

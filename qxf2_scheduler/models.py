@@ -1,6 +1,8 @@
 from qxf2_scheduler import db
 import datetime
 from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint,DateTime
+from qxf2_scheduler import login_manager
+from flask_login import UserMixin
 
 class Interviewers(db.Model):
     "Adding the interviewer" 
@@ -126,3 +128,15 @@ class Candidateinterviewer(db.Model):
 
     def __repr__(self):
         return f"Candidateinterviewer('{self.job_id}','{self.candidate_id}','{self.interviewer_id}')"
+
+
+class Login(db.Model,UserMixin):
+    "Creates username and password"
+    id = db.Column(db.Integer,primary_key=True,nullable=False)
+    username = db.Column(db.String,nullable=False)
+    password = db.Column(db.String,nullable=False)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Login.query.get(int(user_id))

@@ -12,14 +12,15 @@ import ast
 import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Message, Mail
+from flask_login import current_user, login_user,login_required
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
-
+@login_required
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
     "Dummy page to let you see a schedule"
@@ -125,13 +126,56 @@ def scehdule_and_confirm():
     return render_template("get-schedule.html")
 
 
-@app.route("/")
+def validate(username):
+    "Validate the username and passowrd"
+    exists = db.session.query(db.exists().where(Login.username == username)).scalar()        
+    print(exists)
+    return exists
+
+
+def password_validate(password):
+    "Validate the username and passowrd"
+    exists = db.session.query(db.exists().where(Login.password == password)).scalar() 
+
+    return exists
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None  
+    if request.method == 'GET':
+        return render_template('login.html', error=error)          
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        data = {'username':username,'password':password}
+        completion = validate(username)
+        if completion ==False:
+            print("I am first false")
+            error = 'error.'
+        else:
+            print("I am first else")
+            password_check = password_validate(password)
+            if password_check ==False:
+                print("I am second if")
+                error = 'error.'
+            else:
+                print("I am second else")
+                login_user(username)
+                error = 'Success'
+        api_response = {'data':data,'error':error}
+        return jsonify(api_response)
+
+    
+@app.route("/index")
+@login_required
 def index():
     "The index page"
     return "The page is not ready yet!"
 
 
 @app.route("/interviewers")
+@login_required
 def list_interviewers():
     "List all the interviewer names"
     all_interviewers = Interviewers.query.all()

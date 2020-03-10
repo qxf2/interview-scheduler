@@ -12,7 +12,7 @@ import ast
 import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Message, Mail
-from flask_login import current_user, login_user,login_required
+from flask_login import current_user, login_user,login_required,logout_user
 
 mail = Mail(app)
 
@@ -20,8 +20,8 @@ from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobi
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
-@login_required
 @app.route("/get-schedule", methods=['GET', 'POST'])
+@login_required
 def date_picker():
     "Dummy page to let you see a schedule"
     if request.method == 'GET':
@@ -149,24 +149,32 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         data = {'username':username,'password':password}
+        
         completion = validate(username)
         if completion ==False:
-            print("I am first false")
             error = 'error.'
         else:
-            print("I am first else")
             password_check = password_validate(password)
             if password_check ==False:
-                print("I am second if")
                 error = 'error.'
             else:
-                print("I am second else")
-                login_user(username)
+                user = Login()
+                user.name=username
+                user.password=password
+                login_user(user)
                 error = 'Success'
         api_response = {'data':data,'error':error}
         return jsonify(api_response)
 
-    
+
+@app.route("/logout",methods=["GET","POST"])
+@login_required
+def logout():
+    "Logout the current page"
+    logout_user()
+    return redirect(url_for('login'))
+
+
 @app.route("/index")
 @login_required
 def index():

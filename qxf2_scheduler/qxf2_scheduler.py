@@ -33,15 +33,15 @@ def scheduler_job():
             pass
         else:            
             interview_start_time = datetime.datetime.strptime(each_interview_time.interview_start_time,'%Y-%m-%dT%H:%M:%S+05:30')            
-            last_updated_date = datetime.datetime.strptime(last_inserted_id.last_updated_date,'%Y-%m-%d %H:%M:%S')
-            if interview_start_time <= last_updated_date:
+            if interview_start_time <= datetime.datetime.now():
                 update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
                 db.session.commit()
                 
 
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(scheduler_job,'cron',day_of_week='1-5', hour='*', minute='1,31')
+sched.add_job(scheduler_job,'cron', minute='*')
+#sched.add_job(scheduler_job,'cron',day_of_week='1-5', hour='*', minute='1,31')
 sched.start()
 
 

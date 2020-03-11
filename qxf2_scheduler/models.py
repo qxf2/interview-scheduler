@@ -1,6 +1,8 @@
 from qxf2_scheduler import db
 import datetime
 from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint,DateTime
+from sqlalchemy.sql import table, column
+
 
 class Interviewers(db.Model):
     "Adding the interviewer" 
@@ -52,6 +54,7 @@ class Candidates(db.Model):
     candidate_name = db.Column(db.String,nullable=False)
     candidate_email = db.Column(db.String,nullable=False)
     date_applied = db.Column(DateTime, default=datetime.datetime.utcnow)
+    job_applied = db.Column(db.String,nullable=False)
     
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"
@@ -109,12 +112,10 @@ class Candidatestatus(db.Model):
     status_id = db.Column(db.Integer,primary_key=True)
     status_name = db.Column(db.String)
 
-
 class Updatetable(db.Model):
     "Store the last updated date of Jobcandidate"
     table_id = db.Column(db.Integer,primary_key=True)
     last_updated_date = db.Column(db.Integer)
-
 
 class Candidateinterviewer(db.Model):
     "Combine candidate id ,interviewer id and round id,job id"

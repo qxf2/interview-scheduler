@@ -72,7 +72,6 @@
                         event.preventDefault();
                         event.stopPropagation();
                         if (form.checkValidity() === false) {
-                            console.log("I am inside true");
 
                         }
                         else {
@@ -81,7 +80,6 @@
                             var jobId = document.getElementById("idHidden").value;
                             var lastString = interviewersList.charAt(interviewersList.length - 1);
                             var lastlistChar = isLetter(lastString)
-                            console.log(lastlistChar);
                             if (lastlistChar=='true') {
                                 var interviewersList = $("#interviewers").val().split(',');                                
                             }
@@ -91,7 +89,6 @@
 
                             }
                             function isLetter (lastString){
-                                console.log("iam coming here");
                                 if (lastString.length === 1 && lastString.match(/[a-z]/i)){
                                     return 'true';
                                 }
@@ -110,7 +107,6 @@
                                     document.location.href = "/jobs";
                                 },
                                 error: function (request, status, message) {
-                                    console.log(request);
                                     alert(request.responseJSON.message);
                                     document.location.href = "/jobs";
                                 }
@@ -162,6 +158,10 @@
                         // add the selected item
                         terms.push(ui.item.value);
                         // add placeholder to get the comma-and-space at the end
+                        const index = availableTags.indexOf(ui.item.value);
+                        if (index > -1) {
+                            availableTags.splice(index, 1);
+                        }
                         terms.push("");
                         this.value = terms.join(", ");
                         return false;

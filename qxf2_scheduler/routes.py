@@ -21,6 +21,14 @@ DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
 
+@app.route('/')
+@app.route('/index')
+def index_page():
+    "The home page"
+    return render_template('index.html')
+
+
+
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
     "Dummy page to let you see a schedule"

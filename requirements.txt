@@ -14,6 +14,7 @@ docopt==0.6.2
 execnet==1.7.1
 Flask==1.1.1
 Flask-Alembic==2.0.1
+Flask-Login==0.5.0
 Flask-Mail==0.9.1
 Flask-Migrate==2.5.2
 Flask-Script==2.0.6

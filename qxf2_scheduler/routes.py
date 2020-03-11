@@ -20,6 +20,46 @@ from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobi
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
+def check_user_exists(user_email):
+    "Check the job already exists in the database"
+    fetch_existing_user_email = Login.query.all()
+    emails_list = []
+    # Fetch the job role
+    for each_email in fetch_existing_user_email:
+        emails_list.append(each_email.email.lower())
+
+    # Compare the job with database job list
+    if user_email.lower() in emails_list:
+        check_user_exists = True
+    else:
+        check_user_exists = False
+
+    return check_user_exists
+
+@app.route("/registration",methods=['GET','POST'])
+def registration():
+    if request.method == 'GET':
+        return render_template('signup.html')
+    if request.method == 'POST':
+        user_name = request.form.get('username')
+        user_password = request.form.get('userpassword')
+        user_email = request.form.get('useremail')
+        check_user_exist = check_user_exists(user_email)
+        data = {'user_name':user_name,'user_email':user_email,'user_password':user_password}
+        if check_user_exist == True:
+            error = 'error'
+        else:
+            add_new_user_object = Login(username=user_name,email=user_email,password=user_password)
+            db.session.add(add_new_user_object)
+            db.session.flush()
+            user_id = add_new_user_object.id
+            db.session.commit()
+            error = 'Success'
+        api_response = {'data':data,'error':error}
+    
+    return jsonify(api_response)
+        
+
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
     "Dummy page to let you see a schedule"

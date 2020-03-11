@@ -136,9 +136,10 @@ class Login(db.Model,UserMixin):
     id = db.Column(db.Integer,primary_key=True,nullable=False)
     username = db.Column(db.String,nullable=False)
     password = db.Column(db.String,nullable=False)
+    email = db.Column(db.String,nullable=False)
 
     def __repr__(self):
-        return f"Login('{self.id}','{self.username}','{self.password}')"
+        return f"Login('{self.id}','{self.username}','{self.password}','{self.email}')"
 
 @login_manager.user_loader
 def load_user(user_id):

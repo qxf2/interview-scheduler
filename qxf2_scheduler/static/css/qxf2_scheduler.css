@@ -25,7 +25,7 @@ body {
     border-radius: 50%;
     border-top: 10px solid #03a5fc;
     border-bottom: 10px solid #03a5fc;
-    width: 100%;
+    width: 90px;
     height: 90px;
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;

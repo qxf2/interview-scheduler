@@ -21,7 +21,7 @@ DESCRIPTION = 'A senior Qxf2 employee will talk to you and get to know your back
 ATTENDEE = 'annapoorani@qxf2.com'
 DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
 
-from qxf2_scheduler.models import Jobcandidate,Updatetable
+from qxf2_scheduler.models import Jobcandidate,Updatetable,Interviewers,Candidates
 
 
 def scheduler_job():
@@ -126,7 +126,17 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
     else:
         attendee_email_id = interviewer_emails
     interviewer_candidate_email.append(attendee_email_id)
-    interviewer_candidate_email.append(candidate_email)    
+    interviewer_candidate_email.append(candidate_email)
+    #Fetch interviewers name from the email 
+    fetch_interviewer_name = Interviewers.query.filter(Interviewers.interviewer_email==attendee_email_id).values(Interviewers.interviewer_name)
+    for interviewer_name in fetch_interviewer_name:
+        chosen_interviewer_name = interviewer_name.interviewer_name
+    #Fetch candidate info
+    fetch_candidate_name = Candidates.query.filter(Candidates.candidate_email==candidate_email).values(Candidates.candidate_name,Candidates.job_applied)
+    for candidate_details in fetch_candidate_name:
+        candidate_name = candidate_details.candidate_name
+        candidate_job = candidate_details.job_applied
+    SUMMARY = candidate_name + '/' + chosen_interviewer_name + '-' + candidate_job
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
     SUMMARY,LOCATION,DESCRIPTION,interviewer_candidate_email)

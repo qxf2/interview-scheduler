@@ -16,52 +16,95 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Abel|Open+Sans:400,600" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+   
 </head>
 
-<body>
+<body style="background-color:powderblue;">
+    {% include "header.html" %}
+    <div class="container">
     <div class="bs-example">
         {% if 'job_id' in result %}
-        <h3>Welcome to Qxf2</h3>
-        <p>Please fill the below fields and submit your details to schedule next round of your Interview</p>
-        <form action="/{{ result.job_id }}/{{result.url}}/{{result.candidate_id}}/valid" method="POST">
-            <div class="form-group">
-                <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your name</label>
-                <div class="col-md-3">
-                    <input id="candidate-name" name="candidate-name" type="text" placeholder="John"
-                        class="form-control input-md" required>
+       
+            <div class="panel panel-default" style="max-width:700px;margin-left:auto;margin-right:auto;">
+                <div class="panel-heading " style="text-align: center;"></div>
+                <div class="panel-body">
+                    <p>Thank you for applying with us. To schedule an interview please fill the below details </p>
+                    <form action="/{{ result.job_id }}/{{result.url}}/{{result.candidate_id}}/valid" method="POST">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-4 control-label"><span style="color:red">*</span>Enter your name</label>
+                                <div class="col-md-7">
+                                    <input id="candidate-name" name="candidate-name" type="text" placeholder="John"
+                                        class="form-control input-md" required>
+                                </div>
+                            </div>
+            
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-4 control-label"><span style="color:red">*</span>Enter your email</label>
+                                <div class="col-md-7">
+                                    <input id="candidate-email" name="candidate-email" type="email"
+                                        placeholder="johndoe@example.com" class="form-control input-md" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="save"></label>
+                            <div class="col-md-8">
+                                <input class="btn btn-success show-modal" type='submit' id='submit'
+                                    value='Go for schedule'>
+                            </div>
+                        </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="col-md-3 control-label"><span style="color:red">*</span>Enter your email</label>
-                <div class="col-md-3">
-                    <input id="candidate-email" name="candidate-email" type="email" placeholder="johndoe@example.com"
-                        class="form-control input-md" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-md-4 control-label" for="save"></label>
-                <div class="col-md-8">
-                    <input class="btn btn-success show-modal" type='submit' id='submit' value='Go for schedule'>
-                </div>
-            </div>
-        </form>
-        {% else %}
-        <div class="container col-md-offset-1">
-            <h3 align="center">Welcome to Qxf2</h3>
-            <label class="col-md-4 control-label" for="candidatename">Candidate Name:</label>
-            <label class="col-md-4">{{result.candidate_name}}</label>
-            <label class="col-md-4 control-label" for="candidateemail">Candidate Email:</label>
-            <label class="col-md-4">{{result.candidate_email}}</label>
-            <label class="col-md-4 control-label" for="interviewStart">Interview Start time:</label>
-            <label class="col-md-4">{{interview_result.interview_start_time}}</label>
-            <label class="col-md-4 control-label" for="interviewEnd">Interview End Time:</label>
-            <label class="col-md-4">{{interview_result.interview_end_time}}</label>
-            <label class="col-md-4 control-label" for="interviewDate">Interview Date:</label>
-            <label class="col-md-4">{{interview_result.interview_date}}</label>
-            <p>Hi {{result.candidate_name}}, Your interview has been scheduled already.</p>
+            </form>
         </div>
-        {% endif %}
     </div>
+
+    {% else %}
+    <div class="panel panel-default" style="max-width:1200px;max-height: 500px;margin-left:auto;margin-right:auto;top:50px">
+        <div class="panel-heading " style="text-align: center;">Scheduled Interview details</div>
+        <div class="panel-body" id="resultDiv">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="intervieweremail:">Interviewer
+                            Email:{{interview_result.interviewer_email}}</label>
+
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="interviewerstarttime:">
+                            Interview date:{{interview_result.interview_date}}<br></br>
+                            Interview start time:{{interview_result.interview_start_time}}<br><br>
+                            Interview end time:{{interview_result.interview_end_time}}</label>
+
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="roundduration:">Round
+                            Duration:{{interview_result.round_time}}</label>
+
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="rounddescription:">Round
+                            Description:{{interview_result.round_description}}</label>
+
+                    </div>
+                </div>
+            </div>      
+            {% endif %}  
+    </div>
+</div>  
+    
+   
     <script>
         $("#submit").click(function () {
             var validValue = true;
@@ -102,30 +145,26 @@
                     success: function (result) {
                         //if (result.responseJSON.error.error == "NameError")
                         console.log(result)
-                        if (result.error['error'] == "NameError")
-                         {                                                             
-                         
+                        if (result.error['error'] == "NameError") {
+
                             alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
                             window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
                         }
-                        if (result.error['error'] == "EmailError")
-                         {                                                             
-                         
+                        if (result.error['error'] == "EmailError") {
+
                             alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
                             window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
                         }
-                        if (result.error['error'] == "OtherError")
-                         {                                                             
-                         
+                        if (result.error['error'] == "OtherError") {
+
                             alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
                             window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
                         }
-                        if (result.error['error'] == "Success")
-                         {                                                             
-                         
-                            window.location.href = "/" + result.result['job_id'] +"/get-schedule";
+                        if (result.error['error'] == "Success") {
+
+                            window.location.href = "/" + result.result['job_id'] + "/get-schedule";
                         }
-                       
+
                     }
 
                 }
@@ -133,7 +172,10 @@
             }
             return false;
         })
-    </script>
+    </script>  
+    
+    {% include "footer.html" %}
+
 </body>
 
 </html>

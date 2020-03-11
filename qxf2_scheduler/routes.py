@@ -21,7 +21,6 @@ DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
-@login_required
 def date_picker():
     "Dummy page to let you see a schedule"
     if request.method == 'GET':
@@ -179,7 +178,7 @@ def logout():
 @login_required
 def index():
     "The index page"
-    return "The page is not ready yet!"
+    return render_template('index.html')
 
 
 @app.route("/interviewers")

@@ -133,3 +133,5 @@ open your terminal go to the interview scheduler directory and  Move in to the d
       To check the structure of table: .schema
 
 6] NOTE: DATA cannot be migrated. You should add your own data to db and proceed.
+
+7] Run python qxf2_scheduler/setup_db.py for initalizing the candidatestatus table with default values

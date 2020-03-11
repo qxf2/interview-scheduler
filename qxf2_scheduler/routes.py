@@ -21,7 +21,6 @@ DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
-@login_required
 def date_picker():
     "Dummy page to let you see a schedule"
     if request.method == 'GET':
@@ -128,8 +127,8 @@ def scehdule_and_confirm():
 
 def validate(username):
     "Validate the username and passowrd"
-    exists = db.session.query(db.exists().where(Login.username == username)).scalar()        
-    print(exists)
+    exists = db.session.query(db.exists().where(Login.username == username)).scalar() 
+
     return exists
 
 
@@ -238,6 +237,7 @@ def form_interviewer_details(interviewer_details):
 
 
 @app.route("/<interviewer_id>/interviewer")
+@login_required
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
@@ -279,6 +279,7 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
 
 
 @app.route("/interviewer/<interviewer_id>/edit", methods=['GET', 'POST'])
+@login_required
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
     # This query fetch the interviewer details by joining the time slots table and interviewers table.
@@ -333,6 +334,7 @@ def edit_interviewer(interviewer_id):
 
 
 @app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
+@login_required
 def delete_interviewer(interviewer_id):
     "Deletes an interviewer"
     if request.method == 'POST':
@@ -351,6 +353,7 @@ def delete_interviewer(interviewer_id):
 
 
 @app.route("/jobs/")
+@login_required
 def jobs_page():
     "Displays the jobs page for the interview"
     display_jobs = Jobs.query.all()
@@ -363,6 +366,7 @@ def jobs_page():
 
 
 @app.route("/<job_id>/details/")
+@login_required
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id"
     interviewers_list = []
@@ -418,6 +422,7 @@ def check_jobs_exists(job_role):
 
 
 @app.route("/jobs/add", methods=["GET", "POST"])
+@login_required
 def add_job():
     "Add ajob through UI"
     if request.method == 'GET':
@@ -465,6 +470,7 @@ def add_job():
 
 
 @app.route("/jobs/delete", methods=["POST"])
+@login_required
 def delete_job():
     "Deletes a job"
     if request.method == 'POST':
@@ -539,6 +545,7 @@ def update_job_interviewer_in_database(job_id, job_role, interviewers_list):
 
 
 @app.route("/job/<job_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_job(job_id):
     "Editing the already existing job"
     if request.method == 'GET':
@@ -593,6 +600,7 @@ def edit_job(job_id):
 
 
 @app.route("/interviewers/add", methods=["GET", "POST"])
+@login_required
 def add_interviewers():
     data = {}
     "Adding the interviewers"
@@ -709,6 +717,7 @@ def redirect_get_schedule(job_id):
 
 
 @app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
+@login_required
 def send_invite(candidate_id, job_id):
     "Send an invite to schedule an interview"
     if request.method == 'POST':

@@ -775,7 +775,7 @@ def send_invite(candidate_id, job_id):
         session['round_details'] = round_info
         #session['round_time'] = round_time
         #session['round_description'] = round_description
-        generated_url = base_url + generated_url +'/welcome'
+        generated_url = request.base_url + generated_url +'/welcome'
         try:
             msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
                           sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])

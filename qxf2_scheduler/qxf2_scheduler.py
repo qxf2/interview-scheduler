@@ -26,13 +26,21 @@ from qxf2_scheduler.models import Jobcandidate,Updatetable,Interviewers,Candidat
 
 def scheduler_job():
     "Runs this job in the background"
-    last_inserted_id = db.session.query(Updatetable).order_by(Updatetable.table_id.desc()).first()    
-    fetch_interview_start_time = Jobcandidate.query.filter(last_inserted_id.last_updated_date<=Jobcandidate.interview_start_time).update({'candidate_status':1}) 
-    db.session.commit()   
-    
+    last_inserted_id = db.session.query(Updatetable).order_by(Updatetable.table_id.desc()).first() 
+    fetch_interview_time = Jobcandidate.query.all()
+    for each_interview_time in fetch_interview_time:
+        if each_interview_time.interview_start_time == None:
+            pass
+        else:            
+            interview_start_time = datetime.datetime.strptime(each_interview_time.interview_start_time,'%Y-%m-%dT%H:%M:%S+05:30')            
+            if interview_start_time <= datetime.datetime.now():
+                update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
+                db.session.commit()
+                
 
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)
+#sched.add_job(scheduler_job,'cron', minute='*')
 sched.add_job(scheduler_job,'cron',day_of_week='1-5', hour='*', minute='1,31')
 sched.start()
 
@@ -287,6 +295,7 @@ def get_free_slots_in_chunks(free_slots,CHUNK_DURATION):
             
             #Find the difference between start and end slot
             diff_between_slots = convert_string_into_time(free_slot_end) - convert_string_into_time(free_slot_start)
+            print(CHUNK_DURATION)
             if diff_between_slots >= timedelta(minutes=int(CHUNK_DURATION)):
                 modified_free_slot_start = get_modified_free_slot_start(free_slot_start,marker=CHUNK_DURATION)
                 modified_free_slot_end = get_modified_free_slot_end(free_slot_end,marker=CHUNK_DURATION)

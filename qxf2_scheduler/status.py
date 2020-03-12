@@ -6,10 +6,12 @@ from qxf2_scheduler import db
 import json
 import string
 import random,sys,re
+from flask_login import login_required
 
 from qxf2_scheduler.models import Candidatestatus
 
 @app.route("/status",methods=["GET","POST"])
+@login_required
 def read_status():
     "Display the statuses from the database"
     read_status = db.session.query(Candidatestatus).all()
@@ -21,6 +23,7 @@ def read_status():
 
 
 @app.route("/status/<status_id>/delete",methods=["POST"]) 
+@login_required
 def delete_status(status_id):
     "Deletes a candidate"
     if request.method == 'POST':
@@ -52,6 +55,7 @@ def check_status_exists(status_name):
 
 
 @app.route("/status/add",methods=["GET","POST"])
+@login_required
 def add_status():
     "Add a status through UI"
     if request.method == 'GET':
@@ -77,6 +81,7 @@ def add_status():
 
 
 @app.route("/status/<status_id>/edit",methods=["GET","POST"])
+@login_required
 def edit_status(status_id):
     "Edit the status through UI"
     if request.method == "GET":

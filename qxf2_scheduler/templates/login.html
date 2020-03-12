@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask Auth Example</title>
+    <title>Interview Scheduler-Login/Signup</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -43,11 +43,19 @@
                             </div>
                             
                             <input type="button" class="btn btn-info" id="loginButton" value="Login">
+                            <input type="button" class="btn btn-info" id="signupButton" value="Signup">
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+        <script>
+            $("document").ready(function(){
+                $("#signupButton").click(function(){
+                    document.location.href = "/registration"
+                })
+            })
+        </script>
 
         <script>
             $("document").ready(function () {

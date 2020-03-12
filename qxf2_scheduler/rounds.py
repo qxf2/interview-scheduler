@@ -3,11 +3,13 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 from qxf2_scheduler import db
 import json,ast,sys,os,datetime
+from flask_login import login_required
 
 from qxf2_scheduler.models import Jobs, Rounds, Jobround
 
 
 @app.route("/job/<job_id>/rounds",methods=["GET","POST"])
+@login_required
 def read_round_details(job_id):
     "read round details"
     if request.method == 'GET':
@@ -28,6 +30,7 @@ def read_round_details(job_id):
 
 
 @app.route("/jobs/<job_id>/round/add",methods=["GET","POST"])
+@login_required
 def add_rounds_details(job_id):
     "add rounds details"
     if request.method == "POST": 
@@ -59,6 +62,7 @@ def add_rounds_details(job_id):
 
     
 @app.route("/rounds/<round_id>/jobs/<job_id>/delete")
+@login_required
 def delete_round_details(round_id,job_id):
     "delete round details"
     delete_round = Rounds.query.filter(Rounds.round_id == round_id).first()
@@ -72,6 +76,7 @@ def delete_round_details(round_id,job_id):
 
 
 @app.route("/rounds/<round_id>/jobs/<job_id>/edit",methods=["GET","POST"])
+@login_required
 def edit_round_details(round_id,job_id):
     "Edit the round details"
     if request.method == "GET":
@@ -103,6 +108,7 @@ def edit_round_details(round_id,job_id):
 
 
 @app.route("/roundname/get-description",methods=["GET","POST"])
+@login_required
 def get_round_description():
     "Get the round description"
     round_details = ast.literal_eval(request.form.get("round_name"))

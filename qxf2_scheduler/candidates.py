@@ -8,6 +8,7 @@ import string
 import random,sys
 from flask_mail import Message, Mail
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask_login import login_required
 
 
 mail = Mail(app)
@@ -27,6 +28,7 @@ def url_gen(candidate_id, job_id):
 
 
 @app.route("/candidates",methods=["GET"])
+@login_required
 def read_candidates():
     "Read the candidates"      
     display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role)
@@ -39,6 +41,7 @@ def read_candidates():
 
 
 @app.route("/candidate/<candidate_id>/delete",methods=["POST"]) 
+@login_required
 def delete_candidate(candidate_id):
     "Deletes a candidate"
     if request.method == 'POST':
@@ -70,6 +73,7 @@ def delete_candidate(candidate_id):
 #Passing the optional parameter through URL
 @app.route('/candidate/<job_role>/add')
 @app.route("/candidate/add",defaults={'job_role': None},methods=["GET","POST"])
+@login_required
 def add_candidate(job_role):
     "Add a candidate"
     data,error = [],None
@@ -131,6 +135,7 @@ def add_candidate(job_role):
 
 
 @app.route("/candidate/url",methods=["GET","POST"])
+@login_required
 def generate_unique_url():
     candidate_id = request.form.get('candidateId')
     job_id = request.form.get('jobId')
@@ -168,6 +173,7 @@ def get_pending_round_id(job_id,candidate_id):
     
         
 @app.route("/candidate/<candidate_id>/job/<job_id>") 
+@login_required
 def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"
     round_names_list = []
@@ -189,6 +195,7 @@ def show_candidate_job(job_id,candidate_id):
 
 
 @app.route("/candidate/<candidate_id>/edit",methods=["GET","POST"])
+@login_required
 def edit_candidates(candidate_id):
     "Edit the candidtes"    
     #Fetch the candidate details and equal job id    
@@ -234,6 +241,7 @@ def edit_candidates(candidate_id):
         
 
 @app.route("/candidates/<candidate_id>/jobs/<job_id>/email")
+@login_required
 def send_email(candidate_id,job_id):
     # Fetch the id for the candidate status 'Waiting on Candidate'
     #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
@@ -249,6 +257,7 @@ def send_email(candidate_id,job_id):
 
 
 @app.route("/noopening/email",methods=["POST"])
+@login_required
 def no_opening():
     "Send a no opening email to the candidates"
     candidate_name = request.form.get('candidatename')

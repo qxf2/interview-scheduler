@@ -115,11 +115,13 @@ def add_candidate(job_role):
             db.session.commit()
             
             # Fetch the id for the candidate status 'Waiting on Qxf2'
-            #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
-            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[0]).scalar()
+            #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file           
+            candidate_status_id = Candidatestatus.query.filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[0]).values(Candidatestatus.status_id)
+            for each_value in candidate_status_id:
+                status_id = each_value.status_id
            
             #storing the candidate id and job id in jobcandidate table
-            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= candidate_status_id.status_id)
+            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= status_id)
             db.session.add(add_job_candidate_object)
             db.session.commit()
             #Store the candidateid,jobid,roundid and round status in candidateround table

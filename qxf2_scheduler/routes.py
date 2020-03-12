@@ -218,7 +218,7 @@ def logout():
 @login_required
 def index():
     "The index page"
-    return "The page is not ready yet!"
+    return render_template('index.html')
 
 
 @app.route("/interviewers")

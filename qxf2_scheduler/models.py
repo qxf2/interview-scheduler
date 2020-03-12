@@ -1,6 +1,10 @@
 from qxf2_scheduler import db
 import datetime
 from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint,DateTime
+from flask_login import UserMixin
+from qxf2_scheduler import login_manager
+from sqlalchemy.sql import table, column
+
 
 class Interviewers(db.Model):
     "Adding the interviewer" 
@@ -67,7 +71,7 @@ class Rounds(db.Model):
     round_requirement = db.Column(db.String,nullable=False)
 
     def __repr__(self):
-        return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}')"
+        return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}','{self.round_name}')"
 
         
 class Jobcandidate(db.Model):
@@ -110,12 +114,10 @@ class Candidatestatus(db.Model):
     status_id = db.Column(db.Integer,primary_key=True)
     status_name = db.Column(db.String)
 
-
 class Updatetable(db.Model):
     "Store the last updated date of Jobcandidate"
     table_id = db.Column(db.Integer,primary_key=True)
     last_updated_date = db.Column(db.Integer)
-
 
 class Candidateinterviewer(db.Model):
     "Combine candidate id ,interviewer id and round id,job id"
@@ -126,3 +128,21 @@ class Candidateinterviewer(db.Model):
 
     def __repr__(self):
         return f"Candidateinterviewer('{self.job_id}','{self.candidate_id}','{self.interviewer_id}')"
+
+
+class Login(db.Model,UserMixin):
+    "Creates username and password"
+    id = db.Column(db.Integer,primary_key=True,nullable=False)
+    username = db.Column(db.String,nullable=False)
+    password = db.Column(db.String,nullable=False)
+
+    def __repr__(self):
+        return f"Login('{self.id}','{self.username}','{self.password}')"
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = Login()
+    user.id = Login.id
+    user.username = Login.username
+    user.password = Login.password
+    return user

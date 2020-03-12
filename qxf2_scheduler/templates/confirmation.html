@@ -12,19 +12,42 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 </head>
+<body style="background-color:powderblue;">
+    {% include "header.html" %}
 
-<body>
-    <div class="container col-md-offset-1">
-        <div class="row top-space-30" id="resultDiv">
+    <div class="panel panel-default" style="max-width:1000px;max-height: 800px;margin-left:auto;margin-right:auto;">
+        <div class="panel-heading " style="text-align: center;">Scheduled Interview details</div>
+        <div class="panel-body" id="resultDiv">
             {% if value != "" %}
-            <p>You have scheduled an interview, Please check the below details.           
-            </br>Date :  {{ value['date'] }}</br> Time : {{value['slot']}}
-            </br>Please use the below link to open your calendar and check for interview event :</br><a href="{{value['schedule_event'][2]['Link']}}" target="_blank">{{value['schedule_event'][2]['Link']}}</a></p>
-            
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="Date:">Date:
+                            {{ value['date'] }}</br> Time :{{value['slot']}}</label>
+                        <label class="col-md-8" for="dateApplied"></label>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="Interviewer email:">
+                            Interviewer email id:{{value['schedule_event'][3]['interviewer_email']}}</label>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <label class="col-md-8" for="calendar link:">Calendar Link:</label>
+                        <label class="col-md-8" for="calendar link"><a href="{{value['schedule_event'][2]['Link']}}"
+                                target="_blank">{{value['schedule_event'][2]['Link']}}</a></label>
+                    </div>
+
+                </div>
+            </div>
             {% else %}
-            <p>Something went wrong please check it</p>
+            <p>Hi,The interview is not scheduled please try again and also check your internet connection. Try to schedule an interview again.If it does not work please email to us.</p>
             {% endif %}
-        </div>        
+        </div>
     </div>
+    {% include "footer.html" %}
 </body>
+
 </html>

@@ -11,15 +11,14 @@ import json
 import ast
 import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from datetime import datetime
 from flask_mail import Message, Mail
+from flask_login import current_user, login_user,login_required,logout_user
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
 base_url = 'http://localhost:6464/'
-
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
@@ -97,8 +96,8 @@ def scehdule_and_confirm():
         job_id = session['candidate_info']['job_id']
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email,candidate_email, slot)        
-        date_object = datetime.strptime(date, '%m/%d/%Y').date()
-        date = datetime.strftime(date_object, '%B %d, %Y')
+        date_object = datetime.datetime.strptime(date, '%m/%d/%Y').date()
+        date = datetime.datetime.strftime(date_object, '%B %d, %Y')
         value = {'schedule_event': schedule_event, 
         'date': date,
         'slot' : slot}
@@ -125,13 +124,64 @@ def scehdule_and_confirm():
     return render_template("get-schedule.html")
 
 
-@app.route("/")
+def validate(username):
+    "Validate the username and passowrd"
+    exists = db.session.query(db.exists().where(Login.username == username)).scalar()        
+    print(exists)
+    return exists
+
+
+def password_validate(password):
+    "Validate the username and passowrd"
+    exists = db.session.query(db.exists().where(Login.password == password)).scalar() 
+
+    return exists
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None  
+    if request.method == 'GET':
+        return render_template('login.html', error=error)          
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        data = {'username':username,'password':password}
+        
+        completion = validate(username)
+        if completion ==False:
+            error = 'error.'
+        else:
+            password_check = password_validate(password)
+            if password_check ==False:
+                error = 'error.'
+            else:
+                user = Login()
+                user.name=username
+                user.password=password
+                login_user(user)
+                error = 'Success'
+        api_response = {'data':data,'error':error}
+        return jsonify(api_response)
+
+
+@app.route("/logout",methods=["GET","POST"])
+@login_required
+def logout():
+    "Logout the current page"
+    logout_user()
+    return redirect(url_for('login'))
+
+
+@app.route("/index")
+@login_required
 def index():
     "The index page"
-    return "The page is not ready yet!"
+    return render_template('index.html')
 
 
 @app.route("/interviewers")
+@login_required
 def list_interviewers():
     "List all the interviewer names"
     all_interviewers = Interviewers.query.all()
@@ -577,6 +627,7 @@ def show_welcome(candidate_id, job_id, url):
     interview_data = {}
     data = {'job_id': job_id,'candidate_id':candidate_id,'url':url}
     s = Serializer('WEBSITE_SECRET_KEY')
+    round_info = session.get('round_details')
     try:
         url = s.loads(url)
         #This query fetches the candidate status id
@@ -593,17 +644,16 @@ def show_welcome(candidate_id, job_id, url):
             get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
 
             #Fetch the interview date and time
-            get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date)
+            get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date,Jobcandidate.interviewer_email)
 
             #Parsing candidate details
             for candidate_detail in get_candidate_details:
                 data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
-
             #Parsing Interview details
             for interview_detail in get_interview_details:            
                 interview_start_time = parse_interview_time(interview_detail.interview_start_time)
                 interview_end_time = parse_interview_time(interview_detail.interview_end_time)
-                interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date}
+                interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date,'interviewer_email':interview_detail.interviewer_email,'round_time': round_info['round_time'],'round_description':round_info['round_description'],}
     except Exception as e:
         return render_template("expiry.html")
 
@@ -643,14 +693,16 @@ def schedule_interview(job_id,url,candidate_id):
 @app.route('/<job_id>/get-schedule')
 def redirect_get_schedule(job_id):
     "Redirect to the get schedule page"
-    round_time = session.get('round_time')
+    round_info = session.get('round_details')    
     data = {
     'candidate_id':session['candidate_info']['candidate_id'],
     'candidate_name':session['candidate_info']['candidate_name'],
     'candidate_email':session['candidate_info']['candidate_email'],
     'job_id':session['candidate_info']['job_id'],
-    'round_time': round_time
+    'round_time': round_info['round_time'],
+    'round_description':round_info['round_description'],
     }
+    
     return render_template("get-schedule.html",result=data)
 
 
@@ -666,13 +718,18 @@ def send_invite(candidate_id, job_id):
         round_description = request.form.get("rounddescription")
         round_id = request.form.get("roundid")
         round_time = request.form.get("roundtime")
-        session['round_time'] = round_time
+        round_name = request.form.get("roundname")
+        round_info = {'round_time':round_time,
+                        'round_description':round_description,'round_name':round_name}
+        session['round_details'] = round_info
+        #session['round_time'] = round_time
+        #session['round_description'] = round_description
         generated_url = base_url + generated_url +'/welcome'
         try:
-            msg = Message("Schedule an Interview with Qxf2 Services!",
-                          sender="test@qxf2.com", recipients=[candidate_email])
-            msg.body = "Hi %s ,We have received your resume and we are using our scheduler application. You can refer the round description here %s.Please use the URL '%s' to schedule an interview with us" % (
-                candidate_name, round_description,generated_url)
+            msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
+                          sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])
+            msg.body = "Hi %s ,\n\nThank you for choosing to interview with Qxf2 Services. You have been selected for the '%s' of our interview. Please self-schedule your interview with us by visiting '%s' this link. \n\nThe link above will have the details about what to expect in this round. Choose a convenient date for your interview to see a list all the time slots we have available for your interview. Select a time slot that suits you and your interview with us will be scheduled automatically. Once you schedule your interview, you will receive a calendar invite confirming the interview.\n\nThanks, \nQxf2 Services"% (
+            candidate_name, round_name, generated_url)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'
             #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file

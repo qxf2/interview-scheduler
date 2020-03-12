@@ -111,11 +111,13 @@ def add_candidate(job_role):
             db.session.commit()
             
             # Fetch the id for the candidate status 'Waiting on Qxf2'
-            #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
-            candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[0]).scalar()
+            #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file           
+            candidate_status_id = Candidatestatus.query.filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[0]).values(Candidatestatus.status_id)
+            for each_value in candidate_status_id:
+                status_id = each_value.status_id
            
             #storing the candidate id and job id in jobcandidate table
-            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= candidate_status_id.status_id)
+            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= status_id)
             db.session.add(add_job_candidate_object)
             db.session.commit()
             #Store the candidateid,jobid,roundid and round status in candidateround table
@@ -254,8 +256,8 @@ def no_opening():
     candidate_job_applied = request.form.get('candidatejob')
     candidate_id = request.form.get('candidateid')
     try:
-        msg = Message("Currently we don't have an opening!",sender="test@qxf2.com", recipients=[candidate_email])
-        msg.body = "Hi %s ,We have received your resume and thanks for applying for the job.Currently we don't have an opening for the job position.We will get back to you once we have a opening"%(candidate_name)
+        msg = Message("Currently we don't have an opening!",sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])
+        msg.body = "Hi %s ,\n\nWe have received your resume and thanks for applying for the job. Currently we don't have an opening for the job position. We will get back to you once we have an opening.\n\nThanks,\nQxf2 Services"%(candidate_name)
         mail.send(msg)
         #Update the candidate status to 'Waiting for new opening'
         candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[6]).scalar()

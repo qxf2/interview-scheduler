@@ -228,12 +228,13 @@ def edit_candidates(candidate_id):
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
             db.session.commit()            
         else:
-            edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
+            edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email,'job_applied':candidate_job_applied})            
             db.session.commit()
             edited_job_role = db.session.query(Jobs.job_id).filter(Jobs.job_role==candidate_job_applied).first()
             #storing the candidate id and job id in jobcandidate table
-            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=edited_job_role.job_id,url='')
-            db.session.add(add_job_candidate_object)            
+            edit_job_candidate_object = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id).update({'candidate_id':candidate_id,'job_id':edited_job_role.job_id,'url':''})
+            """add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=edited_job_role.job_id,url='')
+            db.session.add(add_job_candidate_object) """           
             db.session.commit()            
 
         api_response = {'data':data}

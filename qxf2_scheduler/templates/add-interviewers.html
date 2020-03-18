@@ -153,21 +153,23 @@
                 $('#mail').remove();
                 $('#email').after('<span id="mail" class="error" style="color:red">Email field is required</span>');
                 validValue = false;
-            }
+            }    
+                        
             if(email != "")
-            {   
-                 if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
-                {
+            {                
+                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if (re.test(email)){
                     $('#mail').remove();
-                    validValue = true;
+                    var idx = email.lastIndexOf('@');
+                    if (idx > -1 && email.slice(idx + 1) !== 'qxf2.com') {
+                                validValue = false
+                                $("#mail").remove();
+                                $('#email').after('<span id="mail" class="error" style="color:red">Email should end with qxf2.com</span>');
+                            }
                 }
-                else
-                {
-                $('#mail').remove();
-                $('#email').after('<span id="mail" class="error" style="color:red">Please enter a valid email address</span>');
-                validValue = false;
+               
                 }
-            }
+            
             //validation for timings
             for(index = 0; index <= count; index++) {
             starttime = $("#starttime"+index).val();

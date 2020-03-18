@@ -87,7 +87,7 @@ class Jobcandidate(db.Model):
     candidate_status = db.Column(db.String)
 
     def __repr__(self):
-        return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}','{self.candidate_status}')"
+        return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}','{self.candidate_status}','{self.interview_start_time}')"
 
 
 class Jobround(db.Model):

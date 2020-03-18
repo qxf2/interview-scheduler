@@ -93,7 +93,6 @@ def date_picker():
         else:
             #Compare the alloted and fetched interviewers id
             interviewer_id = list(set(interviewer_id)-set(alloted_interviewers_id_list))
-        
         #Fetch the interviewer emails for the candidate job       
         interviewer_work_time_slots = []
         for each_id in interviewer_id:

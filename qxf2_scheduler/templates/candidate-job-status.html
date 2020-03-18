@@ -106,6 +106,17 @@
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Waiting for new opening</label>
                         </div>
+                        {% elif result.candidate_status == 'Reject' %}
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Action">Action:</label>
+                            <label class="col-md-8" for="action">No action needed from Qxf2</label>
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-8" for="inviteSent">Reject</label>
+                        </div>
+
 
                         {% endif %}
                         <br>
@@ -317,7 +328,42 @@
             $("#hideButton").attr("disabled",true);
         }
     </script>
+    <script>
+        $("document").ready(function(){
+            $("#thumbsDown").click(function(){           
+            var candidateName = document.getElementById("candidateName").value;
+            var candidateEmail = document.getElementById("candidateEmail").value;
+            var candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            $.ajax({
+                type: 'POST',
+                url: "/reject",
+                data: {
+                    'candidatename': candidateName,
+                    'candidateid': candidateId,
+                    'candidateemail': candidateEmail,
+                    'candidatejob': jobId
+                },
+                success: function (result) {
+                    if (result.error == "Success") {
+                        alert("The reject email has been sent");
+                        document.location.href = "/candidates";
+                        ('#noOpening').attr("disabled",true)
 
+                    }
+                    else {
+                        alert("The reject email cannot be sent");
+                        document.location.href = "/candidates";
+                    }
+
+                }
+            })
+            $("#thumbsDown").attr("disabled",true);
+        
+   
+    })
+        })
+    </script>
 </body>
 
 </html>

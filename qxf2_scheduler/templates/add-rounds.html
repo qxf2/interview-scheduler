@@ -34,7 +34,7 @@
             <label class="col-md-4 control-label" for="rname">Round name</label>
             <div class="col-md-4">
 
-                <input id="rname" name="rname" type="text" placeholder="John" class="form-control" required>
+                <input id="rname" name="rname" maxlength="20" type="text" placeholder="John" class="form-control" required>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
@@ -57,7 +57,7 @@
             </div>
             <label class="col-md-4 control-label" for="rdescription">Round description</label>
             <div class="col-md-4">
-                <textarea name="rdesc" id="rdesc" style="width:380px; height:300px;" required></textarea>
+                <textarea name="rdesc" maxlength="500" id="rdesc" style="width:380px; height:300px;" required></textarea>
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
                 <div class="valid-feedback">Valid</div>

@@ -270,9 +270,12 @@ def no_opening():
         msg.body = "Hi %s ,\n\nWe have received your resume and thanks for applying for the job. Currently we don't have an opening for the job position. We will get back to you once we have an opening.\n\nThanks,\nQxf2 Services"%(candidate_name)
         mail.send(msg)
         #Update the candidate status to 'Waiting for new opening'
-        candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[6]).scalar()
+        candidate_statuses = Candidatestatus.query.all()        
+        for each_status in candidate_statuses:           
+            if each_status.status_name == status.CANDIDTATE_STATUS[6]:               
+                status_id = each_status.status_id
         #Change the candidate status after the invite has been sent
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == candidate_job_applied).update({'candidate_status':candidate_status_id.status_id})
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == candidate_job_applied).update({'candidate_status':status_id})
         db.session.commit()
         error = 'Success'
              
@@ -281,9 +284,38 @@ def no_opening():
         return(str(e))
 
     data = {'candidate_name': candidate_name, 'error': error}
-    return jsonify(data)       
+    return jsonify(data)   
 
-        
+
+@app.route("/reject",methods=["POST"])
+@login_required
+def send_reject():
+    "Send reject email"
+    candidate_name = request.form.get('candidatename')
+    candidate_email = request.form.get('candidateemail')
+    candidate_job_applied = request.form.get('candidatejob')
+    candidate_id = request.form.get('candidateid')
+    try:
+        msg = Message("Interview update from Qxf2 Services!",sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])
+        msg.body = "Hi %s ,\n\nI appreciate your interest in a career opportunity with Qxf2 Services. It was a pleasure speaking to you about your background and interests. There are many qualified applicants in the current marketplace and we are searching for those who have the most directly applicable experience to our limited number of openings. I regret we will not be moving forward with your interview process. We wish you all the best in your current search and future endeavors.\n\nThanks,\nQxf2 Services"%(candidate_name)
+        mail.send(msg)
+        #Update the candidate status to 'Waiting for new opening'        
+        candidate_statuses = Candidatestatus.query.all()        
+        for each_status in candidate_statuses:           
+            if each_status.status_name == status.CANDIDTATE_STATUS[4]:               
+                status_id = each_status.status_id
+        #Change the candidate status after the invite has been sent
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == candidate_job_applied).update({'candidate_status':status_id})
+        db.session.commit()
+        error = 'Success'
+             
+    except Exception as e:
+        error = "Failed"
+        print(e)
+        return(str(e))
+
+    data = {'candidate_name': candidate_name, 'error': error}
+    return jsonify(data)        
 
 
 

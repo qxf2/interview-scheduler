@@ -109,7 +109,7 @@
                 <label class="col-md-4 control-label" for="save"></label>
                 <div class="col-md-8">
                     <input class="btn btn-success" type='button' id='submit' value='Save'>
-                    <button id="clear" name="clear" class="btn btn-danger">Cancel</button>
+                    <button type="button" id="clear" name="clear" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
         </form>
@@ -268,6 +268,12 @@
             document.location.href = "/interviewers"
         })
     </script>  
+    <script>
+        $("#clear").click(function(){
+            document.location.href = "/interviewers";
+
+        })
+    </script>
 </body>
 
 </html>

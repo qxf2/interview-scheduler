@@ -228,10 +228,10 @@
         var newTextBoxDiv = document.createElement('div');
         newTextBoxDiv.id = 'Tools';
         document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
-        newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-6 control-label" for="starttime"><span style="color:red">*</span>Start time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-            '<div class="form-group bfh-timepicker"><label class="col-md-6 control-label" for="endtime"><span style="color:red">*</span>End time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div><div class="col-md-4" id="resultDiv' + count + '"></div></form>' +
+        newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-6 control-label" for="starttime"><span style="color:red">*</span>Start time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+            '<div class="form-group"><label class="col-md-6 control-label" for="endtime"><span style="color:red">*</span>End time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div><div class="col-md-4" id="resultDiv' + count + '"></div></form>' +
             '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
-       $('#Tools input').timepicker({
+       $('#Tools input[type=time]').timepicker({
            timeFormat: 'HH:mm',
            interval: 30,
            use24hours: true,

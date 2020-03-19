@@ -34,7 +34,7 @@
             <label class="col-md-4 control-label" for="rname"><span style="color:red">*</span>Round name</label>
             <div class="col-md-4">
                 {% for each_details in result %}
-                <input id="rname" name="rname" type="text" placeholder="John" class="form-control"
+                <input id="rname" maxlength="20" name="rname" type="text" placeholder="John" class="form-control"
                     value="{{each_details.round_name}}" required>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
@@ -59,7 +59,7 @@
             </div>
             <label class="col-md-4 control-label" for="rdescription"><span style="color:red">*</span>Round description</label>
             <div class="col-md-4">                
-                <textarea name="rdesc" id="rdesc" style="width:380px; height:300px;" required>{{each_details.round_description}}</textarea>
+                <textarea name="rdesc" maxlength="500"id="rdesc" style="width:380px; height:300px;" required>{{each_details.round_description}}</textarea>
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
                 <div class="valid-feedback">Valid</div>

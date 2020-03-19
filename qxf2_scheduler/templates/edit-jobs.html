@@ -35,7 +35,7 @@
         <div class="row top-space-30">
             <form class="needs-validation">
                 <div class="form-group row">
-                    <label class="col-md-4 col-form-label text-md-right" for="jobrole">Job role:</label>
+                    <label class="col-md-4 col-form-label text-md-right" for="jobrole"><span style="color:red">*</span>Job role:</label>
                     <div class="col-md-6">
                         <input id="role" name="jobrole" type="text" placeholder="QA" value='{{ result.role_name }}' class="form-control input-md"
                             required>
@@ -45,7 +45,7 @@
                 </div>
                 <input type="hidden" id="idHidden" value="{{result.job_id}}" required>
                 <div class="form-group row">
-                    <label class="col-md-4 col-form-label text-md-right" for="interviewers">Interviewers:</label>
+                    <label class="col-md-4 col-form-label text-md-right" for="interviewers"><span style="color:red">*</span>Interviewers:</label>
                     <div class="col-md-8">
                         <input class="form-control" type="text" id="interviewers" value="{{result.interviewers_name}}" required>
                         <input type="hidden" id="TestHidden" value="{{result.interviewers_list}}" required>

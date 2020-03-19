@@ -290,8 +290,8 @@
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime"><span style="color:red">*</span>Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime"><span style="color:red">*</span>Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Start&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+                '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">End&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
             console.log("Iam count", count);
             $('#Tools input').timepicker({

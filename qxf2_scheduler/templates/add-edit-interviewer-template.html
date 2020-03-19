@@ -283,24 +283,16 @@
         })
     </script>
     <script>
-        var count = 1;
+        var count = 0;
         function addtextbox() {
-            count++;
             var newTextBoxDiv = document.createElement('div');
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
-                '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
-            console.log("Iam count", count);
-            $('#Tools input').timepicker({
-                timeFormat: 'HH:mm',
-                interval: 30,
-                use24hours: true,
-                scrollbar: true,
-            });
-
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Start&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dstarttime' + count + '" placeholder="starttime" required> </div></div>' +
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">End&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dendtime' + count + '" placeholder="endtime"></div></div>' +
+                '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);"></div><div id="dresultDiv' + count + '"></div></form>'
+            count++;   
         };
 
         function removeTextArea(inputElement) {
@@ -326,13 +318,26 @@
         }
     </script>
     <script>
-        $('.bfh-timepicker').timepicker({
-            timeFormat: 'HH:mm',
-            interval: 30,
-            use24hours: true,
-            scrollbar: true,
+        $(document).ready(function () {
+            $('#starttime0').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 30,
+                use24hours: true,
+                scrollbar: true,
+            });
         });
     </script>
-</body>
+    <script>
+        $(document).ready(function () {
+            $('#endtime0').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 30,
+                use24hours: true,
+                scrollbar: true,
+            });
+        });
+    </script>
 
-</html>
+
+
+</body>

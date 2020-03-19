@@ -54,7 +54,7 @@
             <!-- Text input-->
             {% for each_details in result %}
             <div class="form-group">
-                <label class="col-md-4 control-label" for="fname">First Name</label>
+                <label class="col-md-4 control-label" for="fname"><span style="color:red">*</span>First Name</label>
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
                         value="{{each_details['interviewers_name']}}" required="">
@@ -64,7 +64,7 @@
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="email">Email</label>
+                <label class="col-md-4 control-label" for="email"><span style="color:red">*</span>Email</label>
                 <div class="col-md-4">
                     <input id="email" name="email" type="text" placeholder="johndoe@example.com"
                         value="{{each_details['interviewers_email']}}" class="form-control input-md" required="">
@@ -74,7 +74,7 @@
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="designation">Designation</label>
+                <label class="col-md-4 control-label" for="designation"><span style="color:red">*</span>Designation</label>
                 <div class="col-md-4">
                     <input id="designation" name="designation" type="text" placeholder="QA"
                         value="{{each_details['interviewers_designation']}}" class="form-control input-md" required="">
@@ -87,7 +87,7 @@
                 {% for each_slot in each_details['time'] %}
                 <tr id="time-slot-{{loop.index}}">
                     <td>
-                        <label class="col-md-10 control-label" for="starttime">Start&nbsp;time</label>
+                        <label class="col-md-10 control-label" for="starttime"><span style="color:red">*</span>Start&nbsp;time</label>
                     </td>
                     <td>
                         <input type="time" class="form-control bfh-timepicker input-md" id="starttime{{loop.index}}"
@@ -96,7 +96,7 @@
 
                     </td>
                     <td>
-                        <label class="col-md-10 control-label" for="endtime">End&nbsp;time</label>
+                        <label class="col-md-10 control-label" for="endtime"><span style="color:red">*</span>End&nbsp;time</label>
                     </td>
                     <td>
                         <input type="time" class="form-control bfh-timepicker input-md" id="endtime{{loop.index}}"
@@ -290,8 +290,8 @@
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Start&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+                '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">End&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
                 '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
             console.log("Iam count", count);
             $('#Tools input').timepicker({

@@ -46,12 +46,13 @@
                 <input type="hidden" id="idHidden" value="{{result.job_id}}" required>
                 <div class="form-group row">
                     <label class="col-md-4 col-form-label text-md-right" for="interviewers"><span style="color:red">*</span>Interviewers:</label>
-                    <div class="col-md-8">
-                        <input class="form-control" type="text" id="interviewers" value="{{result.interviewers_name}}" required>
+                    <div class="col-md-8">                        
+                        <input class="form-control" type="text" id="interviewers" value="{% for item in result.interviewers_name %}{{item}}{% if not loop.last %},{% endif %}{% endfor %}" required>
                         <input type="hidden" id="TestHidden" value="{{result.interviewers_list}}" required>
                         <div class="valid-feedback">Valid.</div>
                         <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
+                    
                 </div>
 
                 <div class="col-md-6 offset-md-4 top-space-30">

@@ -18,7 +18,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
-base_url = 'http://localhost:6464/'
+base_url = 'http://3.219.215.68/'
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"
@@ -699,7 +699,7 @@ def show_welcome(candidate_id, job_id, url):
             for candidate_detail in get_candidate_details:
                 data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
             #Parsing the round details
-            candidate_round_details = Candidateround.query.filter(Candidateround.candidate_id==session['candidate_info']['candidate_id'],Candidateround.round_status=='Invitation Sent').values(Candidateround.round_id)
+            candidate_round_details = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.round_status=='Completed').values(Candidateround.round_id)
             for each_round_detail in candidate_round_details:
                 fetched_round_id = each_round_detail.round_id
 
@@ -714,6 +714,7 @@ def show_welcome(candidate_id, job_id, url):
                 interview_end_time = parse_interview_time(interview_detail.interview_end_time)
                 interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date,'interviewer_email':interview_detail.interviewer_email,'round_time': round_info['round_time'],'round_description':round_info['round_description'],}
     except Exception as e:
+        print(e,'hi')
         return render_template("expiry.html")
 
     return render_template("welcome.html",result=data,interview_result=interview_data)

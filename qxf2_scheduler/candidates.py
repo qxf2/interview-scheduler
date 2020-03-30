@@ -97,6 +97,7 @@ def add_candidate(job_role):
         candidate_email = request.form.get('candidateEmail').lower()
         candidate_job_applied = request.form.get('jobApplied')  
         job_id = Jobs.query.filter(Jobs.job_role == candidate_job_applied).value(Jobs.job_id) 
+        candidate_name = candidate_name.strip()
         data = {'candidate_name':candidate_name}
         #Check the candidate has been already added or not
         check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar()        

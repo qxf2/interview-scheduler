@@ -68,13 +68,13 @@
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
                 <button class="btn btn-info" id="addSubmit" type="submit">Submit</button>
-                <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
+                <button name="clear" onclick="clearAdd()" type="button" class="btn btn-danger">Cancel</button>
             </div>
         </form>
     </div>
     <script>
         function clearAdd() {
-            document.location.href = "/candidate/add"
+            document.location.href = "/login"
         }
     </script>
     <script>

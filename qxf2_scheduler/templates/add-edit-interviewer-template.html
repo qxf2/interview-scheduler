@@ -54,7 +54,7 @@
             <!-- Text input-->
             {% for each_details in result %}
             <div class="form-group">
-                <label class="col-md-4 control-label" for="fname">First Name</label>
+                <label class="col-md-4 control-label" for="fname"><span style="color:red">*</span>First Name</label>
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
                         value="{{each_details['interviewers_name']}}" required="">
@@ -64,7 +64,7 @@
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="email">Email</label>
+                <label class="col-md-4 control-label" for="email"><span style="color:red">*</span>Email</label>
                 <div class="col-md-4">
                     <input id="email" name="email" type="text" placeholder="johndoe@example.com"
                         value="{{each_details['interviewers_email']}}" class="form-control input-md" required="">
@@ -74,7 +74,8 @@
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="designation">Designation</label>
+                <label class="col-md-4 control-label" for="designation"><span
+                        style="color:red">*</span>Designation</label>
                 <div class="col-md-4">
                     <input id="designation" name="designation" type="text" placeholder="QA"
                         value="{{each_details['interviewers_designation']}}" class="form-control input-md" required="">
@@ -87,7 +88,8 @@
                 {% for each_slot in each_details['time'] %}
                 <tr id="time-slot-{{loop.index}}">
                     <td>
-                        <label class="col-md-10 control-label" for="starttime">Start&nbsp;time</label>
+                        <label class="col-md-10 control-label" for="starttime"><span
+                                style="color:red">*</span>Start&nbsp;time</label>
                     </td>
                     <td>
                         <input type="time" class="form-control bfh-timepicker input-md" id="starttime{{loop.index}}"
@@ -96,7 +98,8 @@
 
                     </td>
                     <td>
-                        <label class="col-md-10 control-label" for="endtime">End&nbsp;time</label>
+                        <label class="col-md-10 control-label" for="endtime"><span
+                                style="color:red">*</span>End&nbsp;time</label>
                     </td>
                     <td>
                         <input type="time" class="form-control bfh-timepicker input-md" id="endtime{{loop.index}}"
@@ -107,8 +110,10 @@
                         <input type="button" value="Remove" onclick="removeButton({{loop.index}})" class="btn btn-link">
                         {% endif %}
                     </td>
-                    
-                    <td><div id="resultDiv{{loop.index}}"></div></td>
+
+                    <td>
+                        <div id="resultDiv{{loop.index}}"></div>
+                    </td>
                 </tr>
                 <br />
                 {% endfor %}
@@ -125,20 +130,20 @@
         </div>
         <div id="ToolsGroup">
         </div>
-        
 
-    <!-- Button (Double) -->
-    <form class="form-horizontal">
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="save"></label>
-            <div class="col-md-8">
-                <input class="btn btn-success show-modal" type='button' id='submit' value='Save'>
-                <input type='button' id="clear" value='Cancel' onclick="redirectNew()" class="btn btn-danger">
+
+        <!-- Button (Double) -->
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="save"></label>
+                <div class="col-md-8">
+                    <input class="btn btn-success" type='button' id='submit' value='Save'>
+                    <input type='button' id="clear" value='Cancel' onclick="redirectNew()" class="btn btn-danger">
+                </div>
             </div>
-        </div>
-    </form>
-    </form>
-    {% endfor %}
+        </form>
+        </form>
+        {% endfor %}
 
     </div>
     <script>
@@ -162,8 +167,7 @@
                 }
             }
             for (var index = 0; index <= 15; index++) {
-                if(document.getElementById("dstarttime"+index)==null)
-                {
+                if (document.getElementById("dstarttime" + index) == null) {
                     break;
                 }
                 var starttimeVal = $("#dstarttime" + index).val();
@@ -174,133 +178,126 @@
             }
             console.log(timeObject);
             //validation starts from here
-            if(name == "")
-            {
+            if (name == "") {
                 $('#name').remove();
                 $('#fname').after('<span id="name" class="error" style="color:red">Name field is required</span>');
                 validValue = false;
             }
-            if(name != "")
-            {
+            if (name != "") {
                 $('#name').remove();
                 validValue &= true;
             }
-            if (email == "")
-            {
+            if (email == "") {
                 $('#mail').remove();
                 $('#email').after('<span id="mail" class="error" style="color:red">Email field is required</span>');
                 validValue = false;
             }
-            if(email != "")
-            {   
-                 if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
-                {
+            if (email != "") {
+                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if (re.test(email)) {
                     $('#mail').remove();
-                    validValue &= true;
+                    var idx = email.lastIndexOf('@');
+                    if (idx > -1 && email.slice(idx + 1) !== 'qxf2.com') {
+                        validValue = false
+                        $("#mail").remove();
+                        $('#email').after('<span id="mail" class="error" style="color:red">Email should end with qxf2.com</span>');
+                    }
                 }
-                else
-                {
-                $('#mail').remove();
-                $('#email').after('<span id="mail" class="error" style="color:red">Please enter a valid email address</span>');
-                validValue = false;
-                }
+
             }
             //validation for timings
-            for(index = 0; index <= count; index++) {
-            starttime = $("#starttime"+index).val();
-            endtime = $("#endtime"+index).val();
-            var msg="";
-            if(starttime != "" || endtime != "") {
-                if (starttime >= endtime) {
-                    validValue = false;
-                    msg = "Start time can't be greater than or same as end time";
-                    $("#resultDiv"+index).css('color', 'red');
-                    $("#resultDiv"+index).html(msg);
+            for (index = 0; index <= count; index++) {
+                starttime = $("#starttime" + index).val();
+                endtime = $("#endtime" + index).val();
+                var msg = "";
+                if (starttime != "" || endtime != "") {
+                    if (starttime >= endtime) {
+                        validValue = false;
+                        msg = "Start time can't be greater than or same as end time";
+                        $("#resultDiv" + index).css('color', 'red');
+                        $("#resultDiv" + index).html(msg);
+                    }
+                    else {
+                        validValue &= true;
+                        msg = "";
+                        $("#resultDiv" + index).html(msg);
+                    }
                 }
                 else {
-                    validValue &= true;
-                    msg = "";                    
-                    $("#resultDiv"+index).html(msg);
-                }
-            }
-            else {
-                validValue = false;
-                msg = "Start time and end time can't be empty";
-                $("#resultDiv"+index).css('color', 'red');
-                $("#resultDiv"+index).html(msg);
+                    validValue = false;
+                    msg = "Start time and end time can't be empty";
+                    $("#resultDiv" + index).css('color', 'red');
+                    $("#resultDiv" + index).html(msg);
                 }
             }
             //validation for dynamic time
-            for(index = 0; index < 20; index++) {
-            starttime = $("#dstarttime"+index).val();
-            endtime = $("#dendtime"+index).val();
-            var msg="";
-            if(starttime==null)
-            {
-                break;
-            }
-            if(starttime != "" || endtime != "") {
-                if (starttime >= endtime) {
-                    validValue = false;
-                    msg = "Start time can't be greater than or same as end time";
-                    $("#dresultDiv"+index).css('color', 'red');
-                    $("#dresultDiv"+index).html(msg);
+            for (index = 0; index < 20; index++) {
+                starttime = $("#dstarttime" + index).val();
+                endtime = $("#dendtime" + index).val();
+                var msg = "";
+                if (starttime == null) {
+                    break;
+                }
+                if (starttime != "" || endtime != "") {
+                    if (starttime >= endtime) {
+                        validValue = false;
+                        msg = "Start time can't be greater than or same as end time";
+                        $("#dresultDiv" + index).css('color', 'red');
+                        $("#dresultDiv" + index).html(msg);
+                    }
+                    else {
+                        validValue &= true;
+                        msg = "";
+                        $("#dresultDiv" + index).html(msg);
+                    }
                 }
                 else {
-                    validValue &= true;
-                    msg = "";                    
-                    $("#dresultDiv"+index).html(msg);
-                }
-            }
-            else {
-                validValue = false;
-                msg = "Start time and end time can't be empty";
-                $("#dresultDiv"+index).css('color', 'red');
-                $("#dresultDiv"+index).html(msg);
+                    validValue = false;
+                    msg = "Start time and end time can't be empty";
+                    $("#dresultDiv" + index).css('color', 'red');
+                    $("#dresultDiv" + index).html(msg);
                 }
             }
             //validation end
-            if (validValue == true){
+            if (validValue == true) {
 
-            $.ajax({
-                type: 'POST',
-                url: '/interviewers/%d/edit' % id,
-                data: {
-                    'email': email,
-                    'name': name,
-                    'designation': designation,
-                    'timeObject': JSON.stringify(timeObject)
-                },
+                $.ajax({
+                    type: 'POST',
+                    url: '/interviewers/%d/edit' % id,
+                    data: {
+                        'email': email,
+                        'name': name,
+                        'designation': designation,
+                        'timeObject': JSON.stringify(timeObject)
+                    },
 
-                success: function (result) {
-                    var msg = " The interviewer " + ' ' + result.interviewer_name + ' ' + " has been edited successfully";
-                    $('#myModal').modal('show');
-                    $('#myModal .modal-body p').html(msg);
-                }
+                    success: function (result) {
+                        var msg = " The interviewer " + ' ' + result.interviewer_name + ' ' + " has been edited successfully";
+                        $('#myModal').modal('show');
+                        $('#myModal .modal-body p').html(msg);
+                    }
 
-            })
+                })
             }
         })
     </script>
     <script>
-        var count = 1;
+        var count = 0;
         function addtextbox() {
-            count++;
             var newTextBoxDiv = document.createElement('div');
             newTextBoxDiv.id = 'Tools';
             document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
 
-            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="starttime">Starttime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-                '<div class="form-group bfh-timepicker"><label class="col-md-4 control-label" for="endtime">Endtime</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div></form>' +
-                '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
-            console.log("Iam count", count);
-            $('#Tools input').timepicker({
-                timeFormat: 'HH:mm',
-                interval: 30,
-                use24hours: true,
-                scrollbar: true,
-            });
-
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-4 control-label" for="starttime">Start&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dstarttime' + count + '" placeholder="starttime" required> </div></div>' +
+                '<div class="form-group"><label class="col-md-4 control-label" for="endtime">End&nbsp;time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="dendtime' + count + '" placeholder="endtime"></div></div>' +
+                '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);"></div><div id="dresultDiv' + count + '"></div></form>'
+            count++;
+            $('#Tools input[type=time]').timepicker({
+           timeFormat: 'HH:mm',
+           interval: 30,
+           use24hours: true,
+           scrollbar: true,
+       });
         };
 
         function removeTextArea(inputElement) {
@@ -326,13 +323,26 @@
         }
     </script>
     <script>
-        $('.bfh-timepicker').timepicker({
-            timeFormat: 'HH:mm',
-            interval: 30,
-            use24hours: true,
-            scrollbar: true,
+        $(document).ready(function () {
+            $('#starttime0').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 30,
+                use24hours: true,
+                scrollbar: true,
+            });
         });
     </script>
-</body>
+    <script>
+        $(document).ready(function () {
+            $('#endtime0').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 30,
+                use24hours: true,
+                scrollbar: true,
+            });
+        });
+    </script>
 
-</html>
+
+
+</body>

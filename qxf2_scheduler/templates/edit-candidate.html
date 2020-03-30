@@ -31,7 +31,7 @@
     <div>
         <h2 class="grey_text text-justify">Edit Candidates</h2>
         <form class="needs-validation">
-            <label class="col-md-4 control-label" for="fname">Name of the candidate</label>
+            <label class="col-md-4 control-label" for="fname"><span style="color:red">*</span>Name of the candidate</label>
             <div class="col-md-4">
                 <input id="fname" name="fname" type="text" placeholder="John" class="form-control"
                     value="{{result.candidate_name}}" required>
@@ -40,7 +40,7 @@
             </div>
             <input type="hidden" value="{{result.candidate_id}}" id="candidateId">
 
-            <label class="col-md-4 control-label" for="email">Email</label>
+            <label class="col-md-4 control-label" for="email"><span style="color:red">*</span>Email</label>
             <div class="col-md-4">
                 <input id="email" name="email" type="Email" value="{{result.candidate_email}}"
                     placeholder="johndoe@example.com" class="form-control" required>
@@ -52,7 +52,7 @@
             </div>
             <input type="hidden"id="oldJob" value="{{result.job_role}}">
 
-            <label class="col-md-4 control-label" for="select1">Job applied for</label>
+            <label class="col-md-4 control-label" for="select1"><span style="color:red">*</span>Job applied for</label>
             <div class="col-md-4">
                 <select class="form-control" id="select1" required>
                     <option value="{{result.job_role}}">{{result.job_role}}</option>
@@ -68,7 +68,7 @@
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
                 <button class="btn btn-info" type="submit">Edit</button>
-                <button name="clear" onclick="clearEdit()" class="btn btn-danger">Cancel</button>
+                <button type="button" name="clear" onclick="clearEdit()" class="btn btn-danger">Cancel</button>
             </div>
         </form>
     </div>

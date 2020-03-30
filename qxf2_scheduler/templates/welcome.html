@@ -18,6 +18,11 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Abel|Open+Sans:400,600" rel="stylesheet">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        p {
+  word-break: break-word;
+}
+    </style>
    
 </head>
 
@@ -65,37 +70,37 @@
     </div>
 
     {% else %}
-    <div class="panel panel-default" style="max-width:1200px;max-height: 500px;margin-left:auto;margin-right:auto;top:50px">
+    <div class="panel panel-default" style="max-width:1200px;max-height: 650px;margin-left:auto;margin-right:auto;top:50px">
         <div class="panel-heading " style="text-align: center;">Scheduled Interview details</div>
         <div class="panel-body" id="resultDiv">
             <div class="panel-group">
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <label class="col-md-8" for="intervieweremail:">Interviewer
-                            Email:{{interview_result.interviewer_email}}</label>
+                            Email: {{interview_result.interviewer_email}}</label>
 
                     </div>
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <label class="col-md-8" for="interviewerstarttime:">
-                            Interview date:{{interview_result.interview_date}}<br></br>
-                            Interview start time:{{interview_result.interview_start_time}}<br><br>
-                            Interview end time:{{interview_result.interview_end_time}}</label>
+                            Interview date & time: {{interview_result.interview_date}}<br></br>
+                            Interview start time: {{interview_result.interview_start_time}}<br><br>
+                            Interview end time: {{interview_result.interview_end_time}}</label>
 
                     </div>
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <label class="col-md-8" for="roundduration:">Round
-                            Duration:{{interview_result.round_time}}</label>
+                            Duration: {{interview_result.round_time}}</label>
 
                     </div>
                 </div>
                 <div class="panel panel-default">
-                    <div class="panel-body">
-                        <label class="col-md-8" for="rounddescription:">Round
-                            Description:{{interview_result.round_description}}</label>
+                    <div class="panel-body" >
+                        <label class="col-md-12" for="rounddescription:">Round
+                            Description:<p> {{ interview_result.round_description}}</p></label>
 
                     </div>
                 </div>

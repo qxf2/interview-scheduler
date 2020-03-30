@@ -750,7 +750,7 @@ def schedule_interview(job_id,url,candidate_id):
         #url = request.form.get('url')
         return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}       
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
-        candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)
+        candidate_id = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_id)        
         if candidate_data == None:
             err={'error':'EmailError'}
             return jsonify(error=err,result=return_data)
@@ -764,12 +764,25 @@ def schedule_interview(job_id,url,candidate_id):
             'candidate_email':candidate_email,
             'job_id':job_id 
             }
-            session['candidate_info'] = return_data            
-            err={'error':'Success'}
-            return jsonify(error=err,result=return_data)
+            #Fetch the candidate URL from the db and compare the url which is in the browser
+            fetch_candidate_unique_url = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.url)
+            
+            for unique_url in fetch_candidate_unique_url:
+                candidate_unique_url = unique_url.url
+            candidate_unique_url = candidate_unique_url[4:]
+            if candidate_unique_url == url:
+                session['candidate_info'] = return_data            
+                err={'error':'Success'}
+                return jsonify(error=err,result=return_data)
+            else:
+                err={'error':'OtherError'}
+                return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}
+                return jsonify(error=err,result=return_data)
+
         else:
             err={'error':'OtherError'}
             return jsonify(error=err,result=return_data)
+
 
 @app.route('/<job_id>/get-schedule')
 def redirect_get_schedule(job_id):

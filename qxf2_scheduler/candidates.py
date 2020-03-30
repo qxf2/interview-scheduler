@@ -31,11 +31,14 @@ def url_gen(candidate_id, job_id):
 @login_required
 def read_candidates():
     "Read the candidates"      
-    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role)
-    
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role,Jobcandidate.candidate_status)    
     my_candidates_list = []
     for each_candidate in display_candidates:
-        my_candidates_list.append({'candidate_id':each_candidate.candidate_id,'candidate_name':each_candidate.candidate_name,'candidate_email':each_candidate.candidate_email,'job_id':each_candidate.job_id,'job_role':each_candidate.job_role})
+        candidate_status_object = Candidatestatus.query.filter(Candidatestatus.status_id==each_candidate.candidate_status).values(Candidatestatus.status_name)
+        for candidate_status in candidate_status_object:
+            candidate_status = candidate_status.status_name
+
+        my_candidates_list.append({'candidate_id':each_candidate.candidate_id,'candidate_name':each_candidate.candidate_name,'candidate_email':each_candidate.candidate_email,'job_id':each_candidate.job_id,'job_role':each_candidate.job_role,'candidate_status':candidate_status})
     
     return render_template("read-candidates.html",result=my_candidates_list)
 

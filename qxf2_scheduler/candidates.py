@@ -97,6 +97,7 @@ def add_candidate(job_role):
         candidate_email = request.form.get('candidateEmail').lower()
         candidate_job_applied = request.form.get('jobApplied')  
         job_id = Jobs.query.filter(Jobs.job_role == candidate_job_applied).value(Jobs.job_id) 
+        candidate_name = candidate_name.strip()
         data = {'candidate_name':candidate_name}
         #Check the candidate has been already added or not
         check_candidate_exists = db.session.query(db.exists().where(Candidates.candidate_email==candidate_email)).scalar()        
@@ -180,7 +181,7 @@ def show_candidate_job(job_id,candidate_id):
     round_details = {}     
     candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Candidates.date_applied,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url,Jobcandidate.candidate_status,Jobcandidate.interviewer_email)
     for each_data in candidate_job_data:
-        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'interviewer_email_id':each_data.interviewer_email,'date_applied':each_data.date_applied}
+        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'interviewer_email_id':each_data.interviewer_email,'date_applied':each_data.date_applied.date()}
         candidate_status_id = each_data.candidate_status
     #fetch the candidate status name for the status id
     candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
@@ -228,12 +229,13 @@ def edit_candidates(candidate_id):
             edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
             db.session.commit()            
         else:
-            edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email})            
+            edit_candidate_object = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'candidate_name':candidate_name,'candidate_email':candidate_email,'job_applied':candidate_job_applied})            
             db.session.commit()
             edited_job_role = db.session.query(Jobs.job_id).filter(Jobs.job_role==candidate_job_applied).first()
             #storing the candidate id and job id in jobcandidate table
-            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=edited_job_role.job_id,url='')
-            db.session.add(add_job_candidate_object)            
+            edit_job_candidate_object = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id).update({'candidate_id':candidate_id,'job_id':edited_job_role.job_id,'url':''})
+            """add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=edited_job_role.job_id,url='')
+            db.session.add(add_job_candidate_object) """           
             db.session.commit()            
 
         api_response = {'data':data}
@@ -269,9 +271,12 @@ def no_opening():
         msg.body = "Hi %s ,\n\nWe have received your resume and thanks for applying for the job. Currently we don't have an opening for the job position. We will get back to you once we have an opening.\n\nThanks,\nQxf2 Services"%(candidate_name)
         mail.send(msg)
         #Update the candidate status to 'Waiting for new opening'
-        candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[6]).scalar()
+        candidate_statuses = Candidatestatus.query.all()        
+        for each_status in candidate_statuses:           
+            if each_status.status_name == status.CANDIDTATE_STATUS[6]:               
+                status_id = each_status.status_id
         #Change the candidate status after the invite has been sent
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == candidate_job_applied).update({'candidate_status':candidate_status_id.status_id})
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == candidate_job_applied).update({'candidate_status':status_id})
         db.session.commit()
         error = 'Success'
              
@@ -280,9 +285,38 @@ def no_opening():
         return(str(e))
 
     data = {'candidate_name': candidate_name, 'error': error}
-    return jsonify(data)       
+    return jsonify(data)   
 
-        
+
+@app.route("/reject",methods=["POST"])
+@login_required
+def send_reject():
+    "Send reject email"
+    candidate_name = request.form.get('candidatename')
+    candidate_email = request.form.get('candidateemail')
+    candidate_job_applied = request.form.get('candidatejob')
+    candidate_id = request.form.get('candidateid')
+    try:
+        msg = Message("Interview update from Qxf2 Services!",sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])
+        msg.body = "Hi %s ,\n\nI appreciate your interest in a career opportunity with Qxf2 Services. It was a pleasure speaking to you about your background and interests. There are many qualified applicants in the current marketplace and we are searching for those who have the most directly applicable experience to our limited number of openings. I regret we will not be moving forward with your interview process. We wish you all the best in your current search and future endeavors.\n\nThanks,\nQxf2 Services"%(candidate_name)
+        mail.send(msg)
+        #Update the candidate status to 'Waiting for new opening'        
+        candidate_statuses = Candidatestatus.query.all()        
+        for each_status in candidate_statuses:           
+            if each_status.status_name == status.CANDIDTATE_STATUS[4]:               
+                status_id = each_status.status_id
+        #Change the candidate status after the invite has been sent
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == candidate_job_applied).update({'candidate_status':status_id})
+        db.session.commit()
+        error = 'Success'
+             
+    except Exception as e:
+        error = "Failed"
+        print(e)
+        return(str(e))
+
+    data = {'candidate_name': candidate_name, 'error': error}
+    return jsonify(data)        
 
 
 

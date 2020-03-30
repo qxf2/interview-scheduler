@@ -122,7 +122,7 @@ def add_candidate(job_role):
                 status_id = each_value.status_id
            
             #storing the candidate id and job id in jobcandidate table
-            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= status_id)
+            add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= status_id,comments="NULL")
             db.session.add(add_job_candidate_object)
             db.session.commit()
             #Store the candidateid,jobid,roundid and round status in candidateround table
@@ -179,9 +179,9 @@ def show_candidate_job(job_id,candidate_id):
     "Show candidate name and job role"
     round_names_list = []
     round_details = {}     
-    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Candidates.date_applied,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url,Jobcandidate.candidate_status,Jobcandidate.interviewer_email)
+    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id,Jobs.job_id == job_id,Jobcandidate.candidate_id == candidate_id,Jobcandidate.job_id == job_id).values(Candidates.candidate_name, Candidates.candidate_email,Candidates.date_applied,Jobs.job_role,Jobs.job_id,Candidates.candidate_id,Jobcandidate.url,Jobcandidate.candidate_status,Jobcandidate.interviewer_email,Jobcandidate.comments)
     for each_data in candidate_job_data:
-        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'interviewer_email_id':each_data.interviewer_email,'date_applied':each_data.date_applied.date()}
+        data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'interviewer_email_id':each_data.interviewer_email,'date_applied':each_data.date_applied.date(),'comments':each_data.comments}
         candidate_status_id = each_data.candidate_status
     #fetch the candidate status name for the status id
     candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
@@ -316,7 +316,18 @@ def send_reject():
         return(str(e))
 
     data = {'candidate_name': candidate_name, 'error': error}
-    return jsonify(data)        
+    return jsonify(data)     
 
+@app.route("/comments/save",methods=['GET','POST'])
+def save_comments():
+    "Save the comments"
+    candidate_comments = request.form.get('comments')
+    candidate_id = request.form.get('candidateid')
+    job_id = request.form.get('jobid')
+    save_comments = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).update({'comments':candidate_comments})    
+    db.session.commit()
+    error = 'Success'
 
+    data = {'candidate_comments':candidate_comments,'error':error}
 
+    return jsonify(data)

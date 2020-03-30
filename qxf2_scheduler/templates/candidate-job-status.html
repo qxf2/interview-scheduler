@@ -68,8 +68,8 @@
                                 data-candidate-email="{{result.candidate_email}}"
                                 data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}">
                             <input type="button" value="Thumbs down" id="thumbsDown">
-                            <br> 
-                            
+                            <br>
+
                         </div>
                         <br>
                         <div class="col-md-4 form-display">
@@ -117,18 +117,23 @@
                             <label class="col-md-8" for="inviteSent">Reject</label>
                         </div>
 
-
                         {% endif %}
+                        <div class="col-md-10">
+                            <label class="col-md-8" for="comments">Comments:</label>
+                            <textarea class="col-md-8"id="comments" rows="10" cols="20">{{result.comments}}</textarea>
+                            <input type="button" onclick="saveComments()" value="Edit" />
+                        </div>
                         <br>
                         <div class="container col-md-14">
-                            {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}                           
-                            <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()" value="No opening">
-                           {% endif %}
+                            {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}
+                            <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
+                                value="No opening">
+                            {% endif %}
                         </div>
             </div>
 
             {% endif %}
-            
+
             </fieldset>
             </form>
         </div>
@@ -236,7 +241,6 @@
             $('#err-name').empty();
             if (roundDescription == '') {
                 isValid = false;
-                console.log("I am coming here");                              
                 $("#select1").after('<span id="err-name" class="error" style="color:red">Please select the round</span>')
             }
             if (isValid == true) {
@@ -315,7 +319,7 @@
                     if (result.error == "Success") {
                         alert("The no opening email has been sent");
                         document.location.href = "/candidates";
-                        ('#noOpening').attr("disabled",true)
+                        ('#noOpening').attr("disabled", true)
 
                     }
                     else {
@@ -325,44 +329,63 @@
 
                 }
             })
-            $("#hideButton").attr("disabled",true);
+            $("#hideButton").attr("disabled", true);
         }
     </script>
     <script>
-        $("document").ready(function(){
-            $("#thumbsDown").click(function(){           
-            var candidateName = document.getElementById("candidateName").value;
-            var candidateEmail = document.getElementById("candidateEmail").value;
+        $("document").ready(function () {
+            $("#thumbsDown").click(function () {
+                var candidateName = document.getElementById("candidateName").value;
+                var candidateEmail = document.getElementById("candidateEmail").value;
+                var candidateId = document.getElementById("candidateId").value;
+                var jobId = document.getElementById("jobId").value;
+                $.ajax({
+                    type: 'POST',
+                    url: "/reject",
+                    data: {
+                        'candidatename': candidateName,
+                        'candidateid': candidateId,
+                        'candidateemail': candidateEmail,
+                        'candidatejob': jobId
+                    },
+                    success: function (result) {
+                        if (result.error == "Success") {
+                            alert("The reject email has been sent");
+                            document.location.href = "/candidates";
+                            ('#noOpening').attr("disabled", true)
+
+                        }
+                        else {
+                            alert("The reject email cannot be sent");
+                            document.location.href = "/candidates";
+                        }
+
+                    }
+                })
+                $("#thumbsDown").attr("disabled", true);
+
+
+            })
+        })
+    </script>
+    <script>
+        function saveComments() {
             var candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
+            areaComments = document.getElementById("comments").value
             $.ajax({
                 type: 'POST',
-                url: "/reject",
-                data: {
-                    'candidatename': candidateName,
-                    'candidateid': candidateId,
-                    'candidateemail': candidateEmail,
-                    'candidatejob': jobId
-                },
+                url: '/comments/save',
+                data: { 'comments': areaComments ,
+                'candidateid':candidateId,
+                'jobid':jobId},
                 success: function (result) {
-                    if (result.error == "Success") {
-                        alert("The reject email has been sent");
-                        document.location.href = "/candidates";
-                        ('#noOpening').attr("disabled",true)
-
-                    }
-                    else {
-                        alert("The reject email cannot be sent");
-                        document.location.href = "/candidates";
-                    }
-
+                    alert("Comments has been added")
+                    document.location.href = "/candidates";
                 }
+
             })
-            $("#thumbsDown").attr("disabled",true);
-        
-   
-    })
-        })
+        }
     </script>
 </body>
 

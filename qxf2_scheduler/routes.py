@@ -462,6 +462,15 @@ def check_jobs_exists(job_role):
     return check_job_exists
 
 
+def check_not_existing_interviewers(interviewers,actual_interviewers_list):
+    "remove the non existing interviewers"
+    interviewers = set(interviewers)
+    actual_interviewers_list = set(actual_interviewers_list)
+    final_interviewers_list = actual_interviewers_list.intersection(interviewers)
+
+    return final_interviewers_list
+
+
 @app.route("/jobs/add", methods=["GET", "POST"])
 @login_required
 def add_job():
@@ -490,6 +499,12 @@ def add_job():
             """for each_interviewers in interviewers:
                 new_interviewers_list.append(each_interviewers.strip())
             interviewers=list(set(new_interviewers_list))"""
+            #remove the interviewers if its not in the database
+            all_interviewers_list = Interviewers.query.all()
+            actual_interviewers_list = []
+            for each_interviewer in all_interviewers_list:
+                actual_interviewers_list.append(each_interviewer.interviewer_name)
+            interviewers = check_not_existing_interviewers(interviewers,actual_interviewers_list)
             job_object = Jobs(job_role=job_role)
             db.session.add(job_object)
             db.session.commit()
@@ -505,8 +520,7 @@ def add_job():
 
         else:
             return jsonify(message='The job already exists'), 500
-        data = {'jobrole': job_role, 'interviewers': interviewers}
-
+        data = {'jobrole': job_role, 'interviewers': list(interviewers)}
         return jsonify(data)
 
 
@@ -618,6 +632,13 @@ def edit_job(job_id):
         interviewers_name_list = get_interviewers_name_for_jobupdate(job_id)
         # Remove the duplicate interviewers
         interviewers_list = remove_duplicate_interviewers(interviewers_list)
+        #Check the interviewers are there in the database 
+        all_interviewers_list = Interviewers.query.all()
+        actual_interviewers_list = []
+        for each_interviewer in all_interviewers_list:
+            actual_interviewers_list.append(each_interviewer.interviewer_name)
+        #check the non exisiting interviewers are there
+        interviewers_list = check_not_existing_interviewers(interviewers_list,actual_interviewers_list)
         # Compare the two list which is fetched from UI and Database
         check_interviewer_list = is_equal(
             interviewers_name_list, interviewers_list)

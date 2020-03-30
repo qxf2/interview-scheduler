@@ -18,7 +18,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
-base_url = 'http://localhost:6464/'
+base_url = 'http://3.219.215.68/'
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"
@@ -145,7 +145,9 @@ def scehdule_and_confirm():
         candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[2]).scalar()        
         candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':schedule_event[3]['interviewer_email']})
         db.session.commit()  
-
+        #Update the round status for the candidate
+        update_round_status = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id).update({'round_status':'Completed'})
+        db.session.commit()
         #Get the interviewer email from the form 
         alloted_interviewer_email = schedule_event[3]['interviewer_email'] 
         #Fetch the interviewer id of the interviewer
@@ -676,7 +678,6 @@ def show_welcome(candidate_id, job_id, url):
     interview_data = {}
     data = {'job_id': job_id,'candidate_id':candidate_id,'url':url}
     s = Serializer('WEBSITE_SECRET_KEY')
-    round_info = session.get('round_details')
     try:
         url = s.loads(url)
         #This query fetches the candidate status id
@@ -694,16 +695,26 @@ def show_welcome(candidate_id, job_id, url):
 
             #Fetch the interview date and time
             get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date,Jobcandidate.interviewer_email)
-
             #Parsing candidate details
             for candidate_detail in get_candidate_details:
                 data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
+            #Parsing the round details
+            candidate_round_details = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.round_status=='Completed').values(Candidateround.round_id)
+            for each_round_detail in candidate_round_details:
+                fetched_round_id = each_round_detail.round_id
+
+            round_info_object = Rounds.query.filter(Rounds.round_id==fetched_round_id).values(Rounds.round_id,Rounds.round_description,Rounds.round_name,Rounds.round_requirement,Rounds.round_time)
+
+            for each_round_info in round_info_object:
+                round_info = {'round_name':each_round_info.round_name,'round_requirements':each_round_info.round_requirement,'round_time':each_round_info.round_time,'round_description':each_round_info.round_description}            
+            
             #Parsing Interview details
             for interview_detail in get_interview_details:            
                 interview_start_time = parse_interview_time(interview_detail.interview_start_time)
                 interview_end_time = parse_interview_time(interview_detail.interview_end_time)
                 interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date,'interviewer_email':interview_detail.interviewer_email,'round_time': round_info['round_time'],'round_description':round_info['round_description'],}
     except Exception as e:
+        print(e,'hi')
         return render_template("expiry.html")
 
     return render_template("welcome.html",result=data,interview_result=interview_data)
@@ -741,8 +752,18 @@ def schedule_interview(job_id,url,candidate_id):
 
 @app.route('/<job_id>/get-schedule')
 def redirect_get_schedule(job_id):
-    "Redirect to the get schedule page"
-    round_info = session.get('round_details')    
+    "Redirect to the get schedule page"    
+    #Parsing the round details
+    candidate_round_details = Candidateround.query.filter(Candidateround.candidate_id==session['candidate_info']['candidate_id'],Candidateround.round_status=='Invitation Sent').values(Candidateround.round_id)
+    for each_round_detail in candidate_round_details:
+        fetched_round_id = each_round_detail.round_id
+
+    round_info_object = Rounds.query.filter(Rounds.round_id==fetched_round_id).values(Rounds.round_id,Rounds.round_description,Rounds.round_name,Rounds.round_requirement,Rounds.round_time)
+
+    for each_round_info in round_info_object:
+        round_info = {'round_name':each_round_info.round_name,'round_requirements':each_round_info.round_requirement,'round_time':each_round_info.round_time,'round_description':each_round_info.round_description}
+    
+    
     data = {
     'candidate_id':session['candidate_info']['candidate_id'],
     'candidate_name':session['candidate_info']['candidate_name'],
@@ -751,7 +772,6 @@ def redirect_get_schedule(job_id):
     'round_time': round_info['round_time'],
     'round_description':round_info['round_description'],
     }
-    
     return render_template("get-schedule.html",result=data)
 
 
@@ -771,7 +791,7 @@ def send_invite(candidate_id, job_id):
         round_name = request.form.get("roundname")
         round_info = {'round_time':round_time,
                         'round_description':round_description,'round_name':round_name}
-        session['round_details'] = round_info
+        #session['round_details'] = round_info
         #session['round_time'] = round_time
         #session['round_description'] = round_description
         generated_url = base_url + generated_url +'/welcome'
@@ -792,7 +812,7 @@ def send_invite(candidate_id, job_id):
             #Add the candidate round details in candidateround table
             #As of now I am adding round status as completed we can change this to 'Invite sent'
             """candidate_round_detail = Candidateround.query.filter(Candidateround.candidate_id == candidate_id,Candidateround.job_id == job_id).update({'round_id':round_id,'round_status':'Completed'})"""
-            candidate_round_detail = Candidateround(candidate_id=candidate_id,job_id=job_id,round_id=round_id,round_status='Completed')
+            candidate_round_detail = Candidateround(candidate_id=candidate_id,job_id=job_id,round_id=round_id,round_status='Invitation Sent')
             db.session.add(candidate_round_detail)
             db.session.commit()
 

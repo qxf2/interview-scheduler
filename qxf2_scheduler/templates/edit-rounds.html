@@ -31,10 +31,10 @@
     <div>
         <h2 class="grey_text text-justify">Edit Rounds</h2>
         <form class="needs-validation">
-            <label class="col-md-4 control-label" for="rname">Round name</label>
+            <label class="col-md-4 control-label" for="rname"><span style="color:red">*</span>Round name</label>
             <div class="col-md-4">
                 {% for each_details in result %}
-                <input id="rname" name="rname" type="text" placeholder="John" class="form-control"
+                <input id="rname" maxlength="20" name="rname" type="text" placeholder="John" class="form-control"
                     value="{{each_details.round_name}}" required>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
@@ -42,7 +42,7 @@
             <input type="hidden" value="{{each_details.round_id}}" id="roundId">
             <input type="hidden" value="{{job_id}}" id="jobId">
 
-            <label class="col-md-4 control-label" for="rtime">Round duration</label>
+            <label class="col-md-4 control-label" for="rtime"><span style="color:red">*</span>Round duration</label>
             <div class="col-md-4">
                 <select name="Duration" id="rtime" style="width:380px; height:30px;" required>
                     <option value="{{each_details.round_time}}">{{each_details.round_time}}</option>
@@ -57,9 +57,9 @@
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
-            <label class="col-md-4 control-label" for="rdescription">Round description</label>
+            <label class="col-md-4 control-label" for="rdescription"><span style="color:red">*</span>Round description</label>
             <div class="col-md-4">                
-                <textarea name="rdesc" id="rdesc" style="width:380px; height:300px;" required>{{each_details.round_description}}</textarea>
+                <textarea name="rdesc" maxlength="500"id="rdesc" style="width:380px; height:300px;" required>{{each_details.round_description}}</textarea>
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
                 <div class="valid-feedback">Valid</div>
@@ -67,7 +67,7 @@
 
 
             </div>
-            <label class="col-md-4 control-label" for="rrequirements">Round requirements</label>
+            <label class="col-md-4 control-label" for="rrequirements"><span style="color:red">*</span>Round requirements</label>
             <div class="col-md-4">
                 <input id="rreq" name="rreq" type="text" value="{{each_details.round_requirement}}" placeholder="Laptop"
                     class="form-control" required>
@@ -83,7 +83,7 @@
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
                 <button class="btn btn-info" type="submit">Edit</button>
-                <button name="clear" onclick="clearEdit()" class="btn btn-danger">Cancel</button>
+                <button type="button" name="clear" onclick="clearEdit()" class="btn btn-danger">Cancel</button>
             </div>
         </form>
     </div>
@@ -124,7 +124,7 @@
                                 },
                                 success: function (result) {
                                     alert("The round has been edited");
-                                    document.location.href = "/jobs";
+                                    document.location.href = "/job/" + jobId + "/rounds";
                                 },
 
                             })

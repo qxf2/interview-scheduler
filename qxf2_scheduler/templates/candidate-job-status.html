@@ -50,13 +50,22 @@
                             {% if result.interviewer_email_id == None%}
                             <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
                             {% else %}
-                            <label class="col-md-8" for="interviewerDetails">{{result.interviewer_email_id}}</label>
+                            <label class="col-md-8" for="interviewerDetails"><p>{{result.interviewer_email_id}}</p></label>
                             {% endif %}
                         </div>
                         <br>
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Date Applied:">Date Applied:</label>
                             <label class="col-md-8" for="dateApplied">{{result.date_applied}}</label>
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Generated URL:">Generated URL:</label>
+                            {% if result.url == None %}
+                            <label class="col-md-8" for="interviewerDetails">URL not yet generated</label>
+                            {% else %}
+                            <label class="col-md-8" for="interviewerDetails"style="max-width:450px; word-wrap: break-word">{{result.url}}</label>
+                            {% endif %}
                         </div>
                         <br>
                         {% if result.candidate_status == 'Waiting on Qxf2' %}

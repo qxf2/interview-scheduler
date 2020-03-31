@@ -50,6 +50,7 @@
                         <th>Candidate Name</th>
                         <th>Candidate Email</th>
                         <th>Job Applied</th>
+                        <th>Candidate Status</th>
                         <th>Actions</th>
 
                     </tr>
@@ -65,6 +66,7 @@
                         <td>{{ each_candidate.candidate_email }}</td>
                         <!--change each_candidate.job_applied-->
                         <td>{{ each_candidate.job_role }}</td>
+                        <td>{{ each_candidate.candidate_status }}</td>
                         <td><input class="btn btn-info" type="button" id="edit" onclick="editCandidates({{each_candidate.candidate_id}})" value="Edit">
                             <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
                                 data-candidatename="{{ each_candidate.candidate_name }}"

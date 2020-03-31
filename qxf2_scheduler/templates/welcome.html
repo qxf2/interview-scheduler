@@ -162,8 +162,8 @@
                         }
                         if (result.error['error'] == "OtherError") {
 
-                            alert("Email or Name not found, please enter the same email or name that you used when applied for this role");
-                            window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
+                            alert("Email or Name not found, Please check your unique URL you have entered is correct");
+                            //window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";                            
                         }
                         if (result.error['error'] == "Success") {
 

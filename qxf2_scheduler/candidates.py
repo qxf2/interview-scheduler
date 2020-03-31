@@ -31,11 +31,14 @@ def url_gen(candidate_id, job_id):
 @login_required
 def read_candidates():
     "Read the candidates"      
-    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role)
-    
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role,Jobcandidate.candidate_status)    
     my_candidates_list = []
     for each_candidate in display_candidates:
-        my_candidates_list.append({'candidate_id':each_candidate.candidate_id,'candidate_name':each_candidate.candidate_name,'candidate_email':each_candidate.candidate_email,'job_id':each_candidate.job_id,'job_role':each_candidate.job_role})
+        candidate_status_object = Candidatestatus.query.filter(Candidatestatus.status_id==each_candidate.candidate_status).values(Candidatestatus.status_name)
+        for candidate_status in candidate_status_object:
+            candidate_status = candidate_status.status_name
+
+        my_candidates_list.append({'candidate_id':each_candidate.candidate_id,'candidate_name':each_candidate.candidate_name,'candidate_email':each_candidate.candidate_email,'job_id':each_candidate.job_id,'job_role':each_candidate.job_role,'candidate_status':candidate_status})
     
     return render_template("read-candidates.html",result=my_candidates_list)
 
@@ -69,6 +72,37 @@ def delete_candidate(candidate_id):
         
     return jsonify(data)
 
+
+def candidate_diff_job(candidate_name,candidate_email,candidate_job_applied,job_id):
+    "Adding the candidates with different job"
+    result_flag = False
+    try :
+        add_candidate_object = Candidates(candidate_name=candidate_name,candidate_email=candidate_email,job_applied=candidate_job_applied)
+        db.session.add(add_candidate_object)
+        db.session.flush()
+        candidate_id = add_candidate_object.candidate_id
+        db.session.commit()
+        
+        # Fetch the id for the candidate status 'Waiting on Qxf2'
+        #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file           
+        candidate_status_id = Candidatestatus.query.filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[0]).values(Candidatestatus.status_id)
+        for each_value in candidate_status_id:
+            status_id = each_value.status_id
+
+        #storing the candidate id and job id in jobcandidate table
+        add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=job_id,url='',candidate_status= status_id)
+        db.session.add(add_job_candidate_object)
+        db.session.commit()
+        #Store the candidateid,jobid,roundid and round status in candidateround table
+        """add_round_candidate_object = Candidateround(candidate_id=candidate_id,job_id=job_id,round_id='',round_status='')
+        db.session.add(add_round_candidate_object)
+        db.session.commit()"""
+        result_flag = True
+    except Exception as e:
+        print(e)
+        result_flag = False
+
+    return result_flag
     
 #Passing the optional parameter through URL
 @app.route('/candidate/<job_role>/add')
@@ -92,7 +126,6 @@ def add_candidate(job_role):
         return render_template("add-candidates.html",data=available_job_list)
 
     if request.method == 'POST': 
-        result_flag = True       
         candidate_name = request.form.get('candidateName')
         candidate_email = request.form.get('candidateEmail').lower()
         candidate_job_applied = request.form.get('jobApplied')  
@@ -105,9 +138,11 @@ def add_candidate(job_role):
             #check the job of the candidates if the emails are same
             candidate_applied_job = db.session.query(db.exists().where(Candidates.job_applied==candidate_job_applied)).scalar()
             if candidate_applied_job == True:
-                result_flag = False 
-        if result_flag == False:
-            error = "Failed"           
+                error = "Failed" 
+            else:
+                return_object = candidate_diff_job(candidate_name=candidate_name,candidate_email=candidate_email,candidate_job_applied=candidate_job_applied,job_id=job_id)
+                if return_object == True:
+                    error = "Success"          
         else:
             add_candidate_object = Candidates(candidate_name=candidate_name,candidate_email=candidate_email,job_applied=candidate_job_applied)
             db.session.add(add_candidate_object)
@@ -130,6 +165,7 @@ def add_candidate(job_role):
             db.session.add(add_round_candidate_object)
             db.session.commit()"""
             error = "Success"
+              
         api_response = {'data':data,'error':error}
 
         return jsonify(api_response)
@@ -233,7 +269,7 @@ def edit_candidates(candidate_id):
             db.session.commit()
             edited_job_role = db.session.query(Jobs.job_id).filter(Jobs.job_role==candidate_job_applied).first()
             #storing the candidate id and job id in jobcandidate table
-            edit_job_candidate_object = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id).update({'candidate_id':candidate_id,'job_id':edited_job_role.job_id,'url':''})
+            edit_job_candidate_object = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id).update({'candidate_id':candidate_id,'job_id':edited_job_role.job_id,'url':'','candidate_status':1})
             """add_job_candidate_object = Jobcandidate(candidate_id=candidate_id,job_id=edited_job_role.job_id,url='')
             db.session.add(add_job_candidate_object) """           
             db.session.commit()            

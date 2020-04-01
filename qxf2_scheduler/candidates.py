@@ -4,7 +4,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json
-import string
+import string,datetime
 import random,sys
 from flask_mail import Message, Mail
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -15,12 +15,41 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus,Candidateinterviewer
 DOMAIN = 'qxf2.com'
-base_url = 'http://localhost:6464/'
+base_url = 'http://3.219.215.68/'
+
+
+def get_end_business_day(add_days,from_date):
+    "calcuate the five business days"
+    business_days_to_add = add_days
+    current_date = from_date
+    while business_days_to_add > 0:
+        current_date += datetime.timedelta(days=1)
+        weekday = current_date.weekday()
+        if weekday >= 5: # sunday = 6
+            continue
+        business_days_to_add -= 1
+        
+    return current_date
+
+
+def get_hours_between(end_date,current_date):
+    "calculate the hours between two dates"
+    diff_between_dates = end_date - current_date
+    print(diff_between_dates.days)
+    days, seconds = diff_between_dates.days, diff_between_dates.seconds
+    hours_between_dates = days * 24 + seconds // 3600
+
+    return hours_between_dates
 
 
 def url_gen(candidate_id, job_id):
     "generate random url for candidate"
-    s = Serializer('WEBSITE_SECRET_KEY', 60*3600) # 60 secs by 30 mins
+    num_business_days = 5
+    current_date = datetime.datetime.now()
+    end_business_day = get_end_business_day(num_business_days,current_date)
+    print(end_business_day,current_date)
+    num_hours = get_hours_between(end_business_day,current_date)
+    s = Serializer('WEBSITE_SECRET_KEY', num_hours*3600) # 60 secs by 30 mins
     urllist = s.dumps({'candidate_id':candidate_id,'job_id': job_id}).decode('utf-8')
     #KEY_LEN = random.randint(8,16)
     #urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]

@@ -20,8 +20,23 @@ LOCATION =  'Google Hangout or Office',
 DESCRIPTION = 'A senior Qxf2 employee will talk to you and get to know your background. She/He will also give you a real application to test and look at how you break down testing at various levels. This stage is evaluating your communication skills and how you approach testing problems.',
 ATTENDEE = 'annapoorani@qxf2.com'
 DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
+from pytz import timezone
 
 from qxf2_scheduler.models import Jobcandidate,Updatetable,Interviewers,Candidates,Candidateround
+
+
+def convert_to_timezone(current_date):
+    "convert the time into current timezone"
+    format = "%Y-%m-%d %H:%M:%S %Z%z"
+    # Current time in UTC
+    #now_utc = datetime.now(timezone('UTC'))
+    #print(now_utc.strftime(format))
+    # Convert to Asia/Kolkata time zone
+    now_asia = current_date.astimezone(timezone('Asia/Kolkata'))
+    print(now_asia.strftime(format))
+    
+    return now_asia
+
 
 
 def scheduler_job():
@@ -33,7 +48,9 @@ def scheduler_job():
             pass
         else:            
             interview_start_time = datetime.datetime.strptime(each_interview_time.interview_start_time,'%Y-%m-%dT%H:%M:%S+05:30')            
-            if interview_start_time <= datetime.datetime.now():
+            interview_start_time = convert_to_timezone(interview_start_time)
+            current_date_and_time = convert_to_timezone(datetime.datetime.now())
+            if interview_start_time <= current_date_and_time:
                 update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
                 db.session.commit()
                 #update_round_status = Candidateround.query.filter()
@@ -41,7 +58,7 @@ def scheduler_job():
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)
 #sched.add_job(scheduler_job,'cron', minute='*')
-sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='1,31')
+sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='*')
 sched.start()
 
 

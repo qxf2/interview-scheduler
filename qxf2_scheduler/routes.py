@@ -832,7 +832,7 @@ def send_invite(candidate_id, job_id):
         try:
             msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
                           sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email],cc=['test@qxf2.com'])            
-            msg.html = render_template("send_invite.html",round_name=round_name,round_details=round_description,round_username=candidate_name,link=generated_url)
+            msg.html = render_template("send_invite.html",candidate_name=candidate_name,round_name=round_name,round_details=round_description,round_username=candidate_name,link=generated_url)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'
             #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file

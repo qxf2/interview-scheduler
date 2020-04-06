@@ -15,7 +15,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus,Candidateinterviewer
 DOMAIN = 'qxf2.com'
-base_url = 'http://3.219.215.68/'
+base_url = 'http://localhost:6464/'
 
 
 def get_end_business_day(add_days,from_date):

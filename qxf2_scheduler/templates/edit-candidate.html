@@ -51,7 +51,6 @@
 
             </div>
             <input type="hidden"id="oldJob" value="{{result.job_role}}">
-
             <label class="col-md-4 control-label" for="select1"><span style="color:red">*</span>Job applied for</label>
             <div class="col-md-4">
                 <select class="form-control" id="select1" required>
@@ -61,6 +60,14 @@
                     <option value="{{each_job}}">{{each_job}}</option>
                     {% endfor %}
                 </select>
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+            
+            </div>
+            <label class="col-md-4 control-label" for="comments"><span style="color:red">*</span>Add your comments</label>
+            <div class="col-md-4">
+                <textarea id="comments" name="comments" rows="10" col="20" class="form-control" required>{{result.added_comments}}</textarea>
+                   
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
 
@@ -98,6 +105,7 @@
                                 console.log("I am coming here")
                                 var candidateName = $("#fname").val();
                                 var candidateEmail = $("#email").val();
+                                var addedComments = $("#comments").val();
                                 var dropdownValue = document.getElementById("select1");
                                 var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
                                 var existingJob = document.getElementById("oldJob").value;
@@ -110,7 +118,8 @@
                                         'candidateName': candidateName,
                                         'candidateEmail': candidateEmail,
                                         'jobApplied': jobApplied,
-                                        'existJob':existingJob
+                                        'existJob':existingJob,
+                                        'addedcomments':addedComments
                                     },
                                     success: function (result) {
                                         console.log(result.error, result.data['candidate_name']);

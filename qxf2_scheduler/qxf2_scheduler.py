@@ -50,10 +50,11 @@ def scheduler_job():
             interview_start_time = datetime.datetime.strptime(each_interview_time.interview_start_time,'%Y-%m-%dT%H:%M:%S+05:30')            
             interview_start_time = convert_to_timezone(interview_start_time)
             current_date_and_time = convert_to_timezone(datetime.datetime.now())
-            if interview_start_time <= current_date_and_time:
-                update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
-                db.session.commit()
-                #update_round_status = Candidateround.query.filter()
+            candidate_status = each_interview_time.candidate_status
+            if interview_start_time <= current_date_and_time and int(candidate_status) == 3:
+                    update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
+                    db.session.commit()
+                    #update_round_status = Candidateround.query.filter()
 
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)

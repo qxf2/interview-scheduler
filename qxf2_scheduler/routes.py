@@ -189,7 +189,12 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         data = {'username':username,'password':password}
-        
+        #fetch the email id of the user whose logged in
+        user_email_id = Login.query.filter(Login.username==username).values(Login.email)
+        for logged_user in user_email_id:
+            logged_email_id = logged_user.email
+        session['logged_user'] = logged_email_id
+        print(session['logged_user'])
         completion = validate(username)
         if completion ==False:
             error = 'error.'
@@ -828,10 +833,11 @@ def send_invite(candidate_id, job_id):
         #session['round_details'] = round_info
         #session['round_time'] = round_time
         #session['round_description'] = round_description
+        logged_email = session['logged_user']
         generated_url = base_url + generated_url +'/welcome'
         try:
             msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
-                          sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email],cc=['test@qxf2.com'])            
+                          sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email],cc=[logged_email])            
             msg.html = render_template("send_invite.html",candidate_name=candidate_name,round_name=round_name,round_details=round_description,round_username=candidate_name,link=generated_url)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'

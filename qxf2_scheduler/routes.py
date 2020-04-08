@@ -18,7 +18,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
-base_url = 'http://localhost:6464/'
+base_url = 'http://3.129.215.68/'
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"
@@ -831,9 +831,8 @@ def send_invite(candidate_id, job_id):
         generated_url = base_url + generated_url +'/welcome'
         try:
             msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
-                          sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])
-            msg.body = "Hi %s ,\n\nThank you for choosing to interview with Qxf2 Services. You have been selected for the '%s' of our interview. Please self-schedule your interview with us by visiting '%s' this link. \n\nThe link above will have the details about what to expect in this round. Choose a convenient date for your interview to see a list all the time slots we have available for your interview. Select a time slot that suits you and your interview with us will be scheduled automatically. Once you schedule your interview, you will receive a calendar invite confirming the interview.\n\nThanks, \nQxf2 Services"% (
-            candidate_name, round_name, generated_url)
+                          sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email],cc=['test@qxf2.com'])            
+            msg.html = render_template("send_invite.html",candidate_name=candidate_name,round_name=round_name,round_details=round_description,round_username=candidate_name,link=generated_url)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'
             #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file

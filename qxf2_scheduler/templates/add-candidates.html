@@ -61,6 +61,14 @@
                 <div class="invalid-feedback">Please fill out this field</div>
 
             </div>
+            <label class="col-md-4 control-label" for="comments"><span style="color:red">*</span>Add your comments</label>
+            <div class="col-md-4">
+                <textarea id="comments" name="comments" rows="10" col="20" class="form-control" required></textarea>
+                   
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+
+            </div>
 
             <label class="col-md-4 control-label" for="save"></label>
             <div class="col-md-8">
@@ -97,6 +105,7 @@
                             var candidateEmail = $("#email").val();
                             var dropdownValue = document.getElementById("select1");
                             var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
+                            var addedComments = $("#comments").val()
                             console.log(candidateEmail, candidateName, jobApplied);
                             $("#addSubmit").attr("disabled",true);
                             $.ajax({
@@ -105,7 +114,8 @@
                                 data: {
                                     'candidateName': candidateName,
                                     'candidateEmail': candidateEmail,
-                                    'jobApplied': jobApplied
+                                    'jobApplied': jobApplied,
+                                    'addedcomments':addedComments
                                 },
                                 success: function (result) {
                                     console.log(result.error, result.data['candidate_name']);

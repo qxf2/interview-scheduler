@@ -18,7 +18,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
-base_url = 'http://3.129.215.68/'
+base_url = 'http://localhost:6464/'
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"
@@ -735,7 +735,7 @@ def show_welcome(candidate_id, job_id, url):
                 interview_end_time = parse_interview_time(interview_detail.interview_end_time)
                 interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date,'interviewer_email':interview_detail.interviewer_email,'round_time': round_info['round_time'],'round_description':round_info['round_description'],}
     except Exception as e:
-        print(e,'hi')
+        print(e)
         return render_template("expiry.html")
 
     return render_template("welcome.html",result=data,interview_result=interview_data)

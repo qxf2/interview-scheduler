@@ -50,7 +50,7 @@
                             {% if result.interviewer_email_id == None%}
                             <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
                             {% else %}
-                            <label class="col-md-8" for="interviewerDetails">{{result.interviewer_email_id}}</label>
+                            <label class="col-md-8" for="interviewerDetails"><p>{{result.interviewer_email_id}}</p></label>
                             {% endif %}
                         </div>
                         <br>
@@ -58,6 +58,21 @@
                             <label class="col-md-8" for="Date Applied:">Date Applied:</label>
                             <label class="col-md-8" for="dateApplied">{{result.date_applied}}</label>
                         </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Generated URL:">Generated URL:</label>
+                            {% if result.url == None %}
+                            <label class="col-md-8" for="interviewerDetails">URL not yet generated</label>
+                            {% else %}
+                            <label class="col-md-8" for="interviewerDetails"style="max-width:450px; word-wrap: break-word">{{result.url}}</label>
+                            {% endif %}
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="comments:">Added comments:</label>
+                            <label class="col-md-8" for="dateApplied">{{result.comments}}</label>
+                        </div>
+
                         <br>
                         {% if result.candidate_status == 'Waiting on Qxf2' %}
 
@@ -68,8 +83,8 @@
                                 data-candidate-email="{{result.candidate_email}}"
                                 data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}">
                             <input type="button" value="Thumbs down" id="thumbsDown">
-                            <br> 
-                            
+                            <br>
+
                         </div>
                         <br>
                         <div class="col-md-4 form-display">
@@ -116,19 +131,18 @@
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Reject</label>
                         </div>
-
-
+                        
                         {% endif %}
-                        <br>
                         <div class="container col-md-14">
-                            {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}                           
-                            <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()" value="No opening">
-                           {% endif %}
+                            {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}
+                            <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
+                                value="No opening">
+                            {% endif %}
                         </div>
             </div>
 
             {% endif %}
-            
+
             </fieldset>
             </form>
         </div>
@@ -236,7 +250,6 @@
             $('#err-name').empty();
             if (roundDescription == '') {
                 isValid = false;
-                console.log("I am coming here");                              
                 $("#select1").after('<span id="err-name" class="error" style="color:red">Please select the round</span>')
             }
             if (isValid == true) {
@@ -315,7 +328,7 @@
                     if (result.error == "Success") {
                         alert("The no opening email has been sent");
                         document.location.href = "/candidates";
-                        ('#noOpening').attr("disabled",true)
+                        ('#noOpening').attr("disabled", true)
 
                     }
                     else {
@@ -325,45 +338,46 @@
 
                 }
             })
-            $("#hideButton").attr("disabled",true);
+            $("#hideButton").attr("disabled", true);
         }
     </script>
     <script>
-        $("document").ready(function(){
-            $("#thumbsDown").click(function(){           
-            var candidateName = document.getElementById("candidateName").value;
-            var candidateEmail = document.getElementById("candidateEmail").value;
-            var candidateId = document.getElementById("candidateId").value;
-            var jobId = document.getElementById("jobId").value;
-            $.ajax({
-                type: 'POST',
-                url: "/reject",
-                data: {
-                    'candidatename': candidateName,
-                    'candidateid': candidateId,
-                    'candidateemail': candidateEmail,
-                    'candidatejob': jobId
-                },
-                success: function (result) {
-                    if (result.error == "Success") {
-                        alert("The reject email has been sent");
-                        document.location.href = "/candidates";
-                        ('#noOpening').attr("disabled",true)
+        $("document").ready(function () {
+            $("#thumbsDown").click(function () {
+                var candidateName = document.getElementById("candidateName").value;
+                var candidateEmail = document.getElementById("candidateEmail").value;
+                var candidateId = document.getElementById("candidateId").value;
+                var jobId = document.getElementById("jobId").value;
+                $.ajax({
+                    type: 'POST',
+                    url: "/reject",
+                    data: {
+                        'candidatename': candidateName,
+                        'candidateid': candidateId,
+                        'candidateemail': candidateEmail,
+                        'candidatejob': jobId
+                    },
+                    success: function (result) {
+                        if (result.error == "Success") {
+                            alert("The reject email has been sent");
+                            document.location.href = "/candidates";
+                            ('#noOpening').attr("disabled", true)
+
+                        }
+                        else {
+                            alert("The reject email cannot be sent");
+                            document.location.href = "/candidates";
+                        }
 
                     }
-                    else {
-                        alert("The reject email cannot be sent");
-                        document.location.href = "/candidates";
-                    }
+                })
+                $("#thumbsDown").attr("disabled", true);
 
-                }
+
             })
-            $("#thumbsDown").attr("disabled",true);
-        
-   
-    })
         })
     </script>
+    
 </body>
 
 </html>

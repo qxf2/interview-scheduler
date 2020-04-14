@@ -20,6 +20,11 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+    <style>
+        p {
+  word-break: break-word;
+}
+    </style>
 
 </head>
 
@@ -46,12 +51,11 @@
         <article>
             <div>
                 <p><b>Please read the below details carefully before scheduling an interview.</b></p>
-                <br>
                 <ul>
                     <li>The duration of the round is {{result['round_time']}}</li>
                     <li>
-                        
-                        {{result['round_description']}}
+
+                        <p class="display">{{result['round_description']}}</p>
                     </li>
                     <li>
                         You should have a Laptop with proper Internet connection, headphone and webcam
@@ -159,7 +163,7 @@
                         }
                         else {
                             if (freeChunkSlots.length == 0) {
-                                msg += 'There were no free slots for  on ' + result.date;
+                                msg += 'There are no free slots for  on ' + result.date;
                             } else {
                                 msg = 'The free slots on ' + result.date + ' are: <br>';
                                 for (index in freeChunkSlots) {

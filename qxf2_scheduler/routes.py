@@ -700,40 +700,48 @@ def show_welcome(candidate_id, job_id, url):
     data = {'job_id': job_id,'candidate_id':candidate_id,'url':url}
     s = Serializer('WEBSITE_SECRET_KEY')
     try:
-        url = s.loads(url)
-        #This query fetches the candidate status id
-        get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status)
-        for candidate_status in get_candidate_status:
-            candidate_status_id = candidate_status.candidate_status
-        #Fetch the candidate status name from candidatestatus table
-        candidate_status = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
-        if(candidate_status.status_name == status.CANDIDTATE_STATUS[1]):
-            return render_template("welcome.html",result=data)
+        #check the url is valid or not
+        fetch_candidate_unique_url = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.url)            
+        for unique_url in fetch_candidate_unique_url:
+            candidate_unique_url = unique_url.url
+        candidate_unique_url = candidate_unique_url[4:]
+        if candidate_unique_url == url:            
+            #This query fetches the candidate status id
+            url = s.loads(url)
+            get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status)
+            for candidate_status in get_candidate_status:
+                candidate_status_id = candidate_status.candidate_status
+            #Fetch the candidate status name from candidatestatus table
+            candidate_status = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
+            if(candidate_status.status_name == status.CANDIDTATE_STATUS[1]):
+                return render_template("welcome.html",result=data)
 
-        elif (candidate_status.status_name == status.CANDIDTATE_STATUS[2]):
-            #Fetch the candidate name and email
-            get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
+            elif (candidate_status.status_name == status.CANDIDTATE_STATUS[2]):
+                #Fetch the candidate name and email
+                get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
 
-            #Fetch the interview date and time
-            get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date,Jobcandidate.interviewer_email)
-            #Parsing candidate details
-            for candidate_detail in get_candidate_details:
-                data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
-            #Parsing the round details
-            candidate_round_details = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.round_status=='Completed').values(Candidateround.round_id)
-            for each_round_detail in candidate_round_details:
-                fetched_round_id = each_round_detail.round_id
+                #Fetch the interview date and time
+                get_interview_details = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.interview_end_time,Jobcandidate.interview_start_time,Jobcandidate.interview_date,Jobcandidate.interviewer_email)
+                #Parsing candidate details
+                for candidate_detail in get_candidate_details:
+                    data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
+                #Parsing the round details
+                candidate_round_details = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.round_status=='Completed').values(Candidateround.round_id)
+                for each_round_detail in candidate_round_details:
+                    fetched_round_id = each_round_detail.round_id
 
-            round_info_object = Rounds.query.filter(Rounds.round_id==fetched_round_id).values(Rounds.round_id,Rounds.round_description,Rounds.round_name,Rounds.round_requirement,Rounds.round_time)
+                round_info_object = Rounds.query.filter(Rounds.round_id==fetched_round_id).values(Rounds.round_id,Rounds.round_description,Rounds.round_name,Rounds.round_requirement,Rounds.round_time)
 
-            for each_round_info in round_info_object:
-                round_info = {'round_name':each_round_info.round_name,'round_requirements':each_round_info.round_requirement,'round_time':each_round_info.round_time,'round_description':each_round_info.round_description}            
-            
-            #Parsing Interview details
-            for interview_detail in get_interview_details:            
-                interview_start_time = parse_interview_time(interview_detail.interview_start_time)
-                interview_end_time = parse_interview_time(interview_detail.interview_end_time)
-                interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date,'interviewer_email':interview_detail.interviewer_email,'round_time': round_info['round_time'],'round_description':round_info['round_description'],}
+                for each_round_info in round_info_object:
+                    round_info = {'round_name':each_round_info.round_name,'round_requirements':each_round_info.round_requirement,'round_time':each_round_info.round_time,'round_description':each_round_info.round_description}            
+                
+                #Parsing Interview details
+                for interview_detail in get_interview_details:            
+                    interview_start_time = parse_interview_time(interview_detail.interview_start_time)
+                    interview_end_time = parse_interview_time(interview_detail.interview_end_time)
+                    interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date,'interviewer_email':interview_detail.interviewer_email,'round_time': round_info['round_time'],'round_description':round_info['round_description']}
+        else:
+            return render_template("expiry.html")
     except Exception as e:
         print(e)
         return render_template("expiry.html")

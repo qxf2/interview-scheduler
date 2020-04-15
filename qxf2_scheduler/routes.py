@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json
-import ast
+import ast,re
 import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Message, Mail
@@ -18,7 +18,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
-base_url = 'http://3.129.215.68/'
+base_url = 'http://localhost:6464/'
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"
@@ -769,7 +769,7 @@ def schedule_interview(job_id,url,candidate_id):
             
             for unique_url in fetch_candidate_unique_url:
                 candidate_unique_url = unique_url.url
-            candidate_unique_url = candidate_unique_url[4:]
+            candidate_unique_url = re.sub(r'^.*/','',candidate_unique_url)
             if candidate_unique_url == url:
                 session['candidate_info'] = return_data            
                 err={'error':'Success'}

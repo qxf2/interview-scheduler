@@ -27,16 +27,10 @@ from qxf2_scheduler.models import Jobcandidate,Updatetable,Interviewers,Candidat
 
 def convert_to_timezone(current_date):
     "convert the time into current timezone"
-    format = "%Y-%m-%d %H:%M:%S %Z%z"
-    # Current time in UTC
-    #now_utc = datetime.now(timezone('UTC'))
-    #print(now_utc.strftime(format))
-    # Convert to Asia/Kolkata time zone
+    format = "%Y-%m-%d %H:%M:%S %Z%z"    
     now_asia = current_date.astimezone(timezone('Asia/Kolkata'))
-    print(now_asia.strftime(format))
     
     return now_asia
-
 
 
 def scheduler_job():
@@ -59,7 +53,7 @@ def scheduler_job():
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)
 #sched.add_job(scheduler_job,'cron', minute='*')
-sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='*')
+sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='1,31')
 sched.start()
 
 

@@ -105,11 +105,15 @@
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Action">Action:</label>
                             <label class="col-md-8" for="action">No action needed from Qxf2</label>
-                        </div>
+                        </div>                       
                         <br>
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Waiting on Candidate</label>
+                        </div>
+                        <div class="col-md-4 form-display">
+                                <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
+                                    value="Re generate">
                         </div>
                         {% elif result.candidate_status == 'Waiting for new opening' %}
                         <div class="col-md-4 form-display">
@@ -376,6 +380,40 @@
 
             })
         })
+    </script>
+    <script>
+        function regenerate(){
+            var candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            //var roundId = document.getElementById("roundId").value;
+            var roundId = $("#roundId").val()
+            console.log(candidateId,jobId,roundId)
+            $.ajax({
+                type: 'POST',
+                url: "/regenerate/url",
+                data: {
+                    'candidateid': candidateId,
+                    'jobid': jobId,
+                    'roundid':roundId
+                },
+                success: function (result) {
+                    if (result.error == "Success") {
+                        alert("The existing URL is removed");
+                        document.location.href = "/candidate/"+candidateId + "/job/" + jobId;
+                        ('#noOpening').attr("disabled", true)
+
+                    }
+                    else {
+                        alert("Cannot remove the exisitng URL");
+                        document.location.href = "/candidate/"+candidateId + "/job/" + jobId;
+                    }
+
+                }
+            })
+            $("#regenerateUrl").attr("disabled", true);
+
+
+        }
     </script>
     
 </body>

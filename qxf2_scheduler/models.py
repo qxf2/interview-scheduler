@@ -86,6 +86,7 @@ class Jobcandidate(db.Model):
     interview_date = db.Column(db.String)
     interviewer_email = db.Column(db.String)
     candidate_status = db.Column(db.String)
+    comments = db.Column(db.String)
 
     def __repr__(self):
         return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}','{self.candidate_status}','{self.interview_start_time}')"

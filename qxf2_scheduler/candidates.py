@@ -35,7 +35,6 @@ def get_end_business_day(add_days,from_date):
 def get_hours_between(end_date,current_date):
     "calculate the hours between two dates"
     diff_between_dates = end_date - current_date
-    print(diff_between_dates.days)
     days, seconds = diff_between_dates.days, diff_between_dates.seconds
     hours_between_dates = days * 24 + seconds // 3600
 
@@ -47,13 +46,37 @@ def url_gen(candidate_id, job_id):
     num_business_days = 5
     current_date = datetime.datetime.now()
     end_business_day = get_end_business_day(num_business_days,current_date)
-    print(end_business_day,current_date)
     num_hours = get_hours_between(end_business_day,current_date)
     s = Serializer('WEBSITE_SECRET_KEY', num_hours*3600) # 60 secs by 30 mins
     urllist = s.dumps({'candidate_id':candidate_id,'job_id': job_id}).decode('utf-8')
     #KEY_LEN = random.randint(8,16)
     #urllist = [random.choice((string.ascii_letters+string.digits)) for i in range(KEY_LEN)]
     return (f'{candidate_id}/{job_id}/{"".join(urllist)}')
+
+@app.route("/regenerate/url",methods=["GET","POST"])
+def regenerate_url():
+    "Regenerate URL"
+    if request.method == 'POST':
+        try:
+            candidate_id = request.form.get("candidateid")
+            job_id = request.form.get("jobid")
+            round_id = request.form.get("roundid")
+            #regenerate_url = url_gen(candidate_id,job_id)
+            job_candidate_object = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).update({'url':'','candidate_status':'1'})
+            db.session.commit()   
+            get_round_id = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_status=='Invitation Sent').values(Candidateround.round_id)
+            for unique_round_id in get_round_id:
+                sent_round_id = unique_round_id.round_id
+            candidate_round_object = db.session.query(Candidateround).filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_id==sent_round_id).delete()
+            db.session.commit()
+            error = 'Success'
+        except Exception as e:
+            print(e)
+            error = "error"
+
+    data = {'candidate_id':candidate_id,'job_id':job_id,'error':error}
+
+    return jsonify(data)
 
 
 @app.route("/candidates",methods=["GET"])
@@ -160,7 +183,6 @@ def add_candidate(job_role):
         candidate_job_applied = request.form.get('jobApplied')  
         job_id = Jobs.query.filter(Jobs.job_role == candidate_job_applied).value(Jobs.job_id) 
         added_comments = request.form.get('addedcomments')
-        print(added_comments)
         candidate_name = candidate_name.strip()
         data = {'candidate_name':candidate_name}
         #Check the candidate has been already added or not
@@ -252,7 +274,6 @@ def show_candidate_job(job_id,candidate_id):
             url = None
         else:
             url = base_url + each_data.url + '/welcome'
-        print(url)
         data = {'candidate_name':each_data.candidate_name,'job_applied':each_data.job_role,'candidate_id':candidate_id,'job_id':job_id,'url': each_data.url,'candidate_email':each_data.candidate_email,'interviewer_email_id':each_data.interviewer_email,'date_applied':each_data.date_applied.date(),'url':url,'comments':each_data.comments}         
         candidate_status_id = each_data.candidate_status
     #fetch the candidate status name for the status id
@@ -286,7 +307,6 @@ def edit_candidates(candidate_id):
             jobs_list.append(each_job.job_role)
         
         candidate_data['job_roles']=jobs_list
-        print(candidate_data)
         return render_template("edit-candidate.html",result=candidate_data) 
 
     if request.method == 'POST':

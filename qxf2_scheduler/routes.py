@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json
-import ast
+import ast,re
 import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Message, Mail
@@ -782,7 +782,7 @@ def schedule_interview(job_id,url,candidate_id):
             
             for unique_url in fetch_candidate_unique_url:
                 candidate_unique_url = unique_url.url
-            candidate_unique_url = candidate_unique_url[4:]
+            candidate_unique_url = re.sub(r'^.*/','',candidate_unique_url)
             if candidate_unique_url == url:
                 session['candidate_info'] = return_data            
                 err={'error':'Success'}

@@ -252,6 +252,7 @@ def compare_rounds(all_round_id,completed_round_id):
 
 def get_pending_round_id(job_id,candidate_id):
     "Get the pending round id for the candidate"
+    pending_round_ids = []
     round_ids = []
     completed_round_id = [] 
     #Check the round is already alloted for the candidates

@@ -27,6 +27,21 @@
 
 <body>
     {% include "logout.html" %}
+    <div class="modal modal-megamenu" id="myModal">
+        <div class="modal-dialog modal-megamenu">
+            <div class="modal-content modal-megamenu">
+                <div class="modal-header modal-megamenu">
+                    <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+                </div>
+                <div class="modal-body modal-megamenu">
+                    <p>Success:</p>
+                </div>
+                <div class="modal-footer modal-megamenu">
+                    <button type="button" id="close-button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <h2 class="grey_text text-center">Candidate Details</h2>
     <div class="container col-md-offset-1">
         <div class="container col-md-offset-1">
@@ -50,7 +65,9 @@
                             {% if result.interviewer_email_id == None%}
                             <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
                             {% else %}
-                            <label class="col-md-8" for="interviewerDetails"><p>{{result.interviewer_email_id}}</p></label>
+                            <label class="col-md-8" for="interviewerDetails">
+                                <p>{{result.interviewer_email_id}}</p>
+                            </label>
                             {% endif %}
                         </div>
                         <br>
@@ -64,7 +81,8 @@
                             {% if result.url == None %}
                             <label class="col-md-8" for="interviewerDetails">URL not yet generated</label>
                             {% else %}
-                            <label class="col-md-8" for="interviewerDetails"style="max-width:450px; word-wrap: break-word">{{result.url}}</label>
+                            <label class="col-md-8" for="interviewerDetails"
+                                style="max-width:450px; word-wrap: break-word">{{result.url}}</label>
                             {% endif %}
                         </div>
                         <br>
@@ -82,7 +100,12 @@
                                 data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
                                 data-candidate-email="{{result.candidate_email}}"
                                 data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}">
-                            <input type="button" value="Thumbs down" id="thumbsDown">
+                            <!---<input type="button" value="Thumbs down" id="thumbsDown">--->
+                            <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
+                                data-candidatename="{{ result.candidate_name }}"
+                                data-candidateid="{{ result.candidate_id }}" data-jobid="{{ result.job_id }}"
+                                data-candidateemail="{{result.candidate_email}}" data-toggle="modal">Thumbs
+                                down</button>
                             <br>
 
                         </div>
@@ -105,15 +128,15 @@
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Action">Action:</label>
                             <label class="col-md-8" for="action">No action needed from Qxf2</label>
-                        </div>                       
+                        </div>
                         <br>
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Waiting on Candidate</label>
                         </div>
                         <div class="col-md-4 form-display">
-                                <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
-                                    value="Re generate">
+                            <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
+                                value="Re generate">
                         </div>
                         {% elif result.candidate_status == 'Waiting for new opening' %}
                         <div class="col-md-4 form-display">
@@ -135,7 +158,7 @@
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Reject</label>
                         </div>
-                        
+
                         {% endif %}
                         <div class="container col-md-14">
                             {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}
@@ -149,6 +172,23 @@
 
             </fieldset>
             </form>
+        </div>
+        <div class="modal modal-megamenu" id="confirmdeletemodal">
+            <div class="modal-dialog modal-megamenu">
+                <div class="modal-content modal-megamenu">
+                    <div class="modal-header modal-megamenu">
+                        <h4 class="modal-title">Send Reject?</h4>
+                    </div>
+                    <div class="modal-body modal-megamenu">
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="modal-footer modal-megamenu">
+                        <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                        <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
+                            type="submit">Send Reject</button>
+                    </div>
+                </div><!-- end modal-content -->
+            </div><!-- end modal-dialog -->
         </div>
     </div>
     </div>
@@ -346,12 +386,25 @@
         }
     </script>
     <script>
-        $("document").ready(function () {
-            $("#thumbsDown").click(function () {
-                var candidateName = document.getElementById("candidateName").value;
-                var candidateEmail = document.getElementById("candidateEmail").value;
-                var candidateId = document.getElementById("candidateId").value;
-                var jobId = document.getElementById("jobId").value;
+        $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
+            var triggeringElement = $(e.relatedTarget);
+            console.log("Triggering element is: ", triggeringElement.data('href'));
+            $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
+            var modal = $(this)
+            var candidateId = $(e.relatedTarget).data('candidateid');
+            modal.find('.modal-body').text('Are you sure you want to send reject mail to  ' + triggeringElement.data("candidatename") + '  this candidate? ')
+            $("#remove-button").on('click', function () {
+                //$("document").ready(function () {
+                // $("#thumbsDown").click(function () {
+                var candidateName = $(e.relatedTarget).data('candidatename');
+                var candidateEmail = $(e.relatedTarget).data('candidateemail');
+                var candidateId = $(e.relatedTarget).data('candidateid');
+                var jobId = $(e.relatedTarget).data('jobid');
+
+                //document.getElementById("candidateName").value;
+                //var candidateEmail = document.getElementById("candidateEmail").value;
+                //var candidateId = document.getElementById("candidateId").value;
+                //var jobId = document.getElementById("jobId").value;
                 $.ajax({
                     type: 'POST',
                     url: "/reject",
@@ -365,7 +418,8 @@
                         if (result.error == "Success") {
                             alert("The reject email has been sent");
                             document.location.href = "/candidates";
-                            ('#noOpening').attr("disabled", true)
+                            $('#myModal').modal('show');
+                            $('#myModal .modal-body p').html(msg);
 
                         }
                         else {
@@ -380,32 +434,35 @@
 
             })
         })
+        $("#close-button").on('click', function () {
+            location.reload();
+        })   
     </script>
     <script>
-        function regenerate(){
+        function regenerate() {
             var candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
             //var roundId = document.getElementById("roundId").value;
             var roundId = $("#roundId").val()
-            console.log(candidateId,jobId,roundId)
+            console.log(candidateId, jobId, roundId)
             $.ajax({
                 type: 'POST',
                 url: "/regenerate/url",
                 data: {
                     'candidateid': candidateId,
                     'jobid': jobId,
-                    'roundid':roundId
+                    'roundid': roundId
                 },
                 success: function (result) {
                     if (result.error == "Success") {
                         alert("The existing URL is removed");
-                        document.location.href = "/candidate/"+candidateId + "/job/" + jobId;
+                        document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
                         ('#noOpening').attr("disabled", true)
 
                     }
                     else {
                         alert("Cannot remove the exisitng URL");
-                        document.location.href = "/candidate/"+candidateId + "/job/" + jobId;
+                        document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
                     }
 
                 }
@@ -415,7 +472,7 @@
 
         }
     </script>
-    
+
 </body>
 
 </html>

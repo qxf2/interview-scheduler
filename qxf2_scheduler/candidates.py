@@ -15,7 +15,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus,Candidateinterviewer
 DOMAIN = 'qxf2.com'
-base_url = 'http://localhost:6464/'
+base_url = 'http://3.219.215.68/'
 
 
 def get_end_business_day(add_days,from_date):
@@ -404,7 +404,8 @@ def send_reject():
     candidate_job_applied = request.form.get('candidatejob')
     candidate_id = request.form.get('candidateid')
     try:
-        msg = Message("Interview update from Qxf2 Services!",sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])
+        logged_email = session['logged_user']
+        msg = Message("Interview update from Qxf2 Services!",sender=("Qxf2 Services","test@qxf2.com"), cc=[logged_email],recipients=[candidate_email])
         msg.body = "Hi %s ,\n\nI appreciate your interest in a career opportunity with Qxf2 Services. It was a pleasure speaking to you about your background and interests. There are many qualified applicants in the current marketplace and we are searching for those who have the most directly applicable experience to our limited number of openings. I regret we will not be moving forward with your interview process. We wish you all the best in your current search and future endeavors.\n\nThanks,\nQxf2 Services"%(candidate_name)
         mail.send(msg)
         #Update the candidate status to 'Waiting for new opening'        

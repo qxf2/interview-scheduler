@@ -57,7 +57,7 @@ class Candidates(db.Model):
     candidate_email = db.Column(db.String,nullable=False)
     date_applied = db.Column(DateTime, default=datetime.datetime.utcnow)
     job_applied = db.Column(db.String,nullable=False)
-    comments = db.Column(db.String,nullable=False)
+    comments = db.Column(db.String)
     
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"

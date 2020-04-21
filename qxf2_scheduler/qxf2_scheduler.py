@@ -25,11 +25,13 @@ from pytz import timezone
 from qxf2_scheduler.models import Jobcandidate,Updatetable,Interviewers,Candidates,Candidateround
 
 
-def convert_to_timezone(current_date):
+def convert_to_timezone(date_and_time):
     "convert the time into current timezone"
-    format = "%Y-%m-%d %H:%M:%S %Z%z"    
-    now_asia = current_date.astimezone(timezone('Asia/Kolkata'))
-    
+    # Current time in UTC
+    format = "%Y-%m-%d %H:%M:%S %Z%z"
+    # Convert to Asia/Kolkata time zone
+    now_asia = date_and_time.astimezone(timezone('Asia/Kolkata'))
+    now_asia = now_asia.strftime(format)
     return now_asia
 
 
@@ -42,8 +44,10 @@ def scheduler_job():
             pass
         else:            
             interview_start_time = datetime.datetime.strptime(each_interview_time.interview_start_time,'%Y-%m-%dT%H:%M:%S+05:30')            
-            interview_start_time = convert_to_timezone(interview_start_time)
-            current_date_and_time = convert_to_timezone(datetime.datetime.now())
+            # Current time in UTC
+            now_utc = datetime.datetime.now(timezone('UTC'))
+            current_date_and_time = convert_to_timezone(now_utc)
+            current_date_and_time = datetime.datetime.strptime(current_date_and_time,"%Y-%m-%d %H:%M:%S IST+0530")
             candidate_status = each_interview_time.candidate_status
             if interview_start_time <= current_date_and_time and int(candidate_status) == 3:
                     update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})

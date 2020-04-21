@@ -15,7 +15,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates,Jobs,Jobcandidate,Jobround,Rounds,Candidateround,Candidatestatus,Candidateinterviewer
 DOMAIN = 'qxf2.com'
-base_url = 'http://3.219.215.68/'
+base_url = 'http://localhost:6464/'
 
 
 def get_end_business_day(add_days,from_date):
@@ -373,8 +373,10 @@ def no_opening():
     candidate_email = request.form.get('candidateemail')
     candidate_job_applied = request.form.get('candidatejob')
     candidate_id = request.form.get('candidateid')
+    logged_email = session['logged_user']
+
     try:
-        msg = Message("Currently we don't have an opening!",sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email])
+        msg = Message("Currently we don't have an opening!",sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email],cc=[logged_email])
         msg.body = "Hi %s ,\n\nWe have received your resume and thanks for applying for the job. Currently we don't have an opening for the job position. We will get back to you once we have an opening.\n\nThanks,\nQxf2 Services"%(candidate_name)
         mail.send(msg)
         #Update the candidate status to 'Waiting for new opening'

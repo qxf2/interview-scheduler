@@ -240,20 +240,35 @@ def generate_unique_url():
     return jsonify(api_response)
 
 
+def compare_rounds(all_round_id,completed_round_id):
+    "compare two lists of round and get pending"
+    all_round_id = set(all_round_id)
+    completed_round_id = set(completed_round_id)
+    pending_round_ids = all_round_id.difference(completed_round_id)
+    pending_round_ids = list(pending_round_ids)    
+
+    return pending_round_ids
+
+
 def get_pending_round_id(job_id,candidate_id):
     "Get the pending round id for the candidate"
-    pending_round_ids = [] 
+    pending_round_ids = []
+    round_ids = []
+    completed_round_id = [] 
     #Check the round is already alloted for the candidates
     exists = db.session.query(db.exists().where(Candidateround.candidate_id == candidate_id)).scalar()
     if exists == True:
         #Fetch all the round details for a job
         round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
         for each_round_id in round_ids_for_job:
-            #Fetch the round id and round status from candidateround table
-            #Check the round id is already existing in the candidateround table
-            check_round_exists_for_candidate = db.session.query(db.exists().where(Candidateround.round_id==each_round_id.round_id)).scalar()
-            if check_round_exists_for_candidate == False:
-                pending_round_ids.append(each_round_id.round_id)           
+            round_ids.append(each_round_id.round_id)
+        #Check the round id is already existing in the candidateround table
+        completed_round_ids = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id).values(Candidateround.round_id)
+        for each_complete_round in completed_round_ids:
+            completed_round_id.append(each_complete_round.round_id)
+        
+        #Compare two list
+        pending_round_ids = compare_rounds(round_ids,completed_round_id)           
     else:
         round_ids_for_job = Jobround.query.filter(Jobround.job_id==job_id).all()
         for each_round_id in round_ids_for_job:

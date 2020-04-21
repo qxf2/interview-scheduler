@@ -704,12 +704,13 @@ def show_welcome(candidate_id, job_id, url):
     interview_data = {}
     data = {'job_id': job_id,'candidate_id':candidate_id,'url':url}
     s = Serializer('WEBSITE_SECRET_KEY')
+    
     try:
         #check the url is valid or not
         fetch_candidate_unique_url = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.url)            
         for unique_url in fetch_candidate_unique_url:
             candidate_unique_url = unique_url.url
-        candidate_unique_url = candidate_unique_url[4:]
+        candidate_unique_url = re.sub(r'^.*/','',candidate_unique_url)        
         if candidate_unique_url == url:            
             #This query fetches the candidate status id
             url = s.loads(url)

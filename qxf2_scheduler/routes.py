@@ -18,7 +18,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
-base_url = 'http://3.219.215.68/'
+base_url = 'http://localhost:6464/'
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"
@@ -112,12 +112,13 @@ def date_picker():
         return jsonify(api_response)
 
 
-@app.route("/confirm")
+@app.route("/confirm",methods=['GET','POST'])
 def confirm():
     "Confirming the event message"
-    response_value = request.args['value']
-
-    return render_template("confirmation.html", value=json.loads(response_value))
+    if request.method == 'GET':
+        response_value = request.args['value']
+    
+        return render_template("confirmation.html", value=json.loads(response_value))
 
 
 @app.route("/confirmation", methods=['GET', 'POST'])

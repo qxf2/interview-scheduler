@@ -194,7 +194,6 @@ def login():
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
         session['logged_user'] = logged_email_id
-        print(session['logged_user'])
         completion = validate(username)
         if completion ==False:
             error = 'error.'
@@ -541,8 +540,14 @@ def delete_job():
                 'job_id': deleted_role.job_id}
         db.session.delete(deleted_role)
         db.session.commit()
-
-    return jsonify(data)
+        delete_rounds_of_job = Jobround.query.filter(Jobround.job_id==job_id_to_delete).all()
+        for each_round in delete_rounds_of_job:
+            round_to_delete = each_round.round_id
+            db.session.query(Jobround).filter(Jobround.round_id==round_to_delete).delete()
+            db.session.commit()
+            db.session.query(Rounds).filter(Rounds.round_id==round_to_delete).delete()
+            db.session.commit()  
+        return jsonify(data)
 
 
 def is_equal(interviewers_name_list, interviewers_list):
@@ -760,13 +765,10 @@ def schedule_interview(job_id,url,candidate_id):
     "Validate candidate name and candidate email"
     if request.method == 'POST':
         candidate_name = request.form.get('candidate-name')
-        print(candidate_name)
         candidate_email = request.form.get('candidate-email')
-        print(candidate_email)
         #url = request.form.get('url')
         return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}       
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
-        print("data",candidate_data)              
         if candidate_data == None:
             err={'error':'EmailError'}
             return jsonify(error=err,result=return_data)
@@ -788,12 +790,10 @@ def schedule_interview(job_id,url,candidate_id):
             if candidate_unique_url == url:
                 session['candidate_info'] = return_data            
                 err={'error':'Success'}
-                print("success",return_data)
                 return jsonify(error=err,result=return_data)
             else:
                 err={'error':'OtherError'}
                 return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}
-                print("error",return_data)
                 return jsonify(error=err,result=return_data)
 
         else:

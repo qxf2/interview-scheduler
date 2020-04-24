@@ -63,55 +63,67 @@ def registration():
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
     "Dummy page to let you see a schedule"
+    round_duration = request.form.get('roundtime')
     if request.method == 'GET':
         return render_template('get-schedule.html')
     if request.method == 'POST':
         date = request.form.get('date')
         round_duration = request.form.get('roundtime')
+        print(round_duration)
+        round_id = request.form.get('roundid')
         chunk_duration = round_duration.split(' ')[0]
         job_id = session['candidate_info']['job_id']
         candidate_id = session['candidate_info']['candidate_id']
-        #Check who are all the interviewers interviewed the candidate
-        alloted_interviewers_id_list = []
-        try:
-            alloted_interviewers_id = db.session.query(Candidateinterviewer).filter(Candidateinterviewer.candidate_id==candidate_id,Candidateinterviewer.job_id==job_id).values(Candidateinterviewer.interviewer_id)
+        #Check the candidate is scheduled an interview already
+        check_scheduled_event = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_id==round_id).values(Candidateround.round_status)
+        for check_event in check_scheduled_event:
+            candidate_schedule_status = check_event.round_status
+        if candidate_schedule_status == 'Invitation Sent':
+
+            #Check who are all the interviewers interviewed the candidate
             alloted_interviewers_id_list = []
-            for each_interviewer_id in alloted_interviewers_id:
-                alloted_interviewers_id_list.append(each_interviewer_id.interviewer_id)
-        except Exception as e:
-            print("The candidate is scheduling an interview for the first time",e)        
-        
-
-        #Fetch the interviewers for the candidate job
-        job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
-        interviewer_id = []
-        for each_interviewer_id in job_interviewer_id:
-            interviewer_id.append(each_interviewer_id.interviewer_id)
-        
-        if len(alloted_interviewers_id_list) == 0:
-            pass
-        else:
-            #Compare the alloted and fetched interviewers id
-            interviewer_id = list(set(interviewer_id)-set(alloted_interviewers_id_list))
-        #Fetch the interviewer emails for the candidate job       
-        interviewer_work_time_slots = []
-        for each_id in interviewer_id:
-            new_slot = db.session.query(Interviewers,Interviewertimeslots).filter(each_id==Interviewers.interviewer_id,each_id==Interviewertimeslots.interviewer_id).values(
-            Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
-           
-            for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
-                interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,
-                                                'interviewer_end_time': interviewer_end_time})
-        free_slots = my_scheduler.get_free_slots_for_date(
-            date, interviewer_work_time_slots)
-        free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(
-            free_slots,chunk_duration)
-        api_response = {
-            'free_slots_in_chunks': free_slots_in_chunks, 'date': date}
+            try:
+                alloted_interviewers_id = db.session.query(Candidateinterviewer).filter(Candidateinterviewer.candidate_id==candidate_id,Candidateinterviewer.job_id==job_id).values(Candidateinterviewer.interviewer_id)
+                alloted_interviewers_id_list = []
+                for each_interviewer_id in alloted_interviewers_id:
+                    alloted_interviewers_id_list.append(each_interviewer_id.interviewer_id)
+            except Exception as e:
+                print("The candidate is scheduling an interview for the first time",e)        
             
-        return jsonify(api_response)
 
+            #Fetch the interviewers for the candidate job
+            job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
+            interviewer_id = []
+            for each_interviewer_id in job_interviewer_id:
+                interviewer_id.append(each_interviewer_id.interviewer_id)
+            
+            if len(alloted_interviewers_id_list) == 0:
+                pass
+            else:
+                #Compare the alloted and fetched interviewers id
+                interviewer_id = list(set(interviewer_id)-set(alloted_interviewers_id_list))
+            #Fetch the interviewer emails for the candidate job       
+            interviewer_work_time_slots = []
+            for each_id in interviewer_id:
+                new_slot = db.session.query(Interviewers,Interviewertimeslots).filter(each_id==Interviewers.interviewer_id,each_id==Interviewertimeslots.interviewer_id).values(
+                Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
+            
+                for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
+                    interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,
+                                                    'interviewer_end_time': interviewer_end_time})
+            free_slots = my_scheduler.get_free_slots_for_date(
+                date, interviewer_work_time_slots)
+            free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(
+                free_slots,chunk_duration)
+            api_response = {
+                'free_slots_in_chunks': free_slots_in_chunks, 'date': date}
+        
+            return jsonify(api_response)
+        else:
+            data = {'error':"Already scheduled",'candidate_id':candidate_id}
+            return jsonify(data)
 
+            
 @app.route("/confirm",methods=['GET','POST'])
 def confirm():
     "Confirming the event message"
@@ -805,15 +817,18 @@ def schedule_interview(job_id,url,candidate_id):
 @app.route('/<job_id>/get-schedule')
 def redirect_get_schedule(job_id):
     "Redirect to the get schedule page"    
-    #Parsing the round details
+    #Parsing the round details 
+    fetched_round_id = None   
     candidate_round_details = Candidateround.query.filter(Candidateround.candidate_id==session['candidate_info']['candidate_id'],Candidateround.round_status=='Invitation Sent').values(Candidateround.round_id)
+    print(candidate_round_details)
     for each_round_detail in candidate_round_details:
+        print(each_round_detail,each_round_detail.round_id)
         fetched_round_id = each_round_detail.round_id
-
+        print(fetched_round_id)
     round_info_object = Rounds.query.filter(Rounds.round_id==fetched_round_id).values(Rounds.round_id,Rounds.round_description,Rounds.round_name,Rounds.round_requirement,Rounds.round_time)
 
     for each_round_info in round_info_object:
-        round_info = {'round_name':each_round_info.round_name,'round_requirements':each_round_info.round_requirement,'round_time':each_round_info.round_time,'round_description':each_round_info.round_description}
+        round_info = {'round_name':each_round_info.round_name,'round_requirements':each_round_info.round_requirement,'round_time':each_round_info.round_time,'round_description':each_round_info.round_description,'round_id':each_round_info.round_id}
     
     
     data = {
@@ -823,7 +838,9 @@ def redirect_get_schedule(job_id):
     'job_id':session['candidate_info']['job_id'],
     'round_time': round_info['round_time'],
     'round_description':round_info['round_description'],
+    'round_id':round_info['round_id']
     }
+    print("hi data",data)
     return render_template("get-schedule.html",result=data)
 
 

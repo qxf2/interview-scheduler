@@ -25,8 +25,8 @@
         crossorigin="anonymous"></script>
     <style>
         p {
-  word-break: break-word;
-}
+            word-break: break-word;
+        }
     </style>
 
 </head>
@@ -69,8 +69,9 @@
         </article>
 
     </section>
-
+    {{result}}
     <input type="hidden" id="roundDuration" value="{{result['round_time']}}">
+    <input type="hidden" id="roundId" value="{{result['round_id']}}">
     <!----<input type="hidden" id="roundDuration" value="{{result['round_description']}}">---->
 
     <div class="row top-space-30" style="margin-left:15px;" id="resultDiv">
@@ -135,6 +136,7 @@
                 var date = $('#datepicker').val();
                 var elements = [];
                 var roundTime = document.getElementById("roundDuration").value;
+                var roundId = document.getElementById("roundId").value;
                 console.log(roundTime);
                 $("#resultDiv").empty();
                 document.getElementById('loader').style.visibility = 'visible';
@@ -149,7 +151,8 @@
                         url: '/get-schedule',
                         data: {
                             'date': date,
-                            'roundtime': roundTime
+                            'roundtime': roundTime,
+                            'roundid': roundId
                         }
                     };
                     $.ajax(callDetails).done(function (result) {
@@ -157,7 +160,11 @@
                         $('#datepicker').css('border', 'solid 2px rgb(238,238,238)');
                         $("#resultDiv").css('color', 'black');
                         freeChunkSlots = result.free_slots_in_chunks
-                        console.log(freeChunkSlots)
+                        console.log(freeChunkSlots, result);
+                        if (result.error == "Already scheduled") {
+                            alert("The interview has been already scheduled you cant reschedule it again")
+                            window.location = "//expiry/"
+                        }
 
                         //Src: https://stackoverflow.com/questions/49040397/print-json-array-in-js
                         var msg = '<br>';

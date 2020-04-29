@@ -69,7 +69,6 @@ def date_picker():
     if request.method == 'POST':
         date = request.form.get('date')
         round_duration = request.form.get('roundtime')
-        print(round_duration)
         round_id = request.form.get('roundid')
         chunk_duration = round_duration.split(' ')[0]
         job_id = session['candidate_info']['job_id']
@@ -207,7 +206,6 @@ def login():
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
         session['logged_user'] = logged_email_id
-        print(session['logged_user'])
         completion = validate(username)
         if completion ==False:
             error = 'error.'
@@ -773,13 +771,10 @@ def schedule_interview(job_id,url,candidate_id):
     "Validate candidate name and candidate email"
     if request.method == 'POST':
         candidate_name = request.form.get('candidate-name')
-        print(candidate_name)
         candidate_email = request.form.get('candidate-email')
-        print(candidate_email)
         #url = request.form.get('url')
         return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}       
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
-        print("data",candidate_data)              
         if candidate_data == None:
             err={'error':'EmailError'}
             return jsonify(error=err,result=return_data)
@@ -801,12 +796,10 @@ def schedule_interview(job_id,url,candidate_id):
             if candidate_unique_url == url:
                 session['candidate_info'] = return_data            
                 err={'error':'Success'}
-                print("success",return_data)
                 return jsonify(error=err,result=return_data)
             else:
                 err={'error':'OtherError'}
                 return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}
-                print("error",return_data)
                 return jsonify(error=err,result=return_data)
 
         else:
@@ -820,28 +813,27 @@ def redirect_get_schedule(job_id):
     #Parsing the round details 
     fetched_round_id = None   
     candidate_round_details = Candidateround.query.filter(Candidateround.candidate_id==session['candidate_info']['candidate_id'],Candidateround.round_status=='Invitation Sent').values(Candidateround.round_id)
-    print(candidate_round_details)
     for each_round_detail in candidate_round_details:
-        print(each_round_detail,each_round_detail.round_id)
         fetched_round_id = each_round_detail.round_id
-        print(fetched_round_id)
-    round_info_object = Rounds.query.filter(Rounds.round_id==fetched_round_id).values(Rounds.round_id,Rounds.round_description,Rounds.round_name,Rounds.round_requirement,Rounds.round_time)
+    if fetched_round_id == None:
+        return render_template("expiry.html")
+    else:
+        round_info_object = Rounds.query.filter(Rounds.round_id==fetched_round_id).values(Rounds.round_id,Rounds.round_description,Rounds.round_name,Rounds.round_requirement,Rounds.round_time)
 
-    for each_round_info in round_info_object:
-        round_info = {'round_name':each_round_info.round_name,'round_requirements':each_round_info.round_requirement,'round_time':each_round_info.round_time,'round_description':each_round_info.round_description,'round_id':each_round_info.round_id}
-    
-    
-    data = {
-    'candidate_id':session['candidate_info']['candidate_id'],
-    'candidate_name':session['candidate_info']['candidate_name'],
-    'candidate_email':session['candidate_info']['candidate_email'],
-    'job_id':session['candidate_info']['job_id'],
-    'round_time': round_info['round_time'],
-    'round_description':round_info['round_description'],
-    'round_id':round_info['round_id']
-    }
-    print("hi data",data)
-    return render_template("get-schedule.html",result=data)
+        for each_round_info in round_info_object:
+            round_info = {'round_name':each_round_info.round_name,'round_requirements':each_round_info.round_requirement,'round_time':each_round_info.round_time,'round_description':each_round_info.round_description,'round_id':each_round_info.round_id}
+        
+        
+        data = {
+        'candidate_id':session['candidate_info']['candidate_id'],
+        'candidate_name':session['candidate_info']['candidate_name'],
+        'candidate_email':session['candidate_info']['candidate_email'],
+        'job_id':session['candidate_info']['job_id'],
+        'round_time': round_info['round_time'],
+        'round_description':round_info['round_description'],
+        'round_id':round_info['round_id']
+        }
+        return render_template("get-schedule.html",result=data)
 
 
 @app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])

@@ -15,9 +15,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 TIMEZONE_STRING = '+05:30'
 FMT='%H:%M'
 #CHUNK_DURATION = '60'
-SUMMARY = 'Interview Scheduler'
 LOCATION =  'Google Hangout or Office',
-DESCRIPTION = 'A senior Qxf2 employee will talk to you and get to know your background. She/He will also give you a real application to test and look at how you break down testing at various levels. This stage is evaluating your communication skills and how you approach testing problems.',
 ATTENDEE = 'annapoorani@qxf2.com'
 DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
 from pytz import timezone
@@ -140,7 +138,7 @@ def convert_interviewer_time_into_string(interviewer_time):
     return interviewer_actual_time
 
    
-def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_email,selected_slot):
+def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_email,selected_slot,round_name,round_description):
     "Create an event for fetched date and time"    
     service = gcal.base_gcal()   
     interviewer_candidate_email = []
@@ -161,9 +159,10 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
         candidate_name = candidate_details.candidate_name
         candidate_job = candidate_details.job_applied
     SUMMARY = candidate_name + '/' + chosen_interviewer_name + '-' + candidate_job
+    description = round_name + '-' + round_description
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
-    SUMMARY,LOCATION,DESCRIPTION,interviewer_candidate_email)
+    SUMMARY,LOCATION,description,interviewer_candidate_email)
     created_event_info = append_the_create_event_info(create_event,attendee_email_id)
 
     return created_event_info    
@@ -497,5 +496,5 @@ if __name__ == '__main__':
     print("\n=====HOW TO GET FREE SLOTS IN CHUNKS=====")    
     free_slots_in_chunks = get_free_slots_in_chunks(free_slots,chunk_duration)      
     print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
-    event_created_slot = create_event_for_fetched_date_and_time(date,emails,candidate_email,selected_slot)
+    event_created_slot = create_event_for_fetched_date_and_time(date,emails,candidate_email,selected_slot,round_name,round_description)
     print("The event created,The details are",event_created_slot)  

@@ -18,7 +18,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
-base_url = 'http://3.219.215.68/'
+base_url = 'http://localhost:6464/'
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"
@@ -134,12 +134,16 @@ def scehdule_and_confirm():
         candidate_id = session['candidate_info']['candidate_id']
         candidate_email = session['candidate_info']['candidate_email']
         job_id = session['candidate_info']['job_id']
-        get_round_id_object = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_status=='Invitation Sent').values(Candidateround.round_id)
-        for get_round_id in get_round_id_object:
-            candidate_round_id = get_round_id.round_id
-            print(candidate_round_id)
+        #Fetch the round id
+        get_round_id_object = db.session.query(Candidateround).filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_status=='Invitation Sent').scalar()
+        
+        #Fetch the round name and description
+        round_name_and_desc = Rounds.query.filter(Rounds.round_id==get_round_id_object.round_id).values(Rounds.round_name,Rounds.round_description)
+        for each_round_detail in round_name_and_desc:
+            round_name = each_round_detail.round_name
+            round_description = each_round_detail.round_description
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
-            date, email,candidate_email, slot)        
+            date, email,candidate_email, slot,round_name,round_description)        
         date_object = datetime.datetime.strptime(date, '%m/%d/%Y').date()
         date = datetime.datetime.strftime(date_object, '%B %d, %Y')
         value = {'schedule_event': schedule_event, 
@@ -198,7 +202,6 @@ def login():
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
         session['logged_user'] = logged_email_id
-        print(session['logged_user'])
         completion = validate(username)
         if completion ==False:
             error = 'error.'
@@ -764,13 +767,9 @@ def schedule_interview(job_id,url,candidate_id):
     "Validate candidate name and candidate email"
     if request.method == 'POST':
         candidate_name = request.form.get('candidate-name')
-        print(candidate_name)
         candidate_email = request.form.get('candidate-email')
-        print(candidate_email)
-        #url = request.form.get('url')
         return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}       
         candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
-        print("data",candidate_data)              
         if candidate_data == None:
             err={'error':'EmailError'}
             return jsonify(error=err,result=return_data)
@@ -792,12 +791,10 @@ def schedule_interview(job_id,url,candidate_id):
             if candidate_unique_url == url:
                 session['candidate_info'] = return_data            
                 err={'error':'Success'}
-                print("success",return_data)
                 return jsonify(error=err,result=return_data)
             else:
                 err={'error':'OtherError'}
                 return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}
-                print("error",return_data)
                 return jsonify(error=err,result=return_data)
 
         else:

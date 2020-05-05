@@ -134,6 +134,10 @@ def scehdule_and_confirm():
         candidate_id = session['candidate_info']['candidate_id']
         candidate_email = session['candidate_info']['candidate_email']
         job_id = session['candidate_info']['job_id']
+        get_round_id_object = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_status=='Invitation Sent').values(Candidateround.round_id)
+        for get_round_id in get_round_id_object:
+            candidate_round_id = get_round_id.round_id
+            print(candidate_round_id)
         schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
             date, email,candidate_email, slot)        
         date_object = datetime.datetime.strptime(date, '%m/%d/%Y').date()

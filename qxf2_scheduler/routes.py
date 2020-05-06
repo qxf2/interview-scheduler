@@ -8,7 +8,7 @@ import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 import json
-import ast,re
+import ast,re,uuid
 import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Message, Mail
@@ -18,7 +18,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
-base_url = 'http://3.219.215.68/'
+base_url = 'http://localhost:6464/'
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"
@@ -194,7 +194,6 @@ def login():
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
         session['logged_user'] = logged_email_id
-        print(session['logged_user'])
         completion = validate(username)
         if completion ==False:
             error = 'error.'
@@ -759,26 +758,28 @@ def show_welcome(candidate_id, job_id, url):
 def schedule_interview(job_id,url,candidate_id):
     "Validate candidate name and candidate email"
     if request.method == 'POST':
-        candidate_name = request.form.get('candidate-name')
-        print(candidate_name)
+        candidate_unique_code = request.form.get('unique-code')
         candidate_email = request.form.get('candidate-email')
-        print(candidate_email)
-        #url = request.form.get('url')
-        return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}       
-        candidate_data = Candidates.query.filter(Candidates.candidate_email == candidate_email.lower()).value(Candidates.candidate_name)
-        print("data",candidate_data)              
-        if candidate_data == None:
+        #url = request.form.get('url')               
+        candidate_data = Candidates.query.filter(Candidates.candidate_id == candidate_id).values(Candidates.candidate_email,Candidates.candidate_name)
+        for each_info in candidate_data:
+            candidate_fetch_email = each_info.candidate_email
+            candidate_name = each_info.candidate_name
+        return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url,'candidate_name':candidate_name}
+        candidate_code = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).value(Jobcandidate.unique_code) 
+        if candidate_fetch_email.lower() != candidate_email.lower():
             err={'error':'EmailError'}
             return jsonify(error=err,result=return_data)
-        elif candidate_data.lower() != candidate_name.lower():
-            err={'error':'NameError'}
+        elif candidate_code.lower() != candidate_unique_code.lower():
+            err={'error':'CodeError'}
             return jsonify(error=err,result=return_data)
-        elif candidate_data.lower() == candidate_name.lower():
+        elif (candidate_code.lower() == candidate_unique_code.lower() and candidate_fetch_email.lower() == candidate_email.lower()):
             return_data = {
             'candidate_id':candidate_id,
-            'candidate_name':candidate_name,
+            'candidate_unique_code':candidate_code,
             'candidate_email':candidate_email,
-            'job_id':job_id 
+            'job_id':job_id,
+            'candidate_name' :candidate_name
             }
             #Fetch the candidate URL from the db and compare the url which is in the browser
             fetch_candidate_unique_url = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.url)            
@@ -788,12 +789,10 @@ def schedule_interview(job_id,url,candidate_id):
             if candidate_unique_url == url:
                 session['candidate_info'] = return_data            
                 err={'error':'Success'}
-                print("success",return_data)
                 return jsonify(error=err,result=return_data)
             else:
                 err={'error':'OtherError'}
                 return_data = {'job_id':job_id,'candidate_id':candidate_id,'url':url}
-                print("error",return_data)
                 return jsonify(error=err,result=return_data)
 
         else:
@@ -848,9 +847,13 @@ def send_invite(candidate_id, job_id):
         logged_email = session['logged_user']
         generated_url = base_url + generated_url +'/welcome'
         try:
+            #Generate unique id to schedule an interview
+            unique_code = str(uuid.uuid4()).split('-')[0]
+            #Update the unique code into the table
+            update_unique_code = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).update({'unique_code':unique_code}) 
             msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
                           sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email],cc=[logged_email])            
-            msg.html = render_template("send_invite.html",candidate_name=candidate_name,round_name=round_name,round_details=round_description,round_username=candidate_name,link=generated_url)
+            msg.html = render_template("send_invite.html",candidate_name=candidate_name,round_name=round_name,round_details=round_description,round_username=candidate_name,link=generated_url,unique_code=unique_code)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'
             #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file

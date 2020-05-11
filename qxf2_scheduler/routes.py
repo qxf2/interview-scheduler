@@ -13,6 +13,7 @@ import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Message, Mail
 from flask_login import current_user, login_user,login_required,logout_user
+from pytz import timezone
 
 mail = Mail(app)
 
@@ -708,6 +709,14 @@ def parse_interview_time(interview_time):
     parsed_interview_time = datetime.datetime.strptime(interview_time,'%Y-%m-%dT%H:%M:%S+05:30')
     return parsed_interview_time.strftime('%H') + ':' + parsed_interview_time.strftime('%M')
 
+def convert_to_timezone(date_and_time):
+    "convert the time into current timezone"
+    # Current time in UTC
+    format = "%Y-%m-%d %H:%M:%S %Z%z"
+    # Convert to Asia/Kolkata time zone
+    now_asia = date_and_time.astimezone(timezone('Asia/Kolkata'))
+    now_asia = now_asia.strftime(format)
+    return now_asia
 
 @app.route("/<candidate_id>/<job_id>/<url>/welcome")
 def show_welcome(candidate_id, job_id, url):
@@ -715,7 +724,10 @@ def show_welcome(candidate_id, job_id, url):
     interview_data = {}
     data = {'job_id': job_id,'candidate_id':candidate_id,'url':url}
     s = Serializer('WEBSITE_SECRET_KEY')
-    
+    now_utc = datetime.datetime.now(timezone('UTC'))
+    current_date_and_time = convert_to_timezone(now_utc)
+    current_date_and_time = datetime.datetime.strptime(current_date_and_time,"%Y-%m-%d %H:%M:%S IST+0530")
+
     try:
         #check the url is valid or not
         fetch_candidate_unique_url = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.url)            
@@ -725,15 +737,17 @@ def show_welcome(candidate_id, job_id, url):
         if candidate_unique_url == url:            
             #This query fetches the candidate status id
             url = s.loads(url)
-            get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status)
+            get_candidate_status = db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id==candidate_id).values(Jobcandidate.candidate_status,Jobcandidate.interview_start_time)
             for candidate_status in get_candidate_status:
                 candidate_status_id = candidate_status.candidate_status
+                interview_start_time = candidate_status.interview_start_time
+            
             #Fetch the candidate status name from candidatestatus table
-            candidate_status = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
-            if(candidate_status.status_name == status.CANDIDTATE_STATUS[1]):
+            candidate_status = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()            
+            if(candidate_status.status_name == status.CANDIDTATE_STATUS[1] and interview_start_time==None):
                 return render_template("welcome.html",result=data)
 
-            elif (candidate_status.status_name == status.CANDIDTATE_STATUS[2]):
+            elif (candidate_status.status_name == status.CANDIDTATE_STATUS[2] and datetime.datetime.strptime(interview_start_time,"%Y-%m-%dT%H:%M:%S+05:30") > current_date_and_time):
                 #Fetch the candidate name and email
                 get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)
 
@@ -757,6 +771,9 @@ def show_welcome(candidate_id, job_id, url):
                     interview_start_time = parse_interview_time(interview_detail.interview_start_time)
                     interview_end_time = parse_interview_time(interview_detail.interview_end_time)
                     interview_data = {'interview_start_time':interview_start_time,'interview_end_time':interview_end_time,'interview_date':interview_detail.interview_date,'interviewer_email':interview_detail.interviewer_email,'round_time': round_info['round_time'],'round_description':round_info['round_description']}
+            else:
+                return render_template("expiry.html")
+                
         else:
             return render_template("expiry.html")
     except Exception as e:

@@ -553,8 +553,14 @@ def delete_job():
                 'job_id': deleted_role.job_id}
         db.session.delete(deleted_role)
         db.session.commit()
-
-    return jsonify(data)
+        delete_rounds_of_job = Jobround.query.filter(Jobround.job_id==job_id_to_delete).all()
+        for each_round in delete_rounds_of_job:
+            round_to_delete = each_round.round_id
+            db.session.query(Jobround).filter(Jobround.round_id==round_to_delete).delete()
+            db.session.commit()
+            db.session.query(Rounds).filter(Rounds.round_id==round_to_delete).delete()
+            db.session.commit()  
+        return jsonify(data)
 
 
 def is_equal(interviewers_name_list, interviewers_list):

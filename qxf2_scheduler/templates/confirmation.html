@@ -4,6 +4,11 @@
     <title>
         Interview Confirmation
     </title>
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="-1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
@@ -12,6 +17,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 </head>
+
 <body style="background-color:powderblue;">
     {% include "header.html" %}
 
@@ -41,12 +47,67 @@
                     </div>
 
                 </div>
+                <div><input type="hidden" id="reloadPage" value="no"></div>
             </div>
             {% else %}
-            <p>Hi,The interview is not scheduled please try again and also check your internet connection. Try to schedule an interview again.If it does not work please email to us.</p>
+            <p>Hi,The interview is not scheduled please try again and also check your internet connection. Try to
+                schedule an interview again.If it does not work please email to us.</p>
             {% endif %}
         </div>
     </div>
+    <!----<script type="text/javascript">
+        $(document).ready(function() {
+            function reloadPage(){
+                location.reload(true); ;    // RELOAD PAGE ON BUTTON CLICK EVENT.
+
+            // SET AUTOMATIC PAGE RELOAD TIME TO 5000 MILISECONDS (5 SECONDS).
+            var timerId = setInterval('refreshPage()', 5000);
+        }
+        });
+        function refreshPage() { clearInterval(timerId); location.reload(); }
+    </script>---->
+    <!----<script>
+        onload = function () {
+            var e = document.getElementById("reloadPage");
+            if (e.value == "no") e.value = "yes";
+            else { e.value = "no"; location.reload(); }
+        }
+    </script>----->
+    <!---<script>
+        window.history.pushState({ page: 1 }, "", "");
+        window.onpopstate = function (event) {
+            if (event) {
+                window.location.href = 'https://www.google.com/';
+                // Code to handle back button or prevent from navigation
+            }
+        }
+    </script>---->
+    <script>
+    $(document).ready(function($) {
+
+        if (window.history && window.history.popState) {
+  
+          $(window).on('pushstate', function() {
+            var hashLocation = location.hash;
+            var hashSplit = hashLocation.split("#!/");
+            var hashName = hashSplit[1];
+  
+            if (hashName !== '') {
+              var hash = window.location.hash;
+              if (hash === '') {
+                alert('Back button was pressed.');
+                  window.location='www.example.com';
+                  return false;
+              }
+            }
+          });
+  
+          window.history.popState('forward', null, './#forward');
+        }
+  
+      });
+    </script>
+
     {% include "footer.html" %}
 </body>
 

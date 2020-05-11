@@ -159,7 +159,7 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
         candidate_name = candidate_details.candidate_name
         candidate_job = candidate_details.job_applied
     SUMMARY = candidate_name + '/' + chosen_interviewer_name + '-' + candidate_job
-    description = round_name + '-' + round_description
+    description = "Round name:"+round_name+'\n\n'+ 'Round description:'+round_description
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)      
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
     SUMMARY,LOCATION,description,interviewer_candidate_email)

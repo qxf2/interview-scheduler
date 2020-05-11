@@ -72,6 +72,26 @@
                         </div>
                         <br>
                         <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Interviewer details:">Interview date  :</label>
+                            {% if result.interview_date == None%}
+                            <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
+                            {% else %}
+                            <label class="col-md-8" for="interviewerDetails">
+                                <p>{{result.interview_date}}</p>
+                            </label>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Interviewer details:">Interview time  :</label>
+                            {% if result.interview_start_time == None%}
+                            <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
+                            {% else %}
+                            <label class="col-md-8" for="interviewerDetails">
+                                <p>{{result.interview_start_time}}</p>
+                            </label>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 form-display">
                             <label class="col-md-8" for="comments:">Added comments:</label>
                             <label class="col-md-8" for="dateApplied"style="max-width:450px; word-wrap: break-word">{{result.comments}}</label>
                         </div>

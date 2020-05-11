@@ -81,6 +81,7 @@ class Jobcandidate(db.Model):
     candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
     job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
     url = db.Column(db.String)
+    unique_code = db.Column(db.String)
     interview_start_time = db.Column(db.String)
     interview_end_time = db.Column(db.String)
     interview_date = db.Column(db.String)
@@ -88,7 +89,7 @@ class Jobcandidate(db.Model):
     candidate_status = db.Column(db.String)
 
     def __repr__(self):
-        return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}','{self.candidate_status}','{self.interview_start_time}')"
+        return f"Jobcandidate('{self.candidate_id}','{self.job_id}','{self.url}','{self.candidate_status}','{self.interview_start_time}','{self.unique_code}')"
 
 
 class Jobround(db.Model):

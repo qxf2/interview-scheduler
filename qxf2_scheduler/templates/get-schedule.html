@@ -69,7 +69,6 @@
         </article>
 
     </section>
-    {{result}}
     <input type="hidden" id="roundDuration" value="{{result['round_time']}}">
     <input type="hidden" id="roundId" value="{{result['round_id']}}">
     <!----<input type="hidden" id="roundDuration" value="{{result['round_description']}}">---->
@@ -137,7 +136,6 @@
                 var elements = [];
                 var roundTime = document.getElementById("roundDuration").value;
                 var roundId = document.getElementById("roundId").value;
-                console.log(roundTime);
                 $("#resultDiv").empty();
                 document.getElementById('loader').style.visibility = 'visible';
                 if (date == "") {
@@ -160,7 +158,6 @@
                         $('#datepicker').css('border', 'solid 2px rgb(238,238,238)');
                         $("#resultDiv").css('color', 'black');
                         freeChunkSlots = result.free_slots_in_chunks
-                        console.log(freeChunkSlots, result);
                         if (result.error == "Already scheduled") {
                             alert("The interview has been already scheduled you cant reschedule it again")
                             window.location.href = "expiry.html";
@@ -198,7 +195,6 @@
 
     <script>
         function displayChosenSlot(emails, date, slot) {
-            console.log(emails)
             var msg = "The chosen slot for the interviewer   on " + date + " is: " + slot;
             var timeSlotButton = $('<div class="top-space-20"><input class="btn btn-info" type="button" onclick="scheduleEvent(\'' + emails + '\',\'' + date + '\',\'' + slot + '\')" class="btn" value="Schedule my interview"></div>');
             $("#chosenSlot").html(msg);

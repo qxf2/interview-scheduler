@@ -14,6 +14,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Message, Mail
 from flask_login import current_user, login_user,login_required,logout_user
 from pytz import timezone
+import flask
+import flask_login
 
 mail = Mail(app)
 
@@ -200,6 +202,14 @@ def password_validate(password):
 
     return exists
 
+@app.before_request
+def before_request():
+    "Session time out method"    
+    flask.session.permanent = True
+    app.permanent_session_lifetime = datetime.timedelta(minutes=2)
+    flask.session.modified = True
+    flask.g.user = flask_login.current_user
+   
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

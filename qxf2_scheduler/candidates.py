@@ -9,6 +9,7 @@ import random,sys
 from flask_mail import Message, Mail
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import login_required
+import itertools
 
 
 mail = Mail(app)
@@ -78,21 +79,28 @@ def regenerate_url():
 
     return jsonify(data)
 
-
-@app.route("/candidates",methods=["GET"])
-@login_required
-def read_candidates():
-    "Read the candidates"      
-    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role,Jobcandidate.candidate_status)    
+def fetch_candidate_list(candidate_list_object):
+    "Fetch the candidate list"
     my_candidates_list = []
-    for each_candidate in display_candidates:
+    for each_candidate in candidate_list_object:
         candidate_status_object = Candidatestatus.query.filter(Candidatestatus.status_id==each_candidate.candidate_status).values(Candidatestatus.status_name)
         for candidate_status in candidate_status_object:
             candidate_status = candidate_status.status_name
 
         my_candidates_list.append({'candidate_id':each_candidate.candidate_id,'candidate_name':each_candidate.candidate_name,'candidate_email':each_candidate.candidate_email,'job_id':each_candidate.job_id,'job_role':each_candidate.job_role,'candidate_status':candidate_status})
+
+    return my_candidates_list
+
+
+@app.route("/candidates",methods=["GET"])
+@login_required
+def read_candidates():
+    "Read the candidates" 
+    candidates_list = []     
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role,Jobcandidate.candidate_status)    
+    candidates_list = fetch_candidate_list(display_candidates)
     
-    return render_template("read-candidates.html",result=my_candidates_list)
+    return render_template("read-candidates.html",result=candidates_list)
 
 
 @app.route("/candidate/<candidate_id>/delete",methods=["POST"]) 
@@ -450,3 +458,33 @@ def save_comments():
     data = {'candidate_comments':candidate_comments,'error':error}
 
     return jsonify(data)
+
+def peek(iterable):
+    try:
+        first = next(iterable)
+    except StopIteration:
+        return None
+    return first, itertools.chain([first], iterable)
+
+
+@app.route("/candidatestatus/filter",methods=['GET','POST'])
+def filter_candidate_status():
+    "Filter the candidates based on the status"
+    filtered_candidates_list = []
+    filtered_status = request.form.get('selectedstatus')
+    #Fetch the candidate status id for the filtered status
+    status_id = Candidatestatus.query.filter(Candidatestatus.status_name==filtered_status).value(Candidatestatus.status_id)
+    #Fetch the candidates who are all in that status
+    filtered_candidates = Jobcandidate.query.filter(Jobcandidate.candidate_status==status_id).values(Jobcandidate.candidate_id)
+    filter_status_object = peek(filtered_candidates)
+    if filter_status_object != None:
+        for all_candidates in filtered_candidates:
+            candidate_id = all_candidates.candidate_id
+            display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role,Jobcandidate.candidate_status) 
+        filtered_candidates_list = fetch_candidate_list(display_candidates)
+            
+        return render_template("read-candidates.html",result=filtered_candidates_list)
+        
+    else:
+        result = 'error'
+        return result

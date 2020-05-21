@@ -43,13 +43,13 @@
         <div>
             <input class="btn btn-info" type="button" id="add" onclick="addCandidate()" value="Add">
         </div>
-        
+
         <div class="row" style="margin-left:400px;">
-            <!---<i class="fa fa-filter" style="font-size:36px"></i>----> 
-            <label><h6>Filter by status:</h6></label>    
-        <div class="col-md-4">            
+            <!---<i class="fa fa-filter" style="font-size:36px"></i>---->
+            <label><h6>Filter by status:</h6></label>
+        <div class="col-md-4">
             <select class="form-control" id="statusFilter">
-                <option value="">Canddiate statuses</option>                
+                <option value="">Canddiate statuses</option>
                 <option value="Waiting on Qxf2">Waiting on Qxf2</option>
                 <option value="Waiting on Candidate">Waiting on Candidate</option>
                 <option value="Interview Scheduled">Interview Scheduled</option>
@@ -117,22 +117,18 @@
         // Remove button event trigger
         $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
             var triggeringElement = $(e.relatedTarget);
-            console.log("Triggering element is: ", triggeringElement.data('href'));
             $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
-            console.log("This is in confirm delete" + $(e.relatedTarget).data('href'));
             var modal = $(this)
             var candidateId = $(e.relatedTarget).data('candidateid');
             modal.find('.modal-body').text('Are you sure you wish to delete this ' + triggeringElement.data("candidatename") + '  candidate? ')
             $("#remove-button").on('click', function () {
                 var jobid = triggeringElement.data('href');
-                console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
                 $.ajax({
                     type: 'POST',
                     url: '/candidate/'+ candidateId +'/delete',
                     data: { 'candidateId': $(e.relatedTarget).data('candidateid'), 'jobId': $(e.relatedTarget).data('jobid') },
                     success: function (data) {
                         var msg = "The  deleted candidate is " + data.candidate_name;
-                        console.log(msg, data);
                         $('#myModal').modal('show');
                         $('#myModal .modal-body p').html(msg);
                     }
@@ -140,7 +136,7 @@
             })
             $("#close-button").on('click', function () {
                 location.reload();
-                })   
+                })
         })
 
     </script>

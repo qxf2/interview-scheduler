@@ -459,13 +459,6 @@ def save_comments():
 
     return jsonify(data)
 
-def peek(iterable):
-    try:
-        first = next(iterable)
-    except StopIteration:
-        return None
-    return first, itertools.chain([first], iterable)
-
 
 @app.route("/candidatestatus/filter",methods=['GET','POST'])
 def filter_candidate_status():
@@ -475,24 +468,20 @@ def filter_candidate_status():
     #Fetch the candidate status id for the filtered status
     status_id = Candidatestatus.query.filter(Candidatestatus.status_name==filtered_status).value(Candidatestatus.status_id)
     #Fetch the candidates who are all in that status
-    filtered_candidates = Jobcandidate.query.filter(Jobcandidate.candidate_status==status_id).values(Jobcandidate.candidate_id,Jobcandidate.candidate_status,Jobcandidate.job_id)
-    filter_status_object = peek(filtered_candidates)
-    if filter_status_object != None:
-        for all_candidates in filtered_candidates:
-            candidate_id = all_candidates.candidate_id
-            candidate_status = all_candidates.candidate_status
-            job_id = all_candidates.job_id
-            job_applied = Jobs.query.filter(Jobs.job_id==job_id).value(Jobs.job_role)
-            candidate_status_name = Candidatestatus.query.filter(Candidatestatus.status_id==candidate_status).value(Candidatestatus.status_name)
-            candidate_details = Candidates.query.filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_name,Candidates.candidate_email)
-            for each_data in candidate_details:
-                candidate_name=each_data.candidate_name
-                candidate_email = each_data.candidate_email
-            filtered_candidates_list.append({'candidate_id':candidate_id,'candidate_name':candidate_name,'candidate_email':candidate_email,'job_role':job_applied,'candidate_status':candidate_status_name})
+    filtered_candidates = Jobcandidate.query.filter(Jobcandidate.candidate_status==status_id).values(Jobcandidate.candidate_id,Jobcandidate.job_id)
+    for all_candidates in filtered_candidates:
+        candidate_id = all_candidates.candidate_id
+        job_id = all_candidates.job_id
+        #Fetch the job name using job id
+        job_applied = Jobs.query.filter(Jobs.job_id==job_id).value(Jobs.job_role)
+        #Fetch the candidate details from candidate table
+        candidate_details = Candidates.query.filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_name,Candidates.candidate_email)
+        for each_data in candidate_details:
+            candidate_name=each_data.candidate_name
+            candidate_email = each_data.candidate_email
+        filtered_candidates_list.append({'candidate_id':candidate_id,'candidate_name':candidate_name,'candidate_email':candidate_email,'job_role':job_applied,'candidate_status':filtered_status})
 
-            """display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == candidate_id).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.candidate_email,Jobs.job_id,Jobs.job_role,Jobcandidate.candidate_status)
-        filtered_candidates_list = fetch_candidate_list(display_candidates)"""
-
+    if len(filtered_candidates_list) > 0:
         return render_template("read-candidates.html",result=filtered_candidates_list)
 
     else:

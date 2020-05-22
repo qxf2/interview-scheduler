@@ -44,10 +44,10 @@
             <input class="btn btn-info" type="button" id="add" onclick="addCandidate()" value="Add">
         </div>
 
-        <div class="row" style="margin-left:400px;">
+       <!------ <div class="row" style="margin-left:400px;">----->
             <!---<i class="fa fa-filter" style="font-size:36px"></i>---->
-            <label><h6>Filter by status:</h6></label>
-        <div class="col-md-4">
+            <!---<label><h6>Filter by status:</h6></label>---->
+        <!----<div class="col-md-4">
             <select class="form-control" id="statusFilter">
                 <option value="">Canddiate statuses</option>
                 <option value="Waiting on Qxf2">Waiting on Qxf2</option>
@@ -59,7 +59,7 @@
                 <option value="Waiting for new opening">Waiting for new opening</option>
             </select>
         </div>
-    </div>
+    </div>----->
         <div class="row-fluid top-space-20">
             <table class="table table-striped">
                 <thead>
@@ -68,7 +68,20 @@
                         <th>Candidate Name</th>
                         <th>Candidate Email</th>
                         <th>Job Applied</th>
-                        <th>Candidate Status</th>
+                        <th>Status
+                                <select style="width:18px;display:inline;border:none;margin:0;"class="form-control" id="statusFilter">
+                                <option value="">Candidate statuses</option>
+                                <option value="Waiting on Qxf2">Waiting on Qxf2</option>
+                        <option value="Waiting on Candidate">Waiting onCandidate</option>
+                                    <option value="Interview Scheduled">Interview Scheduled</option>
+                                    <option value="No response">No response</option>
+                                    <option value="Reject">Reject</option>
+                                    <option value="Hired">Hired</option>
+                                    <option value="Waiting for new opening">Waiting for new opening</option>
+                                </select>
+
+                            </div>
+                        </th>
                         <th>Actions</th>
 
                     </tr>

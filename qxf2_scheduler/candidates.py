@@ -473,3 +473,29 @@ def filter_candidate_status():
     else:
         result = 'error'
         return result
+
+
+@app.route("/job/filter", methods=['GET', 'POST'])
+def job_filter():
+    "Filter the job for the candidates"
+    filter_job_list = []
+    filtered_job = request.form.get('selectedjob')
+    candidate_job_filter = Candidates.query.filter(Candidates.job_applied == filtered_job).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.job_applied,Candidates.candidate_email)
+
+    for each_data in candidate_job_filter:
+        candidate_name = each_data.candidate_name
+        candidate_email = each_data.candidate_email
+        candidate_job = each_data.job_applied
+        candidate_id = each_data.candidate_id
+        candidate_job_status_id = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id).value(Jobcandidate.candidate_status)
+        candidate_job_status = Candidatestatus.query.filter(Candidatestatus.status_id == candidate_job_status_id).value(Candidatestatus.status_name)
+        filter_job_list.append({'candidate_id':candidate_id, 'candidate_name':candidate_name, 'candidate_email':candidate_email,'job_role':candidate_job, 'candidate_status':candidate_job_status})
+
+    len_of_filtered_candidates_list = len(filter_job_list)
+
+    if len_of_filtered_candidates_list > 0:
+        return render_template("read-candidates.html",  result=filter_job_list)
+
+    else:
+        result = 'error'
+        return result

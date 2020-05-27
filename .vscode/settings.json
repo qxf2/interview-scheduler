@@ -1,3 +1,18 @@
 {
-    "python.pythonPath": "venv-interview-scheduler\\Scripts\\python.exe"
+    "python.pythonPath": "venv-interview-scheduler\\Scripts\\python.exe",
+    //wordwrap
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 120,
+    "[python]": {},
+    "window.zoomLevel": 0,
+    //Indentation
+    "editor.wrappingIndent": "same",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": 4,
+    //Trailing spaces
+    "files.trimTrailingWhitespace": true ,
+    "trailing-spaces.highlightCurrentLine": false,
+    "trailing-spaces.deleteModifiedLinesOnly": true,
+    "trailing-spaces.trimOnSave": true,
+    "trailing-spaces.deleteTrailingSpaces": true,
 }

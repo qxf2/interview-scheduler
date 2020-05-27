@@ -13,6 +13,7 @@
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!--JS files-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -37,84 +38,110 @@
             </div>
         </div>
     </div>
-    <div class="container col-md-offset-1">
+    <div class="container col-md-offset-1 list">
         <h2 class="grey_text text-center">Candidates List</h2>
         <div>
             <input class="btn btn-info" type="button" id="add" onclick="addCandidate()" value="Add">
         </div>
+        {{job_list}}
         <div class="row-fluid top-space-20">
-            <table class="table table-striped">
+            <table id="table" style="table-layout: width: 800%" class="table table-striped">
                 <thead>
                     <tr>
                         <th>Candidate ID</th>
                         <th>Candidate Name</th>
                         <th>Candidate Email</th>
-                        <th>Job Applied</th>
-                        <th>Candidate Status</th>
-                        <th>Actions</th>
+                        <th>Job
+                            <select style="width:18px;display:inline;border:none;margin:0;" class="form-control"
+                                id="jobFilter">
+                                <option value="" style="display:none;">Jobs</option>
+                                <option value="QA Manager">QA Manager</option>
+                                <option value="Senior QA">Senior QA</option>
+                                <option value="QA Engineer">QA Engineer</option>
+                                <option value="Internship">Internship</option>
 
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for each_candidate in result %}
-                    <tr>
-                        <td>{{ each_candidate.candidate_id }}</td>
-                        <!-- change href-->
-                        <td><a
-                                href="/candidate/{{each_candidate.candidate_id}}/job/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
-                        </td>
-                        <td>{{ each_candidate.candidate_email }}</td>
-                        <!--change each_candidate.job_applied-->
-                        <td>{{ each_candidate.job_role }}</td>
-                        <td>{{ each_candidate.candidate_status }}</td>
-                        <td><input class="btn btn-info" type="button" id="edit" onclick="editCandidates({{each_candidate.candidate_id}})" value="Edit">
-                            <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
-                                data-candidatename="{{ each_candidate.candidate_name }}"
-                                data-candidateid="{{ each_candidate.candidate_id }}"
-                                data-jobid="{{ each_candidate.job_id }}" data-toggle="modal">Delete</button></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <div class="modal modal-megamenu" id="confirmdeletemodal">
-                <div class="modal-dialog modal-megamenu">
-                    <div class="modal-content modal-megamenu">
-                        <div class="modal-header modal-megamenu">
-                            <h4 class="modal-title">Remove candidate?</h4>
-                        </div>
-                        <div class="modal-body modal-megamenu">
-                            <input type="text" class="form-control" id="recipient-name">
-                        </div>
-                        <div class="modal-footer modal-megamenu">
-                            <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
-                            <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
-                                type="submit">Remove</button>
-                        </div>
-                    </div><!-- end modal-content -->
-                </div><!-- end modal-dialog -->
-            </div>
+                            </select>
         </div>
+        </select>
+
+        </th>
+        <th>Status
+            <select style="width:18px;display:inline;border:none;margin:0;" class="form-control" id="statusFilter">
+                <option value="" style="display:none;">Candidate statuses</option>
+                <option value="Waiting on Qxf2">Waiting on Qxf2</option>
+                <option value="Waiting on Candidate">Waiting onCandidate</option>
+                <option value="Interview Scheduled">Interview Scheduled</option>
+                <option value="No response">No response</option>
+                <option value="Reject">Reject</option>
+                <option value="Hired">Hired</option>
+                <option value="Waiting for new opening">Waiting for new opening</option>
+            </select>
+        </div>
+    </div>
+
+        </th>
+        <th>Actions</th>
+
+        </tr>
+        </thead>
+        <tbody>
+            {% for each_candidate in result %}
+            <tr>
+                <td>{{ each_candidate.candidate_id }}</td>
+                <!-- change href-->
+                <td><a
+                        href="/candidate/{{each_candidate.candidate_id}}/job/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
+                </td>
+                <td >{{ each_candidate.candidate_email }}</td>
+                <!--change each_candidate.job_applied-->
+                <td>{{ each_candidate.job_role }}</td>
+                <td >{{ each_candidate.candidate_status }}</td>
+                <td><input class="btn btn-info" type="button" id="edit"
+                        onclick="editCandidates({{each_candidate.candidate_id}})" value="Edit">
+                    <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
+                        data-candidatename="{{ each_candidate.candidate_name }}"
+                        data-candidateid="{{ each_candidate.candidate_id }}" data-jobid="{{ each_candidate.job_id }}"
+                        data-toggle="modal">Delete</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    <div class="modal modal-megamenu" id="confirmdeletemodal">
+        <div class="modal-dialog modal-megamenu">
+            <div class="modal-content modal-megamenu">
+                <div class="modal-header modal-megamenu">
+                    <h4 class="modal-title">Remove candidate?</h4>
+                </div>
+                <div class="modal-body modal-megamenu">
+                    <input type="text" class="form-control" id="recipient-name">
+                </div>
+                <div class="modal-footer modal-megamenu">
+                    <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                    <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
+                        type="submit">Remove</button>
+                </div>
+            </div><!-- end modal-content -->
+        </div><!-- end modal-dialog -->
+    </div>
+    </div>
     </div>
     <script>
         // Remove button event trigger
         $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
             var triggeringElement = $(e.relatedTarget);
-            console.log("Triggering element is: ", triggeringElement.data('href'));
             $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
-            console.log("This is in confirm delete" + $(e.relatedTarget).data('href'));
             var modal = $(this)
             var candidateId = $(e.relatedTarget).data('candidateid');
             modal.find('.modal-body').text('Are you sure you wish to delete this ' + triggeringElement.data("candidatename") + '  candidate? ')
             $("#remove-button").on('click', function () {
                 var jobid = triggeringElement.data('href');
-                console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
                 $.ajax({
                     type: 'POST',
-                    url: '/candidate/'+ candidateId +'/delete',
+                    url: '/candidate/' + candidateId + '/delete',
                     data: { 'candidateId': $(e.relatedTarget).data('candidateid'), 'jobId': $(e.relatedTarget).data('jobid') },
                     success: function (data) {
                         var msg = "The  deleted candidate is " + data.candidate_name;
-                        console.log(msg, data);
                         $('#myModal').modal('show');
                         $('#myModal .modal-body p').html(msg);
                     }
@@ -122,19 +149,66 @@
             })
             $("#close-button").on('click', function () {
                 location.reload();
-                })   
+            })
         })
 
     </script>
     <script>
-        function addCandidate(){
+        function addCandidate() {
             document.location.href = '/candidate/add'
         }
     </script>
     <script>
-        function editCandidates(candidate_id){
-            document.location.href = '/candidate/'+ candidate_id + '/edit';
+        function editCandidates(candidate_id) {
+            document.location.href = '/candidate/' + candidate_id + '/edit';
         }
+    </script>
+    <script>
+        $("#statusFilter").on('change', function () {
+            var dropdownvalue = document.getElementById("statusFilter")
+            var selectStatus = dropdownvalue.options[dropdownvalue.selectedIndex].value
+            $.ajax({
+                type: 'POST',
+                url: '/candidatestatus/filter',
+                data: {
+                    'selectedstatus': selectStatus
+                },
+                success: function (result) {
+                    if (result == 'error') {
+                        alert("There are no candidates with the filtered status value")
+                        document.location.href = "/candidates";
+                    }
+                    else {
+                        document.write(result);
+                    }
+                }
+            })
+            $(".list").empty();
+
+        })
+    </script>
+    <script>
+        $("#jobFilter").on('change', function () {
+            var dropdownvalue = document.getElementById("jobFilter")
+            var selectJob = dropdownvalue.options[dropdownvalue.selectedIndex].value
+            $.ajax({
+                type: 'POST',
+                url: '/job/filter',
+                data: {
+                    'selectedjob': selectJob
+                },
+                success: function (result) {
+                    if (result == 'error') {
+                        alert("There are no candidates with the filtered job value")
+                        document.location.href = "/candidates";
+                    }
+                    else {
+                        document.write(result);
+                    }
+                }
+            })
+            $(".list").empty();
+        })
     </script>
 
 </body>

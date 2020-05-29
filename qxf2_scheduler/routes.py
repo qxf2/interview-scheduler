@@ -206,7 +206,7 @@ def password_validate(password):
 def before_request():
     "Session time out method"
     session.permanent = True
-    app.permanent_session_lifetime = datetime.timedelta(minutes=2)
+    app.permanent_session_lifetime = datetime.timedelta(minutes = 60)
     flask.session.modified = True
 
 

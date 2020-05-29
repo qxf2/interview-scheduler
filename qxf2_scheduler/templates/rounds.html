@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Add,Edit,Delete rounds</title>
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
-    <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">    
+    <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
@@ -30,7 +30,7 @@
     <div class="container col-md-offset-1">
         <h2 class="grey_text text-center">Rounds List</h2>
 
-        <input class="btn btn-info" type="button" onclick="addRound(this)" value="Add rounds" data-job-id="{{job_id}}">
+        <input class="btn btn-info" type="button" onclick="addRound(this)" value="Add Rounds" data-job-id="{{job_id}}">
 
 
         <div class="row-fluid top-space-20">
@@ -67,7 +67,7 @@
                 {% endif %}
             </table>
         </div>
-    </div>    
+    </div>
 
     <script>
         //Confirmation message for deleteing round
@@ -106,7 +106,7 @@
     <script>
         function editRound(actionEdit){
             round_id = actionEdit.getAttribute("data-round-id");
-            jobId = actionEdit.getAttribute("data-job-id");            
+            jobId = actionEdit.getAttribute("data-job-id");
             document.location.href = "/rounds/" + round_id +  '/jobs/'+ jobId +'/edit';
         }
     </script>

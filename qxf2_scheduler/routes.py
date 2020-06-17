@@ -680,6 +680,8 @@ def edit_job(job_id):
             actual_interviewers_list.append(each_interviewer.interviewer_name)
         #check the non exisiting interviewers are there
         interviewers_list = check_not_existing_interviewers(interviewers_list,actual_interviewers_list)
+        #remove None from the list.Filter remos None from the list if it presents
+        interviewers_name_list = list(filter(None,interviewers_name_list))
         # Compare the two list which is fetched from UI and Database
         check_interviewer_list = is_equal(
             interviewers_name_list, interviewers_list)

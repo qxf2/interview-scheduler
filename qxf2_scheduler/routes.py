@@ -21,7 +21,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
 DOMAIN = 'qxf2.com'
-base_url = 'http://3.219.215.68/'
+base_url = 'https://interview-scheduler.qxf2.com/'
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"

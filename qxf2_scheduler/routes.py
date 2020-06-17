@@ -211,6 +211,7 @@ def before_request():
 
 
 @app.route('/login', methods=['GET', 'POST'])
+@app.route('/')
 def login():
     error = None
     if request.method == 'GET':

@@ -19,6 +19,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .form-control{
+    display: inline-block;
+    width: 10px; /* or whatever width looks good for your purpose */
+  }
 
 </head>
 
@@ -53,7 +58,7 @@
                         <th>Candidate Name</th>
                         <th>Candidate Email</th>
                         <th>Job
-                            <select class="drop-down form-control" id="jobFilter">
+                            <select class="form-control" id="jobFilter">
                                 <option value="" style="display:none;">Jobs</option>
                                 <option value="QA Manager">QA Manager</option>
                                 <option value="Senior QA">Senior QA</option>
@@ -66,7 +71,7 @@
 
         </th>
         <th>Status
-            <select class="drop-down form-control" id="statusFilter">
+            <select class="form-control" id="statusFilter">
                 <option value="" style="display:none;">Candidate statuses</option>
                 <option value="Waiting on Qxf2">Waiting on Qxf2</option>
                 <option value="Waiting on Candidate">Waiting on Candidate</option>

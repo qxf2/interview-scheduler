@@ -75,13 +75,12 @@ body {
     display:flex;
     flex-direction: row;
     justify-content: left;
-    align-items: center"
+    align-items: center;
 }
-.drop-down {
-    width:10px;
-    border:none;
-    margin:0;
-}
+.form-control{
+    display: inline-block;
+    width: 10px; /* or whatever width looks good for your purpose */
+  }
 
 label,
     input {

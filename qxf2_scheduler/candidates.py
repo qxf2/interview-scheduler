@@ -11,7 +11,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates, Jobs, Jobcandidate, Jobround, Rounds, Candidateround, Candidatestatus, Candidateinterviewer
 DOMAIN = 'qxf2.com'
-base_url = 'http://localhost:6464/'
+base_url = 'https://interview-scheduler.qxf2.com/'
 
 
 def get_end_business_day(add_days, from_date):
@@ -43,7 +43,6 @@ def url_gen(candidate_id, job_id):
     end_business_day = get_end_business_day(num_business_days, current_date)
     num_hours = get_hours_between(end_business_day, current_date)
     s = Serializer('WEBSITE_SECRET_KEY', num_hours*3600) # 60 secs by 30 mins
-    print(s.expires_in,"I will expire in these many days")
     urllist = s.dumps({'candidate_id':candidate_id, 'job_id': job_id}).decode('utf-8')
     return f'{candidate_id}/{job_id}/{"".join(urllist)}'
 

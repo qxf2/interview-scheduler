@@ -171,6 +171,10 @@
                             {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}
                             <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
                                 value="No opening">
+                            {% elif result.candidate_status == 'No response' or result.candidate_status == 'Reject' %}
+
+                            <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
+                                value="Regenerate URL">
                             {% endif %}
                         </div>
 

@@ -26,7 +26,7 @@
 </head>
 
 <body>
-    {% include "logout.html" %}    
+    {% include "logout.html" %}
     <h2 class="grey_text text-center">Candidate Details</h2>
     <div class="container col-md-offset-1">
         <div class="container col-md-offset-1">
@@ -59,6 +59,7 @@
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Date Applied:">Date Applied:</label>
                             <label class="col-md-8" for="dateApplied">{{result.date_applied}}</label>
+
                         </div>
                         <br>
                         <div class="col-md-4 form-display">
@@ -105,7 +106,7 @@
                                 data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
                                 data-candidate-email="{{result.candidate_email}}"
                                 data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"value="Thumbs up">
-                            
+
                             <input type="button"  data-target="#confirmdeletemodal"
                                 data-candidatename="{{ result.candidate_name }}"
                                 data-candidateid="{{ result.candidate_id }}" data-jobid="{{ result.job_id }}"
@@ -141,6 +142,8 @@
                         <div class="col-md-4 form-display">
                                 <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
                                     value="Regenerate URL">
+                                    <input class="col-md-8 btn btn-info" type="button" id="noResponse" onclick="noresponse()" value="No response">
+
                         </div>
                         {% elif result.candidate_status == 'Waiting for new opening' %}
                         <div class="col-md-4 form-display">
@@ -170,6 +173,7 @@
                                 value="No opening">
                             {% endif %}
                         </div>
+
             </div>
 
             {% endif %}
@@ -390,9 +394,9 @@
             $("#hideButton").attr("disabled", true);
         }
     </script>
-    <script>            
+    <script>
             $("#remove-button").on('click', function (e) {
-                
+
                 var candidateName=document.getElementById("candidateName").value;
                 var candidateEmail = document.getElementById("candidateEmail").value;
                 var candidateId = document.getElementById("candidateId").value;
@@ -410,7 +414,7 @@
                         if (result.error == "Success") {
                             alert("The reject email has been sent");
                             document.location.href = "/candidates";
-                           
+
                         }
                         else {
                             alert("The reject email cannot be sent");
@@ -423,10 +427,10 @@
 
 
             })
-        
+
         $("#close-button").on('click', function () {
             location.reload();
-        })   
+        })
     </script>
     <script>
         function regenerate() {
@@ -462,6 +466,29 @@
 
         }
     </script>
+    <script>
+        function noresponse(){
+            candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            console.log(candidateId,jobId);
+            $.ajax({
+                type:'POST',
+                url: '/candidate/noresponse',
+                data:{
+                    'candidateid':candidateId
+                    },
+                success:function(result){
+                    alert("The candidate status has been changed");
+                    document.location.href = "/candidate/"+candidateId+"/job/"+jobId;
+                }
+
+
+            })
+            $("#noResponse").attr("disabled", true);
+
+        }
+    </script>
+
 
 </body>
 

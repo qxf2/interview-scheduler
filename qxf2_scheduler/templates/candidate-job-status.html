@@ -187,9 +187,11 @@
                         <h4 class="modal-title">Are you sure you want to thumbs down the candidate?</h4>
                     </div>
                     <div class="modal-body modal-megamenu">
-                        <input type="checkbox" name="rejectCheckbox" id="checkbox">
-                        <input type="text" class="form-control" value="Check the box if you want to send reject"
-                            id="recipient-name" readonly>
+                        <div class="form-display">
+                            <input type="checkbox" name="rejectCheckbox" id="checkbox">
+                            &nbsp
+                        <label>Check the box if you want to send a reject email.</label>
+                        </div>
                     </div>
                     <div class="modal-footer modal-megamenu">
                         <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>

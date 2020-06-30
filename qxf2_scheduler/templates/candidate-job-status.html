@@ -26,7 +26,7 @@
 </head>
 
 <body>
-    {% include "logout.html" %}    
+    {% include "logout.html" %}
     <h2 class="grey_text text-center">Candidate Details</h2>
     <div class="container col-md-offset-1">
         <div class="container col-md-offset-1">
@@ -72,7 +72,7 @@
                         </div>
                         <br>
                         <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Interviewer details:">Interview date  :</label>
+                            <label class="col-md-8" for="Interviewer details:">Interview date :</label>
                             {% if result.interview_date == None%}
                             <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
                             {% else %}
@@ -82,7 +82,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Interviewer details:">Interview time  :</label>
+                            <label class="col-md-8" for="Interviewer details:">Interview time :</label>
                             {% if result.interview_start_time == None%}
                             <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
                             {% else %}
@@ -93,7 +93,8 @@
                         </div>
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="comments:">Added comments:</label>
-                            <label class="col-md-8" for="dateApplied"style="max-width:450px; word-wrap: break-word">{{result.comments}}</label>
+                            <label class="col-md-8" for="dateApplied"
+                                style="max-width:450px; word-wrap: break-word">{{result.comments}}</label>
                         </div>
 
                         <br>
@@ -101,15 +102,17 @@
 
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Action:">Action:</label>
-                            <input type="button"   id="sendEmail"
-                                data-generated-url="{{result.url}}" data-candidate-name="{{result.candidate_name}}"
+                            <input type="button" id="sendEmail" data-generated-url="{{result.url}}"
+                                data-candidate-name="{{result.candidate_name}}"
                                 data-candidate-email="{{result.candidate_email}}"
-                                data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"value="Thumbs up">
-                            
-                            <input type="button"  data-target="#confirmdeletemodal"
+                                data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"
+                                value="Thumbs up">
+
+                            <input type="button" data-target="#confirmdeletemodal"
                                 data-candidatename="{{ result.candidate_name }}"
                                 data-candidateid="{{ result.candidate_id }}" data-jobid="{{ result.job_id }}"
-                                data-candidateemail="{{result.candidate_email}}" data-toggle="modal"value="Thumbs down">
+                                data-candidateemail="{{result.candidate_email}}" data-toggle="modal"
+                                value="Thumbs down">
                             <br>
 
                         </div>
@@ -139,8 +142,8 @@
                             <label class="col-md-8" for="inviteSent">Waiting on Candidate</label>
                         </div>
                         <div class="col-md-4 form-display">
-                                <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
-                                    value="Regenerate URL">
+                            <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
+                                value="Regenerate URL">
                         </div>
                         {% elif result.candidate_status == 'Waiting for new opening' %}
                         <div class="col-md-4 form-display">
@@ -184,13 +187,14 @@
                         <h4 class="modal-title">Are you sure you want to thumbs down the candidate?</h4>
                     </div>
                     <div class="modal-body modal-megamenu">
-                        <input type="text" class="form-control" value=
-                        "Do you really want to send the reject email to the candidate?"id="recipient-name" readonly>
+                        <input type="checkbox" name="rejectCheckbox" id="checkbox">
+                        <input type="text" class="form-control" value="Check the box if you want to send reject"
+                            id="recipient-name" readonly>
                     </div>
                     <div class="modal-footer modal-megamenu">
                         <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
                         <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
-                            type="submit">Send Reject</button>
+                            type="submit">Reject</button>
                     </div>
                 </div><!-- end modal-content -->
             </div><!-- end modal-dialog -->
@@ -390,77 +394,108 @@
             $("#hideButton").attr("disabled", true);
         }
     </script>
-    <script>            
+    <script>
+        $(document).ready(function () {
             $("#remove-button").on('click', function (e) {
-                
-                var candidateName=document.getElementById("candidateName").value;
+                var candidateName = document.getElementById("candidateName").value;
                 var candidateEmail = document.getElementById("candidateEmail").value;
                 var candidateId = document.getElementById("candidateId").value;
                 var jobId = document.getElementById("jobId").value;
+                if ($("#checkbox").prop("checked")) {
+                    $.ajax({
+                        type: 'POST',
+                        url: "/reject",
+                        data: {
+                            'candidatename': candidateName,
+                            'candidateid': candidateId,
+                            'candidateemail': candidateEmail,
+                            'candidatejob': jobId
+                        },
+                        success: function (result) {
+                            if (result.error == "Success") {
+                                alert("The reject email has been sent");
+                                document.location.href = "/candidates";
+
+                            }
+                            else {
+                                alert("The reject email cannot be sent");
+                                document.location.href = "/candidates";
+                            }
+
+                        }
+                    })
+
+                }
+                else {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/noemail/reject',
+                        data: {
+
+                            'candidatename': candidateName,
+                            'candidateid': candidateId,
+                            'candidateemail': candidateEmail,
+                            'candidatejob': jobId
+                        },
+                        success: function (result) {
+                            if (result.error == "Success") {
+                                alert("The candidate status has been changed to Reject");
+                                document.location.href = "/candidates";
+
+                            }
+                            else {
+                                alert("The candidate status cannot be changed");
+                                document.location.href = "/candidates";
+                            }
+
+                        }
+
+                    })
+
+                }
+
+                $("#thumbsDown").attr("disabled", true);
+
+            })
+        })
+
+            $("#close-button").on('click', function () {
+                location.reload();
+            })
+    </script>
+    <script>
+            function regenerate() {
+                var candidateId = document.getElementById("candidateId").value;
+                var jobId = document.getElementById("jobId").value;
+                //var roundId = document.getElementById("roundId").value;
+                var roundId = $("#roundId").val()
+                console.log(candidateId, jobId, roundId)
                 $.ajax({
                     type: 'POST',
-                    url: "/reject",
+                    url: "/regenerate/url",
                     data: {
-                        'candidatename': candidateName,
                         'candidateid': candidateId,
-                        'candidateemail': candidateEmail,
-                        'candidatejob': jobId
+                        'jobid': jobId,
+                        'roundid': roundId
                     },
                     success: function (result) {
                         if (result.error == "Success") {
-                            alert("The reject email has been sent");
-                            document.location.href = "/candidates";
-                           
+                            alert("The existing URL is removed");
+                            document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
+                            ('#noOpening').attr("disabled", true)
+
                         }
                         else {
-                            alert("The reject email cannot be sent");
-                            document.location.href = "/candidates";
+                            alert("Cannot remove the exisitng URL");
+                            document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
                         }
 
                     }
                 })
-                $("#thumbsDown").attr("disabled", true);
+                $("#regenerateUrl").attr("disabled", true);
 
 
-            })
-        
-        $("#close-button").on('click', function () {
-            location.reload();
-        })   
-    </script>
-    <script>
-        function regenerate() {
-            var candidateId = document.getElementById("candidateId").value;
-            var jobId = document.getElementById("jobId").value;
-            //var roundId = document.getElementById("roundId").value;
-            var roundId = $("#roundId").val()
-            console.log(candidateId, jobId, roundId)
-            $.ajax({
-                type: 'POST',
-                url: "/regenerate/url",
-                data: {
-                    'candidateid': candidateId,
-                    'jobid': jobId,
-                    'roundid': roundId
-                },
-                success: function (result) {
-                    if (result.error == "Success") {
-                        alert("The existing URL is removed");
-                        document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
-                        ('#noOpening').attr("disabled", true)
-
-                    }
-                    else {
-                        alert("Cannot remove the exisitng URL");
-                        document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
-                    }
-
-                }
-            })
-            $("#regenerateUrl").attr("disabled", true);
-
-
-        }
+            }
     </script>
 
 </body>

@@ -495,3 +495,16 @@ def job_filter():
     else:
         result = 'error'
         return result
+
+
+@app.route('/candidate/noresponse',methods=["GET","POST"])
+def status_no_response():
+    "Change the candidate status to no response if they have not replied"
+    if request.method == "POST":
+        candidate_id = request.form.get("candidateid")
+        #Update the candidate status to no response
+        db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id == candidate_id).update({'candidate_status':4})
+        db.session.commit()
+
+    return candidate_id
+

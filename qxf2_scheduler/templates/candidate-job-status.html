@@ -59,6 +59,7 @@
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="Date Applied:">Date Applied:</label>
                             <label class="col-md-8" for="dateApplied">{{result.date_applied}}</label>
+
                         </div>
                         <br>
                         <div class="col-md-4 form-display">
@@ -141,6 +142,9 @@
                         <div class="col-md-4 form-display">
                                 <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
                                     value="Regenerate URL">
+                                    &nbsp;&nbsp;
+                                    <input class="btn btn-info" type="button" id="noResponse" onclick="noresponse()" value="No response">
+
                         </div>
                         {% elif result.candidate_status == 'Waiting for new opening' %}
                         <div class="col-md-4 form-display">
@@ -168,8 +172,13 @@
                             {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}
                             <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
                                 value="No opening">
+                            {% elif result.candidate_status == 'No response' or result.candidate_status == 'Reject' %}
+
+                            <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
+                                value="Regenerate URL">
                             {% endif %}
                         </div>
+
             </div>
 
             {% endif %}
@@ -462,6 +471,29 @@
 
         }
     </script>
+    <script>
+        function noresponse(){
+            candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            console.log(candidateId,jobId);
+            $.ajax({
+                type:'POST',
+                url: '/candidate/noresponse',
+                data:{
+                    'candidateid':candidateId
+                    },
+                success:function(result){
+                    alert("The candidate status has been changed");
+                    document.location.href = "/candidate/"+candidateId+"/job/"+jobId;
+                }
+
+
+            })
+            $("#noResponse").attr("disabled", true);
+
+        }
+    </script>
+
 
 </body>
 

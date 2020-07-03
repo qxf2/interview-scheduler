@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_mail import Mail, Message
+from flaskext.markdown import Markdown
 import qxf2_scheduler.db_config as conf
 import qxf2_scheduler.email_config as email_conf
 import os
@@ -12,6 +13,7 @@ app.secret_key = "qxf2-database"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///%s"%db_file
 db = SQLAlchemy(app)
+Markdown(app)
 
 
 app.config.update(

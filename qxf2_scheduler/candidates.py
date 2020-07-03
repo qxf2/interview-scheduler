@@ -223,13 +223,9 @@ def add_candidate(job_role):
 def generate_unique_url():
     candidate_id = request.form.get('candidateId')
     job_id = request.form.get('jobId')
-    url_exists = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).value(Jobcandidate.url)
-    if (url_exists != ''):
-        url=url_exists
-    else:
-        url=url_gen(candidate_id, job_id)
-        edit_url = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'url': url})
-        db.session.commit()
+    url=url_gen(candidate_id, job_id)
+    edit_url = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'url': url})
+    db.session.commit()
     api_response = {'url': url}
     return jsonify(api_response)
 

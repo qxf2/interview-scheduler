@@ -63,8 +63,8 @@
             </div>
             <label class="col-md-4 control-label" for="comments"><span style="color:red">*</span>Add your comments</label>
             <div class="col-md-4">
-                <textarea id="comments" name="comments" rows="10" col="20" class="form-control" required></textarea>
-                   
+                <textarea id="comments" name="comments" rows="10" col="20" class="form-control"required></textarea>
+
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
 
@@ -95,7 +95,7 @@
                         var candidateEmail = $("#email").val();
                         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                         var emailValidate=re.test(candidateEmail);
-                        console.log(emailValidate);                        
+                        console.log(emailValidate);
                         console.log("I am inside submit")
                         $("#resultDiv").empty();
                         if (emailValidate === true){
@@ -141,7 +141,7 @@
                             $("#resultDiv").css('color', 'red');
                         }
 
-                        
+
                     }, false);
                 });
             }, false);

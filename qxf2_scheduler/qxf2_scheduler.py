@@ -55,7 +55,7 @@ def scheduler_job():
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)
 #sched.add_job(scheduler_job,'cron', minute='*')
-sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='1,31')
+sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='*')
 sched.start()
 
 
@@ -385,11 +385,15 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     "Get the busy slots for a given date"
     service = gcal.base_gcal()
     busy_slots = []
+    fetch_date = '07/06/2020'
     if service:
         try:
             all_events = gcal.get_events_for_date(service,email_id,fetch_date)
             pto_flag = False
+            event_organizer_list = []
             for event in all_events:
+                event_organizer = event['organizer']['email']
+                event_organizer_list.append(event_organizer)
                 if 'summary' in event.keys():
                     event_name = event['summary'].split(':')[-1].strip()
                     event_name = event_name.split()[0]
@@ -397,6 +401,8 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
                         pto_flag = True
                         break
             if pto_flag:
+                busy_slots = gcal.make_day_busy(fetch_date)
+            elif 'test@qxf2.com' in event_organizer_list:
                 busy_slots = gcal.make_day_busy(fetch_date)
             else:
                 busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)

@@ -63,6 +63,18 @@ def registration():
     return jsonify(api_response)
 
 
+def check_interview_exists(date):
+    "Fetch the interviewers wich have an interview already"
+    interviewers_email_list = []
+    now_utc = datetime.datetime.now().date()
+    now_utc = now_utc.strftime("%B %d, %Y")
+    fetch_interviewers_email = db.session.query(Jobcandidate).filter(Jobcandidate.interview_date == now_utc).values(Jobcandidate.interviewer_email)
+    for each_interviewer_email in fetch_interviewers_email:
+        interviewers_email_list.append(each_interviewer_email.interviewer_email)
+
+    return interviewers_email_list
+
+
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
     "Dummy page to let you see a schedule"
@@ -104,6 +116,8 @@ def date_picker():
             else:
                 #Compare the alloted and fetched interviewers id
                 interviewer_id = list(set(interviewer_id)-set(alloted_interviewers_id_list))
+            #Fetch the interviewers email id which have an interview for the picked date
+            interviewers_email = check_interview_exists(date)
             #Fetch the interviewer emails for the candidate job
             interviewer_work_time_slots = []
             for each_id in interviewer_id:
@@ -111,8 +125,10 @@ def date_picker():
                 Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
 
                 for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
-                    interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,
-                                                    'interviewer_end_time': interviewer_end_time})
+                    if interviewer_email in interviewers_email:
+                        pass
+                    else:
+                        interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,'interviewer_end_time': interviewer_end_time})
             free_slots = my_scheduler.get_free_slots_for_date(
                 date, interviewer_work_time_slots)
             free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(

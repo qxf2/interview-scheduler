@@ -402,8 +402,7 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
                         break
             if pto_flag:
                 busy_slots = gcal.make_day_busy(fetch_date)
-            elif 'test@qxf2.com' in event_organizer_list:
-                busy_slots = gcal.make_day_busy(fetch_date)
+
             else:
                 busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
         except HttpError:

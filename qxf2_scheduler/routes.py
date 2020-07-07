@@ -63,6 +63,16 @@ def registration():
     return jsonify(api_response)
 
 
+def get_id_for_emails(email_list):
+    "Get the id for the interviewers who has interview scheduled already"
+    interviewers_id_list = []
+    for interviewer_email in email_list:
+        interviewer_id = Interviewers.query.filter(Interviewers.interviewer_email == interviewer_email).value(Interviewers.interviewer_id)
+        interviewers_id_list.append(interviewer_id)
+
+    return interviewers_id_list
+
+
 def check_interview_exists(date):
     "Fetch the interviewers wich have an interview already"
     interviewers_email_list = []
@@ -71,8 +81,9 @@ def check_interview_exists(date):
     fetch_interviewers_email = db.session.query(Jobcandidate).filter(Jobcandidate.interview_date == now_utc).values(Jobcandidate.interviewer_email)
     for each_interviewer_email in fetch_interviewers_email:
         interviewers_email_list.append(each_interviewer_email.interviewer_email)
+    interviewers_id_list = get_id_for_emails(interviewers_email_list)
 
-    return interviewers_email_list
+    return interviewers_id_list
 
 
 @app.route("/get-schedule", methods=['GET', 'POST'])
@@ -103,21 +114,24 @@ def date_picker():
                     alloted_interviewers_id_list.append(each_interviewer_id.interviewer_id)
             except Exception as e:
                 print("The candidate is scheduling an interview for the first time",e)
-
+            #Fetch the interviewers email id which have an interview for the picked date
+            scheduled_interviewers_id = check_interview_exists(date)
 
             #Fetch the interviewers for the candidate job
             job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
             interviewer_id = []
             for each_interviewer_id in job_interviewer_id:
-                interviewer_id.append(each_interviewer_id.interviewer_id)
+                if each_interviewer_id.interviewer_id in scheduled_interviewers_id:
+                    pass
+                else:
+                    interviewer_id.append(each_interviewer_id.interviewer_id)
 
             if len(alloted_interviewers_id_list) == 0:
                 pass
             else:
                 #Compare the alloted and fetched interviewers id
                 interviewer_id = list(set(interviewer_id)-set(alloted_interviewers_id_list))
-            #Fetch the interviewers email id which have an interview for the picked date
-            interviewers_email = check_interview_exists(date)
+
             #Fetch the interviewer emails for the candidate job
             interviewer_work_time_slots = []
             for each_id in interviewer_id:
@@ -125,9 +139,6 @@ def date_picker():
                 Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
 
                 for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
-                    if interviewer_email in interviewers_email:
-                        pass
-                    else:
                         interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,'interviewer_end_time': interviewer_end_time})
             free_slots = my_scheduler.get_free_slots_for_date(
                 date, interviewer_work_time_slots)

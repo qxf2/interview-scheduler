@@ -395,20 +395,10 @@ def no_opening():
     return jsonify(data)
 
 
-@app.route("/reject", methods=["POST"])
-@login_required
-def send_reject():
-    "Send reject email"
-    candidate_name = request.form.get('candidatename')
-    candidate_email = request.form.get('candidateemail')
-    candidate_job_applied = request.form.get('candidatejob')
-    candidate_id = request.form.get('candidateid')
+def change_status_to_reject(candidate_id,candidate_job_applied):
+    "Change the status to reject"
     try:
-        logged_email = session['logged_user']
-        msg = Message("Interview update from Qxf2 Services!", sender=("Qxf2 Services", "test@qxf2.com"),  cc=[logged_email], recipients=[candidate_email])
-        msg.body = "Hi %s , \n\nI appreciate your interest in a career opportunity with Qxf2 Services. It was a pleasure speaking to you about your background and interests. There are many qualified applicants in the current marketplace and we are searching for those who have the most directly applicable experience to our limited number of openings. I regret we will not be moving forward with your interview process. We wish you all the best in your current search and future endeavors.\n\nThanks, \nQxf2 Services"%(candidate_name)
-        mail.send(msg)
-        #Update the candidate status to 'Waiting for new opening'
+        #Update the candidate status to 'Reject'
         candidate_statuses = Candidatestatus.query.all()
         for each_status in candidate_statuses:
             if each_status.status_name == status.CANDIDTATE_STATUS[4]:
@@ -423,7 +413,25 @@ def send_reject():
         print(e)
         return(str(e))
 
-    data = {'candidate_name': candidate_name, 'error': error}
+    return error
+
+
+@app.route("/reject", methods=["POST"])
+@login_required
+def send_reject():
+    "Send reject email"
+    candidate_name = request.form.get('candidatename')
+    candidate_email = request.form.get('candidateemail')
+    candidate_job_applied = request.form.get('candidatejob')
+    candidate_id = request.form.get('candidateid')
+
+    logged_email = session['logged_user']
+    msg = Message("Interview update from Qxf2 Services!", sender=("Qxf2 Services", "test@qxf2.com"),  cc=[logged_email], recipients=[candidate_email])
+    msg.body = "Hi %s , \n\nI appreciate your interest in a career opportunity with Qxf2 Services. It was a pleasure speaking to you about your background and interests. There are many qualified applicants in the current marketplace and we are searching for those who have the most directly applicable experience to our limited number of openings. I regret we will not be moving forward with your interview process. We wish you all the best in your current search and future endeavors.\n\nThanks, \nQxf2 Services"%(candidate_name)
+    mail.send(msg)
+    candidate_status = change_status_to_reject(candidate_id,candidate_job_applied)
+
+    data = {'candidate_name': candidate_name, 'error': candidate_status}
     return jsonify(data)
 
 @app.route("/comments/save", methods=['GET', 'POST'])
@@ -495,3 +503,27 @@ def job_filter():
     else:
         result = 'error'
         return result
+
+@app.route("/noemail/reject",methods=["GET","POST"])
+def reject_without_email():
+    "Change the status without reject email"
+    candidate_name = request.form.get('candidatename')
+    candidate_email = request.form.get('candidateemail')
+    candidate_job_applied = request.form.get('candidatejob')
+    candidate_id = request.form.get('candidateid')
+    status_change = change_status_to_reject(candidate_id,candidate_job_applied)
+
+    data = {'candidate_name': candidate_name, 'error': status_change}
+    return jsonify(data)
+
+
+@app.route('/candidate/noresponse',methods=["GET","POST"])
+def status_no_response():
+    "Change the candidate status to no response if they have not replied"
+    if request.method == "POST":
+        candidate_id = request.form.get("candidateid")
+        #Update the candidate status to no response
+        db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id == candidate_id).update({'candidate_status':4})
+        db.session.commit()
+
+    return candidate_id

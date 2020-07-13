@@ -94,7 +94,8 @@
                         </div>
                         <div class="col-md-4 form-display">
                             <label class="col-md-8" for="comments:">Added comments:</label>
-                            <label class="col-md-8" for="dateApplied"style="max-width:450px; word-wrap: break-word">{{result.comments|markdown}}</label>
+                            <label class="col-md-8" for="dateApplied"
+                                style="max-width:450px; word-wrap: break-word">{{result.comments|markdown}}</label>
                         </div>
 
                         <br>
@@ -105,9 +106,10 @@
                             <input type="button" id="sendEmail" data-generated-url="{{result.url}}"
                                 data-candidate-name="{{result.candidate_name}}"
                                 data-candidate-email="{{result.candidate_email}}"
-                                data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"value="Thumbs up">
+                                data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"
+                                value="Thumbs up">
 
-                            <input type="button"  data-target="#confirmdeletemodal"
+                            <input type="button" data-target="#confirmdeletemodal"
                                 data-candidatename="{{ result.candidate_name }}"
                                 data-candidateid="{{ result.candidate_id }}" data-jobid="{{ result.job_id }}"
                                 data-candidateemail="{{result.candidate_email}}" data-toggle="modal"
@@ -141,10 +143,11 @@
                             <label class="col-md-8" for="inviteSent">Waiting on Candidate</label>
                         </div>
                         <div class="col-md-4 form-display">
-                                <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
-                                    value="Regenerate URL">
-                                    &nbsp;&nbsp;
-                                    <input class="btn btn-info" type="button" id="noResponse" onclick="noresponse()" value="No response">
+                            <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
+                                value="Regenerate URL">
+                            &nbsp;&nbsp;
+                            <input class="btn btn-info" type="button" id="noResponse" onclick="noresponse()"
+                                value="No response">
 
                         </div>
                         {% elif result.candidate_status == 'Waiting for new opening' %}
@@ -167,12 +170,24 @@
                             <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-8" for="inviteSent">Reject</label>
                         </div>
+                        {% elif result.candidate_status == 'Hired' %}
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Action">Action:</label>
+                            <label class="col-md-8" for="action">No action needed from Qxf2</label>
+                        </div>
+                        <br>
+                        <div class="col-md-4 form-display">
+                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-8" for="inviteSent">Hired</label>
+                        </div>
 
                         {% endif %}
                         <div class="container col-md-14">
-                            {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}
+                            {% if (result.candidate_status == 'Waiting on Qxf2') or (result.interviewer_email_id == None) %}
                             <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
                                 value="No opening">
+                            <input class="btn btn-info" type="button" id="hireButton" onclick="hirebutton()"
+                                value="Hired">
                             {% elif result.candidate_status == 'No response' or result.candidate_status == 'Reject' %}
 
                             <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
@@ -197,7 +212,7 @@
                         <div class="form-display">
                             <input type="checkbox" name="rejectCheckbox" id="checkbox">
                             &nbsp
-                        <label>Check the box if you want to send a reject email.</label>
+                            <label>Check the box if you want to send a reject email.</label>
                         </div>
                     </div>
                     <div class="modal-footer modal-megamenu">
@@ -468,58 +483,58 @@
             })
         })
 
-            $("#close-button").on('click', function () {
-                location.reload();
-            })
+        $("#close-button").on('click', function () {
+            location.reload();
+        })
     </script>
     <script>
-            function regenerate() {
-                var candidateId = document.getElementById("candidateId").value;
-                var jobId = document.getElementById("jobId").value;
-                //var roundId = document.getElementById("roundId").value;
-                var roundId = $("#roundId").val()
-                console.log(candidateId, jobId, roundId)
-                $.ajax({
-                    type: 'POST',
-                    url: "/regenerate/url",
-                    data: {
-                        'candidateid': candidateId,
-                        'jobid': jobId,
-                        'roundid': roundId
-                    },
-                    success: function (result) {
-                        if (result.error == "Success") {
-                            alert("The existing URL is removed");
-                            document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
-                            ('#noOpening').attr("disabled", true)
-
-                        }
-                        else {
-                            alert("Cannot remove the exisitng URL");
-                            document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
-                        }
+        function regenerate() {
+            var candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            //var roundId = document.getElementById("roundId").value;
+            var roundId = $("#roundId").val()
+            console.log(candidateId, jobId, roundId)
+            $.ajax({
+                type: 'POST',
+                url: "/regenerate/url",
+                data: {
+                    'candidateid': candidateId,
+                    'jobid': jobId,
+                    'roundid': roundId
+                },
+                success: function (result) {
+                    if (result.error == "Success") {
+                        alert("The existing URL is removed");
+                        document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
+                        ('#noOpening').attr("disabled", true)
 
                     }
-                })
-                $("#regenerateUrl").attr("disabled", true);
+                    else {
+                        alert("Cannot remove the exisitng URL");
+                        document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
+                    }
+
+                }
+            })
+            $("#regenerateUrl").attr("disabled", true);
 
 
-            }
+        }
     </script>
     <script>
-        function noresponse(){
+        function noresponse() {
             candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
-            console.log(candidateId,jobId);
+            console.log(candidateId, jobId);
             $.ajax({
-                type:'POST',
+                type: 'POST',
                 url: '/candidate/noresponse',
-                data:{
-                    'candidateid':candidateId
-                    },
-                success:function(result){
+                data: {
+                    'candidateid': candidateId
+                },
+                success: function (result) {
                     alert("The candidate status has been changed");
-                    document.location.href = "/candidate/"+candidateId+"/job/"+jobId;
+                    document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
                 }
 
 
@@ -528,7 +543,30 @@
 
         }
     </script>
+    <script>
+        function hirebutton() {
+            candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            console.log(candidateId, jobId);
+            $.ajax({
+                type: 'POST',
+                url: '/candidate/hired',
+                data: {
+                    'candidateid': candidateId,
+                    'jobid':jobId
+                },
+                success: function (result) {
+                    alert("The candidate status has been changed to Hired");
+                    document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
+                }
 
+
+            })
+            $("#hireButton").attr("disabled", true);
+
+        }
+
+    </script>
 
 </body>
 

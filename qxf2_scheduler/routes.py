@@ -262,7 +262,7 @@ def login():
                 user = Login()
                 user.name=username
                 user.password=password
-                login_user(user)
+                login_user(user,remember=True)
                 error = 'Success'
         api_response = {'data':data,'error':error}
         return jsonify(api_response)

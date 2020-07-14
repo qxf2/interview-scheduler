@@ -78,8 +78,7 @@ body {
     align-items: center;
 }
 .form-control{
-    display: inline-block;
-    width: 10px; /* or whatever width looks good for your purpose */
+    width: 45px; /* or whatever width looks good for your purpose */
   }
 
 label,

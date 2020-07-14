@@ -42,8 +42,8 @@ body {
     }
 
 .modal-megamenu {
-    max-height: calc(30vh - 20px);
-    overflow-y: 10px;
+    max-height: calc(100vh - 400px);
+    overflow-y: auto;
 }
 
 .top-space-10 {

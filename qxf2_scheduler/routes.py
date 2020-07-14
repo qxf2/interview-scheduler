@@ -63,6 +63,29 @@ def registration():
     return jsonify(api_response)
 
 
+def get_id_for_emails(email_list):
+    "Get the id for the interviewers who has interview scheduled already"
+    interviewers_id_list = []
+    for interviewer_email in email_list:
+        interviewer_id = Interviewers.query.filter(Interviewers.interviewer_email == interviewer_email).value(Interviewers.interviewer_id)
+        interviewers_id_list.append(interviewer_id)
+
+    return interviewers_id_list
+
+
+def check_interview_exists(date):
+    "Fetch the interviewers wich have an interview already"
+    interviewers_email_list = []
+    now_utc = datetime.datetime.now().date()
+    now_utc = now_utc.strftime("%B %d, %Y")
+    fetch_interviewers_email = db.session.query(Jobcandidate).filter(Jobcandidate.interview_date == now_utc).values(Jobcandidate.interviewer_email)
+    for each_interviewer_email in fetch_interviewers_email:
+        interviewers_email_list.append(each_interviewer_email.interviewer_email)
+    interviewers_id_list = get_id_for_emails(interviewers_email_list)
+
+    return interviewers_id_list
+
+
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
     "Dummy page to let you see a schedule"
@@ -91,19 +114,24 @@ def date_picker():
                     alloted_interviewers_id_list.append(each_interviewer_id.interviewer_id)
             except Exception as e:
                 print("The candidate is scheduling an interview for the first time",e)
-
+            #Fetch the interviewers email id which have an interview for the picked date
+            scheduled_interviewers_id = check_interview_exists(date)
 
             #Fetch the interviewers for the candidate job
             job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
             interviewer_id = []
             for each_interviewer_id in job_interviewer_id:
-                interviewer_id.append(each_interviewer_id.interviewer_id)
+                if each_interviewer_id.interviewer_id in scheduled_interviewers_id:
+                    pass
+                else:
+                    interviewer_id.append(each_interviewer_id.interviewer_id)
 
             if len(alloted_interviewers_id_list) == 0:
                 pass
             else:
                 #Compare the alloted and fetched interviewers id
                 interviewer_id = list(set(interviewer_id)-set(alloted_interviewers_id_list))
+
             #Fetch the interviewer emails for the candidate job
             interviewer_work_time_slots = []
             for each_id in interviewer_id:
@@ -111,8 +139,7 @@ def date_picker():
                 Interviewers.interviewer_email, Interviewertimeslots.interviewer_start_time, Interviewertimeslots.interviewer_end_time)
 
                 for interviewer_email, interviewer_start_time, interviewer_end_time in new_slot:
-                    interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,
-                                                    'interviewer_end_time': interviewer_end_time})
+                        interviewer_work_time_slots.append({'interviewer_email': interviewer_email, 'interviewer_start_time': interviewer_start_time,'interviewer_end_time': interviewer_end_time})
             free_slots = my_scheduler.get_free_slots_for_date(
                 date, interviewer_work_time_slots)
             free_slots_in_chunks = my_scheduler.get_free_slots_in_chunks(
@@ -770,9 +797,8 @@ def show_welcome(candidate_id, job_id, url):
 
             #Fetch the candidate status name from candidatestatus table
             candidate_status = db.session.query(Candidatestatus).filter(Candidatestatus.status_id==candidate_status_id).scalar()
-            if(candidate_status.status_name == status.CANDIDTATE_STATUS[1] and interview_start_time==None):
+            if(candidate_status.status_name == status.CANDIDTATE_STATUS[1]):
                 return render_template("welcome.html",result=data)
-
             elif (candidate_status.status_name == status.CANDIDTATE_STATUS[2] and datetime.datetime.strptime(interview_start_time,"%Y-%m-%dT%H:%M:%S+05:30") > current_date_and_time):
                 #Fetch the candidate name and email
                 get_candidate_details = db.session.query(Candidates).filter(Candidates.candidate_id==candidate_id).values(Candidates.candidate_email,Candidates.candidate_id,Candidates.candidate_name)

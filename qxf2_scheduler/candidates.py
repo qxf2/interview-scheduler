@@ -479,11 +479,12 @@ def filter_candidate_status():
         return result
 
 
-@app.route("/job/filter", methods=['GET', 'POST'])
+@app.route("/filter/job/", methods=['GET', 'POST'])
 def job_filter():
     "Filter the job for the candidates"
     filter_job_list = []
-    filtered_job = request.form.get('selectedjob')
+    filtered_job = request.args.get('selectjob')
+    print(filtered_job)
     candidate_job_filter = Candidates.query.filter(Candidates.job_applied == filtered_job).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.job_applied,Candidates.candidate_email)
 
     for each_data in candidate_job_filter:

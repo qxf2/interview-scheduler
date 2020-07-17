@@ -129,6 +129,10 @@
                             <label class="col-md-2 labelbold" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-10" for="takeAction">Waiting on Qxf2</label>
                         </div>
+                        <div class="col-md-12">
+                            <input class="col-md-2 btn btn-info" type="button" id="hireButton" onclick="hirebutton()"
+                                value="Hired">
+                        </div>
                         <br>
                         {% elif result.candidate_status == 'Interview Scheduled' %}
                         <div class="col-md-12 form-display">
@@ -140,6 +144,7 @@
                             <label class="labelbold col-md-2" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-10" for="interviewScheduled">Interview Scheduled</label>
                         </div>
+
                         {% elif result.candidate_status == 'Waiting on Candidate' %}
                         <div class="col-md-12 form-display">
                             <label class="labelbold col-md-2" for="Action">Action:</label>
@@ -193,8 +198,7 @@
                             {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}
                             <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
                                 value="No opening">
-                            <input class="btn btn-info" type="button" id="hireButton" onclick="hirebutton()"
-                                value="Hired">
+
                             {% elif result.candidate_status == 'No response' or result.candidate_status == 'Reject' %}
 
                             <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"

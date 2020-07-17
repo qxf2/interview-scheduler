@@ -19,6 +19,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
 </head>
 
 <body>
@@ -52,8 +54,7 @@
                         <th>Candidate Name</th>
                         <th>Candidate Email</th>
                         <th>Job
-                            <select style="width:18px;display:inline;border:none;margin:0;" class="form-control"
-                                id="jobFilter">
+                            <select class="form-control" id="jobFilter">
                                 <option value="" style="display:none;">Jobs</option>
                                 <option value="QA Manager">QA Manager</option>
                                 <option value="Senior QA">Senior QA</option>
@@ -66,8 +67,8 @@
 
         </th>
         <th>Status
-            <select style="width:18px;display:inline;border:none;margin:0;" class="form-control" id="statusFilter">
-                <option value="" style="display:none;">Candidate statuses</option>
+            <select class="form-control" id="statusFilter">
+                <option value="" style="display:none;">statuses</option>
                 <option value="Waiting on Qxf2">Waiting on Qxf2</option>
                 <option value="Waiting on Candidate">Waiting on Candidate</option>
                 <option value="Interview Scheduled">Interview Scheduled</option>
@@ -76,36 +77,36 @@
                 <option value="Hired">Hired</option>
                 <option value="Waiting for new opening">Waiting for new opening</option>
             </select>
-        </div>
+    </div>
     </div>
 
-        </th>
-        <th>Actions</th>
+    </th>
+    <th>Actions</th>
 
+    </tr>
+    </thead>
+    <tbody>
+        {% for each_candidate in result %}
+        <tr>
+            <td>{{ each_candidate.candidate_id }}</td>
+            <!-- change href-->
+            <td><a
+                    href="/candidate/{{each_candidate.candidate_id}}/job/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
+            </td>
+            <td>{{ each_candidate.candidate_email }}</td>
+            <!--change each_candidate.job_applied-->
+            <td>{{ each_candidate.job_role }}</td>
+            <td>{{ each_candidate.candidate_status }}</td>
+            <td><input class="btn btn-info" type="button" id="edit"
+                    onclick="editCandidates({{each_candidate.candidate_id}})" value="Edit">
+                <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
+                    data-candidatename="{{ each_candidate.candidate_name }}"
+                    data-candidateid="{{ each_candidate.candidate_id }}" data-jobid="{{ each_candidate.job_id }}"
+                    data-toggle="modal">Delete</button></td>
         </tr>
-        </thead>
-        <tbody>
-            {% for each_candidate in result %}
-            <tr>
-                <td>{{ each_candidate.candidate_id }}</td>
-                <!-- change href-->
-                <td><a
-                        href="/candidate/{{each_candidate.candidate_id}}/job/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
-                </td>
-                <td >{{ each_candidate.candidate_email }}</td>
-                <!--change each_candidate.job_applied-->
-                <td>{{ each_candidate.job_role }}</td>
-                <td >{{ each_candidate.candidate_status }}</td>
-                <td><input class="btn btn-info" type="button" id="edit"
-                        onclick="editCandidates({{each_candidate.candidate_id}})" value="Edit">
-                    <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
-                        data-candidatename="{{ each_candidate.candidate_name }}"
-                        data-candidateid="{{ each_candidate.candidate_id }}" data-jobid="{{ each_candidate.job_id }}"
-                        data-toggle="modal">Delete</button></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        </table>
+        {% endfor %}
+    </tbody>
+    </table>
     </div>
     <div class="modal modal-megamenu" id="confirmdeletemodal">
         <div class="modal-dialog modal-megamenu">

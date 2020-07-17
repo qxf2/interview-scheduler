@@ -77,8 +77,11 @@ body {
     display:flex;
     flex-direction: row;
     justify-content: left;
-    align-items: center"
+    align-items: center;
 }
+.form-control{
+    width: 45px; /* or whatever width looks good for your purpose */
+  }
 
 label,
     input {

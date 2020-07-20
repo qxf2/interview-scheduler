@@ -6,7 +6,7 @@
         Welcome
     </title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
@@ -22,7 +22,7 @@
   word-break: break-word;
 }
     </style>
-   
+
 </head>
 
 <body style="background-color:powderblue;">
@@ -30,7 +30,7 @@
     <div class="container">
     <div class="bs-example">
         {% if 'job_id' in result %}
-       
+
             <div class="panel panel-default" style="max-width:800px;margin-left:auto;margin-right:auto;">
                 <div class="panel-heading " style="text-align: center;"></div>
                 <div class="panel-body">
@@ -41,17 +41,17 @@
                                 <label class="col-md-4 control-label"><span style="color:red">*</span>Enter your unique code</label>
                                 <div class="col-md-7">
                                     <input id="candidate-name" name="candidate-name" type="text" placeholder="xxxxx"
-                                        class="form-control input-md" required>
+                                        class="input-md" required>
                                 </div>
                             </div>
-            
+
                         </div>
                         <div class="form-group">
                             <div class="row">
                                 <label class="col-md-4 control-label"><span style="color:red">*</span>Enter your email</label>
                                 <div class="col-md-7">
                                     <input id="candidate-email" name="candidate-email" type="email"
-                                        placeholder="johndoe@example.com" class="form-control input-md" required>
+                                        placeholder="johndoe@example.com" class="input-md" required>
                                 </div>
                             </div>
                         </div>
@@ -103,12 +103,12 @@
 
                     </div>
                 </div>
-            </div>      
-            {% endif %}  
+            </div>
+            {% endif %}
     </div>
-</div>  
-    
-   
+</div>
+
+
     <script>
         $("#submit").click(function () {
             var validValue = true;
@@ -162,7 +162,7 @@
                         if (result.error['error'] == "OtherError") {
 
                             alert("Email or Code not found, Please check your unique URL you have entered is correct");
-                            //window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";                            
+                            //window.location.href = "/" + result.result['candidate_id'] + "/" + result.result['job_id'] + "/" + result.result['url'] + "/welcome";
                         }
                         if (result.error['error'] == "Success") {
 
@@ -176,8 +176,8 @@
             }
             return false;
         })
-    </script>  
-    
+    </script>
+
     {% include "footer.html" %}
 
 </body>

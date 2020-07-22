@@ -76,9 +76,8 @@ def get_id_for_emails(email_list):
 def check_interview_exists(date):
     "Fetch the interviewers wich have an interview already"
     interviewers_email_list = []
-    now_utc = datetime.datetime.now().date()
-    now_utc = now_utc.strftime("%B %d, %Y")
-    fetch_interviewers_email = db.session.query(Jobcandidate).filter(Jobcandidate.interview_date == now_utc).values(Jobcandidate.interviewer_email)
+    date = datetime.datetime.strptime(date, '%m/%d/%Y').strftime('%B %d, %Y')
+    fetch_interviewers_email = db.session.query(Jobcandidate).filter(Jobcandidate.interview_date == date).values(Jobcandidate.interviewer_email)
     for each_interviewer_email in fetch_interviewers_email:
         interviewers_email_list.append(each_interviewer_email.interviewer_email)
     interviewers_id_list = get_id_for_emails(interviewers_email_list)
@@ -116,7 +115,6 @@ def date_picker():
                 print("The candidate is scheduling an interview for the first time",e)
             #Fetch the interviewers email id which have an interview for the picked date
             scheduled_interviewers_id = check_interview_exists(date)
-
             #Fetch the interviewers for the candidate job
             job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
             interviewer_id = []

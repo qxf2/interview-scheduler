@@ -527,3 +527,15 @@ def status_no_response():
         db.session.commit()
 
     return candidate_id
+
+
+@app.route('/candidate/hired',methods=["GET","POST"])
+def status_to_hired():
+    "Change the candidate status to hiried"
+    if request.method == "POST":
+        candidate_id = request.form.get("candidateid")
+        job_id = request.form.get("jobid")
+        db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':6})
+        db.session.commit()
+
+    return candidate_id

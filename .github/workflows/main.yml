@@ -16,6 +16,7 @@ jobs:
         port: ${{ secrets.port }}
         script:  | 
           cd qxf2/interview-scheduler
+          source venv-interview-scheduler/bin/activate
           git pull origin master
           mv maintenance_off.html maintenance_on.html
           pip install -r requirements.txt
@@ -23,4 +24,5 @@ jobs:
           python migrate_db.py db upgrade
           sudo service gunicorn restart
           mv maintenance_on.html maintenance_off.html
+          deactivate
 

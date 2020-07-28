@@ -9,29 +9,22 @@ on:
       -master
 
 jobs:
-  deploy-server:
-    name: deploy-server
+  deploy:
     runs-on: ubuntu-latest
     steps:
-        -name: Executing remote ssh commands using Github actions
-        uses: qxf2/interview-scheduler@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PROD_KEY }}
-          port: ${{ secrets.port }}
-          script: |
-              -name:Do the Git pull from the master
-              run:git pull origin master
-              -name:Move the maintenance page on
-              run:mv maintenance_off.html maintenance_on.html
-              -name:Install the requirements file
-              run:pip install -r requirements.txt
-              -name:Run the Migration
-              run:python migrate_db.py db migrate
-              run:python migrate_db.py db upgrade
-              -name:Restart the server
-              run:sudo service gunicorn restart
-              -name:Move the maintenance page off
-              mv maintenance_on.html maintenance_off.html
+    - name: SSH to EC2 instance
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PROD_KEY }}
+        port: ${{ secrets.port }}
+        script:  | 
+          git pull origin master
+          mv maintenance_off.html maintenance_on.html
+          pip install -r requirements.txt
+          python migrate_db.py db migrate
+          python migrate_db.py db upgrade
+          sudo service gunicorn restart
+          mv maintenance_on.html maintenance_off.html
 

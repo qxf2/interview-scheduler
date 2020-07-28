@@ -34,80 +34,89 @@
                 <form>
                     <fieldset>
                         {% if result!="" %}
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Candidate Name:">Candidate Name:</label>
-                            <label class="col-md-8" for="candidateName">{{result.candidate_name}}</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Candidate Name:">Candidate Name:</label>
+                            <label class="col-md-10" for="candidateName">{{result.candidate_name}}</label>
 
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Job Applied:">Job Applied:</label>
-                            <label class="col-md-8" for="jobApplied">{{result.job_applied}}</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Job Applied:">Job Applied:</label>
+                            <label class="col-md-10" for="jobApplied">{{result.job_applied}}</label>
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Interviewer details:">Interviewer Email:</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Interviewer details:">Interviewer Email:</label>
                             {% if result.interviewer_email_id == None%}
-                            <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
+                            <label class="col-md-10" for="interviewerDetails">
+                            Interview not yet scheduled</label>
                             {% else %}
-                            <label class="col-md-8" for="interviewerDetails">
+                            <label class="col-md-10" for="interviewerDetails">
                                 <p>{{result.interviewer_email_id}}</p>
                             </label>
                             {% endif %}
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Date Applied:">Date Applied:</label>
-                            <label class="col-md-8" for="dateApplied">{{result.date_applied}}</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Date Applied:">Date Applied:</label>
+                            <label class="col-md-10" for="dateApplied">{{result.date_applied}}</label>
 
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Generated URL:">Generated URL:</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Generated URL:">Generated URL:</label>
                             {% if result.url == None %}
-                            <label class="col-md-8" for="interviewerDetails">URL not yet generated</label>
+                            <label class="col-md-10" for="interviewerDetails">
+                                URL not yet generated</label>
                             {% else %}
-                            <label class="col-md-8" for="interviewerDetails"
-                                style="max-width:450px; word-wrap: break-word">{{result.url}}</label>
+                            <label class="col-md-10" for="interviewerDetails"
+                                style="max-width:450px; word-wrap: break-word">
+                            {{result.url}}</label>
                             {% endif %}
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Interviewer details:">Interview date :</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Interviewer details:">Interview date :</label>
                             {% if result.interview_date == None%}
-                            <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
+                            <label class="col-md-10" for="interviewerDetails">
+                                Interview not yet scheduled</label>
                             {% else %}
-                            <label class="col-md-8" for="interviewerDetails">
+                            <label class="col-md-10" for="interviewerDetails">
                                 <p>{{result.interview_date}}</p>
                             </label>
                             {% endif %}
                         </div>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Interviewer details:">Interview time :</label>
-                            {% if result.interview_start_time == None%}
-                            <label class="col-md-8" for="interviewerDetails">Interview not yet scheduled</label>
+                        <br>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Interviewer details:">Interview time :</label>
+
+                            <label class="col-md-10" for="interviewerDetails">
+                                {% if result.interview_start_time == None%}
+                                Interview not yet scheduled
                             {% else %}
-                            <label class="col-md-8" for="interviewerDetails">
                                 <p>{{result.interview_start_time}}</p>
                             </label>
                             {% endif %}
                         </div>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="comments:">Added comments:</label>
-                            <label class="col-md-8" for="dateApplied"style="max-width:450px; word-wrap: break-word">{{result.comments|markdown}}</label>
+                        <br>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="comments:">Added comments:</label>
+                            <label class="col-md-10">{{result.comments|markdown}}</label>
+
                         </div>
 
                         <br>
                         {% if result.candidate_status == 'Waiting on Qxf2' %}
 
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Action:">Action:</label>
-                            <input type="button" id="sendEmail" data-generated-url="{{result.url}}"
+                        <div class="col-md-12 form-display">
+                            <label class="col-md-2 labelbold" for="Action:">Action:</label>
+                            <input class="btn btn-info" type="button" id="sendEmail" data-generated-url="{{result.url}}"
                                 data-candidate-name="{{result.candidate_name}}"
                                 data-candidate-email="{{result.candidate_email}}"
-                                data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"value="Thumbs up">
+                                data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"
+                                value="Thumbs up">
 
-                            <input type="button"  data-target="#confirmdeletemodal"
+                            <input type="button" data-target="#confirmdeletemodal"
                                 data-candidatename="{{ result.candidate_name }}"
                                 data-candidateid="{{ result.candidate_id }}" data-jobid="{{ result.job_id }}"
                                 data-candidateemail="{{result.candidate_email}}" data-toggle="modal"
@@ -116,31 +125,37 @@
 
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
-                            <label class="col-md-8" for="takeAction">Waiting on Qxf2</label>
+                        <div class="col-md-12 form-display">
+                            <label class="col-md-2 labelbold" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-10" for="takeAction">Waiting on Qxf2</label>
                         </div>
+                        <div class="col-md-12">
+                            <input class="col-md-2 btn btn-info" type="button" id="hireButton" onclick="hirebutton()"
+                                value="Hired">
+                        </div>
+                        <br>
                         {% elif result.candidate_status == 'Interview Scheduled' %}
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Action">Action:</label>
-                            <label class="col-md-8" for="interviewScheduled">No action needed from Qxf2</label>
+                        <div class="col-md-12 form-display">
+                            <label class="col-md-2" for="Action">Action:</label>
+                            <label class="col-md-10" for="interviewScheduled">No action needed from Qxf2</label>
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
-                            <label class="col-md-8" for="interviewScheduled">Interview Scheduled</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-10" for="interviewScheduled">Interview Scheduled</label>
                         </div>
+
                         {% elif result.candidate_status == 'Waiting on Candidate' %}
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Action">Action:</label>
-                            <label class="col-md-8" for="action">No action needed from Qxf2</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Action">Action:</label>
+                            <label class="col-md-10" for="action">No action needed from Qxf2</label>
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
-                            <label class="col-md-8" for="inviteSent">Waiting on Candidate</label>
+                        <div class="col-md-12 form-display">
+                            <label class="col-md-2 labelbold" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-10" for="inviteSent">Waiting on Candidate</label>
                         </div>
-                        <div class="col-md-4 form-display">
+                        <div class="col-md-12 form-display">
                                 <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
                                     value="Regenerate URL">
                                     &nbsp;&nbsp;
@@ -148,31 +163,42 @@
 
                         </div>
                         {% elif result.candidate_status == 'Waiting for new opening' %}
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Action">Action:</label>
-                            <label class="col-md-8" for="action">No action needed from Qxf2</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Action">Action:</label>
+                            <label class="col-md-10" for="action">No action needed from Qxf2</label>
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
-                            <label class="col-md-8" for="inviteSent">Waiting for new opening</label>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-10" for="inviteSent">Waiting for new opening</label>
                         </div>
                         {% elif result.candidate_status == 'Reject' %}
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Action">Action:</label>
-                            <label class="col-md-8" for="action">No action needed from Qxf2</label>
+                        <div class="col-md-12 form-display">
+                            <label class="col-md-2 labelbold" for="Action">Action:</label>
+                            <label class="col-md-10" for="action">No action needed from Qxf2</label>
                         </div>
                         <br>
-                        <div class="col-md-4 form-display">
-                            <label class="col-md-8" for="Candidate Status">Candidate Status:</label>
-                            <label class="col-md-8" for="inviteSent">Reject</label>
+                        <div class="col-md-12 form-display">
+                            <label class="col-md-2 labelbold" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-10" for="inviteSent">Reject</label>
+                        </div>
+                        {% elif result.candidate_status == 'Hired' %}
+                        <div class="col-md-12 form-display">
+                            <label class="col-md-2 labelbold" for="Action">Action:</label>
+                            <label class="col-md-10" for="action">No action needed from Qxf2</label>
+                        </div>
+                        <br>
+                        <div class="col-md-12 form-display">
+                            <label class="col-md-2 labelbold" for="Candidate Status">Candidate Status:</label>
+                            <label class="col-md-10" for="inviteSent">Hired</label>
                         </div>
 
                         {% endif %}
-                        <div class="container col-md-14">
+                        <div class="container col-md-12">
                             {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}
                             <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
                                 value="No opening">
+
                             {% elif result.candidate_status == 'No response' or result.candidate_status == 'Reject' %}
 
                             <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
@@ -197,7 +223,7 @@
                         <div class="form-display">
                             <input type="checkbox" name="rejectCheckbox" id="checkbox">
                             &nbsp
-                        <label>Check the box if you want to send a reject email.</label>
+                            <label>Check the box if you want to send a reject email.</label>
                         </div>
                     </div>
                     <div class="modal-footer modal-megamenu">
@@ -468,58 +494,58 @@
             })
         })
 
-            $("#close-button").on('click', function () {
-                location.reload();
-            })
+        $("#close-button").on('click', function () {
+            location.reload();
+        })
     </script>
     <script>
-            function regenerate() {
-                var candidateId = document.getElementById("candidateId").value;
-                var jobId = document.getElementById("jobId").value;
-                //var roundId = document.getElementById("roundId").value;
-                var roundId = $("#roundId").val()
-                console.log(candidateId, jobId, roundId)
-                $.ajax({
-                    type: 'POST',
-                    url: "/regenerate/url",
-                    data: {
-                        'candidateid': candidateId,
-                        'jobid': jobId,
-                        'roundid': roundId
-                    },
-                    success: function (result) {
-                        if (result.error == "Success") {
-                            alert("The existing URL is removed");
-                            document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
-                            ('#noOpening').attr("disabled", true)
-
-                        }
-                        else {
-                            alert("Cannot remove the exisitng URL");
-                            document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
-                        }
+        function regenerate() {
+            var candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            //var roundId = document.getElementById("roundId").value;
+            var roundId = $("#roundId").val()
+            console.log(candidateId, jobId, roundId)
+            $.ajax({
+                type: 'POST',
+                url: "/regenerate/url",
+                data: {
+                    'candidateid': candidateId,
+                    'jobid': jobId,
+                    'roundid': roundId
+                },
+                success: function (result) {
+                    if (result.error == "Success") {
+                        alert("The existing URL is removed");
+                        document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
+                        ('#noOpening').attr("disabled", true)
 
                     }
-                })
-                $("#regenerateUrl").attr("disabled", true);
+                    else {
+                        alert("Cannot remove the exisitng URL");
+                        document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
+                    }
+
+                }
+            })
+            $("#regenerateUrl").attr("disabled", true);
 
 
-            }
+        }
     </script>
     <script>
-        function noresponse(){
+        function noresponse() {
             candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
-            console.log(candidateId,jobId);
+            console.log(candidateId, jobId);
             $.ajax({
-                type:'POST',
+                type: 'POST',
                 url: '/candidate/noresponse',
-                data:{
-                    'candidateid':candidateId
-                    },
-                success:function(result){
+                data: {
+                    'candidateid': candidateId
+                },
+                success: function (result) {
                     alert("The candidate status has been changed");
-                    document.location.href = "/candidate/"+candidateId+"/job/"+jobId;
+                    document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
                 }
 
 
@@ -528,7 +554,30 @@
 
         }
     </script>
+    <script>
+        function hirebutton() {
+            candidateId = document.getElementById("candidateId").value;
+            var jobId = document.getElementById("jobId").value;
+            console.log(candidateId, jobId);
+            $.ajax({
+                type: 'POST',
+                url: '/candidate/hired',
+                data: {
+                    'candidateid': candidateId,
+                    'jobid':jobId
+                },
+                success: function (result) {
+                    alert("The candidate status has been changed to Hired");
+                    document.location.href = "/candidate/" + candidateId + "/job/" + jobId;
+                }
 
+
+            })
+            $("#hireButton").attr("disabled", true);
+
+        }
+
+    </script>
 
 </body>
 

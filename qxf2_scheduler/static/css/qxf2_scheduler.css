@@ -30,7 +30,9 @@ body {
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
     }
-
+.labelbold{
+    font-weight:bold;
+    }
 @-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
@@ -75,8 +77,11 @@ body {
     display:flex;
     flex-direction: row;
     justify-content: left;
-    align-items: center"
+    align-items: center;
 }
+.form-control{
+    width: 45px; /* or whatever width looks good for your purpose */
+  }
 
 label,
     input {
@@ -213,3 +218,4 @@ label,
           height: auto;
         }
       }
+

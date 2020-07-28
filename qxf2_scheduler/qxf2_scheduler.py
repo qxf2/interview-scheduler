@@ -385,7 +385,6 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     "Get the busy slots for a given date"
     service = gcal.base_gcal()
     busy_slots = []
-    fetch_date = '07/06/2020'
     if service:
         try:
             all_events = gcal.get_events_for_date(service,email_id,fetch_date)
@@ -405,6 +404,7 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
 
             else:
                 busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
+                print(busy_slots)
         except HttpError:
             pass
 

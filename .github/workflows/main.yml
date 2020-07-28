@@ -22,16 +22,16 @@ jobs:
         port: ${{ secrets.port }}
         script: |
             -name:Do the Git pull from the master
-            uses:git pull origin master
+            run:git pull origin master
             -name:Move the maintenance page on
-            uses:mv maintenance_off.html maintenance_on.html
+            run:mv maintenance_off.html maintenance_on.html
             -name:Install the requirements file
-            uses:pip install -r requirements.txt
+            run:pip install -r requirements.txt
             -name:Run the Migration
-            uses:python migrate_db.py db migrate
-            uses:python migrate_db.py db upgrade
+            run:python migrate_db.py db migrate
+            run:python migrate_db.py db upgrade
             -name:Restart the server
-            uses:sudo service gunicorn restart
+            run:sudo service gunicorn restart
             -name:Move the maintenance page off
             mv maintenance_on.html maintenance_off.html
 

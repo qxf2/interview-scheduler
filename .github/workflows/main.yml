@@ -1,13 +1,8 @@
-# This file is used to create the Github actions for deploying into the server
-
-
 name: Interview-Scheduler
-
 on:
   push:
     branches:
       -master
-
 jobs:
   deploy:
     runs-on: ubuntu-latest

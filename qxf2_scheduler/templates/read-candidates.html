@@ -193,8 +193,11 @@
             var dropdownvalue = document.getElementById("jobFilter")
             var selectJob = dropdownvalue.options[dropdownvalue.selectedIndex].value
             $.ajax({
-                type: 'GET',
-                url: '/filter/job?selectjob='+selectJob,
+                type: 'POST',
+                url: '/job/filter',
+                data: {
+                    'selectedjob': selectJob
+                },
                 success: function (result) {
                     if (result == 'error') {
                         alert("There are no candidates with the filtered job value")

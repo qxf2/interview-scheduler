@@ -6,7 +6,7 @@ name: Interview-Scheduler
 on:
   push:
     branches:
-      -CAL-450-github-actions
+      -master
 
 jobs:
   deploy:

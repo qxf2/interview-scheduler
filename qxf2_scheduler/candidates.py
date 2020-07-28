@@ -505,6 +505,7 @@ def job_filter():
         result = 'error'
         return result
 
+
 @app.route("/noemail/reject",methods=["GET","POST"])
 def reject_without_email():
     "Change the status without reject email"

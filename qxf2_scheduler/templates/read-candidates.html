@@ -47,7 +47,6 @@
         <div>
             <input class="btn btn-success" type="button" id="add" onclick="addCandidate()" value="Add">
         </div>
-        <input type="hidden" value="each_candidate.candidate_id">
 
         <div class="row-fluid top-space-20">
             <table id="table" style="table-layout: width: 800%" class="table table-striped">
@@ -67,7 +66,7 @@
 
     </th>
     <th>Actions</th>
-
+    <th>Comments</th>
     </tr>
     </thead>
     <tbody>
@@ -89,6 +88,7 @@
                     data-candidatename="{{ each_candidate.candidate_name }}"
                     data-candidateid="{{ each_candidate.candidate_id }}" data-jobid="{{ each_candidate.job_id }}"
                     data-toggle="modal">Delete</button></td>
+            <td>{{ each_candidate.comments }}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -154,7 +154,7 @@
         $(document).ready(function() {
     $('#table').DataTable( {
         "columnDefs": [
-                {"visible": false, "targets": 2},
+                {"visible": false, "targets": [2,6]},
                 {
                     "targets": [1,2,3,4,5],
                     "orderable":false,

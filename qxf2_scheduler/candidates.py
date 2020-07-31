@@ -77,7 +77,7 @@ def fetch_candidate_list(candidate_list_object):
         for candidate_status in candidate_status_object:
             candidate_status = candidate_status.status_name
 
-        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':each_candidate.job_id, 'job_role':each_candidate.job_role, 'candidate_status':candidate_status})
+        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':each_candidate.job_id, 'job_role':each_candidate.job_role, 'candidate_status':candidate_status, 'comments':each_candidate.comments})
 
     return my_candidates_list
 
@@ -87,7 +87,7 @@ def fetch_candidate_list(candidate_list_object):
 def read_candidates():
     "Read the candidates"
     candidates_list = []
-    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Candidates.comments, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
     candidates_list = fetch_candidate_list(display_candidates)
 
     return render_template("read-candidates.html", result=candidates_list)

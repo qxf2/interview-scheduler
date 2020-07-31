@@ -16,7 +16,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
 
-<body> 
+<body>
     {% include "logout.html" %}
         <div class="container col-md-offset-1">
         <table class="table table-striped">
@@ -25,11 +25,11 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col col-md-2">Interviewers work hours</th>                   
+                    <th scope="col col-md-2">Interviewers work hours</th>
 
                 </tr>
             </thead>
-            <tbody>              
+            <tbody>
 
                 {% for each_detail in result %}
                 <tr>
@@ -42,7 +42,7 @@
                     </td>
                 </tr>
                 {% endfor %}
-               
+
             </tbody>
         </table>
     </div>

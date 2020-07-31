@@ -82,6 +82,19 @@ body {
 .form-control{
     width: 45px; /* or whatever width looks good for your purpose */
   }
+.drop-down {
+    display: inline;
+    width:10px;
+
+}
+a:link { color: gray;}
+.link-button {
+        background: none!important;
+        border: none;
+        padding: 0!important;
+        color:gray;
+        cursor: pointer;
+}
 
 label,
     input {

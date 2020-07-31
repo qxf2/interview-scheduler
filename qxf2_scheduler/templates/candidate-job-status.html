@@ -125,14 +125,14 @@
 
                         </div>
                         <br>
-                        <div class="col-md-12 form-display">
+                        <!----<div class="col-md-12 form-display">
                             <label class="col-md-2 labelbold" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-10" for="takeAction">Waiting on Qxf2</label>
                         </div>
                         <div class="col-md-12">
                             <input class="col-md-2 btn btn-info" type="button" id="hireButton" onclick="hirebutton()"
                                 value="Hired">
-                        </div>
+                        </div>--->
                         <br>
                         {% elif result.candidate_status == 'Interview Scheduled' %}
                         <div class="col-md-12 form-display">
@@ -203,6 +203,11 @@
 
                             <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
                                 value="Regenerate URL">
+                            {% elif result.candidate_status == 'Waiting on Qxf2' %}
+                            <div class="col-md-12">
+                                <input class="col-md-2 btn btn-info" type="button" id="hireButton" onclick="hirebutton()"
+                                    value="Hired">
+                            </div>
                             {% endif %}
                         </div>
 

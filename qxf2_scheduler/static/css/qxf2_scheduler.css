@@ -87,14 +87,16 @@ body {
     width:10px;
 
 }
-a:link { color: gray;}
+href-link { color:blue;}
+
 .link-button {
         background: none!important;
         border: none;
         padding: 0!important;
         color:gray;
         cursor: pointer;
-}
+        text-decoration: underline;
+    }
 
 label,
     input {

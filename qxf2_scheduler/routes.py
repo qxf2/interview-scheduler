@@ -453,7 +453,7 @@ def delete_interviewer(interviewer_id):
     return jsonify(data)
 
 
-@app.route("/jobs/")
+@app.route("/jobs")
 @login_required
 def jobs_page():
     "Displays the jobs page for the interview"

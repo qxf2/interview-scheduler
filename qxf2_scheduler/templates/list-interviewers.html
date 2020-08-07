@@ -45,7 +45,7 @@
             <input class="btn btn-success" type="button" id="add" onclick="addinterviewer()" value="Add">
         </div>
         <br />
-        <table id="table"class="table table-striped">
+        <table id="table"class="table-striped">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -140,13 +140,16 @@
     <script>
         $(document).ready(function() {
     $('#table').DataTable( {
+
         "columnDefs": [
+                { width: [50,400], targets: [0,1] },
                 {
                     "targets": [1,2],
                     "orderable":false,
 
 
                 }],
+
     });
         })
     </script>

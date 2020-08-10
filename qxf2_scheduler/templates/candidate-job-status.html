@@ -343,7 +343,7 @@
             var roundTime = document.getElementById("roundTime").value;
             var expiryDate = document.getElementById("expiryDate").value
             var newDate = new Date(expiryDate)
-            var expiryDate = $.datepicker.formatDate("yy-mm-dd",newDate)
+            var expiryDate = $.datepicker.formatDate("dd-mm-yy",newDate)
             $('#err-name').empty();
             if (roundDescription == '') {
                 isValid = false;

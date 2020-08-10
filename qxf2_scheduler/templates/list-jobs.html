@@ -52,14 +52,17 @@
                     <tr>
                         <th>Job ID</th>
                         <th>Job role</th>
+                        <th>Job status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {{result}}
                     {% for each_job in result %}
                     <tr>
                         <td>{{ each_job.job_id }}</td>
                         <td><a class="href-link" href="/{{ each_job.job_id }}/details">{{ each_job.job_role }}</a></td>
+                        <td>{{ each_job.job_status }}</td>
                         <td><button class="link-button" style="color:sienna"type="button" id="addCandidate"
                                 onclick="addCandidate('{{each_job.job_role}}')">Add Candidate</button> &nbsp;&nbsp;
                             <button class="link-button" type="button" onclick="editJob('{{each_job.job_id}}')"
@@ -157,14 +160,21 @@
         $(document).ready(function () {
             $('#table').DataTable({
                 "columnDefs": [
+                    {'render': function(data, type, row)
+                    {return data+' ('+ row[2]+')';},
+                    'targets':1},
+                    { "visible": false,  "targets": 2 },
+
                     {
                         "targets": [1, 2],
                         "orderable": false,
 
 
                     }],
+
             });
         })
+
     </script>
 
 

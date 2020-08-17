@@ -561,7 +561,6 @@
         function hirebutton() {
             candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
-            console.log(candidateId, jobId);
             $.ajax({
                 type: 'POST',
                 url: '/candidate/hired',

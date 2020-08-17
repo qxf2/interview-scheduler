@@ -497,7 +497,8 @@ def interviewers_for_roles(job_id):
             'round_name' : each_round.round_name,
             'round_time' : each_round.round_time,
             'round_description' : each_round.round_description,
-            'round_requirement' : each_round.round_requirement}
+            'round_requirement' : each_round.round_requirement,
+            'job_id':job_id}
         )
 
     for each_candidate in db_candidate_list:
@@ -965,3 +966,14 @@ def send_invite(candidate_id, job_id):
 
     return jsonify(data)
 
+
+@app.route("/job/status",methods=["GET","POST"])
+def job_status():
+    "Change the job status based on the selected dropdown"
+    job_status = request.form.get("jobstatus")
+    job_id = request.form.get("jobid")
+    print("jobs",job_status,job_id)
+    job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':job_status})
+    db.session.commit()
+
+    return jsonify(job_status)

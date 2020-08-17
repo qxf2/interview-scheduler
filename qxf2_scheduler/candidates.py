@@ -73,6 +73,7 @@ def fetch_candidate_list(candidate_list_object):
     "Fetch the candidate list"
     my_candidates_list = []
     for each_candidate in candidate_list_object:
+        #print("hi",each_candidate)
         candidate_status_object = Candidatestatus.query.filter(Candidatestatus.status_id == each_candidate.candidate_status).values(Candidatestatus.status_name)
         for candidate_status in candidate_status_object:
             candidate_status = candidate_status.status_name
@@ -87,7 +88,9 @@ def fetch_candidate_list(candidate_list_object):
 def read_candidates():
     "Read the candidates"
     candidates_list = []
-    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id, Jobs.job_status == 'Open').values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+    job_status = Jobs.query.all()
+    print(job_status)
     candidates_list = fetch_candidate_list(display_candidates)
 
     return render_template("read-candidates.html", result=candidates_list)

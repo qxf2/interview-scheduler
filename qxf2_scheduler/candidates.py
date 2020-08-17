@@ -44,7 +44,8 @@ def url_gen(candidate_id, job_id):
     num_hours = get_hours_between(end_business_day, current_date)
     s = Serializer('WEBSITE_SECRET_KEY', num_hours*3600) # 60 secs by 30 mins
     urllist = s.dumps({'candidate_id':candidate_id, 'job_id': job_id}).decode('utf-8')
-    return f'{candidate_id}/{job_id}/{"".join(urllist)}'
+    return f'{candidate_id}/{job_id}/{"".join(urllist)}',end_business_day
+
 
 @app.route("/regenerate/url", methods=["GET", "POST"])
 def regenerate_url():
@@ -223,10 +224,11 @@ def add_candidate(job_role):
 def generate_unique_url():
     candidate_id = request.form.get('candidateId')
     job_id = request.form.get('jobId')
-    url=url_gen(candidate_id, job_id)
+    url,link_expiry_date=url_gen(candidate_id, job_id)
+    link_expiry_date = link_expiry_date.date()
     edit_url = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'url': url})
     db.session.commit()
-    api_response = {'url': url}
+    api_response = {'url': url,'expiry_date':link_expiry_date}
     return jsonify(api_response)
 
 
@@ -426,7 +428,7 @@ def send_reject():
     candidate_id = request.form.get('candidateid')
 
     logged_email = session['logged_user']
-    msg = Message("Interview update from Qxf2 Services!", sender=("Qxf2 Services", "test@qxf2.com"),  cc=[logged_email], recipients=[candidate_email])
+    msg = Message("Interview update from Qxf2 Services", sender=("Qxf2 Services", "test@qxf2.com"),  cc=[logged_email], recipients=[candidate_email])
     msg.body = "Hi %s , \n\nI appreciate your interest in a career opportunity with Qxf2 Services. It was a pleasure speaking to you about your background and interests. There are many qualified applicants in the current marketplace and we are searching for those who have the most directly applicable experience to our limited number of openings. I regret we will not be moving forward with your interview process. We wish you all the best in your current search and future endeavors.\n\nThanks, \nQxf2 Services"%(candidate_name)
     mail.send(msg)
     candidate_status = change_status_to_reject(candidate_id,candidate_job_applied)
@@ -484,7 +486,6 @@ def job_filter():
     "Filter the job for the candidates"
     filter_job_list = []
     filtered_job = request.form.get('selectjob')
-    print(filtered_job)
     candidate_job_filter = Candidates.query.filter(Candidates.job_applied == filtered_job).values(Candidates.candidate_id,Candidates.candidate_name,Candidates.job_applied,Candidates.candidate_email)
 
     for each_data in candidate_job_filter:

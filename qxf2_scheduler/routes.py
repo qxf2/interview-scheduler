@@ -497,14 +497,14 @@ def interviewers_for_roles(job_id):
             'round_name' : each_round.round_name,
             'round_time' : each_round.round_time,
             'round_description' : each_round.round_description,
-            'round_requirement' : each_round.round_requirement,
-            'job_id':job_id}
+            'round_requirement' : each_round.round_requirement
+            }
         )
 
     for each_candidate in db_candidate_list:
         candidates_list.append(
             {'candidate_name': each_candidate.candidate_name})
-
+    rounds_list.append({'job_id':job_id})
     return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list)
 
 
@@ -969,10 +969,15 @@ def send_invite(candidate_id, job_id):
 @app.route("/job/status",methods=["GET","POST"])
 def job_status():
     "Change the job status based on the selected dropdown"
-    job_status = request.form.get("jobstatus")
+    #job_status = request.form.get("jobstatus")
     job_id = request.form.get("jobid")
-    print("jobs",job_status,job_id)
-    job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':job_status})
+    #Get the job status for the job id
+    job_status = Jobs.query.filter(Jobs.job_id == job_id).value(Jobs.job_status)
+    if job_status == 'Open':
+        change_job_status = 'Close'
+    else:
+        change_job_status = 'Open'
+    job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':change_job_status})
     db.session.commit()
 
-    return jsonify(job_status)
+    return jsonify({'job_status':change_job_status})

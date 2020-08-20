@@ -34,15 +34,15 @@
             </thead>
             <tbody>
                 {{result}}
-            {% for each_job in result %}
-            <tr>
-            <td>{{ each_job.interviewers_name }}</td>
-            </tr>
-            {% endfor %}
+                {% for each_job in result %}
+                <tr>
+                    <td>{{ each_job.interviewers_name }}</td>
+                </tr>
+                {% endfor %}
 
             </tbody>
         </table>
-    </div><br/><br/>
+    </div><br /><br />
     <h3 class="grey_text text-center">Candidates list for the Job role</h3>
     <div class="container col-md-offset-1">
         <table class="table table-striped">
@@ -52,59 +52,84 @@
                 </tr>
             </thead>
             <tbody>
-            {% for each_candidate in candidates %}
-            <tr>
-            <td>{{ each_candidate.candidate_name }}</td>
-            </tr>
-            {% endfor %}
+                {% for each_candidate in candidates %}
+                <tr>
+                    <td>{{ each_candidate.candidate_name }}</td>
+                </tr>
+                {% endfor %}
 
             </tbody>
         </table>
     </div><br></br>
     <h3 class="grey_text text-center">Round details</h3>
     <div class="container col-md-offset-1">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Round Name</th>
-                        <th scope="col">Time Duration</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Requirements</th>
-                    </tr>
-                </thead>
-                <tbody>
-{{round}}
-                {% for each_round in round %}
-                <input type="hidden" value="{{job_id}}" id="jobId">
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                <td>{{ each_round.round_name}}</td>
-                <td>{{ each_round.round_time }}</td>
-                <td>{{ each_round.round_description }}</td>
-                <td>{{ each_round.round_requirement }}</td>
+                    <th scope="col">Round Name</th>
+                    <th scope="col">Time Duration</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Requirements</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{round}}
+                {% for each_round in round %}
+                {{each_round.job_id}}
+                <input type="hidden" value="{{each_round.job_id}}" id="jobId">
+                <tr>
+                    <td>{{ each_round.round_name}}</td>
+                    <td>{{ each_round.round_time }}</td>
+                    <td>{{ each_round.round_description }}</td>
+                    <td>{{ each_round.round_requirement }}</td>
                 </tr>
                 {% endfor %}
 
-                </tbody>
-            </table>
-            <input type="button" class="btn btn-danger" onclick="changeStatus()" value="Close job" id="jobStatus">
-        </div>
-        <script>
-            function changeStatus(){
+            </tbody>
+        </table>
+        <button class="btn btn-danger changeme" onclick="changeStatus()" id="jobStatus">Close job</button>
+    </div>
+    <script>
+        let store = window.localStorage
+        function changeStatus() {
+          let val
+          var jobid = document.getElementById("jobId").value;
+          store.getItem('btnstat') === "Open job"? checkUpdLocal("Close job") : checkUpdLocal("Open job")
+          // toggle status
 
-                    var jobId = document.getElementById("jobId").value;
-                    console.log(jobId);
-                    $.ajax({
-                        type:'POST',
-                        url:'/job/status',
-                        data:{'jobid':jobId},
-                        success:function(result){
-                            alert("The job has been closed");
+          val = store.getItem('btnstat')
+          $.ajax({
+            type: 'POST',
+            url: '/job/status',
+            data: {
+                 'jobid': jobid
+            },
+            success: function(result) {
+              alert("The Job has been "+result.job_status+"d");
 
-                        }
-                    })
             }
+          })
+        }
 
+        function checkUpdLocal(stat){
+          if(!store.getItem('btnstat')){ // if local storage does not exist
+            store.setItem('btnstat', "Close job") // close by default
+          }else if(store.getItem('btnstat') && !stat){ // if storage exist but we don't change status (first ini) - change buttno text
+            $('.changeme').html(store.getItem('btnstat'))
+          }
+          if(stat){ // setter
+            store.setItem('btnstat', stat)
+            $('.changeme').html(stat)
+          }else{
+            return store.getItem('btnstat') // getter
+          }
+        }
+
+
+        $( document ).ready( function(){checkUpdLocal()})
         </script>
+
+
 
 </body>
 

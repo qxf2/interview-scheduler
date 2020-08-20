@@ -583,7 +583,6 @@ def add_job():
         else:
             return jsonify(message='The job already exists'), 500
         data = {'jobrole': job_role, 'interviewers': list(interviewers), 'job_status':job_status}
-        print(data)
         return jsonify(data)
 
 

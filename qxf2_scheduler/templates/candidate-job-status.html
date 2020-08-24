@@ -267,6 +267,7 @@
                     <input type="hidden" id="roundId">
                     <input type="hidden" id="roundName">
                     <input type="hidden" id="roundTime">
+                    <input type="hidden" id="expiryDate">
                 </div>
 
 
@@ -319,6 +320,8 @@
                 success: function (data) {
                     var url_textbox = document.getElementById("generateUrl");
                     url_textbox.setAttribute('value', data.url);
+                    var expiryDate = data.expiry_date;
+                    document.getElementById("expiryDate").value = expiryDate;
                 }
             })
         })
@@ -338,6 +341,9 @@
             var roundId = document.getElementById("roundId").value;
             var roundName = document.getElementById("roundName").value;
             var roundTime = document.getElementById("roundTime").value;
+            var expiryDate = document.getElementById("expiryDate").value
+            var newDate = new Date(expiryDate)
+            var expiryDate = $.datepicker.formatDate("dd-mm-yy",newDate)
             $('#err-name').empty();
             if (roundDescription == '') {
                 isValid = false;
@@ -356,7 +362,8 @@
                         'rounddescription': roundDescription,
                         'roundid': roundId,
                         'roundname': roundName,
-                        'roundtime': roundTime
+                        'roundtime': roundTime,
+                        'expirydate':expiryDate
                     },
                     success: function (result) {
 
@@ -561,7 +568,6 @@
         function hirebutton() {
             candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
-            console.log(candidateId, jobId);
             $.ajax({
                 type: 'POST',
                 url: '/candidate/hired',

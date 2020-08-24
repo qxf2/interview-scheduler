@@ -33,7 +33,6 @@
                 </tr>
             </thead>
             <tbody>
-                {{result}}
                 {% for each_job in result %}
                 <tr>
                     <td>{{ each_job.interviewers_name }}</td>
@@ -73,9 +72,7 @@
                 </tr>
             </thead>
             <tbody>
-                {{round}}
                 {% for each_round in round %}
-                {{each_round.job_id}}
                 <input type="hidden" value="{{each_round.job_id}}" id="jobId">
                 <tr>
                     <td>{{ each_round.round_name}}</td>

@@ -48,12 +48,17 @@
             <thead>
                 <tr>
                     <th scope="col">Candidates Name</th>
+                    <th>Candidate status</th>
+                    <th>Candidate email</th>
+
                 </tr>
             </thead>
             <tbody>
                 {% for each_candidate in candidates %}
                 <tr>
-                    <td>{{ each_candidate.candidate_name }}</td>
+                    <td><a href="/candidate/{{each_candidate.candidate_id}}/job/{{each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a></td>
+                    <td>{{ each_candidate.candidate_email }}</td>
+                    <td>{{ each_candidate.candidate_status }}</td>
                 </tr>
                 {% endfor %}
 

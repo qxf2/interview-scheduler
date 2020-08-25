@@ -467,6 +467,18 @@ def jobs_page():
 
     return render_template("list-jobs.html", result=my_job_list)
 
+def fetch_candidate_list(candidate_list_object):
+    "Fetch the candidate list"
+    my_candidates_list = []
+    for each_candidate in candidate_list_object:
+        candidate_status_object = Candidatestatus.query.filter(Candidatestatus.status_id == each_candidate.candidate_status).values(Candidatestatus.status_name)
+        for candidate_status in candidate_status_object:
+            candidate_status = candidate_status.status_name
+
+        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':each_candidate.job_id, 'job_role':each_candidate.job_role, 'candidate_status':candidate_status})
+
+    return my_candidates_list
+
 
 @app.route("/<job_id>/details/")
 @login_required
@@ -485,7 +497,9 @@ def interviewers_for_roles(job_id):
         Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
 
     #Fetch the candidate list
-    db_candidate_list = Candidates.query.join(Jobcandidate,Candidates.candidate_id == Jobcandidate.candidate_id).filter(Jobcandidate.job_id==job_id).values(Candidates.candidate_name)
+    db_candidate_list = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+
+    candidates_list = fetch_candidate_list(db_candidate_list)
 
     for each_interviewer in interviewer_list_for_roles:
         interviewers_list.append(
@@ -501,10 +515,8 @@ def interviewers_for_roles(job_id):
             }
         )
 
-    for each_candidate in db_candidate_list:
-        candidates_list.append(
-            {'candidate_name': each_candidate.candidate_name})
     rounds_list.append({'job_id':job_id})
+
     return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list)
 
 

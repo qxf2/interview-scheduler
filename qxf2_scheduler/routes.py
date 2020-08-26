@@ -7,6 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
+from qxf2_scheduler.security import encrypt_password,check_encrypted_password
 import json
 import ast,re,uuid
 import sys,datetime
@@ -48,11 +49,11 @@ def registration():
         user_password = request.form.get('userpassword')
         user_email = request.form.get('useremail')
         check_user_exist = check_user_exists(user_email)
-        data = {'user_name':user_name,'user_email':user_email,'user_password':user_password}
+        data = {'user_name':user_name,'user_email':user_email}
         if check_user_exist == True:
             error = 'error'
         else:
-            add_new_user_object = Login(username=user_name,email=user_email,password=user_password)
+            add_new_user_object = Login(username=user_name,email=user_email,password=encrypt_password(user_password))
             db.session.add(add_new_user_object)
             db.session.flush()
             user_id = add_new_user_object.id
@@ -221,9 +222,9 @@ def validate(username):
     return exists
 
 
-def password_validate(password):
+def password_validate(password, hashed):
     "Validate the username and passowrd"
-    exists = db.session.query(db.exists().where(Login.password == password)).scalar()
+    exists = db.session.query(db.exists().where(Login.password == check_encrypted_password(password, hashed))).scalar()
 
     return exists
 
@@ -244,17 +245,18 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        data = {'username':username,'password':password}
+        data = {'username':username}
         #fetch the email id of the user whose logged in
-        user_email_id = Login.query.filter(Login.username==username).values(Login.email)
+        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.password)
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
+            hashed = logged_user.password
         session['logged_user'] = logged_email_id
         completion = validate(username)
         if completion ==False:
             error = 'error.'
         else:
-            password_check = password_validate(password)
+            password_check = password_validate(password, hashed)
             if password_check ==False:
                 error = 'error.'
             else:

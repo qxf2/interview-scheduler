@@ -467,7 +467,7 @@ def jobs_page():
 
     return render_template("list-jobs.html", result=my_job_list)
 
-def fetch_candidate_list(candidate_list_object):
+def fetch_candidate_list(candidate_list_object,job_id):
     "Fetch the candidate list"
     my_candidates_list = []
     for each_candidate in candidate_list_object:
@@ -475,7 +475,7 @@ def fetch_candidate_list(candidate_list_object):
         for candidate_status in candidate_status_object:
             candidate_status = candidate_status.status_name
 
-        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':each_candidate.job_id, 'job_role':each_candidate.job_role, 'candidate_status':candidate_status})
+        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':job_id, 'candidate_status':candidate_status})
 
     return my_candidates_list
 
@@ -497,9 +497,12 @@ def interviewers_for_roles(job_id):
         Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
 
     #Fetch the candidate list
-    db_candidate_list = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+    db_candidate_list = Candidates.query.join(Jobcandidate,Candidates.candidate_id == Jobcandidate.candidate_id).filter(Jobcandidate.job_id==job_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobcandidate.candidate_status)
 
-    candidates_list = fetch_candidate_list(db_candidate_list)
+
+    """db_candidate_list = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == job_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)"""
+
+    candidates_list = fetch_candidate_list(db_candidate_list,job_id)
 
     for each_interviewer in interviewer_list_for_roles:
         interviewers_list.append(

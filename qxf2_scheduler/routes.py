@@ -460,8 +460,10 @@ def jobs_page():
     display_jobs = Jobs.query.all()
     my_job_list = []
     for each_job in display_jobs:
+        if each_job.job_status is None:
+            each_job.job_status = 'Open'
         my_job_list.append(
-            {'job_id': each_job.job_id, 'job_role': each_job.job_role})
+            {'job_id': each_job.job_id, 'job_role': each_job.job_role,'job_status':each_job.job_status})
 
     return render_template("list-jobs.html", result=my_job_list)
 
@@ -495,13 +497,14 @@ def interviewers_for_roles(job_id):
             'round_name' : each_round.round_name,
             'round_time' : each_round.round_time,
             'round_description' : each_round.round_description,
-            'round_requirement' : each_round.round_requirement}
+            'round_requirement' : each_round.round_requirement
+            }
         )
 
     for each_candidate in db_candidate_list:
         candidates_list.append(
             {'candidate_name': each_candidate.candidate_name})
-
+    rounds_list.append({'job_id':job_id})
     return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list)
 
 
@@ -556,16 +559,15 @@ def add_job():
             # I have to remove the duplicates and removing the whitespaces which will be
             # added repeatedly through UI
             interviewers = remove_duplicate_interviewers(interviewers)
-            """for each_interviewers in interviewers:
-                new_interviewers_list.append(each_interviewers.strip())
-            interviewers=list(set(new_interviewers_list))"""
+
             #remove the interviewers if its not in the database
             all_interviewers_list = Interviewers.query.all()
             actual_interviewers_list = []
             for each_interviewer in all_interviewers_list:
                 actual_interviewers_list.append(each_interviewer.interviewer_name)
             interviewers = check_not_existing_interviewers(interviewers,actual_interviewers_list)
-            job_object = Jobs(job_role=job_role)
+            job_status = 'Open'
+            job_object = Jobs(job_role=job_role, job_status=job_status)
             db.session.add(job_object)
             db.session.commit()
             job_id = job_object.job_id
@@ -580,7 +582,7 @@ def add_job():
 
         else:
             return jsonify(message='The job already exists'), 500
-        data = {'jobrole': job_role, 'interviewers': list(interviewers)}
+        data = {'jobrole': job_role, 'interviewers': list(interviewers), 'job_status':job_status}
         return jsonify(data)
 
 
@@ -962,3 +964,19 @@ def send_invite(candidate_id, job_id):
 
     return jsonify(data)
 
+
+@app.route("/job/status",methods=["GET","POST"])
+def job_status():
+    "Change the job status based on the selected dropdown"
+    #job_status = request.form.get("jobstatus")
+    job_id = request.form.get("jobid")
+    #Get the job status for the job id
+    job_status = Jobs.query.filter(Jobs.job_id == job_id).value(Jobs.job_status)
+    if job_status == 'Open':
+        change_job_status = 'Close'
+    else:
+        change_job_status = 'Open'
+    job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':change_job_status})
+    db.session.commit()
+
+    return jsonify({'job_status':change_job_status})

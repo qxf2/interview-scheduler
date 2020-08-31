@@ -94,21 +94,17 @@
         // Remove button event trigger
         $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
             var triggeringElement = $(e.relatedTarget);
-            console.log("Triggering element is: ", triggeringElement.data('href'));
             $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
-            console.log("This is in confirmdelete" + $(e.relatedTarget).data('href'));
             var modal = $(this)
             modal.find('.modal-body').text('Are you sure you wish to delete this ' + triggeringElement.data("jobrole") + ' job? ')
             $("#remove-button").on('click', function () {
                 var jobid = triggeringElement.data('href');
-                console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
                 $.ajax({
                     type: 'POST',
                     url: '/jobs/delete',
                     data: { 'job-id': $(e.relatedTarget).data('href') },
                     success: function (data) {
                         var msg = "The role deleted is " + data.job_role;
-                        console.log(msg, data);
                         $('#myModal').modal('show');
                         $('#myModal .modal-body p').html(msg);
 
@@ -128,18 +124,15 @@
     </script>
     <script>
             function editJob(jobId) {
-                console.log(jobId);
                 document.location.href = '/job/' + jobId + "/edit";
             }
             function addCandidate(jobRole) {
-                console.log(jobRole);
                 document.location.href = "/candidate/" + jobRole + "/add";
             }
     </script>
     <script>
             function addRounds(jobId) {
                 document.location.href = "/job/" + jobId + "/rounds";
-                console.log("job_id" + jobId)
             }
     </script>
     <script>

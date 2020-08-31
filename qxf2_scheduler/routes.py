@@ -244,28 +244,32 @@ def login():
         return render_template('login.html', error=error)
     if request.method == 'POST':
         username = request.form.get('username')
-        password1 = request.form.get('password')
+        password = request.form.get('password')
         data = {'username':username}
         #fetch the email id of the user whose logged in
-        user_email_id = Login.query.filter(Login.username==username).values(Login.email)
+        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.password)
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
-            #hashed = logged_user.password
-        session['logged_user'] = logged_email_id
-        completion = validate(username)
-        if completion ==False:
+            hashed = logged_user.password
+        if not logged_email_id:
             error = 'error.'
         else:
-            password_check = check_encrypted_password(password1,hashed)
-            if password_check ==False:
+            session['logged_user'] = logged_user.email
+            completion = validate(username)
+            if completion ==False:
                 error = 'error.'
             else:
-                user = Login()
-                user.name=username
-                user.password=password
-                login_user(user)
-                error = 'Success'
+                password_check = check_encrypted_password(password,hashed)
+                if password_check ==False:
+                    error = 'error.'
+                else:
+                    user = Login()
+                    user.name=username
+                    user.password=password
+                    login_user(user)
+                    error = 'Success'
         api_response = {'data':data,'error':error}
+
         return jsonify(api_response)
 
 

@@ -222,9 +222,9 @@ def validate(username):
     return exists
 
 
-def password_validate(password, hashed):
+def password_validate(password):
     "Validate the username and passowrd"
-    exists = db.session.query(db.exists().where(Login.password == check_encrypted_password(password, hashed))).scalar()
+    exists = db.session.query(db.exists().where(Login.password == check_encrypted_password(password))).scalar()
 
     return exists
 
@@ -244,19 +244,19 @@ def login():
         return render_template('login.html', error=error)
     if request.method == 'POST':
         username = request.form.get('username')
-        password = request.form.get('password')
+        password1 = request.form.get('password')
         data = {'username':username}
         #fetch the email id of the user whose logged in
-        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.password)
+        user_email_id = Login.query.filter(Login.username==username).values(Login.email)
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
-            hashed = logged_user.password
+            #hashed = logged_user.password
         session['logged_user'] = logged_email_id
         completion = validate(username)
         if completion ==False:
             error = 'error.'
         else:
-            password_check = password_validate(password, hashed)
+            password_check = check_encrypted_password(password1,hashed)
             if password_check ==False:
                 error = 'error.'
             else:

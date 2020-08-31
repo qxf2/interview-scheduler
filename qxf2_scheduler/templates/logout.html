@@ -1,23 +1,5 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <style>
-        .logoutLblPos {
-            position: fixed;
-            right: 10px;
-            top: 5px;
-        }
-    </style>
-</head>
-
-<body>
-    <form align="right" name="form1" method="post" action="{{ url_for('logout') }}">
-        <label class="logoutLblPos">
-            <input name="submit2" type="submit" id="submit2" value="log out">
-        </label>
-    </form>
-
-</body>
-
-</html>
+<form align="right" name="form1" method="post" action="{{ url_for('logout') }}">
+    <label class="logoutLblPos">
+        <input name="submit2" type="submit" id="submit2" value="log out">
+    </label>
+</form>

@@ -270,7 +270,7 @@ def login():
                     error = 'Success'
         api_response = {'data':data,'error':error}
 
-        return jsonify(api_response)
+    return jsonify(api_response)
 
 
 @app.route("/logout",methods=["GET","POST"])

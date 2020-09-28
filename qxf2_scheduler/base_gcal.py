@@ -65,26 +65,30 @@ def get_events_for_date(service,email_id,fetch_date,maxResults=240,debug=False):
     end_date = start_date.replace(hour=23,minute=59)
     start_date = process_date_isoformat(start_date)
     end_date = process_date_isoformat(end_date)
-    if debug:
-        print('Getting the upto a maximum of {maxResults} upcoming events'.format(maxResults=maxResults))
-    events_result = service.events().list(calendarId=email_id, timeMin=start_date,
-                                          maxResults=maxResults, timeMax=end_date, singleEvents=True,
-                                          orderBy='startTime').execute()
-    events = events_result.get('items', [])
+    events = []
+    try:
+        if debug:
+            print('Getting the upto a maximum of {maxResults} upcoming events'.format(maxResults=maxResults))
+        events_result = service.events().list(calendarId=email_id, timeMin=start_date,
+                                            maxResults=maxResults, timeMax=end_date, singleEvents=True,
+                                            orderBy='startTime').execute()
+        events = events_result.get('items', [])
 
-    if debug:
-        if not events:
-            print('No upcoming events found.')
-        for event in events:
-            start = event['start'].get('dateTime', event['start'].get('date'))
-            print(start, event['summary'])
+        if debug:
+            if not events:
+                print('No upcoming events found.')
+            for event in events:
+                start = event['start'].get('dateTime', event['start'].get('date'))
+
+    except Exception as HttpError:
+        pass
 
     return events
 
 
 def get_busy_slots_for_date(service,email_id,fetch_date,timeZone=TIMEZONE,debug=False):
     "Return free/busy for a given date"
-    start_date = process_date_string(fetch_date) 
+    start_date = process_date_string(fetch_date)
     end_date = start_date.replace(hour=23,minute=59)
     start_date = process_date_isoformat(start_date)
     end_date = process_date_isoformat(end_date)
@@ -128,11 +132,11 @@ def create_event_for_fetched_date_and_time(service,event_start_time,event_end_ti
             'end': {
                 'dateTime': event_end_time,
                 'timeZone': TIMEZONE,
-            },            
+            },
             'attendees': [
                 {'email': attendee[0]},
                 {'email': attendee[1]}
-                
+
             ],
             'reminders': {
                 'useDefault': False,
@@ -141,11 +145,11 @@ def create_event_for_fetched_date_and_time(service,event_start_time,event_end_ti
                 {'method': 'popup', 'minutes': 10},
                 ],
             },
-            "conferenceData": 
+            "conferenceData":
             {
-                "createRequest": 
+                "createRequest":
                 {
-                    "conferenceSolutionKey": 
+                    "conferenceSolutionKey":
                     {
                     "type": "hangoutsMeet"
                     },
@@ -154,5 +158,5 @@ def create_event_for_fetched_date_and_time(service,event_start_time,event_end_ti
             }
             }
     event = service.events().insert(calendarId=EMAIL,body=event,sendUpdates="all").execute()
-    
-    return event 
+
+    return event

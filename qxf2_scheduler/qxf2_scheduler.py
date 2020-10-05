@@ -399,10 +399,13 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
                     if 'PTO'.lower() == event_name.lower():
                         pto_flag = True
                         break
-        else:
-            pto_flag = True
-        if pto_flag:
-            busy_slots = gcal.make_day_busy(fetch_date)
+            if pto_flag:
+                busy_slots = gcal.make_day_busy(fetch_date)
+
+            else:
+                busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
+        except HttpError:
+            pass
 
         else:
             busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)

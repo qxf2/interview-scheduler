@@ -10,6 +10,7 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from uuid import uuid4
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar','https://www.googleapis.com/auth/calendar.events']
@@ -145,18 +146,12 @@ def create_event_for_fetched_date_and_time(service,event_start_time,event_end_ti
                 {'method': 'popup', 'minutes': 10},
                 ],
             },
-            "conferenceData":
-            {
-                "createRequest":
-                {
-                    "conferenceSolutionKey":
-                    {
-                    "type": "hangoutsMeet"
-                    },
-                "requestId": "kdb-atdx-exx"
-                }
-            }
-            }
-    event = service.events().insert(calendarId=EMAIL,body=event,sendUpdates="all").execute()
+             "conferenceData": {
+                 "createRequest":
+                            {"requestId": f"{uuid4().hex}",
+                            "conferenceSolutionKey": {"type": "hangoutsMeet"}
+                            }
+                            }}
+    event = service.events().insert(calendarId=EMAIL,body=event,sendUpdates="all",conferenceDataVersion=1).execute()
 
     return event

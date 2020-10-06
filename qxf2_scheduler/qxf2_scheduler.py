@@ -404,8 +404,6 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
 
             else:
                 busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
-        except HttpError:
-            pass
 
         else:
             busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)

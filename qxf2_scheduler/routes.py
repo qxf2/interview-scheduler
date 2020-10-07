@@ -465,6 +465,18 @@ def jobs_page():
 
     return render_template("list-jobs.html", result=my_job_list)
 
+def fetch_candidate_list(candidate_list_object,job_id):
+    "Fetch the candidate list"
+    my_candidates_list = []
+    for each_candidate in candidate_list_object:
+        candidate_status_object = Candidatestatus.query.filter(Candidatestatus.status_id == each_candidate.candidate_status).values(Candidatestatus.status_name)
+        for candidate_status in candidate_status_object:
+            candidate_status = candidate_status.status_name
+
+        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':job_id, 'candidate_status':candidate_status})
+
+    return my_candidates_list
+
 
 @app.route("/<job_id>/details/")
 @login_required
@@ -483,7 +495,12 @@ def interviewers_for_roles(job_id):
         Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
 
     #Fetch the candidate list
-    db_candidate_list = Candidates.query.join(Jobcandidate,Candidates.candidate_id == Jobcandidate.candidate_id).filter(Jobcandidate.job_id==job_id).values(Candidates.candidate_name)
+    db_candidate_list = Candidates.query.join(Jobcandidate,Candidates.candidate_id == Jobcandidate.candidate_id).filter(Jobcandidate.job_id==job_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobcandidate.candidate_status)
+
+
+    """db_candidate_list = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == job_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)"""
+
+    candidates_list = fetch_candidate_list(db_candidate_list,job_id)
 
     for each_interviewer in interviewer_list_for_roles:
         interviewers_list.append(
@@ -495,12 +512,11 @@ def interviewers_for_roles(job_id):
             'round_name' : each_round.round_name,
             'round_time' : each_round.round_time,
             'round_description' : each_round.round_description,
-            'round_requirement' : each_round.round_requirement}
+            'round_requirement' : each_round.round_requirement
+            }
         )
 
-    for each_candidate in db_candidate_list:
-        candidates_list.append(
-            {'candidate_name': each_candidate.candidate_name})
+    rounds_list.append({'job_id':job_id})
 
     return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list)
 
@@ -556,9 +572,7 @@ def add_job():
             # I have to remove the duplicates and removing the whitespaces which will be
             # added repeatedly through UI
             interviewers = remove_duplicate_interviewers(interviewers)
-            """for each_interviewers in interviewers:
-                new_interviewers_list.append(each_interviewers.strip())
-            interviewers=list(set(new_interviewers_list))"""
+
             #remove the interviewers if its not in the database
             all_interviewers_list = Interviewers.query.all()
             actual_interviewers_list = []
@@ -962,3 +976,19 @@ def send_invite(candidate_id, job_id):
 
     return jsonify(data)
 
+
+@app.route("/job/status",methods=["GET","POST"])
+def job_status():
+    "Change the job status based on the selected dropdown"
+    #job_status = request.form.get("jobstatus")
+    job_id = request.form.get("jobid")
+    #Get the job status for the job id
+    job_status = Jobs.query.filter(Jobs.job_id == job_id).value(Jobs.job_status)
+    if job_status == 'Open':
+        change_job_status = 'Close'
+    else:
+        change_job_status = 'Open'
+    job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':change_job_status})
+    db.session.commit()
+
+    return jsonify({'job_status':change_job_status})

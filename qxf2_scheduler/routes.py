@@ -985,13 +985,22 @@ def job_status():
     "Change the job status based on the selected dropdown"
     #job_status = request.form.get("jobstatus")
     job_id = request.form.get("jobid")
+    status = request.form.get("status")
+    print(job_id,status)
     #Get the job status for the job id
-    job_status = Jobs.query.filter(Jobs.job_id == job_id).value(Jobs.job_status)
-    if job_status == 'Open':
-        change_job_status = 'Close'
+    if status=='true':
+        print("inside true")
+        jobs_status = 'Close'
+        print(jobs_status)
+        job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':jobs_status})
+        db.session.commit()
+        print(jobs_status)
     else:
-        change_job_status = 'Open'
-    job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':change_job_status})
-    db.session.commit()
+        print("inside false")
+        jobs_status = 'Open'
+        job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':jobs_status})
+        db.session.commit()
 
-    return jsonify({'job_status':change_job_status})
+
+    print(jobs_status)
+    return jsonify({'job_status':jobs_status})

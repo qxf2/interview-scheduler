@@ -89,14 +89,14 @@
 
             </tbody>
         </table>
-        <button class="btnstat btn-danger changeme" onclick="changeStatus()" id="jobStatus">Close job</button>
+        <button class="btn btn-danger changeme" onclick="changeStatus()" id="jobStatus">Close job</button>
     </div>
     <script>
         let store = window.localStorage
         function changeStatus() {
           let val
           var jobid = document.getElementById("jobId").value;
-          store.getItem('jobStatus') === "Close job"? checkUpdLocal("Open job") : checkUpdLocal("Close job")
+          store.getItem('btnstat') === "Close job"? checkUpdLocal("Open job") : checkUpdLocal("Close job")
           // toggle status
 
           val = store.getItem('btnstat')

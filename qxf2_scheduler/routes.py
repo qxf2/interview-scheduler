@@ -989,6 +989,15 @@ def job_status():
     print(job_id)
     #Get the job status for the job id
 
+    job_status = Jobs.query.filter(Jobs.job_id == job_id).value(Jobs.job_status)
+    if job_status == 'Open':
+        change_job_status = 'Close'
+    else:
+        change_job_status = 'Open'
+    job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':change_job_status})
+    db.session.commit()
+
+    return jsonify({'job_status':change_job_status})
     """if status=='true':
         print("inside true")
         jobs_status = 'Close'

@@ -97,10 +97,11 @@
         function changeStatus() {
           let val
           var jobid = document.getElementById("jobId").value;
-          store.getItem('btnstat') === "Close job"? checkUpdLocal("Open job") : checkUpdLocal("Close job")
+          store.getItem('btnstat') == "Close job"? checkUpdLocal("Open job") : checkUpdLocal("Close job")
           // toggle status
 
           val = store.getItem('btnstat')
+          console.log(val);
           $.ajax({
             type: 'POST',
             url: '/job/status',
@@ -116,11 +117,14 @@
 
         function checkUpdLocal(stat){
           if(!store.getItem('btnstat')){ // if local storage does not exist
+            console.log("I am coming to line number 120");
             store.setItem('btnstat', "Close job") // close by default
           }else if(store.getItem('btnstat') && !stat){ // if storage exist but we don't change status (first ini) - change buttno text
+            console.log("i am coming to line 123");
             $('.changeme').html(store.getItem('btnstat'))
           }
           if(stat){ // setter
+            console.log("comind inside if stat")
             store.setItem('btnstat', stat)
             $('.changeme').html(stat)
           }else{

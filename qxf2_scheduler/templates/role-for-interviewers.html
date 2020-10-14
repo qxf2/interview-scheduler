@@ -97,7 +97,7 @@
         function changeStatus() {
           let val
           var jobid = document.getElementById("jobId").value;
-          store.getItem('btnstat') == "Close job"? checkUpdLocal("Open job") : checkUpdLocal("Close job")
+          store.getItem('btnstat') == "Open job"? checkUpdLocal("Close job") : checkUpdLocal("Open job")
           // toggle status
 
           val = store.getItem('btnstat')

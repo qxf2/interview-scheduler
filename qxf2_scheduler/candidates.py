@@ -73,7 +73,9 @@ def regenerate_url():
 def fetch_candidate_list(candidate_list_object):
     "Fetch the candidate list"
     my_candidates_list = []
+    print(candidate_list_object)
     for each_candidate in candidate_list_object:
+        print("each_candidate",each_candidate)
         candidate_status_object = Candidatestatus.query.filter(Candidatestatus.status_id == each_candidate.candidate_status).values(Candidatestatus.status_name)
         for candidate_status in candidate_status_object:
             candidate_status = candidate_status.status_name

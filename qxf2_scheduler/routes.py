@@ -460,10 +460,8 @@ def jobs_page():
     display_jobs = Jobs.query.all()
     my_job_list = []
     for each_job in display_jobs:
-        if each_job.job_status is None:
-            each_job.job_status = 'Open'
         my_job_list.append(
-            {'job_id': each_job.job_id, 'job_role': each_job.job_role,'job_status':each_job.job_status})
+            {'job_id': each_job.job_id, 'job_role': each_job.job_role})
 
     return render_template("list-jobs.html", result=my_job_list)
 
@@ -580,8 +578,7 @@ def add_job():
             for each_interviewer in all_interviewers_list:
                 actual_interviewers_list.append(each_interviewer.interviewer_name)
             interviewers = check_not_existing_interviewers(interviewers,actual_interviewers_list)
-            job_status = 'Open'
-            job_object = Jobs(job_role=job_role, job_status=job_status)
+            job_object = Jobs(job_role=job_role)
             db.session.add(job_object)
             db.session.commit()
             job_id = job_object.job_id
@@ -596,7 +593,7 @@ def add_job():
 
         else:
             return jsonify(message='The job already exists'), 500
-        data = {'jobrole': job_role, 'interviewers': list(interviewers), 'job_status':job_status}
+        data = {'jobrole': job_role, 'interviewers': list(interviewers)}
         return jsonify(data)
 
 

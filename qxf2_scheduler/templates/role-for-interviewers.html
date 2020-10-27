@@ -56,7 +56,9 @@
             <tbody>
                 {% for each_candidate in candidates %}
                 <tr>
-                    <td><a href="/candidate/{{each_candidate.candidate_id}}/job/{{each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a></td>
+                    <td><a
+                            href="/candidate/{{each_candidate.candidate_id}}/job/{{each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
+                    </td>
                     <td>{{ each_candidate.candidate_email }}</td>
                     <td>{{ each_candidate.candidate_status }}</td>
                 </tr>
@@ -99,24 +101,24 @@
 
     <script>
         function changeStatus() {
-          let val
-          var jobid = document.getElementById("jobId").value;
-          var jobStatus = document.getElementById("jobStatus").value
-          $.ajax({
-            type: 'POST',
-            url: '/job/status',
-            data: {
-                 'jobid': jobid,
-                 'jobstatus':jobStatus
-            },
-            success: function(result) {
-              alert("The Job status is changed and it's status is "+result.job_status+" now");
+            let val
+            var jobid = document.getElementById("jobId").value;
+            var jobStatus = document.getElementById("jobStatus").value
+            $.ajax({
+                type: 'POST',
+                url: '/job/status',
+                data: {
+                    'jobid': jobid,
+                    'jobstatus': jobStatus
+                },
+                success: function (result) {
+                    alert("The Job status is changed and it's status is " + result.job_status + " now");
 
-            }
-          })
-          window.location.reload();
+                }
+            })
+            window.location.reload();
         }
-</script>
+    </script>
 
 
 </body>

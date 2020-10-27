@@ -996,13 +996,13 @@ def job_status():
     status = request.form.get("jobstatus")
     #Get the job status for the job id
     job_status_db = Jobs.query.filter(Jobs.job_id == job_id).value(Jobs.job_status)
-    if (job_status_db== 'Close'):
-        jobs_status = 'Open'
-        job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':jobs_status})
+    if (job_status_db == 'Close'):
+        new_jobs_status = 'Open'
+        job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':new_jobs_status})
         db.session.commit()
     else:
-        jobs_status = 'Close'
-        job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':jobs_status})
+        new_jobs_status = 'Close'
+        job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':new_jobs_status})
         db.session.commit()
 
-    return jsonify({'job_status':jobs_status})
+    return jsonify({'job_status':new_jobs_status})

@@ -159,6 +159,16 @@ def confirm():
 
         return render_template("confirmation.html", value=json.loads(response_value))
 
+def fetch_existing_interviewer_email(candidate_id, job_id, fetched_interviewer_email):
+    "Fect the existing email id"
+    interviewer_email = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).value(Jobcandidate.interviewer_email)
+    if interviewer_email == None:
+        interviewer_email = fetched_interviewer_email
+    else:
+        interviewer_email += ',' + fetched_interviewer_email
+
+    return interviewer_email
+
 
 @app.route("/confirmation", methods=['GET', 'POST'])
 def scehdule_and_confirm():
@@ -191,7 +201,10 @@ def scehdule_and_confirm():
         'slot' : slot}
         value = json.dumps(value)
         candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[2]).scalar()
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':schedule_event[3]['interviewer_email']})
+
+        #Fetch the already existing interviewer email id
+        updated_interviewer_email = fetch_existing_interviewer_email(candidate_id, job_id, schedule_event[3]['interviewer_email'])
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':updated_interviewer_email})
         db.session.commit()
         #Update the round status for the candidate
         update_round_status = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id).update({'round_status':'Completed'})
@@ -921,6 +934,14 @@ def redirect_get_schedule(job_id):
         }
         return render_template("get-schedule.html",result=data)
 
+def fetch_interviewer_email(candidate_id, job_id):
+    "Fetch the interviewers email for the candidate"
+    email_id = Jobcandidate.query.filter(Jobcandidate.job_id == job_id, Jobcandidate.candidate_id == candidate_id).value(Jobcandidate.interviewer_email)
+    if email_id == None:
+        print("The interviewer is not yet assigned for the candidate")
+
+    return email_id
+
 
 @app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
 @login_required
@@ -942,13 +963,23 @@ def send_invite(candidate_id, job_id):
 
         logged_email = session['logged_user']
         generated_url = base_url + generated_url +'/welcome'
+        cc = []
         try:
             #Generate unique id to schedule an interview
             unique_code = str(uuid.uuid4()).split('-')[0]
             #Update the unique code into the table
             update_unique_code = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).update({'unique_code':unique_code})
+            interviewer_email_id = fetch_interviewer_email(candidate_id, job_id)
+
+            if interviewer_email_id == None:
+                cc = [logged_email]
+            else:
+                cc = interviewer_email_id.split(',')
+                cc.append(logged_email)
+
+
             msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
-                          sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email], cc=[logged_email])
+                          sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email], cc=cc)
             msg.html = render_template("send_invite.html", candidate_name=candidate_name, round_name=round_name,round_details=round_description, round_username=candidate_name, link=generated_url, unique_code=unique_code,expiry_date=expiry_date)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'

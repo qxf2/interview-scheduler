@@ -337,7 +337,7 @@ def form_interviewer_details(interviewer_details):
     return parsed_interviewer_details
 
 
-@app.route("/<interviewer_id>/interviewer")
+@app.route("/interviewer/<interviewer_id>")
 @login_required
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
@@ -478,7 +478,7 @@ def fetch_candidate_list(candidate_list_object,job_id):
     return my_candidates_list
 
 
-@app.route("/<job_id>/details/")
+@app.route("/details/job/<job_id>")
 @login_required
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id"

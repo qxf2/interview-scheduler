@@ -461,7 +461,7 @@ def jobs_page():
     my_job_list = []
     for each_job in display_jobs:
         my_job_list.append(
-            {'job_id': each_job.job_id, 'job_role': each_job.job_role})
+            {'job_id': each_job.job_id, 'job_role': each_job.job_role, 'job_status':each_job.job_status})
 
     return render_template("list-jobs.html", result=my_job_list)
 

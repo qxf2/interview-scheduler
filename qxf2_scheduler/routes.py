@@ -529,7 +529,7 @@ def interviewers_for_roles(job_id):
     #Check the job status and fetch it
     fetch_job_status = check_job_status(job_id)
     rounds_list.append({'job_id':job_id,'job_status':fetch_job_status})
-    return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list)
+    return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list, jobid=job_id)
 
 
 def check_jobs_exists(job_role):
@@ -993,7 +993,7 @@ def job_status():
     "Change the job status based on the selected dropdown"
     #job_status = request.form.get("jobstatus")
     job_id = request.form.get("jobid")
-    status = request.form.get("jobstatus")
+    #status = request.form.get("jobstatus")
     #Get the job status for the job id
     job_status_db = Jobs.query.filter(Jobs.job_id == job_id).value(Jobs.job_status)
     if (job_status_db == 'Close'):
@@ -1004,5 +1004,4 @@ def job_status():
         new_jobs_status = 'Close'
         job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':new_jobs_status})
         db.session.commit()
-
     return jsonify({'job_status':new_jobs_status})

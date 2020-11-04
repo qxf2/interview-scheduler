@@ -2,7 +2,45 @@ body {
     font-size: 20px;
     font-family: "Open Sans", serif;
 }
+.dropdown {
+    position: relative;
+    display: inline-block;
+  }
 
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  .logoutLblPos {
+    position: fixed;
+    right: 10px;
+    top: 5px;
+}
+
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  .glyphicon.glyphicon-menu-hamburger {
+      font-size: 25px;
+  }
+  .dropdown-content a:hover {background-color: #ddd;}
+
+  .dropdown:hover .dropdown-content {display: block;}
+
+  .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+  .wrapper {
+    position:absolute;
+    top:5px;
+    right:80px;
+  }
 .buttons {
     background-color: #4CAF50;
     border: none;
@@ -30,7 +68,9 @@ body {
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
     }
-
+.labelbold{
+    font-weight:bold;
+    }
 @-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
@@ -75,8 +115,30 @@ body {
     display:flex;
     flex-direction: row;
     justify-content: left;
-    align-items: center"
+    align-items: center;
 }
+.form-control{
+    width: 45px; /* or whatever width looks good for your purpose */
+  }
+.drop-down {
+    display: inline;
+    width:10px;
+
+}
+.select
+{
+    width:80px;
+}
+href-link { color:blue;}
+
+.link-button {
+        background: none!important;
+        border: none;
+        padding: 0!important;
+        color:gray;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 
 label,
     input {
@@ -213,3 +275,4 @@ label,
           height: auto;
         }
       }
+

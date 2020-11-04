@@ -10,19 +10,27 @@
 
     <!--Stylesheets-->
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
 
     <!--JS files-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
+
+
 </head>
 
 <body>
     {% include "logout.html" %}
+    {% include "menu-bar.html" %}
     <div class="modal modal-megamenu" id="myModal">
         <div class="modal-dialog modal-megamenu">
             <div class="modal-content modal-megamenu">
@@ -39,73 +47,56 @@
         </div>
     </div>
     <div class="container col-md-offset-1 list">
-        <h2 class="grey_text text-center">Candidates List</h2>
+        <h3 class="grey_text text-center">Candidates List</h2>
         <div>
-            <input class="btn btn-info" type="button" id="add" onclick="addCandidate()" value="Add">
+            <input class="btn btn-success" type="button" id="add" onclick="addCandidate()" value="Add">
         </div>
-        {{job_list}}
+        <input type="hidden" value="each_candidate.candidate_id">
+
         <div class="row-fluid top-space-20">
             <table id="table" style="table-layout: width: 800%" class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Candidate ID</th>
-                        <th>Candidate Name</th>
-                        <th>Candidate Email</th>
-                        <th>Job
-                            <select style="width:18px;display:inline;border:none;margin:0;" class="form-control"
-                                id="jobFilter">
-                                <option value="" style="display:none;">Jobs</option>
-                                <option value="QA Manager">QA Manager</option>
-                                <option value="Senior QA">Senior QA</option>
-                                <option value="QA Engineer">QA Engineer</option>
-                                <option value="Internship">Internship</option>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Job</th>
 
-                            </select>
         </div>
-        </select>
-
         </th>
-        <th>Status
-            <select style="width:18px;display:inline;border:none;margin:0;" class="form-control" id="statusFilter">
-                <option value="" style="display:none;">Candidate statuses</option>
-                <option value="Waiting on Qxf2">Waiting on Qxf2</option>
-                <option value="Waiting on Candidate">Waiting on Candidate</option>
-                <option value="Interview Scheduled">Interview Scheduled</option>
-                <option value="No response">No response</option>
-                <option value="Reject">Reject</option>
-                <option value="Hired">Hired</option>
-                <option value="Waiting for new opening">Waiting for new opening</option>
-            </select>
-        </div>
+        <th>Status</th>
+
+    </div>
     </div>
 
-        </th>
-        <th>Actions</th>
+    </th>
+    <th>Actions</th>
 
+    </tr>
+    </thead>
+    <tbody>
+        {% for each_candidate in result %}
+        <tr>
+            <td>{{ each_candidate.candidate_id }}</td>
+            <!-- change href-->
+            <td><a
+                    href="/candidate/{{each_candidate.candidate_id}}/job/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
+            </td>
+            <td>{{ each_candidate.candidate_email }}</td>
+            <!--change each_candidate.job_applied-->
+            <td>{{ each_candidate.job_role }}</td>
+            <td>{{ each_candidate.candidate_status }}</td>
+
+            <td><button class="link-button" type="button" id="edit"
+                    onclick="editCandidates({{each_candidate.candidate_id}})">Edit</button>
+                <button class="link-button" type="button" data-target="#confirmdeletemodal"
+                    data-candidatename="{{ each_candidate.candidate_name }}"
+                    data-candidateid="{{ each_candidate.candidate_id }}" data-jobid="{{ each_candidate.job_id }}"
+                    data-toggle="modal">Delete</button></td>
         </tr>
-        </thead>
-        <tbody>
-            {% for each_candidate in result %}
-            <tr>
-                <td>{{ each_candidate.candidate_id }}</td>
-                <!-- change href-->
-                <td><a
-                        href="/candidate/{{each_candidate.candidate_id}}/job/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
-                </td>
-                <td >{{ each_candidate.candidate_email }}</td>
-                <!--change each_candidate.job_applied-->
-                <td>{{ each_candidate.job_role }}</td>
-                <td >{{ each_candidate.candidate_status }}</td>
-                <td><input class="btn btn-info" type="button" id="edit"
-                        onclick="editCandidates({{each_candidate.candidate_id}})" value="Edit">
-                    <button type="button" class="btn btn-info" data-target="#confirmdeletemodal"
-                        data-candidatename="{{ each_candidate.candidate_name }}"
-                        data-candidateid="{{ each_candidate.candidate_id }}" data-jobid="{{ each_candidate.job_id }}"
-                        data-toggle="modal">Delete</button></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        </table>
+        {% endfor %}
+    </tbody>
+    </table>
     </div>
     <div class="modal modal-megamenu" id="confirmdeletemodal">
         <div class="modal-dialog modal-megamenu">
@@ -164,6 +155,43 @@
         }
     </script>
     <script>
+        $(document).ready(function() {
+    $('#table').DataTable( {
+        "columnDefs": [
+                {"visible": false, "targets": 2},
+                {
+                    "targets": [1,2,3,4,5],
+                    "orderable":false,
+
+
+                }],
+        initComplete: function (d) {
+            this.api().columns([3,4]).every( function () {
+                var column = this;
+                var Jobs = $("#table th").eq([d]).text();
+                var select = $('<select class="drop-down"><option value="" style="display:none;"></option></select>')
+                    .appendTo( $(column.header()))
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
+
+    } );
+} );
+
+</script>
+<script>
         $("#statusFilter").on('change', function () {
             var dropdownvalue = document.getElementById("statusFilter")
             var selectStatus = dropdownvalue.options[dropdownvalue.selectedIndex].value
@@ -193,9 +221,9 @@
             var selectJob = dropdownvalue.options[dropdownvalue.selectedIndex].value
             $.ajax({
                 type: 'POST',
-                url: '/job/filter',
+                url: '/filter/job',
                 data: {
-                    'selectedjob': selectJob
+                    'selectjob': selectJob
                 },
                 success: function (result) {
                     if (result == 'error') {

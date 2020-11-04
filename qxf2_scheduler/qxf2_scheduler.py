@@ -385,12 +385,11 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
     "Get the busy slots for a given date"
     service = gcal.base_gcal()
     busy_slots = []
-    fetch_date = '07/06/2020'
+    pto_flag = False
+    event_organizer_list = []
     if service:
-        try:
-            all_events = gcal.get_events_for_date(service,email_id,fetch_date)
-            pto_flag = False
-            event_organizer_list = []
+        all_events = gcal.get_events_for_date(service,email_id,fetch_date)
+        if all_events:
             for event in all_events:
                 event_organizer = event['organizer']['email']
                 event_organizer_list.append(event_organizer)
@@ -405,11 +404,11 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
 
             else:
                 busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
-        except HttpError:
-            pass
 
+        else:
+            busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
 
-        return busy_slots,pto_flag
+    return busy_slots,pto_flag
 
 
 def get_interviewer_email_id(interviewer_work_time_slots):

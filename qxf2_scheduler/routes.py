@@ -460,10 +460,13 @@ def jobs_page():
     display_jobs = Jobs.query.all()
     my_job_list = []
     for each_job in display_jobs:
+        if each_job.job_status == None:
+            job_status = check_job_status(each_job.job_id)
         my_job_list.append(
             {'job_id': each_job.job_id, 'job_role': each_job.job_role, 'job_status':each_job.job_status})
 
     return render_template("list-jobs.html", result=my_job_list)
+
 
 def fetch_candidate_list(candidate_list_object,job_id):
     "Fetch the candidate list"

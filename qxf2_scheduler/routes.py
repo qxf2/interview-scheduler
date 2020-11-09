@@ -239,6 +239,8 @@ def before_request():
 def login():
     error = None
     if request.method == 'GET':
+        if current_user.is_authenticated:
+            return redirect(url_for('index'))
         return render_template('login.html', error=error)
     if request.method == 'POST':
         username = request.form.get('username')

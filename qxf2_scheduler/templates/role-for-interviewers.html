@@ -24,6 +24,7 @@
 
 <body>
     {% include "logout.html" %}
+    <input type="hidden" value="{{jobid}}" id="jobId">
     <h3 class="grey_text text-center">Interviewers list for the Job role</h3>
     <div class="container col-md-offset-1">
         <table class="table table-striped">
@@ -48,12 +49,19 @@
             <thead>
                 <tr>
                     <th scope="col">Candidates Name</th>
+                    <th>Candidate email</th>
+                    <th>Candidate status</th>
+
                 </tr>
             </thead>
             <tbody>
                 {% for each_candidate in candidates %}
                 <tr>
-                    <td>{{ each_candidate.candidate_name }}</td>
+                    <td><a
+                            href="/candidate/{{each_candidate.candidate_id}}/job/{{each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
+                    </td>
+                    <td>{{ each_candidate.candidate_email }}</td>
+                    <td>{{ each_candidate.candidate_status }}</td>
                 </tr>
                 {% endfor %}
 
@@ -73,7 +81,7 @@
             </thead>
             <tbody>
                 {% for each_round in round %}
-                <input type="hidden" value="{{each_round.job_id}}" id="jobId">
+                <input type="hidden" value="{{each_round.job_status}}" id="jobStatus">
                 <tr>
                     <td>{{ each_round.round_name}}</td>
                     <td>{{ each_round.round_time }}</td>
@@ -84,48 +92,34 @@
 
             </tbody>
         </table>
-        <button class="btn btn-danger changeme" onclick="changeStatus()" id="jobStatus">Close job</button>
+        {% for each_round in round %}
+        {% for key, value in each_round.items() %}
+        {% if value == 'Open' %}
+        <button class="btn btn-danger" onclick="changeStatus()" id="jobButton">Close job</button>
+        {% elif value == 'Close' %}
+        <button class="btn btn-danger" onclick="changeStatus()" id="jobButton">Open job</button>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
     </div>
+
     <script>
-        let store = window.localStorage
+        console.log("click")
         function changeStatus() {
-          let val
-          var jobid = document.getElementById("jobId").value;
-          store.getItem('btnstat') === "Open job"? checkUpdLocal("Close job") : checkUpdLocal("Open job")
-          // toggle status
+            var jobid = document.getElementById("jobId").value;
+            console.log("hi",jobid);
+            $.ajax({
+                type: 'POST',
+                url: '/job/status',
+                data: {'jobid': jobid},
+                success: function (result) {
+                    alert("The Job status is changed and it's status is " + result.job_status + " now");
 
-          val = store.getItem('btnstat')
-          $.ajax({
-            type: 'POST',
-            url: '/job/status',
-            data: {
-                 'jobid': jobid
-            },
-            success: function(result) {
-              alert("The Job has been "+result.job_status+"d");
-
-            }
-          })
+                }
+            })
+            window.location.reload();
         }
-
-        function checkUpdLocal(stat){
-          if(!store.getItem('btnstat')){ // if local storage does not exist
-            store.setItem('btnstat', "Close job") // close by default
-          }else if(store.getItem('btnstat') && !stat){ // if storage exist but we don't change status (first ini) - change buttno text
-            $('.changeme').html(store.getItem('btnstat'))
-          }
-          if(stat){ // setter
-            store.setItem('btnstat', stat)
-            $('.changeme').html(stat)
-          }else{
-            return store.getItem('btnstat') // getter
-          }
-        }
-
-
-        $( document ).ready( function(){checkUpdLocal()})
-        </script>
-
+    </script>
 
 
 </body>

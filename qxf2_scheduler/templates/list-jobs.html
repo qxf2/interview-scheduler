@@ -58,6 +58,7 @@
                         <tr>
                             <th>Job ID</th>
                             <th>Job role</th>
+                            <th>Job status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -67,6 +68,7 @@
                             <td>{{ each_job.job_id }}</td>
                             <td><a class="href-link" href="/{{ each_job.job_id }}/details">{{ each_job.job_role }}</a>
                             </td>
+                            <td>{{ each_job.job_status }}</td>
                             <td><button class="link-button" style="color:sienna" type="button" id="addCandidate"
                                     onclick="addCandidate('{{each_job.job_role}}')">Add Candidate</button> &nbsp;&nbsp;
                                 <button class="link-button" type="button" onclick="editJob('{{each_job.job_id}}')"

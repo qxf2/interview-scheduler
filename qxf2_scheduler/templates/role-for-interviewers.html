@@ -24,6 +24,7 @@
 
 <body>
     {% include "logout.html" %}
+    <input type="hidden" value="{{jobid}}" id="jobId">
     <h3 class="grey_text text-center">Interviewers list for the Job role</h3>
     <div class="container col-md-offset-1">
         <table class="table table-striped">
@@ -56,7 +57,9 @@
             <tbody>
                 {% for each_candidate in candidates %}
                 <tr>
-                    <td><a href="/candidate/{{each_candidate.candidate_id}}/job/{{each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a></td>
+                    <td><a
+                            href="/candidate/{{each_candidate.candidate_id}}/job/{{each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
+                    </td>
                     <td>{{ each_candidate.candidate_email }}</td>
                     <td>{{ each_candidate.candidate_status }}</td>
                 </tr>
@@ -78,7 +81,7 @@
             </thead>
             <tbody>
                 {% for each_round in round %}
-                <input type="hidden" value="{{each_round.job_id}}" id="jobId">
+                <input type="hidden" value="{{each_round.job_status}}" id="jobStatus">
                 <tr>
                     <td>{{ each_round.round_name}}</td>
                     <td>{{ each_round.round_time }}</td>
@@ -89,9 +92,34 @@
 
             </tbody>
         </table>
-
+        {% for each_round in round %}
+        {% for key, value in each_round.items() %}
+        {% if value == 'Open' %}
+        <button class="btn btn-danger" onclick="changeStatus()" id="jobButton">Close job</button>
+        {% elif value == 'Close' %}
+        <button class="btn btn-danger" onclick="changeStatus()" id="jobButton">Open job</button>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
     </div>
 
+    <script>
+        console.log("click")
+        function changeStatus() {
+            var jobid = document.getElementById("jobId").value;
+            console.log("hi",jobid);
+            $.ajax({
+                type: 'POST',
+                url: '/job/status',
+                data: {'jobid': jobid},
+                success: function (result) {
+                    alert("The Job status is changed and it's status is " + result.job_status + " now");
+
+                }
+            })
+            window.location.reload();
+        }
+    </script>
 
 
 </body>

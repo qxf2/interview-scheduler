@@ -88,7 +88,7 @@ def fetch_candidate_list(candidate_list_object):
 def read_candidates():
     "Read the candidates"
     candidates_list = []
-    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id).values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id, Jobs.job_status == 'Open').values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
     candidates_list = fetch_candidate_list(display_candidates)
 
     return render_template("read-candidates.html", result=candidates_list)
@@ -418,6 +418,15 @@ def change_status_to_reject(candidate_id,candidate_job_applied):
     return error
 
 
+def fetch_interviewer_email(candidate_id, job_id):
+    "Fetch the interviewers email for the candidate"
+    email_id = Jobcandidate.query.filter(Jobcandidate.job_id == job_id, Jobcandidate.candidate_id == candidate_id).value(Jobcandidate.interviewer_email)
+    if email_id == None:
+        print("The interviewer is not yet assigned for the candidate")
+
+    return email_id
+
+
 @app.route("/reject", methods=["POST"])
 @login_required
 def send_reject():
@@ -426,15 +435,23 @@ def send_reject():
     candidate_email = request.form.get('candidateemail')
     candidate_job_applied = request.form.get('candidatejob')
     candidate_id = request.form.get('candidateid')
-
+    interviewer_email = fetch_interviewer_email(candidate_id, candidate_job_applied)
     logged_email = session['logged_user']
-    msg = Message("Interview update from Qxf2 Services", sender=("Qxf2 Services", "test@qxf2.com"),  cc=[logged_email], recipients=[candidate_email])
+
+    if interviewer_email == None:
+        cc = [logged_email]
+    else:
+        cc = interviewer_email.split(',')
+        cc.append(logged_email)
+
+    msg = Message("Interview update from Qxf2 Services", sender=("Qxf2 Services", "test@qxf2.com"),  cc=cc, recipients=[candidate_email])
     msg.body = "Hi %s , \n\nI appreciate your interest in a career opportunity with Qxf2 Services. It was a pleasure speaking to you about your background and interests. There are many qualified applicants in the current marketplace and we are searching for those who have the most directly applicable experience to our limited number of openings. I regret we will not be moving forward with your interview process. We wish you all the best in your current search and future endeavors.\n\nThanks, \nQxf2 Services"%(candidate_name)
     mail.send(msg)
     candidate_status = change_status_to_reject(candidate_id,candidate_job_applied)
 
     data = {'candidate_name': candidate_name, 'error': candidate_status}
     return jsonify(data)
+
 
 @app.route("/comments/save", methods=['GET', 'POST'])
 def save_comments():

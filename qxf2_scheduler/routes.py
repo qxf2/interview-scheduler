@@ -159,6 +159,16 @@ def confirm():
 
         return render_template("confirmation.html", value=json.loads(response_value))
 
+def fetch_existing_interviewer_email(candidate_id, job_id, fetched_interviewer_email):
+    "Fect the existing email id"
+    interviewer_email = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).value(Jobcandidate.interviewer_email)
+    if interviewer_email == None:
+        interviewer_email = fetched_interviewer_email
+    else:
+        interviewer_email += ',' + fetched_interviewer_email
+
+    return interviewer_email
+
 
 @app.route("/confirmation", methods=['GET', 'POST'])
 def scehdule_and_confirm():
@@ -191,7 +201,10 @@ def scehdule_and_confirm():
         'slot' : slot}
         value = json.dumps(value)
         candidate_status_id = db.session.query(Candidatestatus).filter(Candidatestatus.status_name==status.CANDIDTATE_STATUS[2]).scalar()
-        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':schedule_event[3]['interviewer_email']})
+
+        #Fetch the already existing interviewer email id
+        updated_interviewer_email = fetch_existing_interviewer_email(candidate_id, job_id, schedule_event[3]['interviewer_email'])
+        candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':updated_interviewer_email})
         db.session.commit()
         #Update the round status for the candidate
         update_round_status = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id).update({'round_status':'Completed'})
@@ -460,10 +473,13 @@ def jobs_page():
     display_jobs = Jobs.query.all()
     my_job_list = []
     for each_job in display_jobs:
+        if each_job.job_status == None:
+            job_status = check_job_status(each_job.job_id)
         my_job_list.append(
-            {'job_id': each_job.job_id, 'job_role': each_job.job_role})
+            {'job_id': each_job.job_id, 'job_role': each_job.job_role, 'job_status':each_job.job_status})
 
     return render_template("list-jobs.html", result=my_job_list)
+
 
 def fetch_candidate_list(candidate_list_object,job_id):
     "Fetch the candidate list"
@@ -476,6 +492,17 @@ def fetch_candidate_list(candidate_list_object,job_id):
         my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':job_id, 'candidate_status':candidate_status})
 
     return my_candidates_list
+
+
+def check_job_status(job_id):
+    "Check the job status if it's none add the open"
+    job_status = Jobs.query.filter(Jobs.job_id==job_id).value(Jobs.job_status)
+    if job_status == None:
+        add_open_to_job = Jobs.query.filter(Jobs.job_id==job_id).update({'job_status':'Open'})
+        db.session.commit()
+        job_status = 'Open'
+
+    return job_status
 
 
 @app.route("/<job_id>/details/")
@@ -515,10 +542,10 @@ def interviewers_for_roles(job_id):
             'round_requirement' : each_round.round_requirement
             }
         )
-
-    rounds_list.append({'job_id':job_id})
-
-    return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list)
+    #Check the job status and fetch it
+    fetch_job_status = check_job_status(job_id)
+    rounds_list.append({'job_id':job_id,'job_status':fetch_job_status})
+    return render_template("role-for-interviewers.html", round=rounds_list, result=interviewers_list,candidates=candidates_list, jobid=job_id)
 
 
 def check_jobs_exists(job_role):
@@ -579,7 +606,7 @@ def add_job():
             for each_interviewer in all_interviewers_list:
                 actual_interviewers_list.append(each_interviewer.interviewer_name)
             interviewers = check_not_existing_interviewers(interviewers,actual_interviewers_list)
-            job_object = Jobs(job_role=job_role)
+            job_object = Jobs(job_role=job_role,job_status='Open')
             db.session.add(job_object)
             db.session.commit()
             job_id = job_object.job_id
@@ -921,6 +948,14 @@ def redirect_get_schedule(job_id):
         }
         return render_template("get-schedule.html",result=data)
 
+def fetch_interviewer_email(candidate_id, job_id):
+    "Fetch the interviewers email for the candidate"
+    email_id = Jobcandidate.query.filter(Jobcandidate.job_id == job_id, Jobcandidate.candidate_id == candidate_id).value(Jobcandidate.interviewer_email)
+    if email_id == None:
+        print("The interviewer is not yet assigned for the candidate")
+
+    return email_id
+
 
 @app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
 @login_required
@@ -942,13 +977,23 @@ def send_invite(candidate_id, job_id):
 
         logged_email = session['logged_user']
         generated_url = base_url + generated_url +'/welcome'
+        cc = []
         try:
             #Generate unique id to schedule an interview
             unique_code = str(uuid.uuid4()).split('-')[0]
             #Update the unique code into the table
             update_unique_code = Jobcandidate.query.filter(Jobcandidate.candidate_id==candidate_id,Jobcandidate.job_id==job_id).update({'unique_code':unique_code})
+            interviewer_email_id = fetch_interviewer_email(candidate_id, job_id)
+
+            if interviewer_email_id == None:
+                cc = [logged_email]
+            else:
+                cc = interviewer_email_id.split(',')
+                cc.append(logged_email)
+
+
             msg = Message("Invitation to schedule an Interview with Qxf2 Services!",
-                          sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email], cc=[logged_email])
+                          sender=("Qxf2 Services","test@qxf2.com"), recipients=[candidate_email], cc=cc)
             msg.html = render_template("send_invite.html", candidate_name=candidate_name, round_name=round_name,round_details=round_description, round_username=candidate_name, link=generated_url, unique_code=unique_code,expiry_date=expiry_date)
             mail.send(msg)
             # Fetch the id for the candidate status 'Waiting on Qxf2'
@@ -982,13 +1027,15 @@ def job_status():
     "Change the job status based on the selected dropdown"
     #job_status = request.form.get("jobstatus")
     job_id = request.form.get("jobid")
+    #status = request.form.get("jobstatus")
     #Get the job status for the job id
-    job_status = Jobs.query.filter(Jobs.job_id == job_id).value(Jobs.job_status)
-    if job_status == 'Open':
-        change_job_status = 'Close'
+    job_status_db = Jobs.query.filter(Jobs.job_id == job_id).value(Jobs.job_status)
+    if (job_status_db == 'Close'):
+        new_jobs_status = 'Open'
+        job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':new_jobs_status})
+        db.session.commit()
     else:
-        change_job_status = 'Open'
-    job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':change_job_status})
-    db.session.commit()
-
-    return jsonify({'job_status':change_job_status})
+        new_jobs_status = 'Close'
+        job_status = Jobs.query.filter(Jobs.job_id == job_id).update({'job_status':new_jobs_status})
+        db.session.commit()
+    return jsonify({'job_status':new_jobs_status})

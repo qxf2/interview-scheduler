@@ -54,8 +54,8 @@ def scheduler_job():
 
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(scheduler_job,'cron', minute='*')
-#sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='1,31')
+#sched.add_job(scheduler_job,'cron', minute='*')
+sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='1,31')
 sched.start()
 
 

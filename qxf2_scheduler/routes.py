@@ -11,10 +11,11 @@ import json
 import ast,re,uuid
 import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message, Mail
 from flask_login import current_user, login_user,login_required,logout_user
 from pytz import timezone
-import flask
+import flask, random, string
 import flask_login
 
 mail = Mail(app)
@@ -39,6 +40,53 @@ def check_user_exists(user_email):
 
     return check_user_exists
 
+
+def send_email(subject, recipients, text_body):
+    msg = Message(subject, recipients=recipients)
+    msg.html = text_body
+    mail.send(msg)
+    user = Login.query.filter_by(email=recipients[0]).first()
+    user.email_confirmation_sent_on = datetime.datetime.now()
+
+
+@app.route('/confirm/<token>', methods=['GET', 'POST'])
+def confirm_email(token):
+    try:
+        confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=3600)
+    except:
+        flash('The confirmation link is invalid or has expired.', 'error')
+        return redirect(url_for('login'))
+
+    user = Login.query.filter_by(email=email).first()
+
+    if user.email_confirmed:
+        flash('Account already confirmed. Please login.', 'info')
+    else:
+        user.email_confirmed = True
+        user.email_confirmed_on = datetime.datetime.now()
+        db.session.add(user)
+        db.session.commit()
+        flash('Thank you for confirming your email address!')
+
+    return redirect(url_for('login'))
+
+
+def send_confirmation_email(user_email):
+    app.secret_key = gen_random_key()
+    confirm_serializer = URLSafeTimedSerializer(app.secret_key)
+    token=confirm_serializer.dumps(user_email, salt='email-confirmation-salt')
+    confirm_url = url_for(
+        'confirm_email',
+        token=token,
+        _external=True)
+    html = render_template(
+        'email_confirmation.html',
+        confirm_url=confirm_url)
+
+    send_email('Confirm Your Email Address', [user_email], html)
+
+
 @app.route("/registration",methods=['GET','POST'])
 def registration():
     if request.method == 'GET':
@@ -52,12 +100,15 @@ def registration():
         if check_user_exist == True:
             error = 'error'
         else:
+
             add_new_user_object = Login(username=user_name,email=user_email,password=user_password)
             db.session.add(add_new_user_object)
             db.session.flush()
             user_id = add_new_user_object.id
             db.session.commit()
             error = 'Success'
+            send_confirmation_email(user_email)
+            flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
         api_response = {'data':data,'error':error}
 
     return jsonify(api_response)
@@ -247,6 +298,10 @@ def before_request():
     app.permanent_session_lifetime = datetime.timedelta(minutes = 60)
     flask.session.modified = True
 
+def gen_random_key():
+    "Generate random key for signup"
+    return ''.join(random.choices(string.ascii_uppercase + string.digits))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 @app.route('/')
@@ -259,24 +314,31 @@ def login():
         password = request.form.get('password')
         data = {'username':username,'password':password}
         #fetch the email id of the user whose logged in
-        user_email_id = Login.query.filter(Login.username==username).values(Login.email)
+        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed)
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
+            logged_email_confirmation = logged_user.email_confirmed
+        print(logged_email_id,logged_email_confirmation)
         session['logged_user'] = logged_email_id
-        completion = validate(username)
-        if completion ==False:
-            error = 'error.'
-        else:
-            password_check = password_validate(password)
-            if password_check ==False:
+        if logged_email_confirmation == True:
+            completion = validate(username)
+            if completion ==False:
                 error = 'error.'
             else:
-                user = Login()
-                user.name=username
-                user.password=password
-                login_user(user)
-                error = 'Success'
-        api_response = {'data':data,'error':error}
+                password_check = password_validate(password)
+                if password_check ==False:
+                    error = 'error.'
+                else:
+                    user = Login()
+                    user.name=username
+                    user.password=password
+                    login_user(user)
+                    error = 'Success'
+            api_response = {'data':data,'error':error}
+        else:
+            error = 'confirmation error'
+            api_response = {'data':username, 'error':error}
+
         return jsonify(api_response)
 
 

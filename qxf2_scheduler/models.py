@@ -146,7 +146,8 @@ class Login(db.Model,UserMixin):
     email_confirmed_on = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
-        return f"Login('{self.id}','{self.username}','{self.password}','{self.email}','{self.email_confirmation_sent_on}','{self.email_confirmed}','{self.email_confirmed_on}')"
+        return f"Login('{self.id}','{self.username}','{self.password}','{self.email}',
+        '{self.email_confirmation_sent_on}','{self.email_confirmed}','{self.email_confirmed_on}')"
 
 
 @login_manager.user_loader

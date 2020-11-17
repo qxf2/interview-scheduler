@@ -505,7 +505,7 @@ def check_job_status(job_id):
     return job_status
 
 
-@app.route("/<job_id>/details/")
+@app.route("/details/job/<job_id>")
 @login_required
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id"

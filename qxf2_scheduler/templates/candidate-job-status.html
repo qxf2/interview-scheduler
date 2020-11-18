@@ -51,6 +51,15 @@
                             <label class="col-md-10" for="jobApplied">{{result.job_applied}}</label>
                         </div>
                         <br>
+                        {% for each_round_name in all_round_names %}
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="roundName">Round Name( {{ each_round_name }}):</label>
+                            <label class="col-md-10" for="eachRound">
+                                 'I will add the round status' </label>
+
+                        </div>
+                        <br>
+                        {% endfor %}
                         <div class="col-md-12 form-display">
                             <label class="labelbold col-md-2" for="Interviewer details:">Interviewer Email:</label>
                             {% if result.interviewer_email_id == None%}

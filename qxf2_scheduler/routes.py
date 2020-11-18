@@ -42,6 +42,7 @@ def check_user_exists(user_email):
 
 
 def send_email(subject, recipients, text_body):
+    "Send the email"
     msg = Message(subject, recipients=recipients)
     msg.html = text_body
     mail.send(msg)
@@ -51,6 +52,7 @@ def send_email(subject, recipients, text_body):
 
 @app.route('/confirm/<token>', methods=['GET', 'POST'])
 def confirm_email(token):
+    "Check the registered user email is confirmed or not"
     try:
         confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
         email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=3600)
@@ -73,6 +75,7 @@ def confirm_email(token):
 
 
 def send_confirmation_email(user_email):
+    "Sends the confirmation email"
     app.secret_key = gen_random_key()
     confirm_serializer = URLSafeTimedSerializer(app.secret_key)
     token=confirm_serializer.dumps(user_email, salt='email-confirmation-salt')
@@ -89,6 +92,7 @@ def send_confirmation_email(user_email):
 
 @app.route("/registration",methods=['GET','POST'])
 def registration():
+    "New registration"
     if request.method == 'GET':
         return render_template('signup.html')
     if request.method == 'POST':

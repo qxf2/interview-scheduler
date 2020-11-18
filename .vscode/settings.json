@@ -2,7 +2,6 @@
     "python.pythonPath": "venv-interview-scheduler\\Scripts\\python.exe",
     //wordwrap
     "editor.wordWrap": "wordWrapColumn",
-    "editor.wordWrapColumn": 120,
     "[python]": {},
     "window.zoomLevel": 0,
     //Indentation

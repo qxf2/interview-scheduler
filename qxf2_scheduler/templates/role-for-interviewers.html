@@ -5,78 +5,123 @@
         List of interviewer details
     </title>
 
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Stylesheets-->
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+
+
+    <!--JS files-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 </head>
 
 <body>
     {% include "logout.html" %}
+    <input type="hidden" value="{{jobid}}" id="jobId">
     <h3 class="grey_text text-center">Interviewers list for the Job role</h3>
     <div class="container col-md-offset-1">
         <table class="table table-striped">
             <thead>
-                <tr> 
-                    <th scope="col">Interviewers Name</th>      
+                <tr>
+                    <th scope="col">Interviewers Name</th>
                 </tr>
             </thead>
             <tbody>
-            {% for each_job in result %}
-            <tr>
-            <td>{{ each_job.interviewers_name }}</td>
-            </tr>
-            {% endfor %}
-            
+                {% for each_job in result %}
+                <tr>
+                    <td>{{ each_job.interviewers_name }}</td>
+                </tr>
+                {% endfor %}
+
             </tbody>
         </table>
-    </div><br/><br/>
+    </div><br /><br />
     <h3 class="grey_text text-center">Candidates list for the Job role</h3>
     <div class="container col-md-offset-1">
         <table class="table table-striped">
             <thead>
-                <tr> 
-                    <th scope="col">Candidates Name</th>      
+                <tr>
+                    <th scope="col">Candidates Name</th>
+                    <th>Candidate email</th>
+                    <th>Candidate status</th>
+
                 </tr>
             </thead>
             <tbody>
-            {% for each_candidate in candidates %}
-            <tr>
-            <td>{{ each_candidate.candidate_name }}</td>
-            </tr>
-            {% endfor %}
-            
+                {% for each_candidate in candidates %}
+                <tr>
+                    <td><a
+                            href="/candidate/{{each_candidate.candidate_id}}/job/{{each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
+                    </td>
+                    <td>{{ each_candidate.candidate_email }}</td>
+                    <td>{{ each_candidate.candidate_status }}</td>
+                </tr>
+                {% endfor %}
+
             </tbody>
         </table>
     </div><br></br>
     <h3 class="grey_text text-center">Round details</h3>
     <div class="container col-md-offset-1">
-            <table class="table table-striped">
-                <thead>
-                    <tr> 
-                        <th scope="col">Round Name</th>
-                        <th scope="col">Time Duration</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Requirements</th>      
-                    </tr>
-                </thead>
-                <tbody>
-                
-                {% for each_round in round %}
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                <td>{{ each_round.round_name}}</td>
-                <td>{{ each_round.round_time }}</td>
-                <td>{{ each_round.round_description }}</td>
-                <td>{{ each_round.round_requirement }}</td>
+                    <th scope="col">Round Name</th>
+                    <th scope="col">Time Duration</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Requirements</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for each_round in round %}
+                <input type="hidden" value="{{each_round.job_status}}" id="jobStatus">
+                <tr>
+                    <td>{{ each_round.round_name}}</td>
+                    <td>{{ each_round.round_time }}</td>
+                    <td>{{ each_round.round_description }}</td>
+                    <td>{{ each_round.round_requirement }}</td>
                 </tr>
                 {% endfor %}
-                
-                </tbody>
-            </table>
-        </div>
+
+            </tbody>
+        </table>
+        {% for each_round in round %}
+        {% for key, value in each_round.items() %}
+        {% if value == 'Open' %}
+        <button class="btn btn-danger" onclick="changeStatus()" id="jobButton">Close job</button>
+        {% elif value == 'Close' %}
+        <button class="btn btn-danger" onclick="changeStatus()" id="jobButton">Open job</button>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+    </div>
+
+    <script>
+        console.log("click")
+        function changeStatus() {
+            var jobid = document.getElementById("jobId").value;
+            console.log("hi",jobid);
+            $.ajax({
+                type: 'POST',
+                url: '/job/status',
+                data: {'jobid': jobid},
+                success: function (result) {
+                    alert("The Job status is changed and it's status is " + result.job_status + " now");
+
+                }
+            })
+            window.location.reload();
+        }
+    </script>
+
+
 </body>
 
 </html>

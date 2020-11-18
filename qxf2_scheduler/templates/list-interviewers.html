@@ -10,14 +10,21 @@
 
     <!--Stylesheets-->
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
 
     <!--JS files-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
+
 </head>
 
 <body>
@@ -39,15 +46,15 @@
         </div>
     </div>
     <div class="container col-md-offset-1">
-        <h2 class="grey_text text-center">List Interviewers</h2>
+        <h3 class="grey_text text-center">List Interviewers</h2>
         <div>
-            <input class="btn btn-info" type="button" id="add" onclick="addinterviewer()" value="Add">
+            <input class="btn btn-success" type="button" id="add" onclick="addinterviewer()" value="Add">
         </div>
         <br />
-        <table class="table table-striped">
+        <table id="table"class="table table-striped">
             <thead>
                 <tr>
-                    <th>Interviewer ID</th>
+                    <th>ID</th>
                     <th>Interviewer Name</th>
                     <th>Actions</th>
 
@@ -57,12 +64,13 @@
                 {% for each_interviewer in result %}
                 <tr>
                     <td>{{ each_interviewer.interviewer_id }}</td>
-                    <td><a
+                    <td><a class="href-link"
                             href="/{{ each_interviewer.interviewer_id }}/interviewer">{{ each_interviewer.interviewer_name }}</a>
                     </td>
-                    <td><input class="btn btn-info" type="button" value="Edit" id="edit"
-                            onclick="editinterviewer({{ each_interviewer.interviewer_id }})"> <button type="button"
-                            class="btn btn-info" data-target="#confirmdeletemodal"
+                    <td><button class="link-button" type="button" id="edit"
+                            onclick="editinterviewer({{ each_interviewer.interviewer_id }})">Edit</button>&nbsp;&nbsp;
+                        <button type="button" style="color: red;"
+                            class="link-button" data-target="#confirmdeletemodal"
                             data-username="{{ each_interviewer.interviewers_name }}"
                             data-href="{{ each_interviewer.interviewer_id }}" data-toggle="modal">Delete</button></td>
 
@@ -129,6 +137,19 @@
             document.location.href = "/interviewer/"+interviewer_id+"/edit";
 
         }
+    </script>
+    <script>
+        $(document).ready(function() {
+    $('#table').DataTable( {
+        "columnDefs": [
+                {
+                    "targets": [1,2],
+                    "orderable":false,
+
+
+                }],
+    });
+        })
     </script>
 
 </body>

@@ -7,21 +7,21 @@ from sqlalchemy.sql import table, column
 
 
 class Interviewers(db.Model):
-    "Adding the interviewer" 
-    interviewer_id = db.Column(db.Integer,primary_key=True)   
+    "Adding the interviewer"
+    interviewer_id = db.Column(db.Integer,primary_key=True)
     interviewer_name = db.Column(db.String(50),nullable=False)
     interviewer_email = db.Column(db.String(50),nullable=False)
-    interviewer_designation = db.Column(db.String(40),nullable=False)    
-    db.CheckConstraint(interviewer_name > 5)    
-    
+    interviewer_designation = db.Column(db.String(40),nullable=False)
+    db.CheckConstraint(interviewer_name > 5)
+
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"
 
 
 class Interviewertimeslots(db.Model):
-    "Adding the timing for interviewer" 
-    time_id = db.Column(db.Integer,primary_key=True)   
-    interviewer_id = db.Column(db.Integer,db.ForeignKey(Interviewers.interviewer_id),nullable=False)    
+    "Adding the timing for interviewer"
+    time_id = db.Column(db.Integer,primary_key=True)
+    interviewer_id = db.Column(db.Integer,db.ForeignKey(Interviewers.interviewer_id),nullable=False)
     interviewer_start_time = db.Column(db.String,nullable=False)
     interviewer_end_time = db.Column(db.String,nullable=False)
 
@@ -31,10 +31,11 @@ class Interviewertimeslots(db.Model):
 
 class Jobs(db.Model):
     "Adding the Job page"
-    job_id = db.Column(db.Integer,primary_key=True,nullable=False)   
+    job_id = db.Column(db.Integer,primary_key=True,nullable=False)
     job_role = db.Column(db.String,nullable=False)
-    job_interviewer = db.relationship('Jobinterviewer', backref='Jobs', 
+    job_interviewer = db.relationship('Jobinterviewer', backref='Jobs',
        lazy=True, cascade="delete")
+    job_status = db.Column(db.String)
 
     def __repr__(self):
         return f"Jobs('{self.job_id}','{self.job_role}')"
@@ -58,7 +59,7 @@ class Candidates(db.Model):
     date_applied = db.Column(DateTime, default=datetime.datetime.utcnow)
     job_applied = db.Column(db.String,nullable=False)
     comments = db.Column(db.String)
-    
+
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"
 
@@ -74,7 +75,7 @@ class Rounds(db.Model):
     def __repr__(self):
         return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}','{self.round_name}')"
 
-        
+
 class Jobcandidate(db.Model):
     "Combine Job id and Candidate ID"
     combo_id = db.Column(db.Integer,primary_key=True)
@@ -97,7 +98,7 @@ class Jobround(db.Model):
     combo_id = db.Column(db.Integer,primary_key=True)
     job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
     round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
-    
+
     def __repr__(self):
         return f"Jobround('{self.job_id}','{self.round_id}')"
 

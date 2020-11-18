@@ -6,7 +6,7 @@ from qxf2_scheduler.__init__ import app
 from flask_script import Manager
 from flask_migrate import Migrate,MigrateCommand
 
-migrate=Migrate(app, db)
+migrate=Migrate(app, db,render_as_batch=True)
 manager=Manager(app)
 
 manager.add_command('db',MigrateCommand)

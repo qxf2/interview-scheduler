@@ -269,16 +269,28 @@ def get_pending_round_id(job_id, candidate_id):
     return pending_round_ids
 
 
-def get_round_names(candidate_id, job_id):
-    "Get the round name listed for the job"
+def get_round_id(candidate_id, job_id):
+    "Get the round idlisted for the job"
     rounds_id_object = Jobround.query.filter(Jobround.job_id == job_id).all()
-    round_names_list = []
+    round_id_list = []
     for each_round_id in rounds_id_object:
         round_id = each_round_id.round_id
-        round_name = Rounds.query.filter(Rounds.round_id == round_id).value(Rounds.round_name)
-        round_names_list.append(round_name)
+        round_id_list.append(round_id)
 
-    return round_names_list
+    return round_id_list
+
+
+def get_round_names_and_status(candidate_id, job_id, all_round_id):
+    "Get the round name and status listed for the job"
+    round_name_status_list = []
+    all_round_details = {}
+    for every_round_id in all_round_id:
+        get_round_status = Candidateround.query.filter(Candidateround.candidate_id == candidate_id, Candidateround.job_id == job_id, Candidateround.round_id == every_round_id).value(Candidateround.round_status)
+        get_round_name = Rounds.query.filter(Rounds.round_id==every_round_id).value(Rounds.round_name)
+        all_round_details = {'round_name':get_round_name, 'round_status':get_round_status}
+        round_name_status_list.append(all_round_details)
+
+    return round_name_status_list
 
 
 @app.route("/candidate/<candidate_id>/job/<job_id>")
@@ -308,14 +320,17 @@ def show_candidate_job(job_id, candidate_id):
     candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id == candidate_status_id).scalar()
     data['candidate_status']=candidate_status_name.status_name
     pending_round_ids = get_pending_round_id(job_id, candidate_id)
-    #Get the round names for the job the candidate applied
-    all_round_names = get_round_names(candidate_id, job_id)
+    #Get all rounds id for the job the candidate applied
+    all_round_id = get_round_id(candidate_id, job_id)
+    #Get the roundstatus of the candidate job
+    round_name_status_list = get_round_names_and_status(candidate_id, job_id, all_round_id)
+
     #Get the pending round id details from the table
     for each_round_id in pending_round_ids:
         round_detail = db.session.query(Rounds).filter(Rounds.round_id == each_round_id).scalar()
         round_details = {'round_name':round_detail.round_name, 'round_id':round_detail.round_id, 'round_description':round_detail.round_description, 'round_time':round_detail.round_time}
         round_names_list.append(round_details)
-    return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_names=all_round_names)
+    return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_details=round_name_status_list)
 
 
 @app.route("/candidate/<candidate_id>/edit", methods=["GET", "POST"])

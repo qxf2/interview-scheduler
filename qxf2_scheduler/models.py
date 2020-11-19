@@ -110,6 +110,7 @@ class Candidateround(db.Model):
     candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
     round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
     round_status = db.Column(db.String)
+    candidate_feedback = db.Column(db.String)
 
 
 class Candidatestatus(db.Model):

@@ -588,3 +588,20 @@ def status_to_hired():
         db.session.commit()
 
     return candidate_id
+
+
+@app.route("/candidate/<candidate_id>/add_feedback",methods=["GET","POST"])
+def add_feedback(candidate_id):
+    "Adding the feedback for the candidates by interviewers"
+    if request.method == "GET":
+        return render_template("add-feedback.html",candidate_id=candidate_id)
+    if request.method == "POST":
+        error = "Success"
+        added_feedback = request.form.get("addedfeedback")
+        print(added_feedback)
+        Candidateround.query.filter(Candidateround.candidate_id==candidate_id).update({'candidate_feedback':added_feedback})
+        db.session.commit()
+        result = {'added_feedback':added_feedback,'error': error}
+
+    return jsonify(result)
+

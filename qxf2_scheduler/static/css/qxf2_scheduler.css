@@ -360,3 +360,9 @@ label,
         border-radius: 50%;
     }
 
+    .morecontent span {
+        display: none;
+    }
+    .morelink {
+        display: block;
+    }

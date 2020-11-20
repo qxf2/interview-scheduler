@@ -285,9 +285,13 @@ def get_round_names_and_status(candidate_id, job_id, all_round_id):
     round_name_status_list = []
     all_round_details = {}
     for every_round_id in all_round_id:
+        #Get the round status
         get_round_status = Candidateround.query.filter(Candidateround.candidate_id == candidate_id, Candidateround.job_id == job_id, Candidateround.round_id == every_round_id).value(Candidateround.round_status)
+        #Get the candidate feedback
+        candidate_feedback = Candidateround.query.filter(Candidateround.candidate_id == candidate_id, Candidateround.job_id == job_id, Candidateround.round_id == every_round_id).value(Candidateround.candidate_feedback)
+        #Get the round name
         get_round_name = Rounds.query.filter(Rounds.round_id==every_round_id).value(Rounds.round_name)
-        all_round_details = {'round_name':get_round_name, 'round_status':get_round_status}
+        all_round_details = {'round_name':get_round_name, 'round_status':get_round_status,'candidate_feedback':candidate_feedback}
         round_name_status_list.append(all_round_details)
 
     return round_name_status_list
@@ -322,7 +326,7 @@ def show_candidate_job(job_id, candidate_id):
     pending_round_ids = get_pending_round_id(job_id, candidate_id)
     #Get all rounds id for the job the candidate applied
     all_round_id = get_round_id(candidate_id, job_id)
-    #Get the roundstatus of the candidate job
+    #Get the roundstatus, feedback of the candidate job
     round_name_status_list = get_round_names_and_status(candidate_id, job_id, all_round_id)
 
     #Get the pending round id details from the table

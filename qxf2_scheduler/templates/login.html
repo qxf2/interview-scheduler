@@ -41,7 +41,7 @@
                                         placeholder="Your Password">
                                 </div>
                             </div>
-                            
+
                             <input type="button" class="btn btn-info" id="loginButton" value="Login">
                             <input type="button" class="btn btn-info" id="signupButton" value="Signup">
                         </form>
@@ -77,8 +77,14 @@
                                 document.location.href = "/index";
 
                             }
-                            else {
+                            else if(result.error == 'error')
+                            {
                                 alert("Please check your username and password");
+                                document.location.href = '/login';
+                            }
+                            else if (result.error == 'confirmation error')
+                            {
+                                alert("Please confirm your email address")
                                 document.location.href = '/login'
                             }
                         }

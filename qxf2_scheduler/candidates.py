@@ -608,3 +608,19 @@ def add_feedback(candidate_id):
 
     return jsonify(result)
 
+
+@app.route("/candidate/<candidate_id>/edit_feedback",methods=["GET","POST"])
+def edit_feedback(candidate_id):
+    "Adding the feedback for the candidates by interviewers"
+    if request.method == "GET":
+        added_candidate_feedback = Candidateround.query.filter(Candidateround.candidate_id == candidate_id).value(Candidateround.candidate_feedback)
+        return render_template("edit-feedback.html",candidate_id=candidate_id,candidate_feedback=added_candidate_feedback)
+    if request.method == "POST":
+        error = "Success"
+        edited_feedback = request.form.get("editedfeedback")
+        Candidateround.query.filter(Candidateround.candidate_id==candidate_id).update({'candidate_feedback':edited_feedback})
+        db.session.commit()
+        result = {'edited_feedback':edited_feedback,'error': error}
+
+    return jsonify(result)
+

@@ -45,14 +45,16 @@
                 <button type="button" name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
             </div>
         </div>
-        <input type="hidden" id="candidateId" value={{candidate_id}}>
+        <input type="hidden" id="candidateId" value={{result.candidate_id}}>
+        <input type="hidden" id="roundId" value={{result.round_id}}>
         <script>
             $("#addFeedback").button().on("click", function(){
                 var addedFeedback = document.getElementById("comments").value
                 var candidateId = document.getElementById("candidateId").value
+                var roundId = document.getElementById("roundId").value
                 $.ajax({
                     type : 'POST',
-                    url : '/candidate/'+candidateId+'/add_feedback',
+                    url : '/candidate/'+ candidateId + '/round/' + roundId +'/add_feedback',
                     data : {
                         'addedfeedback': addedFeedback
 

@@ -291,7 +291,7 @@ def get_round_names_and_status(candidate_id, job_id, all_round_id):
         candidate_feedback = Candidateround.query.filter(Candidateround.candidate_id == candidate_id, Candidateround.job_id == job_id, Candidateround.round_id == every_round_id).value(Candidateround.candidate_feedback)
         #Get the round name
         get_round_name = Rounds.query.filter(Rounds.round_id==every_round_id).value(Rounds.round_name)
-        all_round_details = {'round_name':get_round_name, 'round_status':get_round_status,'candidate_feedback':candidate_feedback}
+        all_round_details = {'round_name':get_round_name, 'round_status':get_round_status,'candidate_feedback':candidate_feedback,'round_id':every_round_id}
         round_name_status_list.append(all_round_details)
 
     return round_name_status_list
@@ -594,31 +594,33 @@ def status_to_hired():
     return candidate_id
 
 
-@app.route("/candidate/<candidate_id>/add_feedback",methods=["GET","POST"])
-def add_feedback(candidate_id):
+@app.route("/candidate/<candidate_id>/round/<round_id>/add_feedback",methods=["GET","POST"])
+def add_feedback(candidate_id, round_id):
     "Adding the feedback for the candidates by interviewers"
     if request.method == "GET":
-        return render_template("add-feedback.html",candidate_id=candidate_id)
+        data = {'candidate_id':candidate_id,'round_id':round_id}
+        return render_template("add-feedback.html",result=data)
     if request.method == "POST":
         error = "Success"
         added_feedback = request.form.get("addedfeedback")
-        Candidateround.query.filter(Candidateround.candidate_id==candidate_id).update({'candidate_feedback':added_feedback})
+        print(round_id)
+        Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':added_feedback})
         db.session.commit()
         result = {'added_feedback':added_feedback,'error': error}
 
     return jsonify(result)
 
 
-@app.route("/candidate/<candidate_id>/edit_feedback",methods=["GET","POST"])
-def edit_feedback(candidate_id):
+@app.route("/candidate/<candidate_id>/round/<round_id>/edit_feedback",methods=["GET","POST"])
+def edit_feedback(candidate_id, round_id):
     "Adding the feedback for the candidates by interviewers"
     if request.method == "GET":
-        added_candidate_feedback = Candidateround.query.filter(Candidateround.candidate_id == candidate_id).value(Candidateround.candidate_feedback)
+        added_candidate_feedback = Candidateround.query.filter(Candidateround.candidate_id == candidate_id, Candidateround.round_id==round_id).value(Candidateround.candidate_feedback)
         return render_template("edit-feedback.html",candidate_id=candidate_id,candidate_feedback=added_candidate_feedback)
     if request.method == "POST":
         error = "Success"
         edited_feedback = request.form.get("editedfeedback")
-        Candidateround.query.filter(Candidateround.candidate_id==candidate_id).update({'candidate_feedback':edited_feedback})
+        Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':edited_feedback})
         db.session.commit()
         result = {'edited_feedback':edited_feedback,'error': error}
 

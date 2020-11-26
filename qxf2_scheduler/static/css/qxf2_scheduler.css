@@ -361,7 +361,9 @@ label,
     }
 
     .morecontent span {
-        display: none;
+        position: absolute;
+        visibility:hidden;
+        display:none;
     }
     .morelink {
         display: block;

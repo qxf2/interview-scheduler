@@ -615,8 +615,9 @@ def add_feedback(candidate_id, round_id):
 def edit_feedback(candidate_id, round_id):
     "Adding the feedback for the candidates by interviewers"
     if request.method == "GET":
+        data = {'candidate_id':candidate_id,'round_id':round_id}
         added_candidate_feedback = Candidateround.query.filter(Candidateround.candidate_id == candidate_id, Candidateround.round_id==round_id).value(Candidateround.candidate_feedback)
-        return render_template("edit-feedback.html",candidate_id=candidate_id,candidate_feedback=added_candidate_feedback)
+        return render_template("edit-feedback.html",result=data,candidate_feedback=added_candidate_feedback)
     if request.method == "POST":
         error = "Success"
         edited_feedback = request.form.get("editedfeedback")

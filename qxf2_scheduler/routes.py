@@ -2,7 +2,7 @@
 This file contains all the endpoints exposed by the interview scheduler application
 """
 
-from flask import render_template, url_for, flash, redirect, jsonify, request, Response, session
+from flask import render_template, url_for, redirect, jsonify, request, Response, session
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
@@ -17,6 +17,7 @@ from flask_login import current_user, login_user,login_required,logout_user
 from pytz import timezone
 import flask, random, string
 import flask_login
+from flask import flash
 
 mail = Mail(app)
 

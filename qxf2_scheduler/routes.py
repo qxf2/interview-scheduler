@@ -58,7 +58,7 @@ def confirm_email(token):
     "Check the registered user email is confirmed or not"
     try:
         confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-        email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=3600)
+        email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=86400)
     except:
         flash('The confirmation link is invalid or has expired.', 'error')
         return redirect(url_for('login'))

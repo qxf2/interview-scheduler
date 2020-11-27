@@ -48,6 +48,8 @@ def send_email(subject, recipients, text_body):
     mail.send(msg)
     user = Login.query.filter_by(email=recipients[0]).first()
     user.email_confirmation_sent_on = datetime.datetime.now()
+    Login.query.filter(Login.email==recipients[0]).update({'email_confirmation_sent_on':datetime.datetime.now()})
+    db.session.commit()
 
 
 @app.route('/confirm/<token>', methods=['GET', 'POST'])
@@ -318,13 +320,13 @@ def login():
         password = request.form.get('password')
         data = {'username':username,'password':password}
         #fetch the email id of the user whose logged in
-        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed)
+        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on)
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
             logged_email_confirmation = logged_user.email_confirmed
-        print(logged_email_id,logged_email_confirmation)
+            logged_email_sent_on = logged_user.email_confirmation_sent_on
         session['logged_user'] = logged_email_id
-        if logged_email_confirmation == True:
+        if logged_email_confirmation == True or logged_email_sent_on == None:
             completion = validate(username)
             if completion ==False:
                 error = 'error.'

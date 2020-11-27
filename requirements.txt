@@ -13,6 +13,7 @@ colorama==0.4.1
 docopt==0.6.2
 execnet==1.7.1
 Flask==1.1.1
+Flask-Admin==1.5.7
 Flask-Alembic==2.0.1
 Flask-Login==0.5.0
 Flask-Mail==0.9.1
@@ -26,7 +27,7 @@ google-api-python-client==1.7.9
 google-auth==1.6.3
 google-auth-httplib2==0.0.3
 google-auth-oauthlib==0.4.0
-httplib2==0.18.0
+httplib2==0.13.0
 idna==2.8
 importlib-metadata==0.23
 isort==4.3.21
@@ -41,6 +42,7 @@ mccabe==0.6.1
 mock==3.0.5
 more-itertools==7.2.0
 oauthlib==3.0.2
+passlib==1.7.2
 pipreqs==0.4.9
 pluggy==0.13.0
 py==1.8.0
@@ -67,5 +69,6 @@ uritemplate==3.0.0
 urllib3==1.25.3
 Werkzeug==0.15.5
 wrapt==1.11.2
+WTForms==2.3.3
 yarg==0.1.9
 zipp==0.6.0

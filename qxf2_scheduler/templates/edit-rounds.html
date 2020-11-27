@@ -58,7 +58,7 @@
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
             <label class="col-md-4 control-label" for="rdescription"><span style="color:red">*</span>Round description</label>
-            <div class="col-md-4">                
+            <div class="col-md-4">
                 <textarea name="rdesc" maxlength="500"id="rdesc" style="width:380px; height:300px;" required>{{each_details.round_description}}</textarea>
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
@@ -97,21 +97,18 @@
             'use strict';
             window.addEventListener('load', function () {
                 var forms = document.getElementsByClassName('needs-validation');
-                console.log("I am inside function");
                 var validation = Array.prototype.filter.call(forms, function (form) {
                     form.addEventListener('submit', function (event) {
                         event.preventDefault();
                         event.stopPropagation();
                         $("#resultDiv").empty();
                         if (form.checkValidity() === true) {
-                            console.log("I am coming here")
                             var roundName = $("#rname").val();
                             var roundTime = $("#rtime").val();
                             var roundDescription = $("#rdesc").val();
                             var roundRequirements = $("#rreq").val();
                             var roundId = document.getElementById("roundId").value;
                             var jobId = document.getElementById("jobId").value;
-                            console.log(roundName, roundTime, roundDescription, roundRequirements);
                             $.ajax({
                                 type: 'POST',
                                 url: '/rounds/' + roundId + '/jobs/' + jobId + '/edit',

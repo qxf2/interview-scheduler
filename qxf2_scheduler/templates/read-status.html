@@ -42,7 +42,7 @@
         <div>
             <input class="btn btn-info" type="button" id="add" onclick="addStatus()" value="Add">
         </div>
-        
+
         <div class="row-fluid top-space-20">
             {% if result | length == 0 %}
             <div>
@@ -98,15 +98,12 @@
         // Remove button event trigger
         $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
             var triggeringElement = $(e.relatedTarget);
-            console.log("Triggering element is: ", triggeringElement.data('href'));
             $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
-            console.log("This is in confirm delete" + $(e.relatedTarget).data('href'));
             var modal = $(this)
             var statusId = $(e.relatedTarget).data('statusid');
             modal.find('.modal-body').text('Are you sure you wish to delete this ' + triggeringElement.data("statusname") + '  status? ')
             $("#remove-button").on('click', function () {
                 var jobid = triggeringElement.data('href');
-                console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
                 $.ajax({
                     type: 'POST',
                     url: '/status/' + statusId + '/delete',
@@ -116,7 +113,6 @@
                     },
                     success: function (data) {
                         var msg = "The  deleted status is " + data.status_name;
-                        console.log(msg, data);
                         $('#myModal').modal('show');
                         $('#myModal .modal-body p').html(msg);
                     }

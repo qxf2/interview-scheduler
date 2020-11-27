@@ -249,10 +249,11 @@ def before_request():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-@app.route('/')
 def login():
     error = None
     if request.method == 'GET':
+        if current_user.is_authenticated:
+            return redirect(url_for('index'))
         return render_template('login.html', error=error)
     if request.method == 'POST':
         username = request.form.get('username')
@@ -274,7 +275,7 @@ def login():
                 user = Login()
                 user.name=username
                 user.password=password
-                login_user(user)
+                login_user(user,remember=True)
                 error = 'Success'
         api_response = {'data':data,'error':error}
         return jsonify(api_response)
@@ -289,6 +290,7 @@ def logout():
 
 
 @app.route("/index")
+@app.route("/")
 @login_required
 def index():
     "The index page"

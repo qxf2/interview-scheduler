@@ -321,7 +321,6 @@
                     'round_name': roundName
                 },
                 success: function (roundResults) {
-                    console.log(roundResults.round_time);
                     $("#rdesc").show();
                     $("#rdesc").text(roundResults.round_description);
                     $("#roundId").val(roundResults.round_id);
@@ -549,7 +548,6 @@
             var jobId = document.getElementById("jobId").value;
             //var roundId = document.getElementById("roundId").value;
             var roundId = $("#roundId").val()
-            console.log(candidateId, jobId, roundId)
             $.ajax({
                 type: 'POST',
                 url: "/regenerate/url",
@@ -581,7 +579,6 @@
         function noresponse() {
             candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
-            console.log(candidateId, jobId);
             $.ajax({
                 type: 'POST',
                 url: '/candidate/noresponse',

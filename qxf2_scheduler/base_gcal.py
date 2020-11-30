@@ -82,6 +82,7 @@ def get_events_for_date(service,email_id,fetch_date,maxResults=240,debug=False):
                 start = event['start'].get('dateTime', event['start'].get('date'))
 
     except Exception as HttpError:
+        print("I am inside exception")
         pass
 
     return events

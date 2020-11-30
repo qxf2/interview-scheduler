@@ -399,17 +399,15 @@ def get_busy_slots_for_date(email_id,fetch_date,debug=False):
                     if 'PTO'.lower() == event_name.lower():
                         pto_flag = True
                         break
-            if pto_flag:
-                busy_slots = gcal.make_day_busy(fetch_date)
-
-            else:
-                busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
+        else:
+            pto_flag = True
+        if pto_flag:
+            busy_slots = gcal.make_day_busy(fetch_date)
 
         else:
             busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
 
     return busy_slots,pto_flag
-
 
 def get_interviewer_email_id(interviewer_work_time_slots):
     "Parse the email id from the list"
@@ -446,6 +444,7 @@ def get_free_slots_for_date(fetch_date,interviewer_work_time_slots,debug=False):
             final_processed_free_slots += process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_interviewer_email_id,busy_slots)
         if len_of_busy_slots >=1:
             final_processed_free_slots += process_free_slot(fetch_date,day_start_hour,day_end_hour,individual_interviewer_email_id,busy_slots)
+
     return final_processed_free_slots
 
 

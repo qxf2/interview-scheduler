@@ -7,6 +7,7 @@ from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
+from qxf2_scheduler.security import encrypt_password,check_encrypted_password
 import json
 import ast,re,uuid
 import sys,datetime
@@ -102,12 +103,11 @@ def registration():
         user_password = request.form.get('userpassword')
         user_email = request.form.get('useremail')
         check_user_exist = check_user_exists(user_email)
-        data = {'user_name':user_name,'user_email':user_email,'user_password':user_password}
+        data = {'user_name':user_name,'user_email':user_email}
         if check_user_exist == True:
             error = 'error'
         else:
-
-            add_new_user_object = Login(username=user_name,email=user_email,password=user_password)
+            add_new_user_object = Login(username=user_name,email=user_email,password=encrypt_password(user_password))
             db.session.add(add_new_user_object)
             db.session.flush()
             user_id = add_new_user_object.id
@@ -293,7 +293,7 @@ def validate(username):
 
 def password_validate(password):
     "Validate the username and passowrd"
-    exists = db.session.query(db.exists().where(Login.password == password)).scalar()
+    exists = db.session.query(db.exists().where(Login.password == check_encrypted_password(password))).scalar()
 
     return exists
 
@@ -310,15 +310,16 @@ def gen_random_key():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-@app.route('/')
 def login():
     error = None
     if request.method == 'GET':
+        if current_user.is_authenticated:
+            return redirect(url_for('index'))
         return render_template('login.html', error=error)
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        data = {'username':username,'password':password}
+        data = {'username':username}
         #fetch the email id of the user whose logged in
         user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on)
         for logged_user in user_email_id:
@@ -331,7 +332,7 @@ def login():
             if completion ==False:
                 error = 'error.'
             else:
-                password_check = password_validate(password)
+                password_check = check_encrypted_password(password,hashed)
                 if password_check ==False:
                     error = 'error.'
                 else:
@@ -357,6 +358,7 @@ def logout():
 
 
 @app.route("/index")
+@app.route("/")
 @login_required
 def index():
     "The index page"
@@ -418,7 +420,7 @@ def form_interviewer_details(interviewer_details):
     return parsed_interviewer_details
 
 
-@app.route("/<interviewer_id>/interviewer")
+@app.route("/interviewer/<interviewer_id>")
 @login_required
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
@@ -573,7 +575,7 @@ def check_job_status(job_id):
     return job_status
 
 
-@app.route("/<job_id>/details/")
+@app.route("/details/job/<job_id>")
 @login_required
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id"

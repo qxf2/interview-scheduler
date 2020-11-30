@@ -322,11 +322,12 @@ def login():
         password = request.form.get('password')
         data = {'username':username}
         #fetch the email id of the user whose logged in
-        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on)
+        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on,Login.password)
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
             logged_email_confirmation = logged_user.email_confirmed
             logged_email_sent_on = logged_user.email_confirmation_sent_on
+            hashed = logged_user.password
         session['logged_user'] = logged_email_id
         if logged_email_confirmation == True or logged_email_sent_on == None:
             completion = validate(username)

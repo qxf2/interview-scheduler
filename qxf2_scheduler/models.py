@@ -110,6 +110,7 @@ class Candidateround(db.Model):
     candidate_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
     round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
     round_status = db.Column(db.String)
+    candidate_feedback = db.Column(db.String)
 
 
 class Candidatestatus(db.Model):
@@ -141,9 +142,12 @@ class Login(db.Model,UserMixin):
     username = db.Column(db.String,nullable=False)
     password = db.Column(db.String,nullable=False)
     email = db.Column(db.String,nullable=False)
+    email_confirmation_sent_on = db.Column(db.DateTime, nullable=True)
+    email_confirmed = db.Column(db.Boolean, nullable=True, default=False)
+    email_confirmed_on = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
-        return f"Login('{self.id}','{self.username}','{self.password}','{self.email}')"
+        return f"Login('{self.id}','{self.username}','{self.password}','{self.email}','{self.email_confirmation_sent_on}','{self.email_confirmed}','{self.email_confirmed_on}')"
 
 
 @login_manager.user_loader

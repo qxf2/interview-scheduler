@@ -22,9 +22,12 @@ app.config.update(
 	MAIL_SERVER='smtp.gmail.com',
 	MAIL_PORT=465,
 	MAIL_USE_SSL=True,
+	MAIL_USE_TLS = False,
 	MAIL_USERNAME = email_conf.MAIL_USERNAME,
-	MAIL_PASSWORD = email_conf.MAIL_PASSWORD
+	MAIL_PASSWORD = email_conf.MAIL_PASSWORD,
+	MAIL_DEFAULT_SENDER = email_conf.MAIL_USERNAME
 	)
+
 
 login_manager = LoginManager()
 login_manager.login_view = 'login'

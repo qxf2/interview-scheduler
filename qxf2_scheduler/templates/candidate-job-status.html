@@ -11,13 +11,15 @@
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet">
     <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
 
     <!--JS-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js">
+    </script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
@@ -51,11 +53,43 @@
                             <label class="col-md-10" for="jobApplied">{{result.job_applied}}</label>
                         </div>
                         <br>
+                        {% for each_round_name in all_round_details %}
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="roundName">Round Name(
+                                {{ each_round_name ['round_name']}}):</label>
+                            {% if (each_round_name['round_status'] == None) or (each_round_name['round_status']) == 'Invitation Sent' %}
+                            <label class="col-md-10" for="eachRound">
+                                {{ each_round_name['round_status']}}
+                                {% else %}
+                                <label class="col-md-10" for="eachRound">
+                                    {{ each_round_name['round_status']}}&nbsp;
+                                    <a
+                                        href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/add_feedback">Add
+                                        feedback</a>&nbsp;<a
+                                        href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/edit_feedback">Edit
+                                        feedback</a> </label>
+                                {% endif %}
+
+                        </div>
+                        <br>
+                        <div class="col-md-12 form-display">
+                            <label class="col-md-2 labelbold">Interviewer Feedback:</label>
+                            {% if each_round_name['candidate_feedback'] == None %}
+                            <label class="col-md-10">{{each_round_name['candidate_feedback']}}</label>
+                            {% else %}
+                            <label class="col-md-10">
+                                <span class="more">
+                                    {{each_round_name['candidate_feedback']|markdown}}
+                                </span>
+                            </label>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
                         <div class="col-md-12 form-display">
                             <label class="labelbold col-md-2" for="Interviewer details:">Interviewer Email:</label>
                             {% if result.interviewer_email_id == None%}
                             <label class="col-md-10" for="interviewerDetails">
-                            Interview not yet scheduled</label>
+                                Interview not yet scheduled</label>
                             {% else %}
                             <label class="col-md-10" for="interviewerDetails">
                                 <p>{{result.interviewer_email_id}}</p>
@@ -77,7 +111,7 @@
                             {% else %}
                             <label class="col-md-10" for="interviewerDetails"
                                 style="max-width:450px; word-wrap: break-word">
-                            {{result.url}}</label>
+                                {{result.url}}</label>
                             {% endif %}
                         </div>
                         <br>
@@ -99,7 +133,7 @@
                             <label class="col-md-10" for="interviewerDetails">
                                 {% if result.interview_start_time == None%}
                                 Interview not yet scheduled
-                            {% else %}
+                                {% else %}
                                 <p>{{result.interview_start_time}}</p>
                             </label>
                             {% endif %}
@@ -154,10 +188,11 @@
                             <label class="col-md-10" for="inviteSent">Waiting on Candidate</label>
                         </div>
                         <div class="col-md-12 form-display">
-                                <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
-                                    value="Regenerate URL">
-                                    &nbsp;&nbsp;
-                                    <input class="btn btn-info" type="button" id="noResponse" onclick="noresponse()" value="No response">
+                            <input class="btn btn-info" type="button" id="regenerateUrl" onclick="regenerate()"
+                                value="Regenerate URL">
+                            &nbsp;&nbsp;
+                            <input class="btn btn-info" type="button" id="noResponse" onclick="noresponse()"
+                                value="No response">
 
                         </div>
                         {% elif result.candidate_status == 'Waiting for new opening' %}
@@ -203,8 +238,8 @@
                                 value="Regenerate URL">
                             {% elif result.candidate_status == 'Waiting on Qxf2' %}
                             <div class="col-md-12">
-                                <input class="col-md-2 btn btn-info" type="button" id="hireButton" onclick="hirebutton()"
-                                    value="Hired">
+                                <input class="col-md-2 btn btn-info" type="button" id="hireButton"
+                                    onclick="hirebutton()" value="Hired">
                             </div>
                             {% endif %}
                         </div>
@@ -342,7 +377,7 @@
             var roundTime = document.getElementById("roundTime").value;
             var expiryDate = document.getElementById("expiryDate").value
             var newDate = new Date(expiryDate)
-            var expiryDate = $.datepicker.formatDate("dd-mm-yy",newDate)
+            var expiryDate = $.datepicker.formatDate("dd-mm-yy", newDate)
             $('#err-name').empty();
             if (roundDescription == '') {
                 isValid = false;
@@ -362,7 +397,7 @@
                         'roundid': roundId,
                         'roundname': roundName,
                         'roundtime': roundTime,
-                        'expirydate':expiryDate
+                        'expirydate': expiryDate
                     },
                     success: function (result) {
 
@@ -570,7 +605,7 @@
                 url: '/candidate/hired',
                 data: {
                     'candidateid': candidateId,
-                    'jobid':jobId
+                    'jobid': jobId
                 },
                 success: function (result) {
                     alert("The candidate status has been changed to Hired");
@@ -583,6 +618,44 @@
 
         }
 
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            // Configure/customize these variables.
+            var showChar = 100;  // How many characters are shown by default
+            var ellipsestext = "...";
+            var moretext = "Show less";
+            var lesstext = "Show more";
+
+
+            $('.more').each(function () {
+                var content = $(this).html();
+                if (content.length > showChar) {
+
+                    var c = content.substr(0, showChar);
+                    console.log(c);
+                    var h = content.substr(showChar, content.length - showChar);
+                    var textFeed = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent">' + h + '</span><span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+                    $(this).html(textFeed);
+                }
+
+            });
+
+            $(".morelink").click(function () {
+                if ($(this).hasClass("less")) {
+                    $(this).removeClass("less");
+                    $(this).html(moretext);
+                } else {
+                    $(this).addClass("less");
+                    $(this).html(lesstext);
+                }
+                $(this).parent().prev().toggle();
+                $(this).prev().toggle();
+                return false;
+            });
+        })
     </script>
 
 </body>

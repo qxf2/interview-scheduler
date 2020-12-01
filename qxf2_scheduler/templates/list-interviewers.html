@@ -65,7 +65,7 @@
                 <tr>
                     <td>{{ each_interviewer.interviewer_id }}</td>
                     <td><a class="href-link"
-                            href="/{{ each_interviewer.interviewer_id }}/interviewer">{{ each_interviewer.interviewer_name }}</a>
+                            href="/interviewer/{{ each_interviewer.interviewer_id }}">{{ each_interviewer.interviewer_name }}</a>
                     </td>
                     <td><button class="link-button" type="button" id="edit"
                             onclick="editinterviewer({{ each_interviewer.interviewer_id }})">Edit</button>&nbsp;&nbsp;
@@ -108,20 +108,16 @@
         // Remove button event trigger
         $('#confirmdeletemodal').on('shown.bs.modal', function (e) {
             var triggeringElement = $(e.relatedTarget);
-            console.log("Triggering element is: ", triggeringElement.data('href'), 'hi', triggeringElement.data("username"));
             $(this).find('#remove-button').attr('href', $(e.relatedTarget).data('href'));
-            console.log("This is in confirmdelete" + $(e.relatedTarget).data('href'));
             var modal = $(this)
             modal.find('.modal-body').text('Are you sure you wish to delete this  user from the list? ')
             $("#remove-button").on('click', function () {
-                console.log("I am inside the remove button", $(e.relatedTarget).data('href'));
                 $.ajax({
                     type: 'POST',
                     url: '/interviewer/' + $(e.relatedTarget).data('href') + '/delete',
                     data: { 'interviewer-id': $(e.relatedTarget).data('href') },
                     success: function (data) {
                         var msg = "The user deleted is " + data.interviewer_name;
-                        console.log(msg, data);
                         $('#myModal').modal('show');
                         $('#myModal .modal-body p').html(msg);
 
@@ -138,7 +134,6 @@
 
     <script>
         function editinterviewer(interviewer_id) {
-            console.log(interviewer_id);
             document.location.href = "/interviewer/"+interviewer_id+"/edit";
 
         }

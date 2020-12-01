@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    {% include "messages.html" %}
     <section class="hero is-primary is-fullheight">
         <div class="hero-head">
             <nav class="navbar">
@@ -21,11 +22,11 @@
                 </div>
             </nav>
         </div>
-
         <div class="hero-body">
             <div class="container has-text-centered">
                 <div class="column is-4 is-offset-4">
                     <h3 class="title">Login</h3>
+
                     <div class="box">
                         <form>
                             <div class="field">
@@ -41,7 +42,7 @@
                                         placeholder="Your Password">
                                 </div>
                             </div>
-                            
+
                             <input type="button" class="btn btn-info" id="loginButton" value="Login">
                             <input type="button" class="btn btn-info" id="signupButton" value="Signup">
                         </form>
@@ -62,7 +63,6 @@
                 $('#loginButton').click(function () {
                     userName = $("#username").val();
                     userPassword = $("#userpassword").val();
-                    console.log(userName, userPassword);
                     $.ajax({
                         type: 'Post',
                         url: '/login',
@@ -71,14 +71,19 @@
                             password: userPassword
                         },
                         success: function (result) {
-                            console.log(result);
                             if (result.error == 'Success') {
                                 alert("The Credentials are correct and logging in");
                                 document.location.href = "/index";
 
                             }
-                            else {
+                            else if(result.error == 'error')
+                            {
                                 alert("Please check your username and password");
+                                document.location.href = '/login';
+                            }
+                            else if (result.error == 'confirmation error')
+                            {
+                                alert("Please confirm your email address")
                                 document.location.href = '/login'
                             }
                         }

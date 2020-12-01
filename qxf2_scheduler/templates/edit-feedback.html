@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Edit feedback</title>
+
+    <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .bs-example {
+            margin: 20px;
+        }
+
+        textarea {
+            display: inline
+        }
+    </style>
+</head>
+
+    <body>
+            {% include "logout.html" %}
+            <div>
+            <h2 class="grey_text text-justify">Edit feedback</h2>
+            <label class="col-md-4 control-label" for="feedback"><span style="color:red">*</span>Edit your feedback</label>
+            <div class="col-md-4">
+                <textarea id="comments" name="comments" rows="10" col="20" class="form-control"required>{{candidate_feedback}}</textarea>
+
+                <div class="valid-feedback">Valid</div>
+                <div class="invalid-feedback">Please fill out this field</div>
+
+        </div>
+        <div>
+            <label class="col-md-4 control-label" for="save"></label>
+            <div class="col-md-8">
+                <button class="btn btn-info" id="editFeedback" type="submit">Submit</button>
+                <button type="button" name="clear" onclick="clearEdit()" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+        <input type="hidden" id="candidateId" value={{result.candidate_id}}>
+        <input type="hidden" id="roundId" value={{result.round_id}}>
+        <script>
+            $("#editFeedback").button().on("click", function(){
+                var editedFeedback = document.getElementById("comments").value
+                var candidateId = document.getElementById("candidateId").value
+                var roundId = document.getElementById("roundId").value
+                $.ajax({
+                    type : 'POST',
+                    url : '/candidate/'+ candidateId + '/round/' + roundId +'/edit_feedback',
+                    data : {
+                        'editedfeedback': editedFeedback
+
+                    },
+                    success: function(result){
+                        console.log(result);
+                        if (result.error == "Success"){
+                            alert("The feedback has been edited")
+                            document.location.href = '/candidates'
+                        }
+                    }
+                })
+            })
+
+        </script>
+    </body>
+</html>

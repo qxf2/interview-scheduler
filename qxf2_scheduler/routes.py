@@ -2,20 +2,23 @@
 This file contains all the endpoints exposed by the interview scheduler application
 """
 
-from flask import render_template, url_for, flash, redirect, jsonify, request, Response, session
+from flask import render_template, url_for, redirect, jsonify, request, Response, session
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
+from qxf2_scheduler.security import encrypt_password,check_encrypted_password
 import json
 import ast,re,uuid
 import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message, Mail
 from flask_login import current_user, login_user,login_required,logout_user
 from pytz import timezone
-import flask
+import flask, random, string
 import flask_login
+from flask import flash
 
 mail = Mail(app)
 
@@ -39,8 +42,61 @@ def check_user_exists(user_email):
 
     return check_user_exists
 
+
+def send_email(subject, recipients, text_body):
+    "Send the email"
+    msg = Message(subject, recipients=recipients)
+    msg.html = text_body
+    mail.send(msg)
+    user = Login.query.filter_by(email=recipients[0]).first()
+    user.email_confirmation_sent_on = datetime.datetime.now()
+    Login.query.filter(Login.email==recipients[0]).update({'email_confirmation_sent_on':datetime.datetime.now()})
+    db.session.commit()
+
+
+@app.route('/confirm/<token>', methods=['GET', 'POST'])
+def confirm_email(token):
+    "Check the registered user email is confirmed or not"
+    try:
+        confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=86400)
+    except:
+        flash('The confirmation link is invalid or has expired.', 'error')
+        return redirect(url_for('login'))
+
+    user = Login.query.filter_by(email=email).first()
+
+    if user.email_confirmed:
+        flash('Account already confirmed. Please login.', 'info')
+    else:
+        user.email_confirmed = True
+        user.email_confirmed_on = datetime.datetime.now()
+        db.session.add(user)
+        db.session.commit()
+        flash('Thank you for confirming your email address!')
+
+    return redirect(url_for('login'))
+
+
+def send_confirmation_email(user_email):
+    "Sends the confirmation email"
+    app.secret_key = gen_random_key()
+    confirm_serializer = URLSafeTimedSerializer(app.secret_key)
+    token=confirm_serializer.dumps(user_email, salt='email-confirmation-salt')
+    confirm_url = url_for(
+        'confirm_email',
+        token=token,
+        _external=True)
+    html = render_template(
+        'email_confirmation.html',
+        confirm_url=confirm_url)
+
+    send_email('Confirm Your Email Address', [user_email], html)
+
+
 @app.route("/registration",methods=['GET','POST'])
 def registration():
+    "New registration"
     if request.method == 'GET':
         return render_template('signup.html')
     if request.method == 'POST':
@@ -48,16 +104,18 @@ def registration():
         user_password = request.form.get('userpassword')
         user_email = request.form.get('useremail')
         check_user_exist = check_user_exists(user_email)
-        data = {'user_name':user_name,'user_email':user_email,'user_password':user_password}
+        data = {'user_name':user_name,'user_email':user_email}
         if check_user_exist == True:
             error = 'error'
         else:
-            add_new_user_object = Login(username=user_name,email=user_email,password=user_password)
+            add_new_user_object = Login(username=user_name,email=user_email,password=encrypt_password(user_password))
             db.session.add(add_new_user_object)
             db.session.flush()
             user_id = add_new_user_object.id
             db.session.commit()
             error = 'Success'
+            send_confirmation_email(user_email)
+            flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
         api_response = {'data':data,'error':error}
 
     return jsonify(api_response)
@@ -236,7 +294,7 @@ def validate(username):
 
 def password_validate(password):
     "Validate the username and passowrd"
-    exists = db.session.query(db.exists().where(Login.password == password)).scalar()
+    exists = db.session.query(db.exists().where(Login.password == check_encrypted_password(password))).scalar()
 
     return exists
 
@@ -247,36 +305,49 @@ def before_request():
     app.permanent_session_lifetime = datetime.timedelta(minutes = 60)
     flask.session.modified = True
 
+def gen_random_key():
+    "Generate random key for signup"
+    return ''.join(random.choices(string.ascii_uppercase + string.digits))
+
 
 @app.route('/login', methods=['GET', 'POST'])
-@app.route('/')
 def login():
     error = None
     if request.method == 'GET':
+        if current_user.is_authenticated:
+            return redirect(url_for('index'))
         return render_template('login.html', error=error)
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        data = {'username':username,'password':password}
+        data = {'username':username}
         #fetch the email id of the user whose logged in
-        user_email_id = Login.query.filter(Login.username==username).values(Login.email)
+        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on,Login.password)
         for logged_user in user_email_id:
             logged_email_id = logged_user.email
+            logged_email_confirmation = logged_user.email_confirmed
+            logged_email_sent_on = logged_user.email_confirmation_sent_on
+            hashed = logged_user.password
         session['logged_user'] = logged_email_id
-        completion = validate(username)
-        if completion ==False:
-            error = 'error.'
-        else:
-            password_check = password_validate(password)
-            if password_check ==False:
+        if logged_email_confirmation == True or logged_email_sent_on == None:
+            completion = validate(username)
+            if completion ==False:
                 error = 'error.'
             else:
-                user = Login()
-                user.name=username
-                user.password=password
-                login_user(user)
-                error = 'Success'
-        api_response = {'data':data,'error':error}
+                password_check = check_encrypted_password(password,hashed)
+                if password_check ==False:
+                    error = 'error.'
+                else:
+                    user = Login()
+                    user.name=username
+                    user.password=password
+                    login_user(user)
+                    error = 'Success'
+            api_response = {'data':data,'error':error}
+        else:
+            error = 'confirmation error'
+            api_response = {'data':username, 'error':error}
+
         return jsonify(api_response)
 
 
@@ -289,6 +360,7 @@ def logout():
 
 
 @app.route("/index")
+@app.route("/")
 @login_required
 def index():
     "The index page"
@@ -350,7 +422,7 @@ def form_interviewer_details(interviewer_details):
     return parsed_interviewer_details
 
 
-@app.route("/<interviewer_id>/interviewer")
+@app.route("/interviewer/<interviewer_id>")
 @login_required
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
@@ -505,7 +577,7 @@ def check_job_status(job_id):
     return job_status
 
 
-@app.route("/<job_id>/details/")
+@app.route("/details/job/<job_id>")
 @login_required
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id"

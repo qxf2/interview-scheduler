@@ -137,6 +137,23 @@ def convert_interviewer_time_into_string(interviewer_time):
     interviewer_actual_time = interviewer_actual_time.strftime("%H") + ":" + interviewer_actual_time.strftime("%M")
     return interviewer_actual_time
 
+def get_busy_slots_for_fetched_email_id(email_id,fetch_date,debug=False):
+    "Get the busy slots for a given date"
+    service = gcal.base_gcal()
+    busy_slots = []
+    event_organizer_list = []
+    if service:
+        all_events = gcal.get_events_for_date(service,email_id,fetch_date)
+        if all_events:
+            for event in all_events:
+                event_organizer = event['organizer']['email']
+                print(event_organizer)
+                event_organizer_list.append(event_organizer)
+            busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
+
+    return busy_slots
+
+
 
 def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_email,selected_slot,round_name,round_description):
     "Create an event for fetched date and time"
@@ -144,6 +161,9 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
     interviewer_candidate_email = []
     if ',' in interviewer_emails:
         attendee_email_id = interviewer_emails.split(',')
+        for each_attendee in attendee_email_id:
+            busy_slots = get_busy_slots_for_fetched_email_id(each_attendee,date)
+            print("line number 165",busy_slots,each_attendee,len(busy_slots))
         attendee_email_id = random.choice(attendee_email_id)
     else:
         attendee_email_id = interviewer_emails

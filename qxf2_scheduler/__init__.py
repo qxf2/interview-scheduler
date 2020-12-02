@@ -6,12 +6,14 @@ from flaskext.markdown import Markdown
 import qxf2_scheduler.db_config as conf
 import qxf2_scheduler.email_config as email_conf
 import os
+import logging
 
 app = Flask(__name__)
 db_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/interviewscheduler.db'))
 app.secret_key = "qxf2-database"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///%s"%db_file
+logging.basicConfig(filename='record.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 db = SQLAlchemy(app)
 Markdown(app)
 

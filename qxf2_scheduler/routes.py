@@ -60,7 +60,10 @@ def confirm_email(token):
     try:
         confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
         email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=86400)
-    except:
+    except Exception as e:
+        app.logger.info('Info level log',e)
+        app.logger.warning('Warning level log')
+        app.logger.critical(e, exc_info=True)
         flash('The confirmation link is invalid or has expired.', 'error')
         return redirect(url_for('login'))
 

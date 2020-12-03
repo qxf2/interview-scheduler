@@ -59,7 +59,7 @@ def confirm_email(token):
     "Check the registered user email is confirmed or not"
     try:
         confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-        email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=86400)
+        email = confirm_serializer.loads(token, salt='scheduling-app-2000', max_age=86400)
     except Exception as e:
         app.logger.info('Info level log',e)
         app.logger.warning('Warning level log')
@@ -83,13 +83,14 @@ def confirm_email(token):
 
 def send_confirmation_email(user_email):
     "Sends the confirmation email"
-    app.secret_key = gen_random_key()
     confirm_serializer = URLSafeTimedSerializer(app.secret_key)
-    token=confirm_serializer.dumps(user_email, salt='email-confirmation-salt')
+    token=confirm_serializer.dumps(user_email, salt='scheduling-app-2000')
+    app.logger.critical(f'token:{token}')
     confirm_url = url_for(
         'confirm_email',
         token=token,
         _external=True)
+    app.logger.critical(f'confirmurl:{confirm_url}')
     html = render_template(
         'email_confirmation.html',
         confirm_url=confirm_url)
@@ -321,53 +322,40 @@ def login():
             return redirect(url_for('index'))
         return render_template('login.html', error=error)
     if request.method == 'POST':
-        try:
-            username = request.form.get('username')
-            password = request.form.get('password')
-            data = {'username':username}
-            #fetch the email id of the user whose logged in
-            user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on,Login.password)
-            for logged_user in user_email_id:
-                logged_email_id = logged_user.email
-                logged_email_confirmation = logged_user.email_confirmed
-                logged_email_sent_on = logged_user.email_confirmation_sent_on
-                hashed = logged_user.password
-            session['logged_user'] = logged_email_id
-            print(logged_email_id,logged_email_confirmation,logged_email_sent_on,"hi 336")
-            try:
-                if logged_email_confirmation == True or logged_email_sent_on == None:
-                    completion = validate(username)
-                    print("completion 340",completion)
-                    app.logger.critical(completion,exc_info=True)
-                    if completion ==False:
-                        error = 'error.'
-                    else:
-                        password_check = check_encrypted_password(password,hashed)
-                        if password_check ==False:
-                            error = 'error.'
-                        else:
-                            user = Login()
-                            user.name=username
-                            user.password=password
-                            login_user(user)
-                            error = 'Success'
-                            print(error,"354")
-                            app.logger.critical(error,exc_info=True)
-                    api_response = {'data':data,'error':error}
+        username = request.form.get('username')
+        password = request.form.get('password')
+        data = {'username':username}
+        #fetch the email id of the user whose logged in
+        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on,Login.password)
+        for logged_user in user_email_id:
+            logged_email_id = logged_user.email
+            logged_email_confirmation = logged_user.email_confirmed
+            logged_email_sent_on = logged_user.email_confirmation_sent_on
+            hashed = logged_user.password
+        session['logged_user'] = logged_email_id
+        if logged_email_confirmation or not logged_email_sent_on:
+            completion = validate(username)
+            print("completion 340",completion)
+            app.logger.critical(completion,exc_info=True)
+            if completion ==False:
+                error = 'error.'
+            else:
+                password_check = check_encrypted_password(password,hashed)
+                if password_check ==False:
+                    error = 'error.'
                 else:
-                    error = 'confirmation error'
-                    api_response = {'data':username, 'error':error}
-            except Exception as e:
-                print(e,"361")
-                app.logger.critical(e, exc_info=True)
-                app.logger.warning('Warning level log inside try')
+                    user = Login()
+                    user.name=username
+                    user.password=password
+                    login_user(user)
+                    error = 'Success'
+                    print(error,"354")
+                    app.logger.critical(error,exc_info=True)
+            api_response = {'data':data,'error':error}
+        else:
+            error = 'confirmation error'
+            api_response = {'data':username, 'error':error}
 
-        except Exception as e:
-            print(e,"366")
-            app.logger.critical(e, exc_info=True)
-            app.logger.info('Info level log outside try',e)
-        print(api_response)
-        app.logger.critical(api_response,exc_info=True)
         return jsonify(api_response)
 
 

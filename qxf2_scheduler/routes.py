@@ -333,9 +333,12 @@ def login():
                 logged_email_sent_on = logged_user.email_confirmation_sent_on
                 hashed = logged_user.password
             session['logged_user'] = logged_email_id
+            print(logged_email_id,logged_email_confirmation,logged_email_sent_on,"hi 336")
             try:
                 if logged_email_confirmation == True or logged_email_sent_on == None:
                     completion = validate(username)
+                    print("completion 340",completion)
+                    app.logger.critical(completion,exc_info=True)
                     if completion ==False:
                         error = 'error.'
                     else:
@@ -348,18 +351,23 @@ def login():
                             user.password=password
                             login_user(user)
                             error = 'Success'
+                            print(error,"354")
+                            app.logger.critical(error,exc_info=True)
                     api_response = {'data':data,'error':error}
                 else:
                     error = 'confirmation error'
                     api_response = {'data':username, 'error':error}
             except Exception as e:
+                print(e,"361")
                 app.logger.critical(e, exc_info=True)
                 app.logger.warning('Warning level log inside try')
 
         except Exception as e:
+            print(e,"366")
             app.logger.critical(e, exc_info=True)
             app.logger.info('Info level log outside try',e)
-
+        print(api_response)
+        app.logger.critical(api_response,exc_info=True)
         return jsonify(api_response)
 
 

@@ -165,7 +165,7 @@ def total_busy_slot_for_interviewer(busy_slots):
         end_time = each_slot['end']
         diff_time = calculate_difference_in_time(start_time,end_time)
         total_busy_time = total_busy_time + diff_time
-        print(total_busy_time)
+
     return total_busy_time
 
 
@@ -193,7 +193,6 @@ def total_busy_slots(attendee_email_id, date):
         total_time = total_busy_slot_for_interviewer(busy_slots)
         total_busy_time_list.append(total_time)
 
-    print(total_busy_time_list,attendee_email_id)
     return total_busy_time_list
 
 
@@ -202,16 +201,13 @@ def total_count_list(attendee_email_id):
     total_interview_count_list = []
     for new_attendee in attendee_email_id:
         attendee_id = Interviewers.query.filter(Interviewers.interviewer_email == new_attendee).value(Interviewers.interviewer_id)
-        print("Iam attendee id",attendee_id)
         #fetch the interview count for the interviewer
         interview_count = Interviewcount.query.filter(Interviewcount.interviewer_id == attendee_id).value(Interviewcount.interview_count)
-        print("interview count",interview_count)
         if interview_count is None:
-            print("interview count none",interview_count)
             total_interview_count_list.append(0)
         else:
             total_interview_count_list.append(interview_count)
-    print(total_interview_count_list,attendee_email_id)
+
     return total_interview_count_list
 
 
@@ -219,20 +215,15 @@ def pick_interviewer(attendee_email_id,date):
     "Pick the interviewer based on busy time"
     #Find the total busy slots for the interviewers
     busy_time_list = total_busy_slots(attendee_email_id, date)
-    print("line no 219",busy_time_list)
     #Find the interview count for the interviewer
     interview_count_list = total_count_list(attendee_email_id)
     #Scoring algorithm to pick the interviewer
     busy_slots_rank = pd.DataFrame(busy_time_list, attendee_email_id).rank()
-    print(busy_slots_rank)
     interview_count_rank = pd.DataFrame(interview_count_list, attendee_email_id).rank(ascending=False)
-    print(interview_count_rank)
     average_busy_interview_count = (busy_slots_rank + interview_count_rank).rank()
-    print(average_busy_interview_count,"line no 226")
     df_rank_to_dict = average_busy_interview_count.to_dict()[0]
-    print(df_rank_to_dict)
     picked_attendee_email_id = min(df_rank_to_dict, key=df_rank_to_dict.get)
-    print("picked",picked_attendee_email_id)
+
     return picked_attendee_email_id
 
 

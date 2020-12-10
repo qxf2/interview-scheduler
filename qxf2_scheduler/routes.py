@@ -239,7 +239,7 @@ def add_interview_count(fetch_interviewer_id_value):
     print(exists,"hi")
     if exists:
         print("inside if")
-        db.session.query(Interviewcount).filter_by(Interviewcount.interviewer_id == fetch_interviewer_id_value).update({'interview_count': Interviewer.interview_count + 1})
+        db.session.query(Interviewcount).filter_by(interviewer_id =fetch_interviewer_id_value).update({'interview_count': Interviewcount.interview_count + 1})
         db.session.commit()
     else:
         print("inside else")

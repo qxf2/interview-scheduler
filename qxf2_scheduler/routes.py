@@ -724,6 +724,10 @@ def delete_job():
             db.session.commit()
             db.session.query(Rounds).filter(Rounds.round_id==round_to_delete).delete()
             db.session.commit()
+        #delete_job_candidates = Jobcandidate.delete().where(Jobcandidate.job_id == job_id_to_delete)
+        Jobcandidate.query.filter_by(job_id=job_id_to_delete).delete()
+        #delete_job_candidates.execute()
+        db.session.commit()
         return jsonify(data)
 
 

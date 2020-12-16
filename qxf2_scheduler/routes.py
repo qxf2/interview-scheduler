@@ -236,13 +236,10 @@ def add_interview_count(fetch_interviewer_id_value):
     "Update the interview count table"
     #db.session.query(db.exists().where(Login.username == username)).scalar()
     exists = db.session.query(db.exists().where(Interviewcount.interviewer_id == fetch_interviewer_id_value)).scalar()
-    print(exists,"hi")
     if exists:
-        print("inside if")
         db.session.query(Interviewcount).filter_by(interviewer_id =fetch_interviewer_id_value).update({'interview_count': Interviewcount.interview_count + 1})
         db.session.commit()
     else:
-        print("inside else")
         add_interview_count = Interviewcount(interviewer_id=fetch_interviewer_id_value, interview_count=1)
         db.session.add(add_interview_count)
         db.session.commit()

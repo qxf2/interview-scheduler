@@ -222,7 +222,7 @@ def pick_interviewer(attendee_email_id,date):
     interview_count_rank = pd.DataFrame(interview_count_list, attendee_email_id).rank(ascending=False)
     average_busy_interview_count = (busy_slots_rank + interview_count_rank).rank()
     df_rank_to_dict = average_busy_interview_count.to_dict()[0]
-    picked_attendee_email_id = min(df_rank_to_dict, key=df_rank_to_dict.get)
+    picked_attendee_email_id = max(df_rank_to_dict, key=df_rank_to_dict.get)
 
     return picked_attendee_email_id
 
@@ -235,7 +235,7 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
         attendee_email_id = interviewer_emails.split(',')
         picked_email_id = pick_interviewer(attendee_email_id,date)
     else:
-        attendee_email_id = interviewer_emails
+        picked_email_id = interviewer_emails
     interviewer_candidate_email.append(picked_email_id)
     interviewer_candidate_email.append(candidate_email)
     #Fetch interviewers name from the email

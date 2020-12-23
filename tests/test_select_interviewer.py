@@ -1,17 +1,22 @@
 import unittest
 import mock
+import datetime
 from dateutil.parser import parse
 import os,sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from qxf2_scheduler.qxf2_scheduler import total_busy_slots
+import os
+os.environ ["GOOGLE_APPLICATION_CREDENTIALS"] = r'C:\Users\Qxf2 Services\AppData\Roaming\gcloud\legacy_credentials\test@qxf2.com\adc.json'
 
-class pick_interviewer(unittest.TestCase):
+
+class Total_Busy_Slots(unittest.TestCase):
 
     date='12/22/2020'
 
     print("I am in 12")
 
     @mock.patch.object(total_busy_slots,'attendee_email_id',return_value=['namitha.sathyananda@qxf2.com', 'nilaya@qxf2.com', 'dennis.samson@qxf2.com'],create=True )
+
 
     @mock.patch.object(total_busy_slots,'date',return_value='12/22/2020',create=True)
 

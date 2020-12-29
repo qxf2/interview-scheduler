@@ -5,8 +5,11 @@ from dateutil.parser import parse
 import os,sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from qxf2_scheduler.qxf2_scheduler import total_busy_slots
-import os
+#import os
 os.environ ["GOOGLE_APPLICATION_CREDENTIALS"] = r'C:\Users\Qxf2 Services\AppData\Roaming\gcloud\legacy_credentials\test@qxf2.com\adc.json'
+import logging
+
+logging.getLogger('googleapicliet.discovery_cache').setLevel(logging.ERROR)
 
 
 class Total_Busy_Slots(unittest.TestCase):
@@ -21,9 +24,9 @@ class Total_Busy_Slots(unittest.TestCase):
 
     @mock.patch.object(total_busy_slots,'date',return_value='12/22/2020',create=True)
 
-    def test_total_busy_slots(self,mockattendee_email_id,mockdate):
+    def test_total_busy_slots(self,mockdate,mockattendee_email_id,):
 
-        print("I am in 20")
+        print("I am in 20",mockdate,mockattendee_email_id)
 
         total_busy_time_list = [datetime.datetime(1900, 1, 1, 1, 15), datetime.datetime(1900, 1, 1, 2, 10), datetime.datetime(1900, 1, 1, 1, 15), datetime.datetime(1900, 1, 1, 1, 25)]
         print("Failed")

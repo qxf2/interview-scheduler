@@ -19,16 +19,17 @@ class Total_Busy_Slots(unittest.TestCase):
 
     print("I am in 12")
 
-    @mock.patch.object(total_busy_slots,'attendee_email_id',return_value=['namitha.sathyananda@qxf2.com', 'nilaya@qxf2.com', 'dennis.samson@qxf2.com'],create=True )
+    @mock.patch.object(total_busy_slots,'attendee_email_id',return_value=['nilaya@qxf2.com',  'kavya.suryaprakash@qxf2.com'],create=True )
 
 
-    @mock.patch.object(total_busy_slots,'date',return_value='12/22/2020',create=True)
+    @mock.patch.object(total_busy_slots,'date',return_value='1/5/2021',create=True)
 
     def test_total_busy_slots(self,mockdate,mockattendee_email_id,):
 
         print("I am in 20",mockdate,mockattendee_email_id)
 
-        total_busy_time_list = [datetime.datetime(1900, 1, 1, 1, 15), datetime.datetime(1900, 1, 1, 2, 10), datetime.datetime(1900, 1, 1, 1, 15), datetime.datetime(1900, 1, 1, 1, 25)]
+
+        total_busy_time_list = [datetime.datetime(1900, 1, 1, 1, 40), datetime.datetime(1900, 1, 1, 1, 10)]
         print("Failed")
 
         assert total_busy_slots(mockattendee_email_id.return_value,mockdate.return_value)== total_busy_time_list

@@ -36,7 +36,7 @@
                 <input id="sname" name="sname" type="text" placeholder="Status Name" class="form-control" required>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
-            </div>               
+            </div>
             <div class="col-md-8">
                 <button class="btn btn-info" type="submit">Add</button>
                 <button name="clear" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
@@ -53,23 +53,21 @@
             'use strict';
             window.addEventListener('load', function () {
                 var forms = document.getElementsByClassName('needs-validation');
-                console.log("I am inside function");
                 var validation = Array.prototype.filter.call(forms, function (form) {
                     form.addEventListener('submit', function (event) {
                         event.preventDefault();
                         event.stopPropagation();
                         $("#resultDiv").empty();
                         if (form.checkValidity() === true) {
-                            console.log("I am coming here")
                             var statusName = $("#sname").val();
                             $.ajax({
                                 type: 'POST',
                                 url: '/status/add',
                                 data: {
                                     'statusname': statusName,
-                                    
+
                                 },
-                                success: function (result) {                               
+                                success: function (result) {
 
                                     if (result.error == "Success") {
                                         alert("The status has been added");

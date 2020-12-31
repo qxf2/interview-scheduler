@@ -62,12 +62,12 @@
                 </select>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
-            
+
             </div>
             <label class="col-md-4 control-label" for="comments"><span style="color:red">*</span>Add your comments</label>
             <div class="col-md-4">
                 <textarea id="comments" name="comments" rows="10" col="20" class="form-control" required>{{result.added_comments}}</textarea>
-                   
+
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
 
@@ -89,7 +89,6 @@
             'use strict';
             window.addEventListener('load', function () {
                 var forms = document.getElementsByClassName('needs-validation');
-                console.log("I am inside function");
                 var validation = Array.prototype.filter.call(forms, function (form) {
                     form.addEventListener('submit', function (event) {
                         event.preventDefault();
@@ -97,12 +96,9 @@
                         var candidateEmail = $("#email").val();
                         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                         var emailValidate = re.test(candidateEmail);
-                        console.log(emailValidate);
-                        console.log("I am inside submit")
                         $("#resultDiv").empty();
                         if (emailValidate === true) {
                             if (form.checkValidity() === true) {
-                                console.log("I am coming here")
                                 var candidateName = $("#fname").val();
                                 var candidateEmail = $("#email").val();
                                 var addedComments = $("#comments").val();
@@ -110,7 +106,6 @@
                                 var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
                                 var existingJob = document.getElementById("oldJob").value;
                                 var candidateId = document.getElementById("candidateId").value;
-                                console.log(candidateEmail, candidateName, jobApplied,existingJob);
                                 $.ajax({
                                     type: 'POST',
                                     url: '/candidate/%d/edit'%candidateId,
@@ -122,13 +117,9 @@
                                         'addedcomments':addedComments
                                     },
                                     success: function (result) {
-                                        console.log(result.error, result.data['candidate_name']);
                                         var resultName = result.data['candidate_name'];
-                                        console.log(resultName);
                                         alert("The candidate has been edited");
                                         document.location.href = "/candidates";
-
-                                        
 
                                     }
                                 })

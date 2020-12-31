@@ -65,11 +65,40 @@
                     <tbody>
                         {% for each_job in result %}
                         <tr>
+
                             <td>{{ each_job.job_id }}</td>
-                            <td><a class="href-link" href="details/job/{{ each_job.job_id }}">{{ each_job.job_role }}</a>
+                            {% if each_job.job_status == 'Delete'%}
+
+                            <td><a id="deleteId" class="not-active" href="details/job/{{ each_job.job_id }}">{{
+                                    each_job.job_role }}</a>
                             </td>
+
+                            {% else %}
+
+                            <td><a id="deleteId" class="href-link" href="details/job/{{ each_job.job_id }}">{{
+                                    each_job.job_role }}</a>
+                            </td>
+                            {% endif %}
+
+
                             <td>{{ each_job.job_status }}</td>
-                            <td><button class="link-button" style="color:sienna" type="button" id="addCandidate"
+                            {% if each_job.job_status == 'Delete'%}
+
+                            <td><button class="not-active link-button" type="button" id="addCandidate"
+                                    onclick="addCandidate('{{each_job.job_role}}')">Add Candidate</button> &nbsp;&nbsp;
+                                <button class="not-active link-button" type="button" onclick="editJob('{{each_job.job_id}}')"
+                                    id="edit">Edit</button>
+                                &nbsp;&nbsp;
+                                <button type="button"  class="not-active link-button"
+                                    data-target="#confirmdeletemodal" data-jobrole="{{ each_job.job_role }}"
+                                    data-href="{{ each_job.job_id }}" data-toggle="modal">Delete</button>
+                                &nbsp;&nbsp;
+                                <button class="not-active link-button" type="button"
+                                    onclick="addRounds('{{ each_job.job_id }}')">Rounds</button>
+                            </td>
+                            {% else %}
+                            <td>
+                                <button class="link-button" style="color:sienna" type="button" id="addCandidate"
                                     onclick="addCandidate('{{each_job.job_role}}')">Add Candidate</button> &nbsp;&nbsp;
                                 <button class="link-button" type="button" onclick="editJob('{{each_job.job_id}}')"
                                     id="edit">Edit</button>
@@ -79,7 +108,10 @@
                                     data-href="{{ each_job.job_id }}" data-toggle="modal">Delete</button>
                                 &nbsp;&nbsp;
                                 <button class="link-button" type="button"
-                                    onclick="addRounds('{{ each_job.job_id }}')">Rounds</button></td>
+                                    onclick="addRounds('{{ each_job.job_id }}')">Rounds</button>
+
+                            </td>
+                            {% endif %}
 
                         </tr>
                         {% endfor %}
@@ -118,9 +150,14 @@
                     url: '/jobs/delete',
                     data: { 'job-id': $(e.relatedTarget).data('href') },
                     success: function (data) {
+                        console.log("Inside");
+                        $("#deleteId").addClass('not-active').removeAttr("href");
+                        $('#deleteId').attr('disabled', 'disabled');
                         var msg = "The role deleted is " + data.job_role;
                         $('#myModal').modal('show');
                         $('#myModal .modal-body p').html(msg);
+                        console.log("outside");
+
 
                     }
                 })
@@ -137,17 +174,17 @@
 
     </script>
     <script>
-            function editJob(jobId) {
-                document.location.href = '/job/' + jobId + "/edit";
-            }
-            function addCandidate(jobRole) {
-                document.location.href = "/candidate/" + jobRole + "/add";
-            }
+        function editJob(jobId) {
+            document.location.href = '/job/' + jobId + "/edit";
+        }
+        function addCandidate(jobRole) {
+            document.location.href = "/candidate/" + jobRole + "/add";
+        }
     </script>
     <script>
-            function addRounds(jobId) {
-                document.location.href = "/job/" + jobId + "/rounds";
-            }
+        function addRounds(jobId) {
+            document.location.href = "/job/" + jobId + "/rounds";
+        }
     </script>
     <script>
         function closeButton() {
@@ -160,7 +197,7 @@
             $('#table').DataTable({
                 "columnDefs": [
                     {
-                        "targets": [1,2],
+                        "targets": [1, 2],
                         "orderable": false,
 
 

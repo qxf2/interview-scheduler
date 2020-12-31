@@ -335,7 +335,6 @@ def login():
         session['logged_user'] = logged_email_id
         if logged_email_confirmation or not logged_email_sent_on:
             completion = validate(username)
-            print("completion 340",completion)
             app.logger.critical(completion,exc_info=True)
             if completion ==False:
                 error = 'error.'
@@ -349,7 +348,6 @@ def login():
                     user.password=password
                     login_user(user)
                     error = 'Success'
-                    print(error,"354")
                     app.logger.critical(error,exc_info=True)
             api_response = {'data':data,'error':error}
         else:
@@ -715,19 +713,9 @@ def delete_job():
             Jobs.job_id == job_id_to_delete).first()
         data = {'job_role': deleted_role.job_role,
                 'job_id': deleted_role.job_id}
-        db.session.delete(deleted_role)
+        update_job_status = Jobs.query.filter(Jobs.job_id == job_id_to_delete).update({'job_status':'Delete'})
         db.session.commit()
-        delete_rounds_of_job = Jobround.query.filter(Jobround.job_id==job_id_to_delete).all()
-        for each_round in delete_rounds_of_job:
-            round_to_delete = each_round.round_id
-            db.session.query(Jobround).filter(Jobround.round_id==round_to_delete).delete()
-            db.session.commit()
-            db.session.query(Rounds).filter(Rounds.round_id==round_to_delete).delete()
-            db.session.commit()
-        #delete_job_candidates = Jobcandidate.delete().where(Jobcandidate.job_id == job_id_to_delete)
-        Jobcandidate.query.filter_by(job_id=job_id_to_delete).delete()
-        #delete_job_candidates.execute()
-        db.session.commit()
+
         return jsonify(data)
 
 

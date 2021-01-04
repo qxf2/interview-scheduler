@@ -69,8 +69,8 @@
                             <td>{{ each_job.job_id }}</td>
                             {% if each_job.job_status == 'Delete'%}
 
-                            <td><a id="deleteId" class="not-active" href="details/job/{{ each_job.job_id }}">{{
-                                    each_job.job_role }}</a>
+                            <td><s><a id="deleteId" class="not-active" href="details/job/{{ each_job.job_id }}">{{
+                                    each_job.job_role }}</a></s>
                             </td>
 
                             {% else %}

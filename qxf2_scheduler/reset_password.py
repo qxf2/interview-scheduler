@@ -48,24 +48,29 @@ def send_password_reset_email(user_email):
     send_email('Password Reset Requested', [user_email], html)
 
 
+def check_email_domain(email_id):
+    "Check the email domain is qxf2"
+    result_flag = False
+    if email_id.split('@')[1] == 'qxf2.com':
+        result_flag = True
+
+    return result_flag
+
+
 @app.route("/reset-password", methods=["GET","POST"])
 def reset_password():
     "Reset the password"
     if request.method == 'GET':
         return render_template("reset-password.html")
     if request.method == 'POST':
-
         email_id = request.form.get("emailid")
-        print(email_id)
         email_confirmation = check_email_confirmed(email_id)
-        print(email_confirmation)
-        if email_confirmation:
-            print("email is confirmed",email_id)
+        email_domain = check_email_domain(email_id)
+        if email_confirmation or email_domain:
             send_password_reset_email(email_id)
             error = "Success"
         else:
             error = "error"
-            print("email is not confirmed")
         data = {'email_id':email_id, 'error':error}
         return jsonify(data)
 

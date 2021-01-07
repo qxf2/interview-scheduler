@@ -167,7 +167,7 @@ def add_candidate(job_role):
         available_job_list = []
         if job_role is None:
             #If the parameter is none then fetch the jobs from the database
-            job_available = Jobs.query.all()
+            job_available = Jobs.query.filter(Jobs.job_status != 'Delete').all()
             for each_job in job_available:
                 available_job_list.append(each_job.job_role)
         else:

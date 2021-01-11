@@ -138,36 +138,6 @@ def convert_interviewer_time_into_string(interviewer_time):
     return interviewer_actual_time
 
 
-def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_email,selected_slot,round_name,round_description):
-    "Create an event for fetched date and time"
-    service = gcal.base_gcal()
-    interviewer_candidate_email = []
-    if ',' in interviewer_emails:
-        attendee_email_id = interviewer_emails.split(',')
-        attendee_email_id = random.choice(attendee_email_id)
-    else:
-        attendee_email_id = interviewer_emails
-    interviewer_candidate_email.append(attendee_email_id)
-    interviewer_candidate_email.append(candidate_email)
-    #Fetch interviewers name from the email
-    fetch_interviewer_name = Interviewers.query.filter(Interviewers.interviewer_email==attendee_email_id).values(Interviewers.interviewer_name)
-    for interviewer_name in fetch_interviewer_name:
-        chosen_interviewer_name = interviewer_name.interviewer_name
-    #Fetch candidate info
-    fetch_candidate_name = Candidates.query.filter(Candidates.candidate_email==candidate_email).values(Candidates.candidate_name,Candidates.job_applied)
-    for candidate_details in fetch_candidate_name:
-        candidate_name = candidate_details.candidate_name
-        candidate_job = candidate_details.job_applied
-    SUMMARY = candidate_name + '/' + chosen_interviewer_name + '-' + candidate_job
-    description = "Round name : "+round_name+'\n\n'+ 'Round description : '+round_description
-    create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)
-    create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
-    SUMMARY,LOCATION,description,interviewer_candidate_email)
-    created_event_info = append_the_create_event_info(create_event,attendee_email_id)
-
-    return created_event_info
-
-
 def get_modified_free_slot_start(free_slot_start,marker):
     "Modifiying the free slot start to 00 or 30"
     if marker == '60' or marker == '90':
@@ -499,5 +469,5 @@ if __name__ == '__main__':
     print("\n=====HOW TO GET FREE SLOTS IN CHUNKS=====")
     free_slots_in_chunks = get_free_slots_in_chunks(free_slots,chunk_duration)
     print("\n======CREATE AN EVENT FOR FETCHED DATE AND TIME=====")
-    event_created_slot = create_event_for_fetched_date_and_time(date,emails,candidate_email,selected_slot,round_name,round_description)
-    print("The event created,The details are",event_created_slot)
+    #event_created_slot = create_event_for_fetched_date_and_time(date,emails,candidate_email,selected_slot,round_name,round_description)
+    #print("The event created,The details are",event_created_slot)

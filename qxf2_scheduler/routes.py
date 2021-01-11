@@ -6,6 +6,7 @@ from flask import render_template, url_for, redirect, jsonify, request, Response
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
+import qxf2_scheduler.create_event as event
 from qxf2_scheduler import db
 from qxf2_scheduler.security import encrypt_password,check_encrypted_password
 import json
@@ -254,7 +255,7 @@ def scehdule_and_confirm():
         for each_round_detail in round_name_and_desc:
             round_name = each_round_detail.round_name
             round_description = each_round_detail.round_description
-        schedule_event = my_scheduler.create_event_for_fetched_date_and_time(
+        schedule_event = event.create_event_for_fetched_date_and_time(
             date, email,candidate_email, slot,round_name,round_description)
         date_object = datetime.datetime.strptime(date, '%m/%d/%Y').date()
         date = datetime.datetime.strftime(date_object, '%B %d, %Y')

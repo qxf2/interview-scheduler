@@ -87,7 +87,6 @@
             'use strict';
             window.addEventListener('load', function () {
                 var forms = document.getElementsByClassName('needs-validation');
-                console.log("I am inside function");
                 var validation = Array.prototype.filter.call(forms, function (form) {
                     form.addEventListener('submit', function (event) {
                         event.preventDefault();
@@ -95,18 +94,14 @@
                         var candidateEmail = $("#email").val();
                         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                         var emailValidate=re.test(candidateEmail);
-                        console.log(emailValidate);
-                        console.log("I am inside submit")
                         $("#resultDiv").empty();
                         if (emailValidate === true){
                         if (form.checkValidity() === true) {
-                            console.log("I am coming here")
                             var candidateName = $("#fname").val();
                             var candidateEmail = $("#email").val();
                             var dropdownValue = document.getElementById("select1");
                             var jobApplied = dropdownValue.options[dropdownValue.selectedIndex].value;
                             var addedComments = $("#comments").val()
-                            console.log(candidateEmail, candidateName, jobApplied);
                             $("#addSubmit").attr("disabled",true);
                             $.ajax({
                                 type: 'POST',
@@ -118,9 +113,8 @@
                                     'addedcomments':addedComments
                                 },
                                 success: function (result) {
-                                    console.log(result.error, result.data['candidate_name']);
+
                                     var resultName = result.data['candidate_name'];
-                                    console.log(resultName);
 
                                     if (result.error == "Success") {
                                         alert("The candidate has been added");

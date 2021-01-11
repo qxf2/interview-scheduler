@@ -603,7 +603,6 @@ def add_feedback(candidate_id, round_id):
     if request.method == "POST":
         error = "Success"
         added_feedback = request.form.get("addedfeedback")
-        print(round_id)
         Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':added_feedback})
         db.session.commit()
         result = {'added_feedback':added_feedback,'error': error}

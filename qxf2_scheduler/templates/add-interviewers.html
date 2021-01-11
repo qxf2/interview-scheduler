@@ -25,7 +25,7 @@
             display: inline
         }
     </style>
-    
+
 </head>
 
 <body>
@@ -95,13 +95,13 @@
             </div>
             <div class="col-md-4" id="resultDiv0"></div>
         </form>
-        
+
         <div>
             <input class="btn btn-info" onclick="addtextbox()" type="button" value="Add time">
         </div>
         <div id="ToolsGroup">
         </div>
-       
+
 
         <!-- Button (Double) -->
         <form class="form-horizontal">
@@ -130,12 +130,11 @@
             starttime: [],
             endtime: []
             };
-            console.log(timeObject.starttime);
-            console.log(timeObject.endtime);
+
             for (var index = 0; index < count + 1; index++) {
                 timeObject.starttime.push($("#starttime" + index).val())
                 timeObject.endtime.push($("#endtime" + index).val())
-            }           
+            }
             //Validation of name email and designation starts here
             if(name == "")
             {
@@ -153,10 +152,10 @@
                 $('#mail').remove();
                 $('#email').after('<span id="mail" class="error" style="color:red">Email field is required</span>');
                 validValue = false;
-            }    
-                        
+            }
+
             if(email != "")
-            {                
+            {
                 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 if (re.test(email)){
                     $('#mail').remove();
@@ -167,9 +166,9 @@
                                 $('#email').after('<span id="mail" class="error" style="color:red">Email should end with qxf2.com</span>');
                             }
                 }
-               
+
                 }
-            
+
             //validation for timings
             for(index = 0; index <= count; index++) {
             starttime = $("#starttime"+index).val();
@@ -194,7 +193,7 @@
                 $("#resultDiv"+index).html(msg);
                 }
             }
-            
+
             //to check validation and not to store data in database make validValue = false in next line;
             //validValue = false;
             if (validValue == true) {
@@ -217,12 +216,12 @@
                     $('#myModal').modal('show');
                     $('#myModal .modal-body p').html(msg);
                     }
-            })            
+            })
         }
     })
     </script>
     <script>
-        var count = 0;        
+        var count = 0;
         function addtextbox() {
         count++;
         var newTextBoxDiv = document.createElement('div');
@@ -269,7 +268,7 @@
         $("#close").click(function () {
             document.location.href = "/interviewers"
         })
-    </script>  
+    </script>
     <script>
         $("#clear").click(function(){
             document.location.href = "/interviewers";

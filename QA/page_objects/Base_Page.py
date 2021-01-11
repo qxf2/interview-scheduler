@@ -10,13 +10,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains 
-import unittest,time,logging,os,inspect
+import unittest,time,logging,os,inspect,utils.Test_Rail,pytest
 from utils.Base_Logging import Base_Logging
 from inspect import getargspec
+from utils.BrowserStack_Library import BrowserStack_Library
 from .DriverFactory import DriverFactory
 from page_objects import PageFactory
-from utils.Custom_Exceptions import Stop_Test_Exception
-
+from utils.Test_Rail import Test_Rail
+from utils import Tesults
+from utils.stop_test_exception_util import Stop_Test_Exception
+import conf.remote_credentials 
+import conf.base_url_conf
+from utils import Gif_Maker
 
 class Borg:
     #The borg design pattern is to share state
@@ -33,11 +38,13 @@ class Borg:
 
         return result_flag
 
+# Get the Base URL from the conf file
+base_url = conf.base_url_conf
 
 class Base_Page(Borg,unittest.TestCase):
     "Page class that all page models can inherit from"
 
-    def __init__(self,base_url='http://qxf2.com/',trailing_slash_flag=True):
+    def __init__(self,base_url):
         "Constructor"
         Borg.__init__(self)
         if self.is_first_time():
@@ -51,12 +58,9 @@ class Base_Page(Borg,unittest.TestCase):
             self.tesults_flag = False
             self.images = []
             self.browserstack_flag = False
-
+            self.highlight_flag = False 
+            self.test_run_id = None
             self.reset()
-
-        #We assume relative URLs start without a / in the beginning
-        if base_url[-1] != '/' and trailing_slash_flag is True: 
-            base_url += '/' 
         self.base_url = base_url
         self.driver_obj = DriverFactory()
         if self.driver is not None: 
@@ -66,6 +70,7 @@ class Base_Page(Borg,unittest.TestCase):
     def reset(self):
         "Reset the base page object"
         self.driver = None
+        self.calling_module = None
         self.result_counter = 0 #Increment whenever success or failure are called
         self.pass_counter = 0 #Increment everytime success is called
         self.mini_check_counter = 0 #Increment when conditional_write is called
@@ -73,7 +78,16 @@ class Base_Page(Borg,unittest.TestCase):
         self.failure_message_list = []
         self.screenshot_counter = 1
         self.exceptions = []
+        self.gif_file_name = None
+        
 
+    def turn_on_highlight(self):
+        "Highlight the elements being operated upon"
+        self.highlight_flag = True
+
+    def turn_off_highlight(self):
+        "Turn off the highlighting feature"
+        self.highlight_flag = False
 
     def get_failure_message_list(self):
         "Return the failure message list"
@@ -85,15 +99,20 @@ class Base_Page(Borg,unittest.TestCase):
         self.__class__ = PageFactory.PageFactory.get_page_object(page_name,base_url=self.base_url).__class__
        
 
-    def register_driver(self,remote_flag,os_name,os_version,browser,browser_version):
+    def register_driver(self,remote_flag,os_name,os_version,browser,browser_version,remote_project_name,remote_build_name):
         "Register the driver with Page"      
         self.set_screenshot_dir(os_name,os_version,browser,browser_version) # Create screenshot directory
         self.set_log_file()
-        self.driver = self.driver_obj.get_web_driver(remote_flag,os_name,os_version,browser,browser_version)
+        self.driver = self.driver_obj.get_web_driver(remote_flag,os_name,os_version,browser,browser_version,remote_project_name,remote_build_name)
         self.driver.implicitly_wait(5) 
-        #self.driver.maximize_window()
+        self.driver.maximize_window()
         
-        
+        if conf.remote_credentials.REMOTE_BROWSER_PLATFORM == 'BS' and remote_flag.lower() == 'y':
+            self.register_browserstack()
+            self.session_url = self.browserstack_obj.get_session_url()
+            self.browserstack_msg = 'BrowserStack session URL:'
+            self.write( self.browserstack_msg + '\n' + str(self.session_url))
+    
         self.start()
 
 
@@ -102,16 +121,45 @@ class Base_Page(Borg,unittest.TestCase):
         return self.driver
         
 
+    def register_testrail(self):
+        "Register TestRail with Page"
+        self.testrail_flag = True
+        self.tr_obj = Test_Rail()
+    
+    def set_test_run_id(self,test_run_id):
+        "Set TestRail's test run id"
+        self.test_run_id = test_run_id
+
+    def register_tesults(self):
+        "Register Tesults with Page"
+        self.tesults_flag = True
+
+    def register_browserstack(self):
+        "Register Browser Stack with Page"
+        self.browserstack_flag = True
+        self.browserstack_obj = BrowserStack_Library()
+
+    def set_calling_module(self,name):
+        "Set the test name"
+        self.calling_module = name
+
     def get_calling_module(self):
         "Get the name of the calling module"
-        calling_file = inspect.stack()[-1][1]
-        if 'runpy' or 'string' in calling_file:
-            calling_file = inspect.stack()[4][3]
-        calling_filename = calling_file.split(os.sep)
-        #This logic bought to you by windows + cygwin + git bash 
-        if len(calling_filename) == 1: #Needed for 
-            calling_filename = calling_file.split('/')
-        self.calling_module = calling_filename[-1].split('.')[0]
+        if self.calling_module is None:
+            #Try to intelligently figure out name of test when not using pytest
+            full_stack = inspect.stack()
+            index = -1
+            for stack_frame in full_stack:
+                print(stack_frame[1],stack_frame[3])
+                #stack_frame[1] -> file name
+                #stack_frame[3] -> method 
+                if 'test_' in stack_frame[1]:
+                    index = full_stack.index(stack_frame)
+                    break
+            test_file = full_stack[index][1]
+            test_file = test_file.split(os.sep)[-1]
+            testname = test_file.split('.py')[0]
+            self.set_calling_module(testname)
 
         return self.calling_module
     
@@ -150,7 +198,7 @@ class Base_Page(Borg,unittest.TestCase):
         if isinstance(os_name,list):
             windows_browser_combination = browser.lower() 
         else:
-            windows_browser_combination = os_name.lower() + '_' + str(os_version).lower() + '_' + browser.lower()+ '_' + str(browser_version)   
+            windows_browser_combination = os_name.lower() + '_' + str(os_version).lower() + '_' + browser.lower()+ '_' + str(browser_version)
         self.testname = self.get_calling_module()
         self.testname =self.testname.replace('<','')
         self.testname =self.testname.replace('>','')
@@ -180,7 +228,27 @@ class Base_Page(Borg,unittest.TestCase):
         image_dict['name'] = screenshot_name
         image_dict['url'] = screenshot_url
         self.image_url_list.append(image_dict)
-        
+
+
+    def save_screenshot_reportportal(self,image_name):
+        "Method to save image to ReportPortal"
+        try:            
+            rp_logger = self.log_obj.setup_rp_logging()
+            with open(image_name, "rb") as fh:
+                image = fh.read()
+ 
+            rp_logger.info(
+                image_name,
+                attachment={
+                    "data": image,
+                    "mime": "application/octet-stream"
+                },
+            )
+        except Exception as e:
+            self.write("Exception when trying to get rplogger")
+            self.write(str(e))
+            self.exceptions.append("Error when trying to get reportportal logger")
+
 
     def save_screenshot(self,screenshot_name,pre_format="      #Debug screenshot: "):
         "Take a screenshot"
@@ -191,8 +259,12 @@ class Base_Page(Borg,unittest.TestCase):
                 else:
                     os.rename(self.screenshot_dir + os.sep +screenshot_name+'.png',self.screenshot_dir + os.sep +screenshot_name+'_'+str(i)+'.png')
                     break
-        self.driver.get_screenshot_as_file(self.screenshot_dir + os.sep+ screenshot_name+'.png')
-	#self.conditional_write(flag=True,positive= screenshot_name + '.png',negative='', pre_format=pre_format)
+        screenshot_name = self.screenshot_dir + os.sep + screenshot_name+'.png'
+        self.driver.get_screenshot_as_file(screenshot_name)
+	    #self.conditional_write(flag=True,positive= screenshot_name + '.png',negative='', pre_format=pre_format)
+        if hasattr(pytest,'config'):
+            if pytest.config._config.getoption('--reportportal'):
+                self.save_screenshot_reportportal(screenshot_name)
         if self.browserstack_flag is True:
             self.append_latest_image(screenshot_name)
         if self.tesults_flag is True:
@@ -201,6 +273,10 @@ class Base_Page(Borg,unittest.TestCase):
 
     def open(self,url,wait_time=2):
         "Visit the page base_url + url"
+        if self.base_url[-1] != '/' and url[0] != '/':
+            url = '/' + url
+        if self.base_url[-1] == '/' and url[0] == '/':
+            url = url[1:] 
         url = self.base_url + url
         if self.driver.current_url != url:
             self.driver.get(url)
@@ -211,6 +287,11 @@ class Base_Page(Borg,unittest.TestCase):
         "Get the current URL"
         return self.driver.current_url
 
+        
+    def get_page_title(self):
+        "Get the current page title"
+        return self.driver.title
+    
 
     def get_page_paths(self,section):
         "Open configurations file,go to right sections,return section obj"
@@ -236,13 +317,27 @@ class Base_Page(Borg,unittest.TestCase):
     def get_window_by_name(self,window_name):
         "Return window handle id based on name"
         window_handle_id = None
-        for id,name in self.window_structure.items():
+        for id,name in self.window_structure.iteritems():
             if name == window_name:
                 window_handle_id = id
                 break
 
         return window_handle_id
 
+
+    def alert_window(self):
+        try:
+            result_flag = False
+            alert_obj = self.driver.switch_to.alert
+            alert_obj.accept()
+            result_flag = True
+        except Exception as e:
+            self.write("Exception when trying to alert window")
+            self.write(str(e))
+            self.exceptions.append("Error when switching browser window")
+        
+        return result_flag
+ 
 
     def switch_window(self,name=None):
         "Make the driver switch to the last window or a window with a name"
@@ -290,11 +385,14 @@ class Base_Page(Borg,unittest.TestCase):
         "Get the window handles"
         return self.driver.window_handles
 
-
-    def get_current_window_handle(self):
-        "Get the current window handle"
-        pass
-
+    def switch_frame(self,name=None,index=None,wait_time=2):
+        "switch to iframe"
+        self.wait(wait_time)
+        self.driver.switch_to.default_content()
+        if name is not None:
+            self.driver.switch_to.frame(name)
+        elif index is not None:
+            self.driver.switch_to.frame(self.driver.find_elements_by_tag_name("iframe")[index])
 
     def _get_locator(key):
         "fetches locator from the locator conf"
@@ -309,13 +407,42 @@ class Base_Page(Borg,unittest.TestCase):
 
         return value
 
+    def get_element_attribute_value(self,element,attribute_name):
+        "Return the elements attribute value if present"
+        attribute_value = None
+        if (hasattr(element,attribute_name)):
+            attribute_value = element.get_attribute(attribute_name) 
+        
+        return attribute_value
 
+    def highlight_element(self,element,wait_seconds=3):
+        "Highlights a Selenium webdriver element"
+        original_style = self.get_element_attribute_value(element,'style')
+        self.apply_style_to_element(element,"border: 4px solid #F6F7AD;")
+        self.wait(wait_seconds)
+        self.apply_style_to_element(element,original_style)
+      
+    def highlight_elements(self,elements,wait_seconds=3):
+        "Highlights a group of elements"
+        original_styles = []
+        for element in elements:
+            original_styles.append(self.get_element_attribute_value(element,'style'))
+            self.apply_style_to_element(element,"border: 4px solid #F6F7AD;")
+        self.wait(wait_seconds)
+        for style,element in zip(original_styles, elements) :
+            self.apply_style_to_element(element,style)
+
+    def apply_style_to_element(self,element,element_style):
+        self.driver.execute_script("arguments[0].setAttribute('style', arguments[1])", element, element_style)
+       
     def get_element(self,locator,verbose_flag=True):
         "Return the DOM element of the path or 'None' if the element is not found "
         dom_element = None
         try:            
             locator = self.split_locator(locator)            
-            dom_element = self.driver.find_element(*locator)            
+            dom_element = self.driver.find_element(*locator)  
+            if self.highlight_flag is True:
+                self.highlight_element(dom_element)           
         except Exception as e:            
             if verbose_flag is True:
                 self.write(str(e),'debug')
@@ -343,6 +470,8 @@ class Base_Page(Borg,unittest.TestCase):
         try:
             locator = self.split_locator(locator)
             dom_elements = self.driver.find_elements(*locator)
+            if self.highlight_flag is True:
+                self.highlight_elements(dom_elements)
         except Exception as e:
             if msg_flag==True:
                 self.write(str(e),'debug')
@@ -545,7 +674,7 @@ class Base_Page(Borg,unittest.TestCase):
         "Tears down the driver"
         self.driver.quit()
         self.reset()
-
+        
 
     def write(self,msg,level='info'):
         "Log the message"
@@ -587,6 +716,12 @@ class Base_Page(Borg,unittest.TestCase):
             for key, value in custom.items():
                 caseObj[key] = str(value)
             Tesults.add_test_case(caseObj)
+    
+    def make_gif(self):
+        "Create a gif of all the screenshots within the screenshots directory"
+        self.gif_file_name = Gif_Maker.make_gif(self.screenshot_dir,name=self.calling_module)
+
+        return self.gif_file_name
         
 
     def wait(self,wait_seconds=5,locator=None):
@@ -626,16 +761,23 @@ class Base_Page(Borg,unittest.TestCase):
         self.log_obj.write(pre_format + msg,level)
         self.result_counter += 1
         self.failure_message_list.append(pre_format + msg)
-        if level.lower()=='critical':
-            raise Stop_Test_Exception("Stopping test because: " + msg)      
+        if level.lower() == 'critical':
+            self.teardown()
+            raise Stop_Test_Exception("Stopping test because: "+ msg)
         
 
     def log_result(self,flag,positive,negative,level='info'):
         "Write out the result of the test"
-        if flag is True:
-            self.success(positive,level=level)
-        else:            
-            self.failure(negative,level=level)        
+        if level.lower() == "inverse":
+            if flag is True:
+                self.failure(positive,level="error")
+            else:            	                
+                self.success(negative,level="info")
+        else:
+            if flag is True:
+                self.success(positive,level=level)
+            else:            
+                self.failure(negative,level=level)       
 
 
     def read_browser_console_log(self):
@@ -651,13 +793,20 @@ class Base_Page(Borg,unittest.TestCase):
 
 
     def conditional_write(self,flag,positive,negative,level='info'):
-        "Write out either the positive or the negative message based on flag"      
-        if flag is True:
-            self.write(positive,level)
-            self.mini_check_pass_counter += 1
-        else:
-            self.write(negative,level)
+        "Write out either the positive or the negative message based on flag"  
         self.mini_check_counter += 1
+        if level.lower() == "inverse":
+            if flag is True:
+                self.write(positive,level='error')
+            else:
+                self.write(negative,level='info')
+                self.mini_check_pass_counter += 1
+        else:	        	            
+            if flag is True:
+                self.write(positive,level='info')
+                self.mini_check_pass_counter += 1
+            else:
+                self.write(negative,level='error')
 
 
     def execute_javascript(self,js_script,*args):
@@ -671,25 +820,6 @@ class Base_Page(Borg,unittest.TestCase):
         return result_flag
 
 
-    def switch_frame(self,name):
-        "Make the driver switch to the frame with a name"
-        result_flag = False
-        try:
-            if name is not None:            
-                self.driver.switch_to.frame(frame_reference= self.driver.find_element_by_xpath(name))                
-                result_flag = True
-            self.conditional_write(result_flag,
-                                'Automation switched to the frame: %s'%name,
-                                'Unable to locate and switch to the frame with name: %s'%name,
-                                level='debug')
-        except Exception as e:
-            self.write("Exception when trying to switch frame")
-            self.write(str(e))
-            self.exceptions.append("Error when switching frame")
-
-        return result_flag
-    
-    
     def write_test_summary(self):
         "Print out a useful, human readable summary"
         self.write('\n\n************************\n--------RESULT--------\nTotal number of checks=%d'%self.result_counter)
@@ -706,7 +836,10 @@ class Base_Page(Borg,unittest.TestCase):
             self.write('\n--------USEFUL EXCEPTION--------\n')
             for (i,msg) in enumerate(self.exceptions,start=1):
                 self.write(str(i)+"- " + msg)
-        self.write('************************')
+        self.make_gif()
+        if self.gif_file_name is not None:
+            self.write("Screenshots & GIF created at %s"%self.screenshot_dir)
+            self.write('************************')
 
     def start(self):
         "Overwrite this method in your Page module if you want to visit a specific URL"

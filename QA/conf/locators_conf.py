@@ -11,48 +11,68 @@
 #PARTIAL_LINK_TEXT
 #XPATH
 ###########################################
+'''
+#Locators for the footer object(footer_object.py)
 
-#Locators for interview-Scheduler application
+footer_menu = "xpath,//ul[contains(@class,'nav-justified')]/descendant::a[text()='%s']"
+copyright_text = "xpath,//p[contains(@class,'qxf2_copyright')]"
+#----
+'''
+#Locators for the login object(form_object.py)
+username_field = "xpath,//input[@id = 'username']"
+password_field = "xpath,//input[@id='userpassword']"
+login_button = "xpath,//*[@id='loginButton']"
+signup_button = "xpath,//*[@id='signupButton']"
 
-#Locators for Interview-scheduler for Add interviewer:
+#Locators for the index object(index_object.py)
+interviewers_page = "xpath,//a[contains(.,'List the interviewers')]"
+jobs_page = "xpath,//a[contains(.,'List the jobs')]"
+candidates_page = "xpath,//a[contains(.,'List the candidates')]"
 
-add_button = "xpath,//input[contains(@id,'add')]"
+#Heading for index page
+heading = "xpath,//h2[contains(.,'Why Interview Scheduler Application?')]"
 
-interviewer_name = "xpath,//input[contains(@id,'fname')]"
+'''
+#Locators for the form object(form_object.py)
+name_field = "id,name"       
+email_field = "name,email"
+phone_no_field = "css selector,#phone"
+click_me_button = "xpath,//button[text()='Click me!']"
+gender_dropdown = "xpath,//button[@data-toggle='dropdown']"
+gender_option = "xpath,//a[text()='%s']"
+tac_checkbox = "xpath,//input[@type='checkbox']"
+#----
 
-interviewer_email = "xpath,//input[contains(@id,'email')]"
+#Locators for hamburger menu object(hamburg_menu_object.py)
+menu_icon = "xpath,//img[@alt='Menu']"
+menu_link = "xpath,//ul[contains(@class,'dropdown-menu')]/descendant::a[text()='%s']"
+menu_item = "xpath,//ul[contains(@class,'dropdown-menu')]/descendant::a[@data-toggle='dropdown' and text()='%s']"
+#----
 
-interviewer_designation = "xpath,//input[contains(@id,'designation')]"
+#Locators for header object(header_object.py)
+qxf2_logo = "xpath,//img[contains(@src,'qxf2_logo.png')]"
+qxf2_tagline_part1 = "xpath,//h1[contains(@class,'banner-brown') and text()='SOFTWARE TESTING SERVICES']"
+qxf2_tagline_part2 = "xpath,//h1[contains(@class,'banner-grey') and text()='for startups']"
+#----
 
-starttime = "xpath,//input[contains(@id,'starttime0')]"
+#Locators for table object(table_object.py)
+table_xpath = "xpath,//table[@name='Example Table']"
+rows_xpath = "xpath,//table[@name='Example Table']//tbody/descendant::tr"
+cols_xpath = "xpath,//table[@name='Example Table']//tbody/descendant::td"
+cols_relative_xpath = "xpath,//table[@name='Example Table']//tbody/descendant::tr[%d]/descendant::td"
+cols_header = "xpath,//table[@name='Example Table']//thead/descendant::th"
+#----
 
-set_starttime = "xpath,//a[contains(text(),'00:30')]"
+#Locators for tutorial redirect page(tutorial_redirect_page.py)
+heading = "xpath,//h2[contains(@class,'grey_text') and text()='Selenium for beginners: Practice page 2']"
 
-endtime = "xpath,//input[contains(@id,'endtime0')]"
+#Locators for Contact Object(contact_object.py)
+contact_name_field = "id,name"
 
-set_endtime = "xpath,//a[contains(text(),'07:30')]"
+#Locators for mobile application - Bitcoin Info(bitcoin_price_page.py)
+bitcoin_real_time_price_button = "xpath,//android.widget.TextView[@resource-id='com.dudam.rohan.bitcoininfo:id/current_price']"
+bitcoin_price_page_heading = "xpath,//android.widget.TextView[@text='Real Time Price of Bitcoin']"
+bitcoin_price_in_usd = "xpath,//android.widget.TextView[@resource-id='com.dudam.rohan.bitcoininfo:id/doller_value']"
+'''
 
-submit = "xpath,//input[contains(@id,'submit')]"
-
-#Locators for Interview-scheduler for delete interviewer:
-
-url = "http://3.219.215.68/interviewers"
-
-find_table = "xpath,//div[@class='container col-md-offset-1']"
-
-find_rows = "xpath,//td//a[contains(@href,'interviewer')]"
-
-delete_button = "xpath,(//td//button[contains(@text,Delete)])[%d]"#'(//button[text()="Delete"])[1]'
-
-confirmation_Pop_up = "xpath,//button[@id='remove-button']"
-
-close_pop_up = "xpath,//button[@id='close-button']"
-
-interviewer_name = "xpath,//th[contains(text(),'Interviewer Name')]"
-
-column_header = "xpath,//div[@class='container col-md-offset-1']//thead/descendant::th"
-
-tab_rows = "xpath,//div[@class='container col-md-offset-1']//tbody/descendant::tr"
-
-relative_xpath = "xpath,//div[@class='container col-md-offset-1']//tbody/descendant::tr[%d]/descendant::td"
 

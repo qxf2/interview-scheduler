@@ -15,7 +15,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 TIMEZONE_STRING = '+05:30'
 FMT='%H:%M'
 #CHUNK_DURATION = '60'
-LOCATION =  'Google Hangout or Office',
+LOCATION =  'Jitsi Meet',
 ATTENDEE = 'annapoorani@qxf2.com'
 DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
 from pytz import timezone
@@ -123,9 +123,11 @@ def combine_date_and_time(date,selected_slot):
 def append_the_create_event_info(create_event,interviewer_email_id):
     "Appends the created event information into list"
     created_event_info = []
+    res = ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k = 7))
     created_event_info.append({'start':create_event['start']})
     created_event_info.append({'end':create_event['end']})
-    created_event_info.append({'Link':create_event['htmlLink']})
+    created_event_info.append({'Link':"https://meet.jit.si/interviewScheduler/"+res})
     created_event_info.append({'interviewer_email':interviewer_email_id})
 
     return created_event_info
@@ -163,6 +165,7 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
     SUMMARY,LOCATION,description,interviewer_candidate_email)
+
     created_event_info = append_the_create_event_info(create_event,attendee_email_id)
 
     return created_event_info

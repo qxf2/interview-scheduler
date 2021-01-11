@@ -335,7 +335,6 @@ def login():
         session['logged_user'] = logged_email_id
         if logged_email_confirmation or not logged_email_sent_on:
             completion = validate(username)
-            print("completion 340",completion)
             app.logger.critical(completion,exc_info=True)
             if completion ==False:
                 error = 'error.'
@@ -349,7 +348,6 @@ def login():
                     user.password=password
                     login_user(user)
                     error = 'Success'
-                    print(error,"354")
                     app.logger.critical(error,exc_info=True)
             api_response = {'data':data,'error':error}
         else:

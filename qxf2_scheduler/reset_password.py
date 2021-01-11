@@ -23,7 +23,6 @@ def reset_with_token(token):
     except:
         flash('The password reset link is invalid or has expired.', 'error')
         return redirect(url_for('login'))
-    print(email)
 
     return render_template('reset_password_with_token.html',email=email)
 
@@ -80,7 +79,6 @@ def change_password():
     if request.method == 'POST':
         user_email = request.form.get("useremail")
         new_password = request.form.get("newpassword")
-        print(user_email,new_password)
         Login.query.filter(Login.email == user_email).update({'password':encrypt_password(new_password)})
         db.session.commit()
         error = "Success"

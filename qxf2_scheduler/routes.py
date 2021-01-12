@@ -247,8 +247,9 @@ def scehdule_and_confirm():
         candidate_email = session['candidate_info']['candidate_email']
         job_id = session['candidate_info']['job_id']
         #Fetch the round id
+        print(candidate_id,job_id)
         get_round_id_object = db.session.query(Candidateround).filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_status=='Invitation Sent').scalar()
-
+        print(get_round_id_object,candidate_id,job_id)
         #Fetch the round name and description
         round_name_and_desc = Rounds.query.filter(Rounds.round_id==get_round_id_object.round_id).values(Rounds.round_name,Rounds.round_description)
         for each_round_detail in round_name_and_desc:

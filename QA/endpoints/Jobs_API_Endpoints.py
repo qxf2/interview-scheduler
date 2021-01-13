@@ -11,18 +11,29 @@ class Jobs_API_Endpoints(Base_API):
         """Append API end point to base URL"""
         return self.base_url+'login'
 
+    def signup_url(self):
+        """Append API end point to base URL"""
+        return self.base_url+'registration'
 
     def jobs_url(self,suffix=''):
         """Append API end point to base URL"""
         return self.base_url+'jobs'+suffix
 
+    def signup_app(self,data):
+        """Login to App"""
+        url = self.signup_url()
+        print(url)
+        print(data)
+        response = self.post(url,data=data)
+        #print(response)
+        print("nilaya")
+        return response
 
     def login_app(self,data):
         """Login to App"""
         url = self.login_url()
         response = self.post(url,data=data)
         return response
-
 
     def add_jobs(self,data):
         "Adds a new job"

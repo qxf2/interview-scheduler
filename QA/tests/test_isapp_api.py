@@ -22,18 +22,26 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 @pytest.mark.API
 def test_isapi_example(api_url='http://localhost:6464/'):
     "Run api test"
-    try:
+    if True:
         # Create test object
         test_obj = API_Player(url=api_url)
 
         # set authentication details
         username = conf.user_name
         password_details = conf.password
+        userpassword = conf.password
+        useremail = conf.useremail
         job_data = conf.job_details
         candidate_data = conf.candidate_details
         interviewer_data = conf.interviewer_details
 
         auth_details = test_obj.login_details(username, password_details)
+        signup_details = test_obj.signup_details(username, useremail, userpassword)
+
+        result_flag = test_obj.signup_app(signup_details)
+        test_obj.log_result(result_flag,
+                            positive='Successfully signed up in app %s' % username,
+                            negative='Could not sign in to app %s' % username)
 
         result_flag = test_obj.login_app(auth_details)
         test_obj.log_result(result_flag,
@@ -101,8 +109,8 @@ def test_isapi_example(api_url='http://localhost:6464/'):
         actual_pass = test_obj.passed
         test_obj.write_test_summary()
 
-    except Exception as e:
-        print(e)
+    #except Exception as e:
+    #print(e)
 
 
 

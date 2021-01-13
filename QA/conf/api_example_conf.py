@@ -9,5 +9,6 @@ candidate_details = {'candidateName':'test_api_new123','candidateEmail':'test_ap
 interviewer_details = {'name':'test_nilaya','email':'nilaya+1234@qxf2.com','designation':'Senior QA','timeObject':'{"starttime":["10:00"],"endtime":["19:00"]}'}
 
 #authentication details
-user_name = 'nilaya'
-password = 'nilaya123'
+user_name = 'nilaya123'
+password = 'nilaya12345'
+useremail = 'nilaya+900@qxf2.com'

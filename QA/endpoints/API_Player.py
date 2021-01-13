@@ -29,6 +29,25 @@ class API_Player(Results):
         return login_data
 
 
+    def signup_details(self, username, useremail, userpassword):
+        "encode auth details"
+        user = username
+        pass_word = userpassword
+        user_email = useremail
+        signup_data = {'username':user, 'useremail':user_email,
+        'userpassword':pass_word}
+
+        return signup_data
+
+
+    def signup_app(self, signup_data):
+        "signup user"
+        response = self.api_obj.signup_app(data=signup_data)
+        result_flag = bool(response['response'] == 200)
+
+        return result_flag
+
+
     def login_app(self, login_data):
         "login to app"
         response = self.api_obj.login_app(data=login_data)
@@ -73,6 +92,8 @@ class API_Player(Results):
     def get_jobs(self):
         "get available jobs"
         response = self.api_obj.get_jobs()
+        print(response)
+        print("in get jobs")
         new_event_list = self.get_list(response)
         result_flag = bool(response['response'] == 200)
         self.write(msg="Fetched jobs list:\n %s"%new_event_list)

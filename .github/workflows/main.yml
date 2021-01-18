@@ -10,11 +10,12 @@ jobs:
       - name: CI-tests
         uses: appleboy/ssh-action@master
           script:
+           pip install virtualenv
            virtualenv -p /usr/bin/python3 qxf2_virtenv
            . qxf2_virtenv/bin/activate
            pip install -r requirements.txt
            cd qxf2/interview-scheduler/QA
-           pytest tests/test_select_inyterviewer.py
+           pytest tests/test_select_interviewer.py
            deactivate
 '''
   deploy:

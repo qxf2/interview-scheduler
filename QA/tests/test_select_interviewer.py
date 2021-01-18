@@ -4,7 +4,9 @@ import mock
 import datetime
 from dateutil.parser import parse
 import os,sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+print(sys.path)
+
 from qxf2_scheduler.qxf2_scheduler import pick_interviewer
 
 

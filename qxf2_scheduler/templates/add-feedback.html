@@ -28,6 +28,17 @@
 
     <body>
             {% include "logout.html" %}
+            <label class="col-md-4 control-label" for="thumbsUp">
+                <span style="color:red">*</span>
+                What was your opinion about the candidate?
+            </label>
+            <div class="col-md-4">
+                <select id="thumbsUp" style="width:200px; height:30px;">
+                <option value="thumbsup">Thumbs Up</option>
+                <option value="thumbsdown">Thumbs Down</option>
+            </select>
+            </div>
+            <br>
             <div>
             <h2 class="grey_text text-justify">Add feedback</h2>
             <label class="col-md-4 control-label" for="feedback"><span style="color:red">*</span>Add your feedback</label>
@@ -47,16 +58,21 @@
         </div>
         <input type="hidden" id="candidateId" value={{result.candidate_id}}>
         <input type="hidden" id="roundId" value={{result.round_id}}>
+        {{result.round_id}}
         <script>
             $("#addFeedback").button().on("click", function(){
+                var dropdownValue = document.getElementById("thumbsUp");
+                var thumbsValue = dropdownValue.options[dropdownValue.selectedIndex].value;
                 var addedFeedback = document.getElementById("comments").value
                 var candidateId = document.getElementById("candidateId").value
+                console.log(candidateId,addedFeedback,thumbsValue)
                 var roundId = document.getElementById("roundId").value
                 $.ajax({
                     type : 'POST',
                     url : '/candidate/'+ candidateId + '/round/' + roundId +'/add_feedback',
                     data : {
-                        'addedfeedback': addedFeedback
+                        'addedfeedback': addedFeedback,
+                        'thumbsvalue':thumbsValue
 
                     },
                     success: function(result){

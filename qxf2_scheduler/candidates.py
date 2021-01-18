@@ -603,9 +603,11 @@ def add_feedback(candidate_id, round_id):
     if request.method == "POST":
         error = "Success"
         added_feedback = request.form.get("addedfeedback")
-        Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':added_feedback})
+        thumbs_value = request.form.get("thumbsvalue")
+        combined_feed = thumbs_value + ',' + added_feedback
+        Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':combined_feed})
         db.session.commit()
-        result = {'added_feedback':added_feedback,'error': error}
+        result = {'added_feedback':combined_feed,'error': error}
 
     return jsonify(result)
 
@@ -620,9 +622,11 @@ def edit_feedback(candidate_id, round_id):
     if request.method == "POST":
         error = "Success"
         edited_feedback = request.form.get("editedfeedback")
-        Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':edited_feedback})
+        thumbs_value = request.form.get("thumbsvalue")
+        combined_edit_feed = thumbs_value + ',' + edited_feedback
+        Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':combined_edit_feed})
         db.session.commit()
-        result = {'edited_feedback':edited_feedback,'error': error}
+        result = {'edited_feedback':combined_edit_feed,'error': error}
 
     return jsonify(result)
 

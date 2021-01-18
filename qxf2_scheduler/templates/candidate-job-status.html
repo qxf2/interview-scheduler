@@ -77,11 +77,21 @@
                             {% if each_round_name['candidate_feedback'] == None %}
                             <label class="col-md-10">{{each_round_name['candidate_feedback']}}</label>
                             {% else %}
+                            {% if each_round_name['candidate_feedback'].startswith('thumbsup') %}
                             <label class="col-md-10">
                                 <span class="more">
+                                    <img src="/static/img/thumbs-up.png" width="50" height="30"></img>
                                     {{each_round_name['candidate_feedback']|markdown}}
                                 </span>
                             </label>
+                            {% else %}
+                            <label class="col-md-10">
+                                <span class="more">
+                                    <img  src="/static/img/thumbs-down.png" width="50" height="30"></img>
+                                    {{each_round_name['candidate_feedback']|markdown}}
+                                </span>
+                            </label>
+                            {% endif %}
                             {% endif %}
                         </div>
                         <br>

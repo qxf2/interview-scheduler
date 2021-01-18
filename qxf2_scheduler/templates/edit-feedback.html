@@ -28,6 +28,17 @@
 
     <body>
             {% include "logout.html" %}
+            <label class="col-md-4 control-label" for="thumbsUp">
+                <span style="color:red">*</span>
+                What was your opinion about the candidate?
+            </label>
+            <div class="col-md-4">
+                <select id="thumbsUp" style="width:200px; height:30px;">
+                <option value="thumbsup">Thumbs Up</option>
+                <option value="thumbsdown">Thumbs Down</option>
+            </select>
+            </div>
+            <br>
             <div>
             <h2 class="grey_text text-justify">Edit feedback</h2>
             <label class="col-md-4 control-label" for="feedback"><span style="color:red">*</span>Edit your feedback</label>
@@ -49,6 +60,8 @@
         <input type="hidden" id="roundId" value={{result.round_id}}>
         <script>
             $("#editFeedback").button().on("click", function(){
+                var dropdownValue = document.getElementById("thumbsUp");
+                var thumbsValue = dropdownValue.options[dropdownValue.selectedIndex].value;
                 var editedFeedback = document.getElementById("comments").value
                 var candidateId = document.getElementById("candidateId").value
                 var roundId = document.getElementById("roundId").value
@@ -56,7 +69,8 @@
                     type : 'POST',
                     url : '/candidate/'+ candidateId + '/round/' + roundId +'/edit_feedback',
                     data : {
-                        'editedfeedback': editedFeedback
+                        'editedfeedback': editedFeedback,
+                        'thumbsvalue':thumbsValue
 
                     },
                     success: function(result){

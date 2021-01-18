@@ -7,8 +7,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: appleboy/ssh-action@master
       - name: CI-tests
+        uses: appleboy/ssh-action@master
           script:
            virtualenv -p /usr/bin/python3 qxf2_virtenv
            . qxf2_virtenv/bin/activate

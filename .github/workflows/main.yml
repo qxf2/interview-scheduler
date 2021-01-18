@@ -17,4 +17,5 @@ jobs:
         run: |
              pip install -r requirements.txt
              pwd
-             pytest QA/tests/test_get_free_slots.py
+             cd QA/
+             python -m pytest tests/test_get_free_slots.py

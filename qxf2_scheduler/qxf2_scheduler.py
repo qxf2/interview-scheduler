@@ -50,12 +50,13 @@ def scheduler_job():
             if interview_start_time <= current_date_and_time and int(candidate_status) == 3:
                     update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
                     db.session.commit()
-                    #update_round_status = Candidateround.query.filter()
+                    update_round_status = Candidateround.query.filter(each_interview_time.candidate_id == Candidateround.candidate_id).update({'round_status':'Completed'})
+                    db.session.commit()
 
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)
 #sched.add_job(scheduler_job,'cron', minute='*')
-sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='1,31')
+sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='*')
 sched.start()
 
 

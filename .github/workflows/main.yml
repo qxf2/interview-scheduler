@@ -10,47 +10,11 @@ jobs:
       - name: CI-tests
         uses: appleboy/ssh-action@master
           script:
+           pwd
            pip install virtualenv
            virtualenv -p /usr/bin/python3 qxf2_virtenv
            . qxf2_virtenv/bin/activate
            pip install -r requirements.txt
            cd qxf2/interview-scheduler/QA
            pytest tests/test_select_interviewer.py
-           deactivate
-'''
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - name: SSH to EC2 instance
-      uses: appleboy/checkout@v2
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.PROD_KEY }}
-        port: ${{ secrets.port }}
-        script:  |
-          cd qxf2/interview-scheduler
-          source venv-interview-scheduler/bin/activate
-          git pull origin master
-          mv maintenance_off.html maintenance_on.html
-          pip install -r requirements.txt
-          python migrate_db.py db migrate
-          python migrate_db.py db upgrade
-          sudo service gunicorn restart
-          mv maintenance_on.html maintenance_off.html
-          deactivate
-'''
-  test-production:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: appleboy/checkout@v2
-      - name: post-deploy-tests
-          script:
-           virtualenv -p /usr/bin/python3 qxf2_virtenv
-           . qxf2_virtenv/bin/activate
-           pip install -r requirements.txt
-           cd qxf2/interview-scheduler/QA
-           pytest tests/test_isapp_api.py -U https://interview-scheduler.qxf2.com
            deactivate

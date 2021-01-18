@@ -4,7 +4,7 @@ from flask_login import LoginManager
 from flask_mail import Mail, Message
 from flaskext.markdown import Markdown
 import qxf2_scheduler.db_config as conf
-import qxf2_scheduler.email_config as email_conf
+#import qxf2_scheduler.email_config as email_conf
 import os
 import logging
 

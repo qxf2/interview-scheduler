@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: appleboy/ssh-action@master
       - name: CI-tests
-          script: |
+          script:
            virtualenv -p /usr/bin/python3 qxf2_virtenv
            . qxf2_virtenv/bin/activate
            pip install -r requirements.txt

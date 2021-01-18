@@ -7,14 +7,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: CI-tests
-        uses: appleboy/ssh-action@master
-          script:
-           pwd
-           pip install virtualenv
-           virtualenv -p /usr/bin/python3 qxf2_virtenv
-           . qxf2_virtenv/bin/activate
-           pip install -r requirements.txt
-           cd qxf2/interview-scheduler/QA
-           pytest tests/test_select_interviewer.py
-           deactivate
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run test
+        run: pytest QA/tests/test_select_interviewer.py

@@ -14,5 +14,6 @@ jobs:
           python-version: 3.6
 
       - name: Run test
-        run: pip install -r requirements.txt
+        run: |
+             pip install -r requirements.txt
              pytest QA/tests/test_select_interviewer.py

@@ -19,4 +19,4 @@ jobs:
              pwd
              cd QA/tests
              ls
-             python -m pytest test_get_free_slots.py
+             python -m pytest test_mock_base_gcal.py

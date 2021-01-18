@@ -16,4 +16,4 @@ jobs:
       - name: Run test
         run: |
              pip install -r requirements.txt
-             pytest QA/tests/test_select_interviewer.py
+             python QA/tests/test_select_interviewer.py

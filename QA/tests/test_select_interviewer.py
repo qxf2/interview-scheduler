@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 print(sys.path)
 
 from qxf2_scheduler.qxf2_scheduler import pick_interviewer
+#import qxf2_scheduler.qxf2_scheduler as pick_interviewer
 
 
 # 1. Passing one interviewer so it returns that interviewer only

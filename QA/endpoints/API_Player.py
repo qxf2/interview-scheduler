@@ -48,6 +48,14 @@ class API_Player(Results):
         return result_flag
 
 
+    def accept_signup(self, new_url):
+        "accept the email sent after signup"
+        response = self.api_obj.confirm_email(new_url)
+        result_flag = bool(response['response'] == 200)
+
+        return result_flag
+
+
     def login_app(self, login_data):
         "login to app"
         response = self.api_obj.login_app(data=login_data)
@@ -74,6 +82,7 @@ class API_Player(Results):
         new_event_list = [element.replace("\n", "") for element in new_event_list]
 
         return new_event_list
+
 
     def get_id(self, response):
         "to extract list from response"

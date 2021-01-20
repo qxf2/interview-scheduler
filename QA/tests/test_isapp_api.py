@@ -14,7 +14,8 @@ API test for Interview Scheduler Application
 import os
 import sys
 import pytest
-from QA.conf import api_example_conf as conf
+from QA.page_objects.confirm_email import Confirm_Email_Object
+from conf import api_example_conf as conf
 from QA.endpoints.API_Player import API_Player
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -25,6 +26,7 @@ def test_isapi_example(api_url='http://localhost:6464/'):
     if True:
         # Create test object
         test_obj = API_Player(url=api_url)
+        test_email = Confirm_Email_Object()
 
         # set authentication details
         username = conf.user_name
@@ -38,10 +40,21 @@ def test_isapi_example(api_url='http://localhost:6464/'):
         auth_details = test_obj.login_details(username, password_details)
         signup_details = test_obj.signup_details(username, useremail, userpassword)
 
+
         result_flag = test_obj.signup_app(signup_details)
         test_obj.log_result(result_flag,
                             positive='Successfully signed up in app %s' % username,
                             negative='Could not sign in to app %s' % username)
+
+
+        result_flag = test_email.fetch_email_invite()
+
+
+        result_flag = test_obj.accept_signup(test_email.fetch_email_invite())
+        test_obj.log_result(result_flag,
+                            positive='Successfully activated account %s' % username,
+                            negative='Could not activate account with  %s' % username)
+
 
         result_flag = test_obj.login_app(auth_details)
         test_obj.log_result(result_flag,

@@ -17,6 +17,7 @@ jobs:
         run: |
              pip install -r requirements.txt
              pip install bs4
+             pip install loguru
              pwd
              python run.py > /dev/null 2>&1 &
              pytest QA/tests/test_isapp_api.py

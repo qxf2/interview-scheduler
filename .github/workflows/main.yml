@@ -21,6 +21,7 @@ jobs:
              cd ..
       - name: Start run.py in background
         run: |
+             pwd
              python run.py
              background: true
 

@@ -18,6 +18,6 @@ jobs:
              pip install bs4
              cd QA/
              pip install -r requirements.txt
-             pwd
+             cd ..
              python run.py > /dev/null 2>&1 &
              pytest QA/tests/test_isapp_api.py

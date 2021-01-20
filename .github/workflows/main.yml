@@ -19,4 +19,4 @@ jobs:
              pwd
              cd QA
              ls
-             python -m tests/pytest test_isapp_api.py
+             python -m pytest tests/test_isapp_api.py

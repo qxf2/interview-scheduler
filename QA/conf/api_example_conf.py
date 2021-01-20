@@ -10,5 +10,5 @@ interviewer_details = {'name':'test_nilaya','email':'nilaya+1234@qxf2.com','desi
 
 #authentication details
 user_name = 'nilaya123'
-password = 'nilaya12345'
-useremail = 'nilaya+900@qxf2.com'
+password = 'nilaya1234'
+useremail = 'test+9000@qxf2.com'

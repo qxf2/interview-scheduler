@@ -15,7 +15,7 @@ A simple IMAP util that will help us with account activation
 #The import statements import: standard Python modules,conf
 import os,sys,time,imaplib,email,datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import conf.email_conf as conf_file
+import QA.conf.email_conf as conf_file
 
 class Email_Util:
     "Class to interact with IMAP servers"

@@ -19,4 +19,4 @@ jobs:
              pwd
              python run.py > /dev/null 2>&1 &
              cd QA
-             python -m pytest tests/test_isapp_api.py
+             pytest tests/test_isapp_api.py

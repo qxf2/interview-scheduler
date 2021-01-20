@@ -41,3 +41,4 @@ from qxf2_scheduler import routes
 from qxf2_scheduler import candidates
 from qxf2_scheduler import rounds
 from qxf2_scheduler import status
+from qxf2_scheduler import reset_password

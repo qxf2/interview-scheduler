@@ -176,7 +176,6 @@
                     timeObject.endtime.push($("#dendtime" + index).val())
                 }
             }
-            console.log(timeObject);
             //validation starts from here
             if (name == "") {
                 $('#name').remove();
@@ -315,9 +314,7 @@
     </script>
     <script>
         function removeButton(loopIndex) {
-            console.log(loopIndex);
             var row_id = "time-slot-" + loopIndex;
-            console.log(row_id);
             var elem = document.getElementById(row_id);
             elem.parentNode.removeChild(elem);
         }

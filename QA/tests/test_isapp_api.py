@@ -14,10 +14,10 @@ API test for Interview Scheduler Application
 import os
 import sys
 import pytest
-from QA.page_objects.confirm_email import Confirm_Email_Object
-from QA.conf import api_example_conf as conf
-from QA.endpoints.API_Player import API_Player
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from page_objects.confirm_email import Confirm_Email_Object
+from conf import api_example_conf as conf
+from endpoints.API_Player import API_Player
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 @pytest.mark.API

@@ -18,5 +18,5 @@ jobs:
              pip install -r requirements.txt
              pwd
              python run.py > /dev/null 2>&1 &
-             cd QA/tests
-             python -m pytest test_isapp_api.py
+             cd QA
+             python -m pytest tests/test_isapp_api.py

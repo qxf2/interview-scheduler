@@ -19,5 +19,11 @@ jobs:
              cd QA/
              pip install -r requirements.txt
              cd ..
-             python run.py > /dev/null 2>&1 &
+      - name: Start run.py in background
+        run: |
+             python run.py
+             background: true
+
+      - name: Start run.py in background
+        run: |
              pytest QA/tests/test_isapp_api.py

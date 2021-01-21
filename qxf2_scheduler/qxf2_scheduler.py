@@ -162,7 +162,7 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
     jitsi_link = "https://meet.jit.si/interviewScheduler/%s"%res
     LOCATION = jitsi_link
     SUMMARY = candidate_name + '/' + chosen_interviewer_name + '-' + candidate_job
-    description = "Round name : "+round_name+'\n\n'+ 'Round description : '+round_description + "Use the Jitsi link to join the meeting " +  jitsi_link
+    description = "Round name : "+round_name+'\n\n'+ 'Round description : '+round_description + "  Use the Jitsi link to join the meeting  " +  jitsi_link
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)
 
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,

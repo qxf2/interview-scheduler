@@ -20,7 +20,7 @@ jobs:
           MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
       - name: Print
         run: |
-          echo "I am print"
+          echo $MAIL_USER
           cat >> qxf2_scheduler/email_config.py
              MAIL_USERNAME = "$MAIL_USER"
              MAIL_PASSWORD = "$MAIL_PASS"

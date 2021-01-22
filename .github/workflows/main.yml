@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Running the requirements
-      uses: actions/checkout@v2
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
         MAIL_USER : ${{ secrets.MAIL_USERNAME }}

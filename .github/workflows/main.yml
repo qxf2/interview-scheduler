@@ -15,10 +15,6 @@ jobs:
 
       - name: Run test
         uses: actions/checkout@v2
-        env:
-          MAIL_USERNAME : ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD : ${{ secrets.MAIL_PASSWORD }}
-      - name: Print
         run: |
           echo "I am print"
           cat >> qxf2_scheduler/email_config.py

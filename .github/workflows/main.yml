@@ -13,12 +13,6 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Configure Mail Credentials
-        uses: actions/setup-python@v1
-        with:
-          MAIL_USERNAME : ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD : ${{ secrets.MAIL_PASSWORD }}
-
       - name: Run test
         run: |
              pip install bs4
@@ -26,13 +20,15 @@ jobs:
              pip install -r requirements.txt
              cd ..
              echo $secrets.MAIL_USERNAME
-             cat >> qxf2_scheduler/email_config.py <<EOL
-             MAIL_USERNAME = ${{ secrets.MAIL_USERNAME }}
-             MAIL_PASSWORD = ${{ secrets.MAIL_PASSWORD }}
-             EOL
-             chmod +x qxf2_scheduler/email_config.py
-             pwd
-             echo "$(qxf2_scheduler/email_config.py)"
+        with:
+          MAIL_USERNAME : ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD : ${{ secrets.MAIL_PASSWORD }}
+          sudo cat >> qxf2_scheduler/email_config.py <<EOL
+          MAIL_USERNAME
+          MAIL_PASSWORD
+          EOL
+          pwd
+          echo "$(qxf2_scheduler/email_config.py)"
 
       - name: Start run.py in background
         run: |

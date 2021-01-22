@@ -22,3 +22,7 @@ jobs:
         run: |
           echo "I am print"
           echo $env.MAIL_USERNAME
+          cat >> qxf2_scheduler/email_config.py <<EOL
+             ${MAIL_USERNAME}
+             ${MAIL_PASSWORD}
+             EOL

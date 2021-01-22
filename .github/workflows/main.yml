@@ -19,6 +19,11 @@ jobs:
              cd QA/
              pip install -r requirements.txt
              cd ..
+             cat >> qxf2_scheduler/email_config.py <<EOL
+             MAIL_USERNAME = ${{ secrets.MAIL_USERNAME }}
+             MAIL_PASSWORD = ${{ secrets.MAIL_PASSWORD }}
+             EOL
+
       - name: Start run.py in background
         run: |
              pwd
@@ -27,4 +32,4 @@ jobs:
 
       - name: Start run.py in background
         run: |
-             pytest QA/tests/test_isapp_api.py
+             pytest QA/tests/test_select_interviewer.py

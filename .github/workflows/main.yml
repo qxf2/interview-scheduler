@@ -22,8 +22,8 @@ jobs:
         run: |
           echo "I am print"
           cat >> qxf2_scheduler/email_config.py
-             env.MAIL_USERNAME
-             env.MAIL_PASSWORD
+             MAIL_USERNAME = ${{ secrets.MAIL_USERNAME }}
+             MAIL_PASSWORD = ${{ secrets.MAIL_PASSWORD }}
           cat qxf2_scheduler/email_config.py
       - name: Start server in background
         run: |

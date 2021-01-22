@@ -21,7 +21,6 @@ jobs:
       - name: Print
         run: |
           echo "I am print"
-          echo $env.MAIL_USERNAME
           cat >> qxf2_scheduler/email_config.py
              ${MAIL_USERNAME}
              ${MAIL_PASSWORD}

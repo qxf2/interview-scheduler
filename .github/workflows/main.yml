@@ -16,11 +16,14 @@ jobs:
       - name: Run test
         uses: actions/checkout@v2
         with:
+          host: ${{ secrets.HOST }}
+          echo $host
           MAIL_USER : ${{ secrets.MAIL_USERNAME }}
+          echo $MAIL_USER
           MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
       - name: Print
         run: |
-          echo $MAIL_USER
+          echo $host
           cat >> qxf2_scheduler/email_config.py
              MAIL_USERNAME = "$MAIL_USER"
              MAIL_PASSWORD = "$MAIL_PASS"

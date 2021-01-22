@@ -24,7 +24,7 @@ jobs:
              MAIL_PASSWORD = ${{ secrets.MAIL_PASSWORD }}
              EOL
              pwd
-             cat qxf2_scheduler/email_config.py
+             echo "$(qxf2_scheduler/email_config.py)"
 
       - name: Start run.py in background
         run: |

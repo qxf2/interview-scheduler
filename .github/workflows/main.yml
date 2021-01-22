@@ -4,7 +4,7 @@ on:
     branches:
       - moving_test_to_qa
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
     steps:
     - name: Running the requirements

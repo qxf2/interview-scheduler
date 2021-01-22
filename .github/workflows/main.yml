@@ -26,3 +26,6 @@ jobs:
              ${MAIL_USERNAME}
              ${MAIL_PASSWORD}
              EOL
+          pip install bs4
+          cd QA/
+          pip install -r requirements.txt

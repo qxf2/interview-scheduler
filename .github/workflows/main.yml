@@ -14,7 +14,6 @@ jobs:
           python-version: 3.8
 
       - name: Run test
-        uses: actions/checkout@v2
         run: |
           echo "I am print"
           cat >> qxf2_scheduler/email_config.py

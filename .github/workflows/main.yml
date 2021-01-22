@@ -22,6 +22,15 @@ jobs:
         run: |
           echo "I am print"
           cat >> qxf2_scheduler/email_config.py
-             ${MAIL_USERNAME}
-             ${MAIL_PASSWORD}
+             env.MAIL_USERNAME
+             env.MAIL_PASSWORD
           cat qxf2_scheduler/email_config.py
+      - name: Start server in background
+        run: |
+             pip install bs4
+             cd QA/
+             pip install -r requirements.txt
+             cd ..
+             pwd
+             python run.py
+             background: true

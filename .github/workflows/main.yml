@@ -22,8 +22,8 @@ jobs:
         run: |
           echo "I am print"
           cat >> qxf2_scheduler/email_config.py
-          MAIL_USERNAME = "$MAIL_USERNAME"
-          MAIL_PASSWORD = "$MAIL_PASSWORD"
+             MAIL_USERNAME = "$MAIL_USERNAME"
+             MAIL_PASSWORD = "$MAIL_PASSWORD"
           cat qxf2_scheduler/email_config.py
       - name: Start server in background
         run: |

@@ -4,34 +4,19 @@ on:
     branches:
       - moving_test_to_qa
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: CI-tests
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-
-      - name: Run test
-        uses: actions/checkout@v2
-        with:
-          host: ${{ secrets.HOST }}
-          MAIL_USER : ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
-      - name: Print
-        script: |
+    - name: Running the requirements
+      uses: actions/checkout@v2
+      with:
+        host: ${{ secrets.HOST }}
+        MAIL_USER : ${{ secrets.MAIL_USERNAME }}
+        MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
+        script:  |
           echo $host
+          echo $MAIL_USER
           cat >> qxf2_scheduler/email_config.py
              MAIL_USERNAME = "$MAIL_USER"
              MAIL_PASSWORD = "$MAIL_PASS"
           cat qxf2_scheduler/email_config.py
-      - name: Start server in background
-        script: |
-             pip install bs4
-             cd QA/
-             pip install -r requirements.txt
-             cd ..
-             pwd
-             python run.py
-             background: true

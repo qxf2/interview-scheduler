@@ -13,6 +13,13 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: Configure Mail Credentials
+        uses: actions/setup-python@v1
+        with:
+          MAIL_USERNAME : ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD : ${{ secrets.MAIL_PASSWORD }}
+          echo $secrets.MAIL_USERNAME
+
       - name: Run test
         run: |
              pip install bs4

@@ -8,7 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Running the requirements
-      uses: appleboy/ssh-action@master
+      uses: actions/setup-python@v1
+      with:
+          python-version: 3.8
       with:
         host: ${{ secrets.HOST }}
         MAIL_USER : ${{ secrets.MAIL_USERNAME }}

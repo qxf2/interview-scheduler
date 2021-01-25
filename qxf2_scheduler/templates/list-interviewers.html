@@ -51,7 +51,7 @@
             <input class="btn btn-success" type="button" id="add" onclick="addinterviewer()" value="Add">
         </div>
         <br />
-        <table id="table"class="table table-striped">
+        <table id="table"class="table table-striped"width="90%">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -69,7 +69,7 @@
                     </td>
                     <td><button class="link-button" type="button" id="edit"
                             onclick="editinterviewer({{ each_interviewer.interviewer_id }})">Edit</button>&nbsp;&nbsp;
-                        <button type="button" style="color: red;"
+                        <button type="button" style="color:rgba(255, 0, 0, 0.589);"
                             class="link-button" data-target="#confirmdeletemodal"
                             data-username="{{ each_interviewer.interviewers_name }}"
                             data-href="{{ each_interviewer.interviewer_id }}" data-toggle="modal">Delete</button></td>
@@ -143,12 +143,12 @@
     $('#table').DataTable( {
 
         "columnDefs": [
-                { width: 20, targets: 0},
+                { width:20, targets: 0},
+                {width:100, targets:1},
+                {width:140, targets:2},
                 {
                     "targets": [1,2],
                     "orderable":false,
-
-
                 }],
 
     });

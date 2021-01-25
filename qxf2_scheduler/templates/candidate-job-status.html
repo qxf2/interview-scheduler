@@ -62,10 +62,10 @@
                                 {{ each_round_name['round_status']}}
                                 {% else %}
                                 <label class="col-md-10" for="eachRound">
-                                    {{ each_round_name['round_status']}}&nbsp;
+                                    {{ each_round_name['round_status']}}&nbsp;&nbsp;
                                     <a
                                         href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/add_feedback">Add
-                                        feedback</a>&nbsp;<a
+                                        feedback</a>&nbsp;&nbsp;<a
                                         href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/edit_feedback">Edit
                                         feedback</a> </label>
                                 {% endif %}
@@ -84,7 +84,9 @@
                             </label>
                             {% endif %}
                         </div>
+                        <br>
                         {% endfor %}
+
                         <div class="col-md-12 form-display">
                             <label class="labelbold col-md-2" for="Interviewer details:">Interviewer Email:</label>
                             {% if result.interviewer_email_id == None%}
@@ -635,7 +637,6 @@
                 if (content.length > showChar) {
 
                     var c = content.substr(0, showChar);
-                    console.log(c);
                     var h = content.substr(showChar, content.length - showChar);
                     var textFeed = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent">' + h + '</span><span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
                     $(this).html(textFeed);

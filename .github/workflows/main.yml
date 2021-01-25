@@ -17,10 +17,3 @@ jobs:
           host: ${{ secrets.HOST }}
           MAIL_USER : ${{ secrets.MAIL_USERNAME }}
           MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
-      script:  |
-          echo $host
-          echo $MAIL_USER
-          cat >> qxf2_scheduler/email_config.py
-              MAIL_USERNAME = "$MAIL_USER"
-              MAIL_PASSWORD = "$MAIL_PASS"
-          cat qxf2_scheduler/email_config.py

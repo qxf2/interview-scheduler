@@ -269,7 +269,7 @@ def scehdule_and_confirm():
         candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':updated_interviewer_email})
         db.session.commit()
         #Update the round status for the candidate
-        update_round_status = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id).update({'round_status':'Interview Scheduled'})
+        update_round_status = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_id==get_round_id_object.round_id).update({'round_status':'Interview Scheduled'})
         db.session.commit()
         #Get the interviewer email from the form
         alloted_interviewer_email = schedule_event[3]['interviewer_email']

@@ -10,11 +10,16 @@ jobs:
     - name: Running the requirements
       uses: actions/checkout@v1
     - name: Check commands
-      script: |
-        cd QA/
-        pip install -r requirements.txt
-        cd ..
-        pwd
-        pip install bs4
-        python run.py
-        background: true
+      uses: actions/checkout@v2
+      with:
+        host: ${{ secrets.HOST }}
+        MAIL_USER : ${{ secrets.MAIL_USERNAME }}
+        MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
+        script: |
+          cd QA/
+          pip install -r requirements.txt
+          cd ..
+          pwd
+          pip install bs4
+          python run.py
+          background: true

@@ -10,5 +10,5 @@ jobs:
     - name: Running the requirements
       uses: actions/checkout@v1
     - name: Check commands
-        run: |
-          pwd
+      run: |
+        pwd

@@ -5,6 +5,8 @@ on:
       - moving_test_to_qa
 jobs:
   test:
+    name: Print mail username
     runs-on: ubuntu-latest
-    - name: Print mail username
-      run: "echo ${{ secrets.MAIL_USERNAME }}"
+    steps:
+      - name: Print mail username
+        run: "echo ${{ secrets.MAIL_USERNAME }}"

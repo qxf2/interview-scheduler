@@ -19,9 +19,10 @@ jobs:
               pip install -r QA/requirements.txt
               pip install bs4
               touch qxf2_scheduler/email_config.py
-              cat >> qxf2_scheduler/email_config.py
+              cat > qxf2_scheduler/email_config.py << EOF
               MAIL_USERNAME = "${{ secrets.MAIL_USERNAME }}"
               MAIL_PASSWORD = "${{ secrets.MAIL_PASSWORD }}"
+              EOF
               more qxf2_scheduler/email_config.py
               python run.py
               background: true

@@ -10,7 +10,7 @@ jobs:
     - name: Running the requirements
       uses: actions/checkout@v1
     - name: Check commands
-      run: |
+      script: |
         cd QA/
         pip install -r requirements.txt
         cd ..

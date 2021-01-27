@@ -9,4 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print mail username
-        run: "echo ${{ secrets.MAIL_USERNAME }}"
+        run: |
+        if [ "${{ secrets.MAIL_USERNAME }}" == "careers@qxf2.com" ];
+        then
+            echo "Yay!"
+        fi

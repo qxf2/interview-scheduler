@@ -8,11 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Running the requirements
-      uses: actions/setup-python@v2
+      uses: actions/checkout@master
       with:
           python-version: 3.8
     - name: Start server in background
-      uses: actions/checkout@master
       run: |
             pip install bs4
             cd QA/

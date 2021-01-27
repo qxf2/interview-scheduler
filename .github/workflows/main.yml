@@ -13,12 +13,12 @@ jobs:
         host: ${{ secrets.HOST }}
         MAIL_USER : ${{ secrets.MAIL_USERNAME }}
         MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
-        run: |
-          pwd
-          cd QA/
-          pip install -r requirements.txt
-          cd ..
-          pwd
-          pip install bs4
-          python run.py
-          background: true
+      run: |
+        pwd
+        cd QA/
+        pip install -r requirements.txt
+        cd ..
+        pwd
+        pip install bs4
+        python run.py
+        background: true

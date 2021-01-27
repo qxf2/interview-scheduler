@@ -10,4 +10,4 @@ jobs:
     - name: Running the requirements
       uses: actions/checkout@v1
       with:
-          python-version: 3.8
+          pwd

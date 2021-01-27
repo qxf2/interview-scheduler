@@ -13,6 +13,7 @@ jobs:
               if [ "${{ secrets.MAIL_USERNAME }}" == "careers@qxf2.com" ]; then
                 echo "Yay!"
               fi
+              cd ..
               pwd
               ls -al
               pip install -r QA/requirements.txt

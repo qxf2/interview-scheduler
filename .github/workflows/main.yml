@@ -13,7 +13,7 @@ jobs:
           python-version: 3.8
     - name: Start server in background
       uses: actions/checkout@v2
-      run: |
+      script: |
             pip install bs4
             cd QA/
             pip install -r requirements.txt

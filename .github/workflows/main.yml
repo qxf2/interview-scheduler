@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Print mail username
         run: |
-        if [ "${{ secrets.MAIL_USERNAME }}" == "careers@qxf2.com" ];
-        then
-            echo "Yay!"
-        fi
+              if [ "${{ secrets.MAIL_USERNAME }}" == "careers@qxf2.com" ]; then
+                echo "Yay!"
+                exit 1
+              fi

@@ -9,6 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Running the requirements
+      uses: actions/checkout@v1
       with:
         host: ${{ secrets.HOST }}
         MAIL_USER : ${{ secrets.MAIL_USERNAME }}

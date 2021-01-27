@@ -9,5 +9,6 @@ jobs:
     steps:
     - name: Running the requirements
       uses: actions/checkout@v1
-      with:
+    - name: Check commands
+        run: |
           pwd

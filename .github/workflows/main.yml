@@ -6,13 +6,5 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - env:
-        host: ${{ secrets.HOST }}
-        MAIL_USER : ${{ secrets.MAIL_USERNAME }}
-        MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
-    - run: |
-        echo $host
-        echo $MAIL_USER
-        pwd
+    - name: Print mail username
+      run: "echo ${{ secrets.MAIL_USERNAME }}"

@@ -18,6 +18,8 @@ jobs:
         host: ${{ secrets.HOST }}
         MAIL_USER : ${{ secrets.MAIL_USERNAME }}
         MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
+        echo $host
+        echo $MAIL_USER
 
     - name: Run server in Background
       run: |

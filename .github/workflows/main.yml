@@ -13,7 +13,6 @@ jobs:
           python-version: 3.8
 
     - name: Running the requirements
-      uses: actions/checkout@v1
       with:
         host: ${{ secrets.HOST }}
         MAIL_USER : ${{ secrets.MAIL_USERNAME }}

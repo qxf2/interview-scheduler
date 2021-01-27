@@ -13,6 +13,8 @@ jobs:
         host: ${{ secrets.HOST }}
         MAIL_USER : ${{ secrets.MAIL_USERNAME }}
         MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
+
+    - name: Run server in Background
       run: |
         pwd
         cd QA/

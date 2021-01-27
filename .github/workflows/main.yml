@@ -12,13 +12,11 @@ jobs:
       with:
           python-version: 3.8
     - name: Configure Email Config
-      uses: actions/checkout@v2
       with:
           host: ${{ secrets.HOST }}
           MAIL_USERNAME : ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD : ${{ secrets.MAIL_PASSWORD }}
     - name: Print
-      uses: actions/checkout@v2
       run: |
            echo $host
            cat >> qxf2_scheduler/email_config.py
@@ -26,7 +24,6 @@ jobs:
               MAIL_PASSWORD = "$MAIL_PASS"
            cat qxf2_scheduler/email_config.py
     - name: Start server in background
-      uses: actions/checkout@v2
       run: |
             pip install bs4
             cd QA/

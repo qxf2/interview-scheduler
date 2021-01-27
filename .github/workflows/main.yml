@@ -8,13 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Running the requirements
-      uses: actions/checkout@v1
-      with:
+    - with:
         host: ${{ secrets.HOST }}
         MAIL_USER : ${{ secrets.MAIL_USERNAME }}
         MAIL_PASS : ${{ secrets.MAIL_PASSWORD }}
-      run: |
+    - run: |
         echo $host
         echo $MAIL_USER
         pwd

@@ -18,6 +18,7 @@ jobs:
           MAIL_USERNAME : ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD : ${{ secrets.MAIL_PASSWORD }}
     - name: Print
+      uses: actions/checkout@v2
       script: |
            echo $host
            cat >> qxf2_scheduler/email_config.py
@@ -25,6 +26,7 @@ jobs:
               MAIL_PASSWORD = "$MAIL_PASS"
            cat qxf2_scheduler/email_config.py
     - name: Start server in background
+      uses: actions/checkout@v2
       script: |
             pip install bs4
             cd QA/

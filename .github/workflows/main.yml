@@ -12,6 +12,7 @@ jobs:
       with:
           python-version: 3.8
     - name: Configure Email Config
+      uses: actions/checkout@v2
       with:
           host: ${{ secrets.HOST }}
           MAIL_USERNAME : ${{ secrets.MAIL_USERNAME }}

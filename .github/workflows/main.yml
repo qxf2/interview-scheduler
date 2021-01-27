@@ -8,29 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Running the requirements
-      uses: actions/checkout@master
+      uses: actions/checkout@v1
       with:
           python-version: 3.8
-    - name: Start server in background
-      run: |
-            pwd
-            pip install bs4
-            cd QA/
-            pip install -r requirements.txt
-            cd ..
-            pwd
-            python run.py
-            background: true
-    - name: Configure Email Config
-      uses: actions/checkout@v2
-      with:
-          host: ${{ secrets.HOST }}
-          MAIL_USERNAME : ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD : ${{ secrets.MAIL_PASSWORD }}
-    - name: Print
-      run: |
-           echo $host
-           cat >> qxf2_scheduler/email_config.py
-              MAIL_USERNAME = "$MAIL_USERNAME"
-              MAIL_PASSWORD = "$MAIL_PASSWORD"
-           cat qxf2_scheduler/email_config.py

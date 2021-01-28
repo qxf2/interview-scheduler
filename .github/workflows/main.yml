@@ -21,3 +21,5 @@ jobs:
               more qxf2_scheduler/email_config.py
               python run.py
               background: true
+              pytest QA/tests/test_select_interviewer.py
+              pkill -f run_server.py

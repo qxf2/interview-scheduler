@@ -9,11 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Print mail username
+      - name: Running requirements and server in background
         run: |
-              if [ "${{ secrets.MAIL_USERNAME }}" == "careers@qxf2.com" ]; then
-                echo "Yay!"
-              fi
               pwd
               ls -al
               pip install -r QA/requirements.txt

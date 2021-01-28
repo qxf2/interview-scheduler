@@ -14,7 +14,7 @@ apipkg==1.5
 APScheduler==3.6.3
 astroid==2.2.5
 atomicwrites==1.3.0
-attrs==19.1.0
+attrs==19.3.0
 blinker==1.4
 cachetools==3.1.1
 certifi==2019.6.16

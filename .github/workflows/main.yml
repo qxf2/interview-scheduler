@@ -20,5 +20,5 @@ jobs:
               EOF
               more qxf2_scheduler/email_config.py
               python  run.py > /dev/null 2>&1 &
-              python -m pytest QA/tests/test_select_interviewer.py QA/tests/test_isapp_api.py
+              python -m pytest QA/tests/test_select_interviewer.py
               pkill -f run.py

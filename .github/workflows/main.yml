@@ -5,7 +5,7 @@ on:
       - moving_test_to_qa
 jobs:
   test:
-    name: Print mail username
+    name: Run CI tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

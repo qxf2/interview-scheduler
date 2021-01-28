@@ -11,8 +11,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Running requirements and server in background
         run: |
-              pwd
-              ls -al
               pip install -r QA/requirements.txt
               pip install bs4
               touch qxf2_scheduler/email_config.py

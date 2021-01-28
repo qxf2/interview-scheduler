@@ -19,7 +19,6 @@ jobs:
               MAIL_PASSWORD = "${{ secrets.MAIL_PASSWORD }}"
               EOF
               more qxf2_scheduler/email_config.py
-              python run.py
-              background: true
+              python  run_server.py > /dev/null 2>&1 &
               pytest QA/tests/test_select_interviewer.py
               pkill -f run_server.py

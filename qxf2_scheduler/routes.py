@@ -22,7 +22,7 @@ from flask import flash
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
 
@@ -232,6 +232,19 @@ def fetch_existing_interviewer_email(candidate_id, job_id, fetched_interviewer_e
     return interviewer_email
 
 
+def add_interview_count(fetch_interviewer_id_value):
+    "Update the interview count table"
+    #db.session.query(db.exists().where(Login.username == username)).scalar()
+    exists = db.session.query(db.exists().where(Interviewcount.interviewer_id == fetch_interviewer_id_value)).scalar()
+    if exists:
+        db.session.query(Interviewcount).filter_by(interviewer_id =fetch_interviewer_id_value).update({'interview_count': Interviewcount.interview_count + 1})
+        db.session.commit()
+    else:
+        add_interview_count = Interviewcount(interviewer_id=fetch_interviewer_id_value, interview_count=1)
+        db.session.add(add_interview_count)
+        db.session.commit()
+
+
 @app.route("/confirmation", methods=['GET', 'POST'])
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
@@ -282,6 +295,9 @@ def scehdule_and_confirm():
         add_interviewer_candidate_object = Candidateinterviewer(job_id=job_id,candidate_id=candidate_id,interviewer_id=fetch_interviewer_id_value)
         db.session.add(add_interviewer_candidate_object)
         db.session.commit()
+
+        #Add the count for the interviewer in the interviewcount table
+        add_interview_count(fetch_interviewer_id_value)
 
         return redirect(url_for('confirm', value=value))
 

@@ -60,7 +60,6 @@
 
                     },
                     success: function(result){
-                        console.log(result);
                         if (result.error == "Success"){
                             alert("The feedback has been edited")
                             document.location.href = '/candidates'
@@ -69,6 +68,11 @@
                 })
             })
 
+        </script>
+        <script>
+            function clearEdit(){
+                document.location.href = "/candidates"
+            }
         </script>
     </body>
 </html>

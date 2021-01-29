@@ -19,8 +19,6 @@ jobs:
               MAIL_PASSWORD = "${{ secrets.MAIL_PASSWORD }}"
               EOF
               more qxf2_scheduler/email_config.py
-              python migrate_db.py db migrate
-              python migrate_db.py db upgrade
               python  run.py > /dev/null 2>&1 &
-              python -m pytest QA/tests/test_select_interviewer.py QA/tests/test_isapp_api.py
+              python -m pytest QA/tests/test_select_interviewer.py
               pkill -f run.py

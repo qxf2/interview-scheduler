@@ -32,8 +32,6 @@ class Jobs_API_Endpoints(Base_API):
     def signup_app(self,data):
         """Login to App"""
         url = self.signup_url()
-        print(url)
-        print(data)
         response = self.post(url,data=data)
         return response
 

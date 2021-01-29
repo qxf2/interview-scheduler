@@ -42,7 +42,9 @@ class API_Player(Results):
 
     def signup_app(self, signup_data):
         "signup user"
+        print(signup_data)
         response = self.api_obj.signup_app(data=signup_data)
+        print(response)
         result_flag = bool(response['response'] == 200)
 
         return result_flag

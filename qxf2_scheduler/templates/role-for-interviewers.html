@@ -104,10 +104,8 @@
     </div>
 
     <script>
-        console.log("click")
         function changeStatus() {
             var jobid = document.getElementById("jobId").value;
-            console.log("hi",jobid);
             $.ajax({
                 type: 'POST',
                 url: '/job/status',

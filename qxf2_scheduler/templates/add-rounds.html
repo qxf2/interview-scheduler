@@ -91,14 +91,12 @@
             'use strict';
             window.addEventListener('load', function () {
                 var forms = document.getElementsByClassName('needs-validation');
-                console.log("I am inside function");
                 var validation = Array.prototype.filter.call(forms, function (form) {
                     form.addEventListener('submit', function (event) {
                         event.preventDefault();
                         event.stopPropagation();
                         $("#resultDiv").empty();
                         if (form.checkValidity() === true) {
-                            console.log("I am coming here")
                             var roundName = $("#rname").val();
                             var roundDescription = $("#rdesc").val();
                             var roundRequirements = $("#rreq").val();

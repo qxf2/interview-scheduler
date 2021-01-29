@@ -20,7 +20,5 @@ jobs:
               EOF
               more qxf2_scheduler/email_config.py
               python  run.py > /dev/null 2>&1 &
-              python migrate_db.py db migrate
-              python migrate_db.py db upgrade
               python -m pytest QA/tests/test_select_interviewer.py QA/tests/test_isapp_api.py
               pkill -f run.py

@@ -261,7 +261,6 @@ def scehdule_and_confirm():
         job_id = session['candidate_info']['job_id']
         #Fetch the round id
         get_round_id_object = db.session.query(Candidateround).filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_status=='Invitation Sent').scalar()
-
         #Fetch the round name and description
         round_name_and_desc = Rounds.query.filter(Rounds.round_id==get_round_id_object.round_id).values(Rounds.round_name,Rounds.round_description)
         for each_round_detail in round_name_and_desc:
@@ -282,7 +281,7 @@ def scehdule_and_confirm():
         candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':updated_interviewer_email})
         db.session.commit()
         #Update the round status for the candidate
-        update_round_status = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id).update({'round_status':'Completed'})
+        update_round_status = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id).update({'round_status':'Interview Scheduled'})
         db.session.commit()
         #Get the interviewer email from the form
         alloted_interviewer_email = schedule_event[3]['interviewer_email']
@@ -936,7 +935,7 @@ def show_welcome(candidate_id, job_id, url):
                 for candidate_detail in get_candidate_details:
                     data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
                 #Parsing the round details
-                candidate_round_details = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.round_status=='Completed').values(Candidateround.round_id)
+                candidate_round_details = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.round_status=='Interview Scheduled').values(Candidateround.round_id)
                 for each_round_detail in candidate_round_details:
                     fetched_round_id = each_round_detail.round_id
 

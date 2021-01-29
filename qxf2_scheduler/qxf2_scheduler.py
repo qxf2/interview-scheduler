@@ -8,7 +8,7 @@ import qxf2_scheduler.base_gcal as gcal
 from googleapiclient.errors import HttpError
 import datetime
 from datetime import timedelta
-import random,sys
+import random,sys, string
 from qxf2_scheduler import db
 from apscheduler.schedulers.background import BackgroundScheduler
 import pandas as pd
@@ -16,7 +16,6 @@ import pandas as pd
 TIMEZONE_STRING = '+05:30'
 FMT='%H:%M'
 #CHUNK_DURATION = '60'
-LOCATION =  'Google Hangout or Office',
 ATTENDEE = 'annapoorani@qxf2.com'
 DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
 NEW_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S+05:30"
@@ -123,12 +122,12 @@ def combine_date_and_time(date,selected_slot):
     return create_event_start_time,create_event_end_time
 
 
-def append_the_create_event_info(create_event,interviewer_email_id):
+def append_the_create_event_info(create_event,interviewer_email_id, jitsi_link):
     "Appends the created event information into list"
     created_event_info = []
     created_event_info.append({'start':create_event['start']})
     created_event_info.append({'end':create_event['end']})
-    created_event_info.append({'Link':create_event['htmlLink']})
+    created_event_info.append({'Link':jitsi_link})
     created_event_info.append({'interviewer_email':interviewer_email_id})
 
     return created_event_info
@@ -247,12 +246,17 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
     for candidate_details in fetch_candidate_name:
         candidate_name = candidate_details.candidate_name
         candidate_job = candidate_details.job_applied
+    res = ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k = 7))
+    jitsi_link = "https://meet.jit.si/interviewScheduler/%s"%res
+    LOCATION = jitsi_link
     SUMMARY = candidate_name + '/' + chosen_interviewer_name + '-' + candidate_job
-    description = "Round name : "+round_name+'\n\n'+ 'Round description : '+round_description
+    description = "Round name : "+round_name+'\n\n'+ 'Round description : '+round_description + "  Use the Jitsi link to join the meeting  " +  jitsi_link
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)
+
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
     SUMMARY,LOCATION,description,interviewer_candidate_email)
-    created_event_info = append_the_create_event_info(create_event,picked_email_id)
+    created_event_info = append_the_create_event_info(create_event,attendee_email_id,jitsi_link)
 
     return created_event_info
 

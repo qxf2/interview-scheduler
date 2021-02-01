@@ -256,7 +256,7 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
 
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
     SUMMARY,LOCATION,description,interviewer_candidate_email)
-    created_event_info = append_the_create_event_info(create_event,attendee_email_id,jitsi_link)
+    created_event_info = append_the_create_event_info(create_event,picked_email_id,jitsi_link)
 
     return created_event_info
 

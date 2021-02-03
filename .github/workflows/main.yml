@@ -20,7 +20,8 @@ jobs:
               EOF
               more qxf2_scheduler/email_config.py
               mkdir data
-              python migrate_db.py db  migrate
+              python migrate_db.py db init
+              python migrate_db.py db migrate
               python migrate_db.py db upgrade
               python qxf2_scheduler/setup_db.py
               touch data/candidatestatus.csv

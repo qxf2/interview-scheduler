@@ -42,9 +42,7 @@ class API_Player(Results):
 
     def signup_app(self, signup_data):
         "signup user"
-        print(signup_data)
         response = self.api_obj.signup_app(data=signup_data)
-        print(response)
         result_flag = bool(response['response'] == 200)
 
         return result_flag
@@ -103,8 +101,6 @@ class API_Player(Results):
     def get_jobs(self):
         "get available jobs"
         response = self.api_obj.get_jobs()
-        print(response)
-        print("in get jobs")
         new_event_list = self.get_list(response)
         result_flag = bool(response['response'] == 200)
         self.write(msg="Fetched jobs list:\n %s"%new_event_list)

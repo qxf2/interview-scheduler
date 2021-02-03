@@ -22,6 +22,8 @@ jobs:
               mkdir data
               python migrate_db.py db init
               python migrate_db.py db  migrate
+              python migrate_db.py db upgrade
+              python qxf2_scheduler/setup_db.py
               ls -la
               python  run.py > /dev/null 2>&1 &
               python -m pytest QA/tests/test_select_interviewer.py QA/tests/test_isapp_api.py

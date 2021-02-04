@@ -22,7 +22,7 @@ from flask import flash
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
 
@@ -232,6 +232,19 @@ def fetch_existing_interviewer_email(candidate_id, job_id, fetched_interviewer_e
     return interviewer_email
 
 
+def add_interview_count(fetch_interviewer_id_value):
+    "Update the interview count table"
+    #db.session.query(db.exists().where(Login.username == username)).scalar()
+    exists = db.session.query(db.exists().where(Interviewcount.interviewer_id == fetch_interviewer_id_value)).scalar()
+    if exists:
+        db.session.query(Interviewcount).filter_by(interviewer_id =fetch_interviewer_id_value).update({'interview_count': Interviewcount.interview_count + 1})
+        db.session.commit()
+    else:
+        add_interview_count = Interviewcount(interviewer_id=fetch_interviewer_id_value, interview_count=1)
+        db.session.add(add_interview_count)
+        db.session.commit()
+
+
 @app.route("/confirmation", methods=['GET', 'POST'])
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
@@ -248,7 +261,6 @@ def scehdule_and_confirm():
         job_id = session['candidate_info']['job_id']
         #Fetch the round id
         get_round_id_object = db.session.query(Candidateround).filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_status=='Invitation Sent').scalar()
-
         #Fetch the round name and description
         round_name_and_desc = Rounds.query.filter(Rounds.round_id==get_round_id_object.round_id).values(Rounds.round_name,Rounds.round_description)
         for each_round_detail in round_name_and_desc:
@@ -282,6 +294,9 @@ def scehdule_and_confirm():
         add_interviewer_candidate_object = Candidateinterviewer(job_id=job_id,candidate_id=candidate_id,interviewer_id=fetch_interviewer_id_value)
         db.session.add(add_interviewer_candidate_object)
         db.session.commit()
+
+        #Add the count for the interviewer in the interviewcount table
+        add_interview_count(fetch_interviewer_id_value)
 
         return redirect(url_for('confirm', value=value))
 
@@ -335,7 +350,6 @@ def login():
         session['logged_user'] = logged_email_id
         if logged_email_confirmation or not logged_email_sent_on:
             completion = validate(username)
-            print("completion 340",completion)
             app.logger.critical(completion,exc_info=True)
             if completion ==False:
                 error = 'error.'
@@ -349,7 +363,6 @@ def login():
                     user.password=password
                     login_user(user)
                     error = 'Success'
-                    print(error,"354")
                     app.logger.critical(error,exc_info=True)
             api_response = {'data':data,'error':error}
         else:
@@ -715,15 +728,9 @@ def delete_job():
             Jobs.job_id == job_id_to_delete).first()
         data = {'job_role': deleted_role.job_role,
                 'job_id': deleted_role.job_id}
-        db.session.delete(deleted_role)
+        update_job_status = Jobs.query.filter(Jobs.job_id == job_id_to_delete).update({'job_status':'Delete'})
         db.session.commit()
-        delete_rounds_of_job = Jobround.query.filter(Jobround.job_id==job_id_to_delete).all()
-        for each_round in delete_rounds_of_job:
-            round_to_delete = each_round.round_id
-            db.session.query(Jobround).filter(Jobround.round_id==round_to_delete).delete()
-            db.session.commit()
-            db.session.query(Rounds).filter(Rounds.round_id==round_to_delete).delete()
-            db.session.commit()
+
         return jsonify(data)
 
 

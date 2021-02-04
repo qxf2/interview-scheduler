@@ -83,11 +83,11 @@
     <script>
         $(function () {
             //holidays in yyyy-mm-dd format
-            var holidays = ['2020-01-01', '2020-01-15', '2020-02-21', '2020-03-25', '2020-05-01', '2020-10-02', '2020-10-26', '2020-10-30', '2020-12-25'];
+            var holidays = ['2021-01-01', '2021-01-14', '2021-01-26', '2021-04-13','2021-05-14', '2021-09-10', '2021-10-15', '2021-11-01', '2021-11-05'];
             // src https://stackoverflow.com/questions/21669950/jquery-ui-datpicker-excluding-weekends-mindate
             // Calculate the next working day manually
             var startDate = new Date(),
-                noOfDaysToAdd = 0,
+                noOfDaysToAdd = 3,
                 count = 1;
 
             while (count <= noOfDaysToAdd) {

@@ -82,7 +82,6 @@ def get_events_for_date(service,email_id,fetch_date,maxResults=240,debug=False):
                 start = event['start'].get('dateTime', event['start'].get('date'))
 
     except Exception as HttpError:
-        print("I am inside exception")
         pass
 
     return events
@@ -147,12 +146,8 @@ def create_event_for_fetched_date_and_time(service,event_start_time,event_end_ti
                 {'method': 'popup', 'minutes': 10},
                 ],
             },
-             "conferenceData": {
-                 "createRequest":
-                            {"requestId": f"{uuid4().hex}",
-                            "conferenceSolutionKey": {"type": "hangoutsMeet"}
-                            }
-                            }}
+
+            }
     event = service.events().insert(calendarId=EMAIL,body=event,sendUpdates="all",conferenceDataVersion=1).execute()
 
     return event

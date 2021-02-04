@@ -18,7 +18,6 @@ jobs:
               MAIL_USERNAME = "${{ secrets.MAIL_USERNAME }}"
               MAIL_PASSWORD = "${{ secrets.MAIL_PASSWORD }}"
               EOF
-              more qxf2_scheduler/email_config.py
               mkdir data
               touch data/candidatestatus.csv
               cat > data/candidatestatus.csv <<EOF
@@ -31,12 +30,10 @@ jobs:
               6,Hired
               7,Waiting for new opening
               EOF
-              more data/candidatestatus.csv
               python migrate_db.py db init
               python migrate_db.py db migrate
               python migrate_db.py db upgrade
               python qxf2_scheduler/setup_db.py
               python  run.py > /dev/null 2>&1 &
-              python -m pytest QA/tests/test_select_interviewer.py
-              python -m pytest QA/tests/test_isapp_api.py
+              python -m pytest QA/tests/test_select_interviewer.py QA/tests/test_isapp_api.py
               pkill -f run.py

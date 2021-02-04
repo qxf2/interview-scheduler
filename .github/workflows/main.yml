@@ -20,10 +20,6 @@ jobs:
               EOF
               more qxf2_scheduler/email_config.py
               mkdir data
-              python migrate_db.py db migrate
-              python migrate_db.py db upgrade
-              python qxf2_scheduler/setup_db.py
-              pwd
               touch data/candidatestatus.csv
               cat > data/candidatestatus.csv <<EOF
               status_id,status_name
@@ -36,7 +32,10 @@ jobs:
               7,Waiting for new opening
               EOF
               more data/candidatestatus.csv
-              pwd
+              python migrate_db.py db init
+              python migrate_db.py db migrate
+              python migrate_db.py db upgrade
+              python qxf2_scheduler/setup_db.py
               ls -la
               cd /data
               ls -la

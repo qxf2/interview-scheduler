@@ -38,6 +38,8 @@ jobs:
               more data/candidatestatus.csv
               pwd
               ls -la
+              cd /data
+              ls -la
               python  run.py > /dev/null 2>&1 &
               python -m pytest QA/tests/test_select_interviewer.py QA/tests/
               test_isapp_api.py

@@ -122,7 +122,6 @@ class API_Player(Results):
     def add_candidates(self, candidate_data):
         "add new candidate"
         response = self.api_obj.add_candidates(data=candidate_data)
-        print(response)
         result_flag = bool(response['response'] == 200)
         return result_flag
 

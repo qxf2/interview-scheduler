@@ -2,7 +2,7 @@ name: Interview-Scheduler
 on:
   push:
     branches:
-      - moving_test_to_qa
+      - master
 jobs:
   test:
     name: Run CI tests

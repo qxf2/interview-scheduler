@@ -37,7 +37,6 @@ jobs:
               python  run.py > /dev/null 2>&1 &
               python -m pytest QA/tests/test_select_interviewer.py QA/tests/test_isapp_api.py
               pkill -f run.py
-  jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:

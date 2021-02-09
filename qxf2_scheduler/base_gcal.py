@@ -146,12 +146,8 @@ def create_event_for_fetched_date_and_time(service,event_start_time,event_end_ti
                 {'method': 'popup', 'minutes': 10},
                 ],
             },
-             "conferenceData": {
-                 "createRequest":
-                            {"requestId": f"{uuid4().hex}",
-                            "conferenceSolutionKey": {"type": "hangoutsMeet"}
-                            }
-                            }}
+
+            }
     event = service.events().insert(calendarId=EMAIL,body=event,sendUpdates="all",conferenceDataVersion=1).execute()
 
     return event

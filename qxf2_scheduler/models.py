@@ -150,6 +150,16 @@ class Login(db.Model,UserMixin):
         return f"Login('{self.id}','{self.username}','{self.password}','{self.email}','{self.email_confirmation_sent_on}','{self.email_confirmed}','{self.email_confirmed_on}')"
 
 
+class Interviewcount(db.Model):
+    "Keep the number of interview count for interviewers"
+    id = db.Column(db.Integer, primary_key=True)
+    interviewer_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
+    interview_count = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"Interviewcount('{self.interviewer_id}','{self.interview_count}')"
+
+
 @login_manager.user_loader
 def load_user(user_id):
     user = Login()

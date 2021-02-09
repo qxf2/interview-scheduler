@@ -22,7 +22,7 @@ from flask import flash
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
 
@@ -232,6 +232,19 @@ def fetch_existing_interviewer_email(candidate_id, job_id, fetched_interviewer_e
     return interviewer_email
 
 
+def add_interview_count(fetch_interviewer_id_value):
+    "Update the interview count table"
+    #db.session.query(db.exists().where(Login.username == username)).scalar()
+    exists = db.session.query(db.exists().where(Interviewcount.interviewer_id == fetch_interviewer_id_value)).scalar()
+    if exists:
+        db.session.query(Interviewcount).filter_by(interviewer_id =fetch_interviewer_id_value).update({'interview_count': Interviewcount.interview_count + 1})
+        db.session.commit()
+    else:
+        add_interview_count = Interviewcount(interviewer_id=fetch_interviewer_id_value, interview_count=1)
+        db.session.add(add_interview_count)
+        db.session.commit()
+
+
 @app.route("/confirmation", methods=['GET', 'POST'])
 def scehdule_and_confirm():
     "Schedule an event and display confirmation"
@@ -248,7 +261,6 @@ def scehdule_and_confirm():
         job_id = session['candidate_info']['job_id']
         #Fetch the round id
         get_round_id_object = db.session.query(Candidateround).filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_status=='Invitation Sent').scalar()
-
         #Fetch the round name and description
         round_name_and_desc = Rounds.query.filter(Rounds.round_id==get_round_id_object.round_id).values(Rounds.round_name,Rounds.round_description)
         for each_round_detail in round_name_and_desc:
@@ -269,7 +281,7 @@ def scehdule_and_confirm():
         candidate_status = Jobcandidate.query.filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':candidate_status_id.status_id,'interview_start_time':schedule_event[0]['start']['dateTime'],'interview_end_time':schedule_event[1]['end']['dateTime'],'interview_date':date,'interviewer_email':updated_interviewer_email})
         db.session.commit()
         #Update the round status for the candidate
-        update_round_status = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id).update({'round_status':'Completed'})
+        update_round_status = Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.job_id==job_id,Candidateround.round_id==get_round_id_object.round_id).update({'round_status':'Interview Scheduled'})
         db.session.commit()
         #Get the interviewer email from the form
         alloted_interviewer_email = schedule_event[3]['interviewer_email']
@@ -282,6 +294,9 @@ def scehdule_and_confirm():
         add_interviewer_candidate_object = Candidateinterviewer(job_id=job_id,candidate_id=candidate_id,interviewer_id=fetch_interviewer_id_value)
         db.session.add(add_interviewer_candidate_object)
         db.session.commit()
+
+        #Add the count for the interviewer in the interviewcount table
+        add_interview_count(fetch_interviewer_id_value)
 
         return redirect(url_for('confirm', value=value))
 
@@ -713,15 +728,9 @@ def delete_job():
             Jobs.job_id == job_id_to_delete).first()
         data = {'job_role': deleted_role.job_role,
                 'job_id': deleted_role.job_id}
-        db.session.delete(deleted_role)
+        update_job_status = Jobs.query.filter(Jobs.job_id == job_id_to_delete).update({'job_status':'Delete'})
         db.session.commit()
-        delete_rounds_of_job = Jobround.query.filter(Jobround.job_id==job_id_to_delete).all()
-        for each_round in delete_rounds_of_job:
-            round_to_delete = each_round.round_id
-            db.session.query(Jobround).filter(Jobround.round_id==round_to_delete).delete()
-            db.session.commit()
-            db.session.query(Rounds).filter(Rounds.round_id==round_to_delete).delete()
-            db.session.commit()
+
         return jsonify(data)
 
 
@@ -926,7 +935,7 @@ def show_welcome(candidate_id, job_id, url):
                 for candidate_detail in get_candidate_details:
                     data = {'candidate_name':candidate_detail.candidate_name,'candidate_email':candidate_detail.candidate_email}
                 #Parsing the round details
-                candidate_round_details = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.round_status=='Completed').values(Candidateround.round_id)
+                candidate_round_details = db.session.query(Candidateround.candidate_id==candidate_id,Candidateround.round_status=='Interview Scheduled').values(Candidateround.round_id)
                 for each_round_detail in candidate_round_details:
                     fetched_round_id = each_round_detail.round_id
 

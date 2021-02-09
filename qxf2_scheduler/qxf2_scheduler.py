@@ -8,19 +8,21 @@ import qxf2_scheduler.base_gcal as gcal
 from googleapiclient.errors import HttpError
 import datetime
 from datetime import timedelta
-import random,sys
+import random,sys, string
 from qxf2_scheduler import db
 from apscheduler.schedulers.background import BackgroundScheduler
+import pandas as pd
 
 TIMEZONE_STRING = '+05:30'
 FMT='%H:%M'
 #CHUNK_DURATION = '60'
-LOCATION =  'Google Hangout or Office',
 ATTENDEE = 'annapoorani@qxf2.com'
 DATE_TIME_FORMAT = "%m/%d/%Y%H:%M"
+NEW_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S+05:30"
+
 from pytz import timezone
 
-from qxf2_scheduler.models import Jobcandidate,Updatetable,Interviewers,Candidates,Candidateround
+from qxf2_scheduler.models import Jobcandidate,Updatetable,Interviewers,Candidates,Candidateround, Interviewcount
 
 
 def convert_to_timezone(date_and_time):
@@ -48,14 +50,24 @@ def scheduler_job():
             current_date_and_time = datetime.datetime.strptime(current_date_and_time,"%Y-%m-%d %H:%M:%S IST+0530")
             candidate_status = each_interview_time.candidate_status
             if interview_start_time <= current_date_and_time and int(candidate_status) == 3:
-                    update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
-                    db.session.commit()
-                    #update_round_status = Candidateround.query.filter()
+                update_candidate_status = Jobcandidate.query.filter(each_interview_time.candidate_id==Jobcandidate.candidate_id).update({'candidate_status':1})
+                db.session.commit()
+
+    fetch_candidate_round_status = Candidateround.query.all()
+    for each_round_status in fetch_candidate_round_status:
+        if each_round_status.round_status == None:
+            pass
+        else:
+            if interview_start_time <= current_date_and_time and int(candidate_status) == 1 and each_round_status.round_status == 'Interview Scheduled':
+                update_round_status = Candidateround.query.filter(each_round_status.candidate_id == Candidateround.candidate_id).update({'round_status':'Completed'})
+            db.session.commit()
+
+
 
 #Running the task in the background to update the jobcandidate table
 sched = BackgroundScheduler(daemon=True)
-#sched.add_job(scheduler_job,'cron', minute='*')
-sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='1,31')
+sched.add_job(scheduler_job,'cron', minute='*')
+#sched.add_job(scheduler_job,'cron',day_of_week='mon-fri', hour='*', minute='1,31')
 sched.start()
 
 
@@ -120,12 +132,12 @@ def combine_date_and_time(date,selected_slot):
     return create_event_start_time,create_event_end_time
 
 
-def append_the_create_event_info(create_event,interviewer_email_id):
+def append_the_create_event_info(create_event,interviewer_email_id, jitsi_link):
     "Appends the created event information into list"
     created_event_info = []
     created_event_info.append({'start':create_event['start']})
     created_event_info.append({'end':create_event['end']})
-    created_event_info.append({'Link':create_event['htmlLink']})
+    created_event_info.append({'Link':jitsi_link})
     created_event_info.append({'interviewer_email':interviewer_email_id})
 
     return created_event_info
@@ -138,19 +150,105 @@ def convert_interviewer_time_into_string(interviewer_time):
     return interviewer_actual_time
 
 
+def convert_string_into_time_new(conversion_time):
+    "convert string into time"
+
+    return datetime.datetime.strptime(conversion_time, NEW_DATE_TIME_FORMAT)
+
+
+def calculate_difference_in_time(start, end):
+    "Calculate the difference between start and end busy slots"
+    converted_start_time = convert_string_into_time_new(start)
+    converted_end_time = convert_string_into_time_new(end)
+    diff_time = converted_end_time-converted_start_time
+
+    return diff_time
+
+
+def total_busy_slot_for_interviewer(busy_slots):
+    "Calculates the total busy duration for the interviewer"
+    t='00:00:00'
+    total_busy_time = datetime.datetime.strptime(t,'%H:%M:%S')
+    for each_slot in busy_slots:
+        start_time = each_slot['start']
+        end_time = each_slot['end']
+        diff_time = calculate_difference_in_time(start_time,end_time)
+        total_busy_time = total_busy_time + diff_time
+
+    return total_busy_time
+
+
+def get_busy_slots_for_fetched_email_id(email_id,fetch_date,debug=False):
+    "Get the busy slots for a given date"
+    service = gcal.base_gcal()
+    busy_slots = []
+    event_organizer_list = []
+    if service:
+        all_events = gcal.get_events_for_date(service,email_id,fetch_date)
+        if all_events:
+            for event in all_events:
+                event_organizer = event['organizer']['email']
+                event_organizer_list.append(event_organizer)
+            busy_slots = gcal.get_busy_slots_for_date(service,email_id,fetch_date,timeZone=gcal.TIMEZONE,debug=debug)
+
+    return busy_slots
+
+
+def total_busy_slots(attendee_email_id, date):
+    "Find the total busy slots for all interviewers"
+    total_busy_time_list = []
+    for each_attendee in attendee_email_id:
+        busy_slots = get_busy_slots_for_fetched_email_id(each_attendee,date)
+        total_time = total_busy_slot_for_interviewer(busy_slots)
+        total_busy_time_list.append(total_time)
+
+    return total_busy_time_list
+
+
+def total_count_list(attendee_email_id):
+    "Find the total interview count for the interviewer"
+    total_interview_count_list = []
+    for new_attendee in attendee_email_id:
+        attendee_id = Interviewers.query.filter(Interviewers.interviewer_email == new_attendee).value(Interviewers.interviewer_id)
+        #fetch the interview count for the interviewer
+        interview_count = Interviewcount.query.filter(Interviewcount.interviewer_id == attendee_id).value(Interviewcount.interview_count)
+        if interview_count is None:
+            total_interview_count_list.append(0)
+        else:
+            total_interview_count_list.append(interview_count)
+
+    return total_interview_count_list
+
+
+def pick_interviewer(attendee_email_id,date):
+    "Pick the interviewer based on busy time"
+    #Find the total busy slots for the interviewers
+    busy_time_list = total_busy_slots(attendee_email_id, date)
+    #Find the interview count for the interviewer
+    interview_count_list = total_count_list(attendee_email_id)
+    #Scoring algorithm to pick the interviewer
+    busy_slots_rank = pd.DataFrame(busy_time_list, attendee_email_id).rank()
+    interview_count_rank = pd.DataFrame(interview_count_list, attendee_email_id).rank(ascending=False)
+    average_busy_interview_count = (busy_slots_rank + interview_count_rank).rank()
+    df_rank_to_dict = average_busy_interview_count.to_dict()[0]
+    picked_attendee_email_id = max(df_rank_to_dict, key=df_rank_to_dict.get)
+
+    return picked_attendee_email_id
+
+
 def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_email,selected_slot,round_name,round_description):
     "Create an event for fetched date and time"
     service = gcal.base_gcal()
     interviewer_candidate_email = []
     if ',' in interviewer_emails:
         attendee_email_id = interviewer_emails.split(',')
-        attendee_email_id = random.choice(attendee_email_id)
+        picked_email_id = pick_interviewer(attendee_email_id,date)
     else:
-        attendee_email_id = interviewer_emails
-    interviewer_candidate_email.append(attendee_email_id)
+        picked_email_id = interviewer_emails
+    interviewer_candidate_email.append(picked_email_id)
     interviewer_candidate_email.append(candidate_email)
     #Fetch interviewers name from the email
-    fetch_interviewer_name = Interviewers.query.filter(Interviewers.interviewer_email==attendee_email_id).values(Interviewers.interviewer_name)
+    fetch_interviewer_name = Interviewers.query.filter(Interviewers.interviewer_email==picked_email_id).values(Interviewers.interviewer_name)
     for interviewer_name in fetch_interviewer_name:
         chosen_interviewer_name = interviewer_name.interviewer_name
     #Fetch candidate info
@@ -158,12 +256,17 @@ def create_event_for_fetched_date_and_time(date,interviewer_emails,candidate_ema
     for candidate_details in fetch_candidate_name:
         candidate_name = candidate_details.candidate_name
         candidate_job = candidate_details.job_applied
+    res = ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k = 7))
+    jitsi_link = "https://meet.jit.si/interviewScheduler/%s"%res
+    LOCATION = jitsi_link
     SUMMARY = candidate_name + '/' + chosen_interviewer_name + '-' + candidate_job
-    description = "Round name : "+round_name+'\n\n'+ 'Round description : '+round_description
+    description = "Round name : "+round_name+'\n\n'+ 'Round description : '+round_description + "  Use the Jitsi link to join the meeting  " +  jitsi_link
     create_event_start_time,create_event_end_time = combine_date_and_time(date,selected_slot)
+
     create_event = gcal.create_event_for_fetched_date_and_time(service,create_event_start_time,create_event_end_time,
     SUMMARY,LOCATION,description,interviewer_candidate_email)
-    created_event_info = append_the_create_event_info(create_event,attendee_email_id)
+    created_event_info = append_the_create_event_info(create_event,picked_email_id,jitsi_link)
 
     return created_event_info
 

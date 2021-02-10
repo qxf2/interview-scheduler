@@ -2,7 +2,7 @@ name: Interview-Scheduler
 on:
   push:
     branches:
-      - master
+      - moving_test_to_qa
 jobs:
   test:
     name: Run CI tests
@@ -12,7 +12,6 @@ jobs:
       - name: Running requirements and server in background
         run: |
               pip install -r QA/requirements.txt
-              pip install bs4
               touch qxf2_scheduler/email_config.py
               cat > qxf2_scheduler/email_config.py << EOF
               MAIL_USERNAME = "${{ secrets.MAIL_USERNAME }}"

@@ -12,6 +12,7 @@ jobs:
       - name: Running requirements and server in background
         run: |
               pip install -r QA/requirements.txt
+              pip install bs10
               touch qxf2_scheduler/email_config.py
               cat > qxf2_scheduler/email_config.py << EOF
               MAIL_USERNAME = "${{ secrets.MAIL_USERNAME }}"
@@ -38,6 +39,7 @@ jobs:
               pkill -f run.py
   deploy:
     runs-on: ubuntu-latest
+    needs: test
     steps:
     - name: SSH to EC2 instance
       uses: appleboy/ssh-action@master

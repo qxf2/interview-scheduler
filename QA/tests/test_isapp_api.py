@@ -23,7 +23,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 @pytest.mark.API
 def test_isapi_example(api_url='http://localhost:6464/'):
     "Run api test"
-    if True:
+    try:
         # Create test object
         test_obj = API_Player(url=api_url)
         test_email = Confirm_Email_Object()
@@ -122,8 +122,8 @@ def test_isapi_example(api_url='http://localhost:6464/'):
         actual_pass = test_obj.passed
         test_obj.write_test_summary()
 
-    #except Exception as e:
-    #print(e)
+    except Exception as e:
+        print(e)
 
 
 

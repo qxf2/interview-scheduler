@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Running requirements and server in background
+      - name: Running requirements and server in  background
         run: |
               pip install -r QA/requirements.txt
               touch qxf2_scheduler/email_config.py

@@ -212,7 +212,7 @@ def add_candidate(job_role):
             add_job_candidate_object = Jobcandidate(candidate_id=candidate_id, job_id=job_id, url='', candidate_status= status_id)
             db.session.add(add_job_candidate_object)
             db.session.commit()
-            #Store the candidateid, jobid, roundid and round status in candidateround table
+
 
             error = "Success"
 

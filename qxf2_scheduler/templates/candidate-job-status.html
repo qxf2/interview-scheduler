@@ -74,8 +74,8 @@
                         <br>
                         <div class="col-md-12 form-display">
                             <label class="col-md-2 labelbold">Interviewer Feedback:</label>
-                            {% if each_round_name['candidate_feedback']['candidate_feedback'] == None %}
-                            <label class="col-md-10">{{each_round_name['candidate_feedback']['candidate_feedback']}}</label>
+                            {% if (each_round_name['candidate_feedback']['candidate_feedback'] == None) or (each_round_name['round_status'] == None) or (each_round_name['round_status']) == 'Invitation Sent' %}
+                            <label class="col-md-10">None</label>
                             {% else %}
                             {% if each_round_name['candidate_feedback']['thumbs_value']=='thumbsup' %}
                             <label class="col-md-10">

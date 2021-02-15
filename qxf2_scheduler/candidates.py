@@ -6,6 +6,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from qxf2_scheduler import app
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
+from sqlalchemy import or_
 
 mail = Mail(app)
 
@@ -88,7 +89,8 @@ def fetch_candidate_list(candidate_list_object):
 def read_candidates():
     "Read the candidates"
     candidates_list = []
-    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id, Jobs.job_status == 'Open').values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id, Jobs.job_status != 'Close').values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+
     candidates_list = fetch_candidate_list(display_candidates)
 
     return render_template("read-candidates.html", result=candidates_list)
@@ -165,7 +167,7 @@ def add_candidate(job_role):
         available_job_list = []
         if job_role is None:
             #If the parameter is none then fetch the jobs from the database
-            job_available = Jobs.query.all()
+            job_available = Jobs.query.filter(Jobs.job_status != 'Delete').all()
             for each_job in job_available:
                 available_job_list.append(each_job.job_role)
         else:

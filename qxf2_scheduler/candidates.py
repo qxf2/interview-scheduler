@@ -623,7 +623,8 @@ def edit_feedback(candidate_id, round_id):
         data = {'candidate_id':candidate_id,'round_id':round_id}
         added_candidate_feedback = Candidateround.query.filter(Candidateround.candidate_id == candidate_id, Candidateround.round_id==round_id).values(Candidateround.candidate_feedback,Candidateround.thumbs_value)
         for edit_feedback in added_candidate_feedback:
-            added_candidate_feedback={'candidate_feedback':edit_feedback.candidate_feedback, 'thumbs_value':edit_feedback.thumbs_value}
+            edit_feedback_value = (edit_feedback.thumbs_value.split('s')[0]+'s'+" "+edit_feedback.thumbs_value.split('s')[-1]).title()
+            added_candidate_feedback={'candidate_feedback':edit_feedback.candidate_feedback, 'thumbs_value':edit_feedback_value}
 
         return render_template("edit-feedback.html",result=data,candidate_feedback=added_candidate_feedback)
 

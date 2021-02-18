@@ -37,12 +37,18 @@
             What was your opinion about the candidate?
         </label>
         <div class="col-md-4">
+            {% if candidate_feedback['thumbs_value'] == 'Thumbs Up' %}
             <select id="thumbsUp" style="width:200px; height:30px;">
                 <option value="{{candidate_feedback['thumbs_value']}}">{{candidate_feedback['thumbs_value']}}</option>
-                <option value="thumbsup">Thumbs Up</option>
                 <option value="thumbsdown">Thumbs Down</option>
-
             </select>
+            {% else %}
+            <select id="thumbsUp" style="width:200px; height:30px;">
+            <option value="{{candidate_feedback['thumbs_value']}}">{{candidate_feedback['thumbs_value']}}</option>
+            <option value="thumbsup">Thumbs Up</option>
+            </select>
+        {% endif %}
+
         </div>
         <br>
         <div>

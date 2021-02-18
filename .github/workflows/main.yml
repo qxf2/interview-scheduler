@@ -35,7 +35,7 @@ jobs:
               python qxf2_scheduler/setup_db.py
               python  run.py > /dev/null 2>&1 &
               cd QA/tests
-              py -m pytest
+              python -m pytest
               pkill -f run.py
   deploy:
     runs-on: ubuntu-latest

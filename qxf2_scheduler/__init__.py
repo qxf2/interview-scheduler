@@ -17,8 +17,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///%s"%db_file
 logging.basicConfig(filename='record.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 db = SQLAlchemy(app)
 Markdown(app)
-seeder = FlaskSeeder()
 db.init_app(app)
+seeder = FlaskSeeder()
 seeder.init_app(app,db)
 
 

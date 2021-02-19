@@ -34,8 +34,6 @@ class Jobs(db.Model):
     "Adding the Job page"
     job_id = db.Column(db.Integer,primary_key=True,nullable=False)
     job_role = db.Column(db.String,nullable=False)
-    job_interviewer = db.relationship('Jobinterviewer', backref='Jobs',
-       lazy=True, cascade="delete")
     job_status = db.Column(db.String)
 
     def __repr__(self):

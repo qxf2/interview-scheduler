@@ -42,9 +42,14 @@
                 <option value="{{candidate_feedback['thumbs_value']}}">{{candidate_feedback['thumbs_value']}}</option>
                 <option value="thumbsdown">Thumbs Down</option>
             </select>
-            {% else %}
+            {% elif candidate_feedback['thumbs_value'] == 'Thumbs Down' %}
             <select id="thumbsUp" style="width:200px; height:30px;">
             <option value="{{candidate_feedback['thumbs_value']}}">{{candidate_feedback['thumbs_value']}}</option>
+            <option value="thumbsup">Thumbs Up</option>
+            </select>
+            {% else %}
+            <select id="thumbsUp" style="width:200px; height:30px;">
+                <option value="thumbsdown">Thumbs Down</option>
             <option value="thumbsup">Thumbs Up</option>
             </select>
         {% endif %}
@@ -66,7 +71,7 @@
             <div>
                 <label class="col-md-4 control-label" for="save"></label>
                 <div class="col-md-8">
-                    <button class="btn btn-info" id="submit" type="submit">Submit</button>
+                    <button class="btn btn-info" id="submit" type="submit">Edit</button>
                     <button type="button" name="clear" onclick="clearEdit()" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
@@ -104,9 +109,10 @@
                                 },
                                 success: function (result) {
                                     if (result.error == "Success") {
-                                        alert("The feedback has been edited")
+                                        alert("The feedback has been edited");
                                         document.location.href = '/candidates'
                                     }
+
                                 }
                             })
 

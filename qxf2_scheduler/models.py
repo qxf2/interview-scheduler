@@ -111,7 +111,7 @@ class Candidateround(db.Model):
     round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
     round_status = db.Column(db.String)
     candidate_feedback = db.Column(db.String)
-
+    thumbs_value = db.Column(db.String)
 
 class Candidatestatus(db.Model):
     "Save the status list"

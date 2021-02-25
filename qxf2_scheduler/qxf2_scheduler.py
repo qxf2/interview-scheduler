@@ -60,7 +60,7 @@ def scheduler_job():
         else:
             if interview_start_time <= current_date_and_time and int(candidate_status) == 1 and each_round_status.round_status == 'Interview Scheduled':
                 update_round_status = Candidateround.query.filter(each_round_status.candidate_id == Candidateround.candidate_id).update({'round_status':'Completed'})
-            db.session.commit()
+                db.session.commit()
 
 
 

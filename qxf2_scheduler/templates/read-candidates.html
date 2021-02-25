@@ -47,7 +47,7 @@
         </div>
     </div>
     <div class="container col-md-offset-1 list">
-        <h3 class="grey_text text-center">Candidates List</h2>
+        <h3 class="grey_text text-center">Candidates Details</h2>
             <div>
                 <input class="btn btn-success" type="button" id="add" onclick="addCandidate()" value="Add">
             </div>
@@ -84,8 +84,8 @@
             <td>{{ each_candidate.candidate_status }}</td>
 
             <td><button class="link-button" type="button" id="edit"
-                    onclick="editCandidates({{each_candidate.candidate_id}})">Edit</button>
-                <button class="link-button" type="button" data-target="#confirmdeletemodal"
+                    onclick="editCandidates({{each_candidate.candidate_id}})">Edit</button>&nbsp;&nbsp;
+                <button class="link-button" style="color:rgba(255, 0, 0, 0.589);"type="button" data-target="#confirmdeletemodal"
                     data-candidatename="{{ each_candidate.candidate_name }}"
                     data-candidateid="{{ each_candidate.candidate_id }}" data-jobid="{{ each_candidate.job_id }}"
                     data-toggle="modal">Delete</button></td>

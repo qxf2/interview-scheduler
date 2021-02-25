@@ -56,7 +56,6 @@
                 <select class="form-control" id="select1" required>
                     <option value="{{result.job_role}}">{{result.job_role}}</option>
                     {% for each_job in result.job_roles %}
-                    {{each_job}}
                     <option value="{{each_job}}">{{each_job}}</option>
                     {% endfor %}
                 </select>

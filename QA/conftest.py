@@ -7,18 +7,44 @@ from utils import post_test_reports_to_slack
 #from utils.email_pytest_report import Email_Pytest_Report
 from utils import Tesults
 from pathlib import Path
+import flask_migrate
+from qxf2_scheduler.__init__ import app
+from flask_migrate import Migrate,MigrateCommand
+from flask_script import Manager
+from qxf2_scheduler import db
+import subprocess, shutil
+
+migrate=Migrate(app, db,render_as_batch=True)
+manager=Manager(app)
+
+manager.add_command('db',MigrateCommand)
+
+@pytest.fixture()
+def app_fixture():
+    app.config['TESTING'] = True
+
+    with app.app_context():
+        yield
 
 
 @pytest.fixture
-def test_obj(setup_db,base_url,browser,browser_version,os_version,os_name,remote_flag,testrail_flag,tesults_flag,test_run_id,remote_project_name,remote_build_name,testname):
+def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,remote_flag,testrail_flag,tesults_flag,test_run_id,remote_project_name,remote_build_name,testname):
     "Return an instance of Base Page that knows about the third party integrations"
     db_file = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/interviewscheduler.db')))
-    print(db_file,"hello")
+    migrations_directory = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'migrations/')))
+
+    print(migrations_directory,"hello")
     if db_file.exists():
         os.remove(db_file)
+        shutil.rmtree('migrations')
         print("file exists delete it")
     else:
         print("no file")
+    flask_migrate.init()
+    flask_migrate.migrate()
+    flask_migrate.upgrade()
+    candidate_status = subprocess.run(["python","qxf2_scheduler/setup_db.py"])
+    flask_seeder = subprocess.run(["flask","seed","run"])
     test_obj = PageFactory.get_page_object("Zero",base_url=base_url)
     test_obj.set_calling_module(testname)
     #Setup and register a driver

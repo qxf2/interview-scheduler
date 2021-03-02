@@ -67,7 +67,9 @@ class DemoSeeder(Seeder):
     def run(self):
         "Create new faker and creates data"
         #Adding user to login
-        self.login = Login(username='nilaya', password=encrypt_password("qwerty"), email="nilaya@qxf2.com", email_confirmed=1)
+        print("Hi how are you")
+        self.login = Login(id=3,username='nilaya', password=encrypt_password("qwerty"), email="nilaya@qxf2.com",email_confirmed=1)
+        print(f'Login object{self.login}{type(self.login)}')
         self.db.session.add(self.login)
         self.db.session.commit()
 

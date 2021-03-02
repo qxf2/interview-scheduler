@@ -117,7 +117,7 @@ if __name__ == '__main__':
         test_obj = PageFactory.get_page_object("Zero", base_url=options.url)
 
         #Setup and register a driver
-        test_obj.register_driver(options.setup_db, options.remote_flag, options.os_name,\
+        test_obj.register_driver(options.remote_flag, options.os_name,\
         options.os_version, options.browser, options.browser_version,\
         options.remote_project_name, options.remote_build_name)
 

@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Edit feedback</title>
@@ -44,15 +53,15 @@
             </select>
             {% elif candidate_feedback['thumbs_value'] == 'Thumbs Down' %}
             <select id="thumbsUp" style="width:200px; height:30px;">
-            <option value="{{candidate_feedback['thumbs_value']}}">{{candidate_feedback['thumbs_value']}}</option>
-            <option value="thumbsup">Thumbs Up</option>
+                <option value="{{candidate_feedback['thumbs_value']}}">{{candidate_feedback['thumbs_value']}}</option>
+                <option value="thumbsup">Thumbs Up</option>
             </select>
             {% else %}
             <select id="thumbsUp" style="width:200px; height:30px;">
                 <option value="thumbsdown">Thumbs Down</option>
-            <option value="thumbsup">Thumbs Up</option>
+                <option value="thumbsup">Thumbs Up</option>
             </select>
-        {% endif %}
+            {% endif %}
 
         </div>
         <br>

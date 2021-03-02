@@ -1,6 +1,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Edit Interviewers</title>
@@ -121,7 +130,8 @@
                 <tr>
                     <td>
                         {% set counter = each_details['time'] | length %}
-                        <input type="hidden" id="TestHidden" value="{{counter}}"> </td>
+                        <input type="hidden" id="TestHidden" value="{{counter}}">
+                    </td>
                 </tr>
             </table>
         </form>
@@ -292,11 +302,11 @@
                 '<input type="button" value="Remove" class="btn btn-link" onclick="removeTextArea(this);"></div><div id="dresultDiv' + count + '"></div></form>'
             count++;
             $('#Tools input[type=time]').timepicker({
-           timeFormat: 'HH:mm',
-           interval: 30,
-           use24hours: true,
-           scrollbar: true,
-       });
+                timeFormat: 'HH:mm',
+                interval: 30,
+                use24hours: true,
+                scrollbar: true,
+            });
         };
 
         function removeTextArea(inputElement) {

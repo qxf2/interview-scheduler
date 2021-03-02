@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Signup</title>
@@ -43,34 +52,34 @@
                 <input id="email" name="email" type="Email" placeholder="johndoe@example.com" class="form-control"
                     required>
                 <div id='emaildomain'></div>
-                </div>
-                <div class="valid-feedback">Valid</div>
-                <div class="invalid-feedback">Please fill out this field</div>
-                
             </div>
-            <label class="col-md-4 control-label" for="password">Password</label>
-            <div class="col-md-4">
-                <input id="password" name="password" type="password" class="form-control" required>
-                </div>
-                <div class="valid-feedback">Valid</div>
-                <div class="invalid-feedback">Please fill out this field</div>
-            </div>
-            <label class="col-md-4 control-label" for="password">Confirm Password</label>
-            <div class="col-md-4">
-                <input id="confirmPassword" name="password" type="password" class="form-control" required>
-                
-                </div>
-                <div class="valid-feedback">Valid</div>
-                <div class="invalid-feedback">Please fill out this field</div>
-                <div id='message'></div>
-            </div>
+            <div class="valid-feedback">Valid</div>
+            <div class="invalid-feedback">Please fill out this field</div>
 
-            <label class="col-md-4 control-label" for="save"></label>
-            <div class="col-md-8">
-                <button class="btn btn-info" id="addSubmit" type="submit">Submit</button>
-                <button name="clear" onclick="clearAdd()" type="button" class="btn btn-danger">Cancel</button>
-            </div>
-        </form>
+    </div>
+    <label class="col-md-4 control-label" for="password">Password</label>
+    <div class="col-md-4">
+        <input id="password" name="password" type="password" class="form-control" required>
+    </div>
+    <div class="valid-feedback">Valid</div>
+    <div class="invalid-feedback">Please fill out this field</div>
+    </div>
+    <label class="col-md-4 control-label" for="password">Confirm Password</label>
+    <div class="col-md-4">
+        <input id="confirmPassword" name="password" type="password" class="form-control" required>
+
+    </div>
+    <div class="valid-feedback">Valid</div>
+    <div class="invalid-feedback">Please fill out this field</div>
+    <div id='message'></div>
+    </div>
+
+    <label class="col-md-4 control-label" for="save"></label>
+    <div class="col-md-8">
+        <button class="btn btn-info" id="addSubmit" type="submit">Submit</button>
+        <button name="clear" onclick="clearAdd()" type="button" class="btn btn-danger">Cancel</button>
+    </div>
+    </form>
     </div>
     <script>
         function clearAdd() {
@@ -88,7 +97,7 @@
                         event.preventDefault();
                         event.stopPropagation();
                         $("#message").empty();
-                        $("#emaildomain").empty();                        
+                        $("#emaildomain").empty();
                         var candidateEmail = $("#email").val();
                         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                         var emailValidate = true;
@@ -103,7 +112,7 @@
 
                         }
                         var passwordValidate = true;
-                        if (validValue && emailValidate == true){
+                        if (validValue && emailValidate == true) {
 
                             if ($('#password').val() != $('#confirmPassword').val()) {
                                 passwordValidate = false;
@@ -111,10 +120,10 @@
                                 $('#message').html('Password not Matching').css('color', 'red')
                             }
 
-                        }                 
-                                             
-                        if (validValue === true) {                            
-                            if (form.checkValidity() === true) {                                
+                        }
+
+                        if (validValue === true) {
+                            if (form.checkValidity() === true) {
                                 var userName = $("#uname").val();
                                 var userEmail = $("#email").val();
                                 var userPassword = $("#password").val();
@@ -127,8 +136,8 @@
                                         'useremail': userEmail,
                                         'userpassword': userPassword
                                     },
-                                    success: function (result) {                             
-                                        
+                                    success: function (result) {
+
                                         if (result.error == "Success") {
                                             alert("The user has been registered");
                                             document.location.href = "/login";
@@ -143,7 +152,7 @@
                                     }
                                 })
                             }
-                        }                     
+                        }
 
 
                     }, false);

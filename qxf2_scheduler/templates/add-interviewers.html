@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Add Interviewers</title>
@@ -21,6 +30,7 @@
         .bs-example {
             margin: 20px;
         }
+
         textarea {
             display: inline
         }
@@ -52,7 +62,8 @@
             <h2 class="grey_text text-justify">Add Interviewers</h2>
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="fname"><span style="color:red">*</span>Interviewer Name</label>
+                <label class="col-md-4 control-label" for="fname"><span style="color:red">*</span>Interviewer
+                    Name</label>
                 <div class="col-md-4">
                     <input id="fname" name="fname" type="text" placeholder="John" class="form-control input-md"
                         required>
@@ -61,7 +72,7 @@
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="email" ><span style="color:red">*</span>Email</label>
+                <label class="col-md-4 control-label" for="email"><span style="color:red">*</span>Email</label>
                 <div class="col-md-4">
                     <input id="email" name="email" type="email" placeholder="johndoe@example.com"
                         class="form-control input-md" required>
@@ -71,7 +82,8 @@
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="designation"><span style="color:red">*</span>Designation</label>
+                <label class="col-md-4 control-label" for="designation"><span
+                        style="color:red">*</span>Designation</label>
                 <div class="col-md-4">
                     <input id="designation" name="designation" type="text" placeholder="QA"
                         class="form-control input-md" required>
@@ -120,15 +132,15 @@
         var timeObject = {
             starttime: [],
             endtime: []
-            };
+        };
         $("#submit").click(function () {
             var validValue = true;
             var email = $("#email").val();
             var name = $("#fname").val();
             var designation = $("#designation").val();
             timeObject = {
-            starttime: [],
-            endtime: []
+                starttime: [],
+                endtime: []
             };
 
             for (var index = 0; index < count + 1; index++) {
@@ -136,61 +148,57 @@
                 timeObject.endtime.push($("#endtime" + index).val())
             }
             //Validation of name email and designation starts here
-            if(name == "")
-            {
+            if (name == "") {
                 $('#name').remove();
                 $('#fname').after('<span id="name" class="error" style="color:red">Name field is required</span>');
                 validValue = false;
             }
-            if(name != "")
-            {
+            if (name != "") {
                 $('#name').remove();
                 validValue &= true;
             }
-            if (email == "")
-            {
+            if (email == "") {
                 $('#mail').remove();
                 $('#email').after('<span id="mail" class="error" style="color:red">Email field is required</span>');
                 validValue = false;
             }
 
-            if(email != "")
-            {
+            if (email != "") {
                 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                if (re.test(email)){
+                if (re.test(email)) {
                     $('#mail').remove();
                     var idx = email.lastIndexOf('@');
                     if (idx > -1 && email.slice(idx + 1) !== 'qxf2.com') {
-                                validValue = false
-                                $("#mail").remove();
-                                $('#email').after('<span id="mail" class="error" style="color:red">Email should end with qxf2.com</span>');
-                            }
+                        validValue = false
+                        $("#mail").remove();
+                        $('#email').after('<span id="mail" class="error" style="color:red">Email should end with qxf2.com</span>');
+                    }
                 }
 
-                }
+            }
 
             //validation for timings
-            for(index = 0; index <= count; index++) {
-            starttime = $("#starttime"+index).val();
-            endtime = $("#endtime"+index).val();
-            var msg="";
-            if(starttime != "" || endtime != "") {
-                if (starttime >= endtime) {
-                    validValue = false;
-                    msg = "Start time can't be greater than or same as end time";
-                    $("#resultDiv"+index).css('color', 'red');
-                    $("#resultDiv"+index).html(msg);
+            for (index = 0; index <= count; index++) {
+                starttime = $("#starttime" + index).val();
+                endtime = $("#endtime" + index).val();
+                var msg = "";
+                if (starttime != "" || endtime != "") {
+                    if (starttime >= endtime) {
+                        validValue = false;
+                        msg = "Start time can't be greater than or same as end time";
+                        $("#resultDiv" + index).css('color', 'red');
+                        $("#resultDiv" + index).html(msg);
+                    }
+                    else {
+                        validValue &= true;
+                        $("#resultDiv" + index).remove();
+                    }
                 }
                 else {
-                    validValue &= true;
-                    $("#resultDiv"+index).remove();
-                }
-            }
-            else {
-                validValue = false;
-                msg = "Start time and end time can't be empty";
-                $("#resultDiv"+index).css('color', 'red');
-                $("#resultDiv"+index).html(msg);
+                    validValue = false;
+                    msg = "Start time and end time can't be empty";
+                    $("#resultDiv" + index).css('color', 'red');
+                    $("#resultDiv" + index).html(msg);
                 }
             }
 
@@ -207,36 +215,36 @@
                         'timeObject': JSON.stringify(timeObject)
                     },
                     success: function (result) {
-                    var msg = "Success: The interviewer " + ' ' + result.data.interviewer_name + ' ' + " has been added successfully";
-                    $('#myModal').modal('show');
-                    $('#myModal .modal-body p').html(msg);
+                        var msg = "Success: The interviewer " + ' ' + result.data.interviewer_name + ' ' + " has been added successfully";
+                        $('#myModal').modal('show');
+                        $('#myModal .modal-body p').html(msg);
                     },
                     error: function (result) {
-                    var msg ="Failure: The interviewer" + ' '+ name +' ' + "already exist, check email properly";
-                    $('#myModal').modal('show');
-                    $('#myModal .modal-body p').html(msg);
+                        var msg = "Failure: The interviewer" + ' ' + name + ' ' + "already exist, check email properly";
+                        $('#myModal').modal('show');
+                        $('#myModal .modal-body p').html(msg);
                     }
-            })
-        }
-    })
+                })
+            }
+        })
     </script>
     <script>
         var count = 0;
         function addtextbox() {
-        count++;
-        var newTextBoxDiv = document.createElement('div');
-        newTextBoxDiv.id = 'Tools';
-        document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
-        newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-6 control-label" for="starttime"><span style="color:red">*</span>Start time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
-            '<div class="form-group"><label class="col-md-6 control-label" for="endtime"><span style="color:red">*</span>End time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div><div class="col-md-4" id="resultDiv' + count + '"></div></form>' +
-            '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
-       $('#Tools input[type=time]').timepicker({
-           timeFormat: 'HH:mm',
-           interval: 30,
-           use24hours: true,
-           scrollbar: true,
-       });
-    };
+            count++;
+            var newTextBoxDiv = document.createElement('div');
+            newTextBoxDiv.id = 'Tools';
+            document.getElementById("ToolsGroup").appendChild(newTextBoxDiv);
+            newTextBoxDiv.innerHTML = '<form class="form-inline"><div class="form-group"><label class="col-md-6 control-label" for="starttime"><span style="color:red">*</span>Start time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="starttime' + count + '" placeholder="starttime" required=""> </div></div>' +
+                '<div class="form-group"><label class="col-md-6 control-label" for="endtime"><span style="color:red">*</span>End time</label><div class="col-md-4"><input type="time" class="form-control input-md" id="endtime' + count + '" placeholder="endtime" required=""></div></div><div class="col-md-4" id="resultDiv' + count + '"></div></form>' +
+                '&nbsp;&nbsp;<input type="button" value="Remove" class="removeTools" onclick="removeTextArea(this);">'
+            $('#Tools input[type=time]').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 30,
+                use24hours: true,
+                scrollbar: true,
+            });
+        };
         function removeTextArea(inputElement) {
             var el = inputElement;
             while (el.tagName != 'DIV') el = el.parentElement;
@@ -270,7 +278,7 @@
         })
     </script>
     <script>
-        $("#clear").click(function(){
+        $("#clear").click(function () {
             document.location.href = "/interviewers";
 
         })

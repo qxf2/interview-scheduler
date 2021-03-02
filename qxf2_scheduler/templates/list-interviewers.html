@@ -1,6 +1,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <title>
         List of interviewer details
     </title>
@@ -47,61 +56,62 @@
     </div>
     <div class="container col-md-offset-1">
         <h3 class="grey_text text-center">Interviewers Details</h2>
-        <div>
-            <input class="btn btn-success" type="button" id="add" onclick="addinterviewer()" value="Add">
-        </div>
-        <br />
-        <table id="table"class="table table-striped"width="90%">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Interviewer Name</th>
-                    <th>Actions</th>
+            <div>
+                <input class="btn btn-success" type="button" id="add" onclick="addinterviewer()" value="Add">
+            </div>
+            <br />
+            <table id="table" class="table table-striped" width="90%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Interviewer Name</th>
+                        <th>Actions</th>
 
-                </tr>
-            </thead>
-            <tbody>
-                {% for each_interviewer in result %}
-                <tr>
-                    <td>{{ each_interviewer.interviewer_id }}</td>
-                    <td><a class="href-link"
-                            href="/interviewer/{{ each_interviewer.interviewer_id }}">{{ each_interviewer.interviewer_name }}</a>
-                    </td>
-                    <td><button class="link-button" type="button" id="edit"
-                            onclick="editinterviewer({{ each_interviewer.interviewer_id }})">Edit</button>&nbsp;&nbsp;
-                        <button type="button" style="color:rgba(255, 0, 0, 0.589);"
-                            class="link-button" data-target="#confirmdeletemodal"
-                            data-username="{{ each_interviewer.interviewers_name }}"
-                            data-href="{{ each_interviewer.interviewer_id }}" data-toggle="modal">Delete</button></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for each_interviewer in result %}
+                    <tr>
+                        <td>{{ each_interviewer.interviewer_id }}</td>
+                        <td><a class="href-link" href="/interviewer/{{ each_interviewer.interviewer_id }}">{{
+                                each_interviewer.interviewer_name }}</a>
+                        </td>
+                        <td><button class="link-button" type="button" id="edit"
+                                onclick="editinterviewer({{ each_interviewer.interviewer_id }})">Edit</button>&nbsp;&nbsp;
+                            <button type="button" style="color:rgba(255, 0, 0, 0.589);" class="link-button"
+                                data-target="#confirmdeletemodal"
+                                data-username="{{ each_interviewer.interviewers_name }}"
+                                data-href="{{ each_interviewer.interviewer_id }}" data-toggle="modal">Delete</button>
+                        </td>
 
 
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-        <script>
-            function addinterviewer() {
-                document.location.href = '/interviewers/add'
-            }
-        </script>
-        <div class="modal modal-megamenu" id="confirmdeletemodal">
-            <div class="modal-dialog modal-megamenu">
-                <div class="modal-content modal-megamenu">
-                    <div class="modal-header modal-megamenu">
-                        <h4 class="modal-title">Remove Interviewer?</h4>
-                    </div>
-                    <div class="modal-body modal-megamenu">
-                        <input type="text" class="form-control" id="recipient-name">
-                    </div>
-                    <div class="modal-footer modal-megamenu">
-                        <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
-                        <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
-                            type="submit">Remove</button>
-                    </div>
-                </div><!-- end modal-content -->
-            </div><!-- end modal-dialog -->
-        </div>
+            <script>
+                function addinterviewer() {
+                    document.location.href = '/interviewers/add'
+                }
+            </script>
+            <div class="modal modal-megamenu" id="confirmdeletemodal">
+                <div class="modal-dialog modal-megamenu">
+                    <div class="modal-content modal-megamenu">
+                        <div class="modal-header modal-megamenu">
+                            <h4 class="modal-title">Remove Interviewer?</h4>
+                        </div>
+                        <div class="modal-body modal-megamenu">
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="modal-footer modal-megamenu">
+                            <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                            <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
+                                type="submit">Remove</button>
+                        </div>
+                    </div><!-- end modal-content -->
+                </div><!-- end modal-dialog -->
+            </div>
     </div>
     </div>
     <script>
@@ -126,34 +136,35 @@
 
             })
             $("#close-button").on('click', function () {
-            window.location.reload();
-        })
+                window.location.reload();
+            })
         })
 
     </script>
 
     <script>
         function editinterviewer(interviewer_id) {
-            document.location.href = "/interviewer/"+interviewer_id+"/edit";
+            document.location.href = "/interviewer/" + interviewer_id + "/edit";
 
         }
     </script>
     <script>
-        $(document).ready(function() {
-    $('#table').DataTable( {
+        $(document).ready(function () {
+            $('#table').DataTable({
 
-        "columnDefs": [
-                { width:20, targets: 0},
-                {width:100, targets:1},
-                {width:140, targets:2},
-                {
-                    "targets": [1,2],
-                    "orderable":false,
-                }],
+                "columnDefs": [
+                    { width: 20, targets: 0 },
+                    { width: 100, targets: 1 },
+                    { width: 140, targets: 2 },
+                    {
+                        "targets": [1, 2],
+                        "orderable": false,
+                    }],
 
-    });
+            });
         })
     </script>
 
 </body>
+
 </html>

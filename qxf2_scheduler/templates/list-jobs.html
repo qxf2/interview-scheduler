@@ -1,6 +1,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <title>
         List of Jobs
     </title>
@@ -70,7 +79,7 @@
                             {% if each_job.job_status == 'Delete'%}
 
                             <td><s><a id="deleteId" class="not-active" href="details/job/{{ each_job.job_id }}">{{
-                                    each_job.job_role }}</a></s>
+                                        each_job.job_role }}</a></s>
                             </td>
 
                             {% else %}
@@ -86,12 +95,12 @@
 
                             <td><button class="not-active link-button" type="button" id="addCandidate"
                                     onclick="addCandidate('{{each_job.job_role}}')">Add Candidate</button> &nbsp;&nbsp;
-                                <button class="not-active link-button" type="button" onclick="editJob('{{each_job.job_id}}')"
-                                    id="edit">Edit</button>
+                                <button class="not-active link-button" type="button"
+                                    onclick="editJob('{{each_job.job_id}}')" id="edit">Edit</button>
                                 &nbsp;&nbsp;
-                                <button type="button"  class="not-active link-button"
-                                    data-target="#confirmdeletemodal" data-jobrole="{{ each_job.job_role }}"
-                                    data-href="{{ each_job.job_id }}" data-toggle="modal">Delete</button>
+                                <button type="button" class="not-active link-button" data-target="#confirmdeletemodal"
+                                    data-jobrole="{{ each_job.job_role }}" data-href="{{ each_job.job_id }}"
+                                    data-toggle="modal">Delete</button>
                                 &nbsp;&nbsp;
                                 <button class="not-active link-button" type="button"
                                     onclick="addRounds('{{ each_job.job_id }}')">Rounds</button>
@@ -196,9 +205,9 @@
         $(document).ready(function () {
             $('#table').DataTable({
                 "columnDefs": [
-                { width: 20, targets: 0 },
+                    { width: 20, targets: 0 },
                     {
-                        "targets": [1,2,3],
+                        "targets": [1, 2, 3],
                         "orderable": false,
 
 

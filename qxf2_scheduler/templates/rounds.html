@@ -1,6 +1,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <title>
         List of rounds
     </title>
@@ -54,7 +63,9 @@
                     <td>{{each_item.round_description}}</td>
                     <td>{{each_item.round_requirement}}</td>
                     <td>
-                        <input class="btn btn-info" id="editround{{each_item.round_id}}" onclick="editRound(this)" type="button" value="Edit" data-round-id="{{each_item.round_id}}" data-round-name="{{each_item.round_name}}"
+                        <input class="btn btn-info" id="editround{{each_item.round_id}}" onclick="editRound(this)"
+                            type="button" value="Edit" data-round-id="{{each_item.round_id}}"
+                            data-round-name="{{each_item.round_name}}"
                             data-round-description="{{each_item.round_description}}"
                             data-round-requirement="{{each_item.round_requirement}}"
                             data-round-duration="{{each_item.round_time}}" data-job-id="{{job_id}}">
@@ -103,14 +114,14 @@
         }
     </script>
     <script>
-        function editRound(actionEdit){
+        function editRound(actionEdit) {
             round_id = actionEdit.getAttribute("data-round-id");
             jobId = actionEdit.getAttribute("data-job-id");
-            document.location.href = "/rounds/" + round_id +  '/jobs/'+ jobId +'/edit';
+            document.location.href = "/rounds/" + round_id + '/jobs/' + jobId + '/edit';
         }
     </script>
     <script>
-        function addRound(actionAdd){
+        function addRound(actionAdd) {
             jobId = actionAdd.getAttribute("data-job-id");
             document.location.href = "/jobs/" + jobId + "/round/add";
 
@@ -118,4 +129,5 @@
     </script>
 
 </body>
+
 </html>

@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Edit status</title>
@@ -33,7 +42,8 @@
         <form class="needs-validation">
             <label class="col-md-4 control-label" for="statusname">Status name</label>
             <div class="col-md-4">
-                <input id="sname" name="sname" type="text" placeholder="Status Name" class="form-control" value="{{result.status_name}}" required>
+                <input id="sname" name="sname" type="text" placeholder="Status Name" class="form-control"
+                    value="{{result.status_name}}" required>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
@@ -64,9 +74,9 @@
                             var statusName = $("#sname").val();
                             $.ajax({
                                 type: 'POST',
-                                url: '/status/'+statusId+'/edit',
+                                url: '/status/' + statusId + '/edit',
                                 data: {
-                                    'statusid':statusId,
+                                    'statusid': statusId,
                                     'statusname': statusName,
 
                                 },
@@ -77,12 +87,12 @@
                                         document.location.href = "/status";
 
                                     }
-                                    else{
+                                    else {
                                         alert("The status already exists");
                                         document.location.href = "/status";
                                     }
 
-                            }
+                                }
                             })
                         }
                     },

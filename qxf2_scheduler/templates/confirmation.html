@@ -1,6 +1,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <title>
         Interview Confirmation
     </title>
@@ -83,29 +92,29 @@
         }
     </script>---->
     <script>
-    $(document).ready(function($) {
+        $(document).ready(function ($) {
 
-        if (window.history && window.history.popState) {
-  
-          $(window).on('pushstate', function() {
-            var hashLocation = location.hash;
-            var hashSplit = hashLocation.split("#!/");
-            var hashName = hashSplit[1];
-  
-            if (hashName !== '') {
-              var hash = window.location.hash;
-              if (hash === '') {
-                alert('Back button was pressed.');
-                  window.location='www.example.com';
-                  return false;
-              }
+            if (window.history && window.history.popState) {
+
+                $(window).on('pushstate', function () {
+                    var hashLocation = location.hash;
+                    var hashSplit = hashLocation.split("#!/");
+                    var hashName = hashSplit[1];
+
+                    if (hashName !== '') {
+                        var hash = window.location.hash;
+                        if (hash === '') {
+                            alert('Back button was pressed.');
+                            window.location = 'www.example.com';
+                            return false;
+                        }
+                    }
+                });
+
+                window.history.popState('forward', null, './#forward');
             }
-          });
-  
-          window.history.popState('forward', null, './#forward');
-        }
-  
-      });
+
+        });
     </script>
 
     {% include "footer.html" %}

@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Add Rounds</title>
@@ -34,7 +43,8 @@
             <label class="col-md-4 control-label" for="rname"><span style="color:red">*</span>Round name</label>
             <div class="col-md-4">
 
-                <input id="rname" name="rname" maxlength="20" type="text" placeholder="John" class="form-control" required>
+                <input id="rname" name="rname" maxlength="20" type="text" placeholder="John" class="form-control"
+                    required>
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
@@ -55,9 +65,11 @@
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
             </div>
-            <label class="col-md-4 control-label" for="rdescription"><span style="color:red">*</span>Round description</label>
+            <label class="col-md-4 control-label" for="rdescription"><span style="color:red">*</span>Round
+                description</label>
             <div class="col-md-4">
-                <textarea name="rdesc" maxlength="500" id="rdesc" style="width:380px; height:300px;" required></textarea>
+                <textarea name="rdesc" maxlength="500" id="rdesc" style="width:380px; height:300px;"
+                    required></textarea>
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
                 </div>
                 <div class="valid-feedback">Valid</div>
@@ -65,7 +77,8 @@
 
 
             </div>
-            <label class="col-md-4 control-label" for="rrequirements"><span style="color:red">*</span>Round requirements</label>
+            <label class="col-md-4 control-label" for="rrequirements"><span style="color:red">*</span>Round
+                requirements</label>
             <div class="col-md-4">
                 <input id="rreq" name="rreq" type="text" placeholder="Laptop" class="form-control" required>
                 <div class=" col-md-8 row top-space-30" id="resultDiv">
@@ -77,7 +90,8 @@
             <input type="hidden" id="jobId" value="{{job_id}}">
             <div class="col-md-8">
                 <button class="btn btn-info" id="addRound" type="submit">Add</button>
-                <button name="clear" id="cancelRound" type="button" onclick="clearAdd()" class="btn btn-danger">Cancel</button>
+                <button name="clear" id="cancelRound" type="button" onclick="clearAdd()"
+                    class="btn btn-danger">Cancel</button>
             </div>
         </form>
     </div>
@@ -103,7 +117,7 @@
                             var dropdownValue = document.getElementById("rtime");
                             var roundTime = dropdownValue.options[dropdownValue.selectedIndex].value;
                             var jobId = document.getElementById("jobId").value;
-                            $("#addRound").attr("disabled",true);
+                            $("#addRound").attr("disabled", true);
                             $.ajax({
                                 type: 'POST',
                                 url: '/jobs/' + jobId + '/round/add',

@@ -2,6 +2,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -53,8 +62,8 @@
             </div>
         </div>
         <script>
-            $("document").ready(function(){
-                $("#signupButton").click(function(){
+            $("document").ready(function () {
+                $("#signupButton").click(function () {
                     document.location.href = "/registration"
                 })
             })
@@ -78,13 +87,11 @@
                                 document.location.href = "/index";
 
                             }
-                            else if(result.error == 'error')
-                            {
+                            else if (result.error == 'error') {
                                 alert("Please check your username and password");
                                 document.location.href = '/login';
                             }
-                            else if (result.error == 'confirmation error')
-                            {
+                            else if (result.error == 'confirmation error') {
                                 alert("Please confirm your email address")
                                 document.location.href = '/login'
                             }

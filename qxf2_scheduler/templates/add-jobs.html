@@ -1,6 +1,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <title>
         Add Jobs
     </title>
@@ -36,7 +45,8 @@
         <div class="row top-space-30">
             <form class="needs-validation">
                 <div class="input-group">
-                    <label class="col-md-3 col-form-label text-md-right" for="jobrole"><span style="color:red">*</span>Job role:</label>
+                    <label class="col-md-3 col-form-label text-md-right" for="jobrole"><span
+                            style="color:red">*</span>Job role:</label>
                     <div class="col-md-6">
                         <input id="role" name="jobrole" type="text" placeholder="QA" class="form-control input-md"
                             required>
@@ -44,20 +54,21 @@
                         <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
                 </div>
-                <br>               
+                <br>
                 <div class="input-group">
-                    <label class="col-md-3 col-form-label text-md-right" for="interviewers"><span style="color:red">*</span>Interviewers:</label>
+                    <label class="col-md-3 col-form-label text-md-right" for="interviewers"><span
+                            style="color:red">*</span>Interviewers:</label>
                     <div class="col-md-6">
                         <input class="form-control" type="text" id="interviewers" required>
                         <input type="hidden" id="TestHidden" value="{{result}}" required>
                         <div class="valid-feedback">Valid.</div>
                         <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
-                
 
-                <div class="col-md-2">
-                    <button type="submit" id="submit">Submit</button>
-                </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" id="submit">Submit</button>
+                    </div>
                 </div>
             </form>
         </div>

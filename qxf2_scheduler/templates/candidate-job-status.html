@@ -1,6 +1,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <title>
         Candidate job status
     </title>
@@ -57,7 +66,8 @@
                         <div class="col-md-12 form-display">
                             <label class="labelbold col-md-2" for="roundName">Round Name(
                                 {{ each_round_name ['round_name']}}):</label>
-                            {% if (each_round_name['round_status'] == None) or (each_round_name['round_status']) == 'Invitation Sent' %}
+                            {% if (each_round_name['round_status'] == None) or (each_round_name['round_status']) ==
+                            'Invitation Sent' %}
                             <label class="col-md-10" for="eachRound">
                                 {{ each_round_name['round_status']}}
                                 {% else %}
@@ -74,7 +84,9 @@
                         <br>
                         <div class="col-md-12 form-display">
                             <label class="col-md-2 labelbold">Interviewer Feedback:</label>
-                            {% if (each_round_name['candidate_feedback']['candidate_feedback'] == None) or (each_round_name['round_status'] == None) or (each_round_name['round_status']) == 'Invitation Sent' %}
+                            {% if (each_round_name['candidate_feedback']['candidate_feedback'] == None) or
+                            (each_round_name['round_status'] == None) or (each_round_name['round_status']) ==
+                            'Invitation Sent' %}
                             <label class="col-md-10">None</label>
                             {% else %}
                             {% if each_round_name['candidate_feedback']['thumbs_value']=='thumbsup' %}
@@ -87,7 +99,7 @@
                             {% else %}
                             <label class="col-md-10">
                                 <span class="more">
-                                    <img  src="/static/img/thumbs-down.png" width="50" height="30"></img>
+                                    <img src="/static/img/thumbs-down.png" width="50" height="30"></img>
                                     {{ each_round_name['candidate_feedback']['candidate_feedback'] }}
                                 </span>
                             </label>
@@ -240,7 +252,8 @@
 
                         {% endif %}
                         <div class="container col-md-12">
-                            {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id == None) %}
+                            {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id ==
+                            None) %}
                             <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
                                 value="No opening">
 

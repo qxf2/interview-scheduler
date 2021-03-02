@@ -1,6 +1,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <title>
         List of candidate details
     </title>
@@ -63,54 +72,56 @@
                             <th>Job</th>
 
 
-            <th>Status</th>
+                            <th>Status</th>
 
 
-    <th>Actions</th>
+                            <th>Actions</th>
 
-    </tr>
-    </thead>
-    <tbody>
-        {% for each_candidate in result %}
-        <tr>
-            <td>{{ each_candidate.candidate_id }}</td>
-            <!-- change href-->
-            <td><a
-                    href="/candidate/{{each_candidate.candidate_id}}/job/{{ each_candidate.job_id}}">{{ each_candidate.candidate_name }}</a>
-            </td>
-            <td>{{ each_candidate.candidate_email }}</td>
-            <!--change each_candidate.job_applied-->
-            <td>{{ each_candidate.job_role }}</td>
-            <td>{{ each_candidate.candidate_status }}</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for each_candidate in result %}
+                        <tr>
+                            <td>{{ each_candidate.candidate_id }}</td>
+                            <!-- change href-->
+                            <td><a href="/candidate/{{each_candidate.candidate_id}}/job/{{ each_candidate.job_id}}">{{
+                                    each_candidate.candidate_name }}</a>
+                            </td>
+                            <td>{{ each_candidate.candidate_email }}</td>
+                            <!--change each_candidate.job_applied-->
+                            <td>{{ each_candidate.job_role }}</td>
+                            <td>{{ each_candidate.candidate_status }}</td>
 
-            <td><button class="link-button" type="button" id="edit"
-                    onclick="editCandidates({{each_candidate.candidate_id}})">Edit</button>&nbsp;&nbsp;
-                <button class="link-button" style="color:rgba(255, 0, 0, 0.589);"type="button" data-target="#confirmdeletemodal"
-                    data-candidatename="{{ each_candidate.candidate_name }}"
-                    data-candidateid="{{ each_candidate.candidate_id }}" data-jobid="{{ each_candidate.job_id }}"
-                    data-toggle="modal">Delete</button></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    </table>
-    </div>
-    <div class="modal modal-megamenu" id="confirmdeletemodal">
-        <div class="modal-dialog modal-megamenu">
-            <div class="modal-content modal-megamenu">
-                <div class="modal-header modal-megamenu">
-                    <h4 class="modal-title">Remove candidate?</h4>
-                </div>
-                <div class="modal-body modal-megamenu">
-                    <input type="text" class="form-control" id="recipient-name">
-                </div>
-                <div class="modal-footer modal-megamenu">
-                    <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
-                    <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
-                        type="submit">Remove</button>
-                </div>
-            </div><!-- end modal-content -->
-        </div><!-- end modal-dialog -->
-    </div>
+                            <td><button class="link-button" type="button" id="edit"
+                                    onclick="editCandidates({{each_candidate.candidate_id}})">Edit</button>&nbsp;&nbsp;
+                                <button class="link-button" style="color:rgba(255, 0, 0, 0.589);" type="button"
+                                    data-target="#confirmdeletemodal"
+                                    data-candidatename="{{ each_candidate.candidate_name }}"
+                                    data-candidateid="{{ each_candidate.candidate_id }}"
+                                    data-jobid="{{ each_candidate.job_id }}" data-toggle="modal">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal modal-megamenu" id="confirmdeletemodal">
+                <div class="modal-dialog modal-megamenu">
+                    <div class="modal-content modal-megamenu">
+                        <div class="modal-header modal-megamenu">
+                            <h4 class="modal-title">Remove candidate?</h4>
+                        </div>
+                        <div class="modal-body modal-megamenu">
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="modal-footer modal-megamenu">
+                            <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                            <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
+                                type="submit">Remove</button>
+                        </div>
+                    </div><!-- end modal-content -->
+                </div><!-- end modal-dialog -->
+            </div>
     </div>
     </div>
     <script>
@@ -153,7 +164,7 @@
     <script>
         $(document).ready(function () {
             $('#table').DataTable({
-                "order": [[ 0, "desc" ]],
+                "order": [[0, "desc"]],
                 "columnDefs": [
                     { "visible": false, "targets": 2 },
                     {

@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <title>
         Welcome
     </title>
@@ -19,8 +28,8 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
         p {
-  word-break: break-word;
-}
+            word-break: break-word;
+        }
     </style>
 
 </head>
@@ -28,8 +37,8 @@
 <body style="background-color:powderblue;">
     {% include "header.html" %}
     <div class="container">
-    <div class="bs-example">
-        {% if 'job_id' in result %}
+        <div class="bs-example">
+            {% if 'job_id' in result %}
 
             <div class="panel panel-default" style="max-width:800px;margin-left:auto;margin-right:auto;">
                 <div class="panel-heading " style="text-align: center;"></div>
@@ -38,7 +47,8 @@
                     <form action="/{{ result.job_id }}/{{result.url}}/{{result.candidate_id}}/valid" method="POST">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-md-4 control-label"><span style="color:red">*</span>Enter your unique code</label>
+                                <label class="col-md-4 control-label"><span style="color:red">*</span>Enter your unique
+                                    code</label>
                                 <div class="col-md-7">
                                     <input id="candidate-name" name="candidate-name" type="text" placeholder="xxxxx"
                                         class="input-md" required>
@@ -48,7 +58,8 @@
                         </div>
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-md-4 control-label"><span style="color:red">*</span>Enter your email</label>
+                                <label class="col-md-4 control-label"><span style="color:red">*</span>Enter your
+                                    email</label>
                                 <div class="col-md-7">
                                     <input id="candidate-email" name="candidate-email" type="email"
                                         placeholder="johndoe@example.com" class="input-md" required>
@@ -69,7 +80,8 @@
     </div>
 
     {% else %}
-    <div class="panel panel-default" style="max-width:1200px;max-height: 650px;margin-left:auto;margin-right:auto;top:50px">
+    <div class="panel panel-default"
+        style="max-width:1200px;max-height: 650px;margin-left:auto;margin-right:auto;top:50px">
         <div class="panel-heading " style="text-align: center;">Scheduled Interview details</div>
         <div class="panel-body" id="resultDiv">
             <div class="panel-group">
@@ -97,7 +109,7 @@
                     </div>
                 </div>
                 <div class="panel panel-default">
-                    <div class="panel-body" >
+                    <div class="panel-body">
                         <label class="col-md-12" for="rounddescription:">Round
                             Description:<p> {{ interview_result.round_description}}</p></label>
 
@@ -105,8 +117,8 @@
                 </div>
             </div>
             {% endif %}
+        </div>
     </div>
-</div>
 
 
     <script>

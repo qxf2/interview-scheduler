@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Add Candidates</title>
@@ -31,7 +40,8 @@
     <div>
         <h2 class="grey_text text-justify">Edit Candidates</h2>
         <form class="needs-validation">
-            <label class="col-md-4 control-label" for="fname"><span style="color:red">*</span>Name of the candidate</label>
+            <label class="col-md-4 control-label" for="fname"><span style="color:red">*</span>Name of the
+                candidate</label>
             <div class="col-md-4">
                 <input id="fname" name="fname" type="text" placeholder="John" class="form-control"
                     value="{{result.candidate_name}}" required>
@@ -50,7 +60,7 @@
                 <div class="invalid-feedback">Please fill out this field</div>
 
             </div>
-            <input type="hidden"id="oldJob" value="{{result.job_role}}">
+            <input type="hidden" id="oldJob" value="{{result.job_role}}">
             <label class="col-md-4 control-label" for="select1"><span style="color:red">*</span>Job applied for</label>
             <div class="col-md-4">
                 <select class="form-control" id="select1" required>
@@ -63,9 +73,11 @@
                 <div class="invalid-feedback">Please fill out this field</div>
 
             </div>
-            <label class="col-md-4 control-label" for="comments"><span style="color:red">*</span>Add your comments</label>
+            <label class="col-md-4 control-label" for="comments"><span style="color:red">*</span>Add your
+                comments</label>
             <div class="col-md-4">
-                <textarea id="comments" name="comments" rows="10" col="20" class="form-control" required>{{result.added_comments}}</textarea>
+                <textarea id="comments" name="comments" rows="10" col="20" class="form-control"
+                    required>{{result.added_comments}}</textarea>
 
                 <div class="valid-feedback">Valid</div>
                 <div class="invalid-feedback">Please fill out this field</div>
@@ -107,13 +119,13 @@
                                 var candidateId = document.getElementById("candidateId").value;
                                 $.ajax({
                                     type: 'POST',
-                                    url: '/candidate/%d/edit'%candidateId,
+                                    url: '/candidate/%d/edit' % candidateId,
                                     data: {
                                         'candidateName': candidateName,
                                         'candidateEmail': candidateEmail,
                                         'jobApplied': jobApplied,
-                                        'existJob':existingJob,
-                                        'addedcomments':addedComments
+                                        'existJob': existingJob,
+                                        'addedcomments': addedComments
                                     },
                                     success: function (result) {
                                         var resultName = result.data['candidate_name'];

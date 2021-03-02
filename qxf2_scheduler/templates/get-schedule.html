@@ -1,6 +1,15 @@
 <html>
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R28LRN90JF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R28LRN90JF');
+    </script>
     <title>
         Welcome to Interview Scheduler Application
     </title>
@@ -83,7 +92,7 @@
     <script>
         $(function () {
             //holidays in yyyy-mm-dd format
-            var holidays = ['2021-01-01', '2021-01-14', '2021-01-26', '2021-04-13','2021-05-14', '2021-09-10', '2021-10-15', '2021-11-01', '2021-11-05'];
+            var holidays = ['2021-01-01', '2021-01-14', '2021-01-26', '2021-04-13', '2021-05-14', '2021-09-10', '2021-10-15', '2021-11-01', '2021-11-05'];
             // src https://stackoverflow.com/questions/21669950/jquery-ui-datpicker-excluding-weekends-mindate
             // Calculate the next working day manually
             var startDate = new Date(),

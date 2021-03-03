@@ -5,6 +5,7 @@ from flask_mail import Mail, Message
 from flaskext.markdown import Markdown
 import qxf2_scheduler.db_config as conf
 import qxf2_scheduler.email_config as email_conf
+from flask_seeder import FlaskSeeder
 import os
 import logging
 
@@ -16,6 +17,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///%s"%db_file
 logging.basicConfig(filename='record.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 db = SQLAlchemy(app)
 Markdown(app)
+db.init_app(app)
+seeder = FlaskSeeder()
+seeder.init_app(app,db)
 
 
 app.config.update(

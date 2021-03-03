@@ -4,6 +4,7 @@ from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint,DateT
 from flask_login import UserMixin
 from qxf2_scheduler import login_manager
 from sqlalchemy.sql import table, column
+from flask_seeder import Seeder, Faker, generator
 
 
 class Interviewers(db.Model):
@@ -34,8 +35,6 @@ class Jobs(db.Model):
     "Adding the Job page"
     job_id = db.Column(db.Integer,primary_key=True,nullable=False)
     job_role = db.Column(db.String,nullable=False)
-    job_interviewer = db.relationship('Jobinterviewer', backref='Jobs',
-       lazy=True, cascade="delete")
     job_status = db.Column(db.String)
     job_type = db.Column(db.String)
 

@@ -43,6 +43,7 @@ def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,rem
     #flask_migrate.init()
     flask_migrate.migrate()
     flask_migrate.upgrade()
+    #subprocess.run(["alembic","upgrade","85c82ff60170_add_company"])
     #candidate_status = subprocess.run(["python","qxf2_scheduler/setup_db.py"])
     flask_seeder = subprocess.run(["flask","seed","run"])
     test_obj = PageFactory.get_page_object("Zero",base_url=base_url)

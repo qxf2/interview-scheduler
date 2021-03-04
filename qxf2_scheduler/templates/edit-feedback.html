@@ -40,6 +40,9 @@
 
 <body>
     {% include "logout.html" %}
+    {% if candidate_feedback == None %}
+    <body onload="showalert()"></body>
+    {% else %}
     <form class="needs-validation">
         <label class="col-md-4 control-label" for="thumbsUp">
             <span style="color:red">*</span>
@@ -62,7 +65,7 @@
                 <option value="thumbsup">Thumbs Up</option>
             </select>
             {% endif %}
-
+{% endif %}
         </div>
         <br>
         <div>
@@ -136,6 +139,12 @@
     <script>
         function clearEdit() {
             document.location.href = "/candidates"
+        }
+    </script>
+    <script>
+        function showalert(){
+            alert("Please add feedback before edit it")
+            document.location.href="/candidates"
         }
     </script>
 </body>

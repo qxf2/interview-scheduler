@@ -30,22 +30,7 @@ def app_fixture():
 @pytest.fixture
 def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,remote_flag,testrail_flag,tesults_flag,test_run_id,remote_project_name,remote_build_name,testname):
     "Return an instance of Base Page that knows about the third party integrations"
-    db_file = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/interviewscheduler.db')))
-    migrations_directory = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'migrations/')))
 
-    print(migrations_directory,"hello")
-    """if db_file.exists():
-        os.remove(db_file)
-        shutil.rmtree('migrations')
-        print("file exists delete it")
-    else:
-        print("no file")"""
-    #flask_migrate.init()
-    flask_migrate.migrate()
-    flask_migrate.upgrade()
-    #subprocess.run(["alembic","upgrade","85c82ff60170_add_company"])
-    #candidate_status = subprocess.run(["python","qxf2_scheduler/setup_db.py"])
-    flask_seeder = subprocess.run(["flask","seed","run"])
     test_obj = PageFactory.get_page_object("Zero",base_url=base_url)
     test_obj.set_calling_module(testname)
     #Setup and register a driver

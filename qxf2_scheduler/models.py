@@ -14,7 +14,6 @@ class Interviewers(db.Model):
     interviewer_email = db.Column(db.String(50),nullable=False)
     interviewer_designation = db.Column(db.String(40),nullable=False)
     db.CheckConstraint(interviewer_name > 5)
-    interviewer_company = db.Column(db.String,default="Qxf2")
 
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"
@@ -37,7 +36,6 @@ class Jobs(db.Model):
     job_role = db.Column(db.String,nullable=False)
     job_status = db.Column(db.String)
     job_type = db.Column(db.String)
-    job_call=db.Column(db.String,default="Free")
 
     def __repr__(self):
         return f"Jobs('{self.job_id}','{self.job_role}')"
@@ -61,7 +59,6 @@ class Candidates(db.Model):
     date_applied = db.Column(DateTime, default=datetime.datetime.utcnow)
     job_applied = db.Column(db.String,nullable=False)
     comments = db.Column(db.String)
-    candidate_title=db.Column(db.String)
 
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"

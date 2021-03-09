@@ -37,6 +37,7 @@ class Jobs(db.Model):
     job_role = db.Column(db.String,nullable=False)
     job_status = db.Column(db.String)
     job_type = db.Column(db.String)
+    job_value = db.Column(db.String)
 
     def __repr__(self):
         return f"Jobs('{self.job_id}','{self.job_role}')"
@@ -56,11 +57,9 @@ class Candidates(db.Model):
     "Adding the candidates"
     candidate_id = db.Column(db.Integer,primary_key=True,nullable=False)
     candidate_name = db.Column(db.String,nullable=False)
-    candidate_email = db.Column(db.String,nullable=False)
     date_applied = db.Column(DateTime, default=datetime.datetime.utcnow)
     job_applied = db.Column(db.String,nullable=False)
     comments = db.Column(db.String)
-    candidate_title = db.Column(db.String)
 
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"

@@ -35,7 +35,6 @@ class Jobs(db.Model):
     job_id = db.Column(db.Integer,primary_key=True,nullable=False)
     job_role = db.Column(db.String,nullable=False)
     job_status = db.Column(db.String)
-    job_type = db.Column(db.String)
 
     def __repr__(self):
         return f"Jobs('{self.job_id}','{self.job_role}')"

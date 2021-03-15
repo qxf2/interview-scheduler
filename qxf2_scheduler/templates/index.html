@@ -22,30 +22,44 @@
 </head>
 
 <body>
+    {% include "header.html" %}
     {% include "logout.html" %}
     <div class="container">
         <div class="row">
-            <h2 class="grey_text text-center">Why Interview Scheduler Application?</h2>
-            <br>
-            <h3 class="text-justify">This application helps one to automate<a
-                    href="https://github.com/qxf2/interview-scheduler"> the interview scheduling process.</a></h3>
-            <br>
+            <h4>We have developed this application to handle large volume of candidates during our interviews. You can refer the source code <a href="https://github.com/qxf2/interview-scheduler"> here.</a></h4>
+                           <ul>
+                <li>Allow us to handle a large volume of candidates without having to bother about scheduling</li>
+                <li> Make the interaction with Qxf2 different from other companies</li>
 
-            <h3>Pages one should know to schedule an application</h3>
+                <li>Reduce (almost eliminate) exchange of emails between candidate and interviewer</li></ul>
+                Interview scheduler has three main entities: <a href="./jobs">Jobs</a>, <a href="./interviewers">Interviewers</a> and <a href="./candidates">Candidates</a>
+            <br>
+                <h4 style="color:blue;">Adding an interviewer</h4>
+                <ul><li>Navigate to <a href="./interviewers">interviewers</a></li>
+                    <li>Add your details like name, email id and your available time slots</li>
+                    <li>You can give any number of time slots with breaks</li></ul>
+                <h4 style="color: blue;">Adding a candidate</h4>
+                    <ul>
+                    <li>Navigate to <a href="./candidates">candidates</a></li>
+                    <li>Add the candidates details like name, email and job applied </li>
+                    <li>Add comments about the candidates if it's specified in their resume or in the email or if somone internally referred that candidate</li></ul>
+                <h4 style="color:blue;">Adding a job</h4>
+                <ul>
+                    <li>Navigate to <a href="./jobs">jobs</a></li>
+                    <li>Add the Job with interviewers</li>
+                    <li>Add the rounds for the job added</li>
+                </ul>
+                <h4 style="color: blue;">General instructions</h4>
+                <ul>
 
-            <ol>
-                <h4>
-                    <li><a href="./interviewers">List the interviewers</a></li>
-                </h4>
-                <h4>
-                    <li><a href="./jobs">List the jobs</a></li>
-                </h4>
-                <h4>
-                    <li><a href="./candidates">List the candidates</a></li>
-                </h4>
-            </ol>
+                    <li>Once the interview is scheduled we can't reschedule it through our application. We can further do it through Email. Interviewer should take care of it</li>
+                    <li> Once the interview is done, it is interviewer's responsibility to add feedback. It will be helpful for the interviwer of the next round
+                    </li>
+                    <li>If you are the interviewer of last round ,don't send any reject/accept to the candidate. We will take care of it</li>
+                </ul>&nbsp;
         </div>
     </div>
+
 
 </body>
 

@@ -26,6 +26,22 @@ def app_fixture():
     with app.app_context():
         yield
 
+@pytest.fixture(scope="session")
+def rp_logger(request):
+    import logging
+    from pytest_reportportal import RPLogger, RPLogHandler
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    # Setting up a logging.
+    logging.setLoggerClass(RPLogger)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    # Create handler for Report Portal.
+    rp_handler = RPLogHandler(request.node.config.py_test_service)
+    # Set INFO level for Report Portal handler.
+    rp_handler.setLevel(logging.INFO)
+    return logger
+
 
 @pytest.fixture
 def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,remote_flag,testrail_flag,tesults_flag,test_run_id,remote_project_name,remote_build_name,testname):
@@ -33,17 +49,17 @@ def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,rem
     db_file = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/interviewscheduler.db')))
     migrations_directory = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'migrations/')))
 
-    print(migrations_directory,"hello")
-    """if db_file.exists():
+    #print(migrations_directory,"hello")
+    if db_file.exists():
         os.remove(db_file)
         shutil.rmtree('migrations')
         print("file exists delete it")
     else:
-        print("no file")"""
-    #flask_migrate.init()
+        print("no file")
+    flask_migrate.init()
     flask_migrate.migrate()
     flask_migrate.upgrade()
-    #candidate_status = subprocess.run(["python","qxf2_scheduler/setup_db.py"])
+    candidate_status = subprocess.run(["python","qxf2_scheduler/setup_db.py"])
     flask_seeder = subprocess.run(["flask","seed","run"])
     test_obj = PageFactory.get_page_object("Zero",base_url=base_url)
     test_obj.set_calling_module(testname)
@@ -273,10 +289,10 @@ def pytest_configure(config):
     if_reportportal =config.getoption('--reportportal')
 
     try:
-        config._inicache["rp_uuid"]="34ec4436-1a3c-4079-9ca0-e177e530fa47"
-        config._inicache["rp_endpoint"]="http://web.demo.reportportal.io"
-        config._inicache["rp_project"]="personal"
-        config._inicache["rp_launch"]="TEST_EXAMPLE"
+        config._inicache["rp_uuid"]="3d28cf28-4ddd-4677-8c12-b501eead235f"
+        config._inicache["rp_endpoint"]="https://demo.reportportal.io"
+        config._inicache["rp_project"]="annapooraniqxf2_personal"
+        config._inicache["rp_launch"]="annapooraniqxf2_TEST_EXAMPLE"
 
     except Exception as e:
         print (str(e))

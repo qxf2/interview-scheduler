@@ -14,7 +14,6 @@ class Interviewers(db.Model):
     interviewer_email = db.Column(db.String(50),nullable=False)
     interviewer_designation = db.Column(db.String(40),nullable=False)
     db.CheckConstraint(interviewer_name > 5)
-    interviewer_company = db.Column(db.String(40),default="Qxf2")
 
     def __repr__(self):
         return f"Interviewers('{self.interviewer_name}', '{self.interviewer_email}','{self.interviewer_designation}')"
@@ -36,8 +35,6 @@ class Jobs(db.Model):
     job_id = db.Column(db.Integer,primary_key=True,nullable=False)
     job_role = db.Column(db.String,nullable=False)
     job_status = db.Column(db.String)
-    job_type = db.Column(db.String)
-    job_value = db.Column(db.String)
 
     def __repr__(self):
         return f"Jobs('{self.job_id}','{self.job_role}')"
@@ -57,6 +54,7 @@ class Candidates(db.Model):
     "Adding the candidates"
     candidate_id = db.Column(db.Integer,primary_key=True,nullable=False)
     candidate_name = db.Column(db.String,nullable=False)
+    candidate_email=db.Column(db.String)
     date_applied = db.Column(DateTime, default=datetime.datetime.utcnow)
     job_applied = db.Column(db.String,nullable=False)
     comments = db.Column(db.String)

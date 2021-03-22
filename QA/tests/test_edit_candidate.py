@@ -22,6 +22,7 @@ from conf import login_conf as conf
 @pytest.mark.GUI
 def test_edit_candidate(test_obj):
     "Run the test"
+
     try:
         #Initialize falgs for test summary
         expected_pass= 0
@@ -42,6 +43,7 @@ def test_edit_candidate(test_obj):
 
         #3. Enter Username and Password and login to page
         result_flag = test_obj.login_page(username, password)
+
         test_obj.log_result(result_flag,
                             positive="Successfully logged in the page\n",
                             negative="Failed to login the page \nOn url: %s" \
@@ -80,6 +82,7 @@ def test_edit_candidate(test_obj):
                             negative="Failed to edit Candidate comments \nOn url: %s" \
                             % test_obj.get_current_url(),
                             level="debug")
+
 
         #Click on Save button after editing candidate
         result_flag= test_obj.save_edited_candidate()

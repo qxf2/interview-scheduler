@@ -233,6 +233,7 @@ class Base_Page(Borg,unittest.TestCase):
         "Method to save image to ReportPortal"
         try:
             rp_logger = self.log_obj.setup_rp_logging()
+            print("created rp logger")
             with open(image_name, "rb") as fh:
                 image = fh.read()
 
@@ -263,6 +264,7 @@ class Base_Page(Borg,unittest.TestCase):
 	    #self.conditional_write(flag=True,positive= screenshot_name + '.png',negative='', pre_format=pre_format)
         if hasattr(pytest,'config'):
             if pytest.config._config.getoption('--reportportal'):
+                print("report portal started")
                 self.save_screenshot_reportportal(screenshot_name)
         if self.browserstack_flag is True:
             self.append_latest_image(screenshot_name)

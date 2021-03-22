@@ -5,7 +5,6 @@ Class to hold miscellaneous but useful decorators for our framework
 from inspect import getfullargspec
 from QA.page_objects.Base_Page import Base_Page
 
-
 class Wrapit():
 
     "Wrapit class to hold decorator functions"
@@ -33,6 +32,7 @@ class Wrapit():
             result = func(*args,**kwargs)
             screenshot_name = '%003d'%args[0].screenshot_counter + '_' + func.__name__
             args[0].screenshot_counter += 1
+            print(screenshot_name)
             args[0].save_screenshot(screenshot_name)
 
             return result

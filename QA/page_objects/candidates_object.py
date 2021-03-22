@@ -48,7 +48,7 @@ class Candidates_Object:
 
         return result_flag
 
-   
+
 
     @Wrapit._exceptionHandler
     @Wrapit._screenshot
@@ -252,9 +252,9 @@ class Candidates_Object:
                                level='debug')
 
         return result_flag
- 
-    @Wrapit._exceptionHandler
+
     @Wrapit._screenshot
+    @Wrapit._exceptionHandler
     def edit_candidates(self):
         "Click on edit button of Candidates page"
         result_flag = self.click_element(self.edit_candidate_button)
@@ -264,8 +264,9 @@ class Candidates_Object:
                                 level='debug')
         return result_flag
 
-    @Wrapit._exceptionHandler
+
     @Wrapit._screenshot
+    @Wrapit._exceptionHandler
     def edit_candidate_comment(self, comment_candidates):
         "Edit the comments of Candidate"
         result_flag = self.set_text(self.comment_candidates, comment_candidates, clear_flag=False)
@@ -275,8 +276,8 @@ class Candidates_Object:
                                level='debug')
         return result_flag
 
-    @Wrapit._exceptionHandler
     @Wrapit._screenshot
+    @Wrapit._exceptionHandler
     def save_edited_candidate(self):
         "Click the Save button to save changes applied for te candidate"
         result_flag = self.click_element(self.edit_candidate_page_save_button)

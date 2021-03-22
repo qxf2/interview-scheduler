@@ -413,8 +413,8 @@ def no_opening():
     logged_email = session['logged_user']
 
     try:
-        msg = Message("Currently we don't have an opening!", sender=("Qxf2 Services", "test@qxf2.com"),  recipients=[candidate_email], cc=[logged_email])
-        msg.body = "Hi %s , \n\nWe have received your resume and thanks for applying for the job. Currently we don't have an opening for the job position. We will get back to you once we have an opening.\n\nThanks, \nQxf2 Services"%(candidate_name)
+        msg = Message("Career opportunity with Qxf2 Services", sender=("Qxf2 Services", "test@qxf2.com"),  recipients=[candidate_email], cc=[logged_email])
+        msg.body = "Hi %s , \n\nThanks for applying to Qxf2 Services. We have received your application. Currently we don't have openings suitable to your background and experience. We will get back to you once we have an opening that fits you better.\n\nThanks, \nQxf2 Services"%(candidate_name)
         mail.send(msg)
         #Update the candidate status to 'Waiting for new opening'
         candidate_statuses = Candidatestatus.query.all()

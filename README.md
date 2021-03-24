@@ -1,4 +1,4 @@
-# interview-scheduler
+# Interview scheduler
 This repo contains code needed for the Qxf2 interview scheduler application. Please follow the setup instructions to start using the application.
 
 ----
@@ -88,25 +88,21 @@ __g) Initial db setup__
 
 1] Open the interview-scheduler folder and create another folder named "data"(This folder is Database folder)
 
-2]The above created "data" folder will be empty initially.
+2]The above created "data" folder will be empty initially. For the first time While creating the db run the following command
 
-      For the first time While creating the db run the following command
+      python migrate_db.py db init
 
-      "python migrate_db.py db init"
+3]Now We have to migrate the required data to this "data" folder. Migrating Database can be done by using the following command
 
-Now We have to migrate the required data to this "data" folder. Migrating Database can be done by using the following command
+      python migrate_db.py db  migrate
 
-      ==>  'python migrate_db.py db  migrate'  (The command should be ran inside the interview-scheduler directory)
-
-3]Once you follow the above step you will see that Database has been created.
-
-      The created database will be with '.db'extension, i.e (<Filename>.db)
+Once you follow the above step you will see that Database has been created. The created database will be with '.db'extension, i.e (<Filename>.db)
 
 4]So now we should add the required tables by using the following command
 
-      ==> 'python migrate_db.py db upgrade'
+      python migrate_db.py db upgrade
 
-      Whenever we change the structure of table we should again "migrate" and "Upgrade" the db.
+Whenever we change the structure of table we should again "migrate" and "Upgrade" the db.
 
 5] To check if the tables have been added:
 
@@ -120,9 +116,9 @@ open your terminal go to the interview scheduler directory and  Move in to the d
 
       To check the structure of table: .schema
 
-6] NOTE: DATA cannot be migrated. You should add your own data to db and proceed.
+NOTE: DATA cannot be migrated. You should add your own data to db and proceed.
 
-7] Run python qxf2_scheduler/setup_db.py for initalizing the candidatestatus table with default values
+6] Run python qxf2_scheduler/setup_db.py for initalizing the candidatestatus table with default values
 
 
 

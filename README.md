@@ -15,12 +15,12 @@ c. Reduce (almost eliminate) exchange of emails between candidate and interviewe
 
 ### 2. SETUP
 
-__a) Python__
+__a. Python__
 
 This project uses Python 3.7.4 or higher.
 
 
-__b)Setup your virtualenv__
+__b. Setup your virtualenv__
 
 1. Install virtualenv
 
@@ -50,14 +50,14 @@ __b)Setup your virtualenv__
 6. From next time onwards you can don't need to repeat steps 1 to 4.You can directly goto step 4 and work on your project and to stop you can do step 5
 
 
-__c) Install the required Python modules:__
+__c. Install the required Python modules:__
 
 With your virtualenv activated, run the following command:
 
             pip install -r requirements.txt
 
 
-__d) Google calendar setup__
+__d. Google calendar setup__
 
 If you are not from Qxf2, please create a token.pickle file using this link: [Google Calendar API: Python quickstart](https://developers.google.com/calendar/quickstart/python)
 
@@ -67,7 +67,7 @@ Place the token.pickle file in the root directory of this project (same director
 If you are from Qxf2, please ask a colleague for the token.pickle file
 
 
-__e) Verify Google calendar setup__
+__e. Verify Google calendar setup__
 
 To verify your Google calendar setup, try the following command
 
@@ -76,7 +76,7 @@ To verify your Google calendar setup, try the following command
 If all went well, you should see 10 upcoming events for the email id you provided.
 
 
-__f) Adding Email Configuration__
+__f. Adding Email Configuration__
 
 For this application user need to add email_config.py, under qxf2_scheduler folder with details as below:
 
@@ -84,27 +84,27 @@ MAIL_USERNAME = "name@email.com"
 MAIL_PASSWORD = "password"
 
 
-__g) Initial db setup__
+__g. Initial db setup__
 
-1] Open the interview-scheduler folder and create another folder named "data"(This folder is Database folder)
+1. Open the interview-scheduler folder and create another folder named "data"(This folder is Database folder)
 
-2]The above created "data" folder will be empty initially. For the first time While creating the db run the following command
+2. The above created "data" folder will be empty initially. For the first time While creating the db run the following command
 
       python migrate_db.py db init
 
-3]Now We have to migrate the required data to this "data" folder. Migrating Database can be done by using the following command
+3. Now We have to migrate the required data to this "data" folder. Migrating Database can be done by using the following command
 
       python migrate_db.py db  migrate
 
 Once you follow the above step you will see that Database has been created. The created database will be with '.db'extension, i.e (<Filename>.db)
 
-4]So now we should add the required tables by using the following command
+4. So now we should add the required tables by using the following command
 
       python migrate_db.py db upgrade
 
 Whenever we change the structure of table we should again "migrate" and "Upgrade" the db.
 
-5] To check if the tables have been added:
+5. To check if the tables have been added:
 
 open your terminal go to the interview scheduler directory and  Move in to the data folder and follow the commands.
 
@@ -118,11 +118,11 @@ open your terminal go to the interview scheduler directory and  Move in to the d
 
 NOTE: DATA cannot be migrated. You should add your own data to db and proceed.
 
-6] Run python qxf2_scheduler/setup_db.py for initalizing the candidatestatus table with default values
+6. Run python qxf2_scheduler/setup_db.py for initalizing the candidatestatus table with default values
 
 
 
-__h) Start the application__
+__h. Start the application__
 
 To start the application, run
 

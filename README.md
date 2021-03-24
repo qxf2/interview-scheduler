@@ -96,17 +96,17 @@ __g. Initial db setup__
 
       python migrate_db.py db  migrate
 
-Once you follow the above step you will see that Database has been created. The created database will be with '.db'extension, i.e (<Filename>.db)
+   Once you follow the above step you will see that Database has been created. The created database will be with '.db'extension, i.e (<Filename>.db)
 
 4. So now we should add the required tables by using the following command
 
       python migrate_db.py db upgrade
 
-Whenever we change the structure of table we should again "migrate" and "Upgrade" the db.
+    Whenever we change the structure of table we should again "migrate" and "Upgrade" the db.
 
 5. To check if the tables have been added:
 
-open your terminal go to the interview scheduler directory and  Move in to the data folder and follow the commands.
+   open your terminal go to the interview scheduler directory and  Move in to the data folder and follow the commands.
 
       ** sqlite3 should be installed in your PC
 
@@ -116,7 +116,7 @@ open your terminal go to the interview scheduler directory and  Move in to the d
 
       To check the structure of table: .schema
 
-NOTE: DATA cannot be migrated. You should add your own data to db and proceed.
+    NOTE: DATA cannot be migrated. You should add your own data to db and proceed.
 
 6. Run python qxf2_scheduler/setup_db.py for initalizing the candidatestatus table with default values
 

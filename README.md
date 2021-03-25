@@ -90,17 +90,17 @@ __g. Initial db setup__
 
 2. The above created "data" folder will be empty initially. For the first time While creating the db run the following command
 
-      python migrate_db.py db init
+        python migrate_db.py db init
 
 3. Now We have to migrate the required data to this "data" folder. Migrating Database can be done by using the following command
 
-      python migrate_db.py db  migrate
+        python migrate_db.py db  migrate
 
    Once you follow the above step you will see that Database has been created. The created database will be with '.db'extension, i.e (<Filename>.db)
 
 4. So now we should add the required tables by using the following command
 
-      python migrate_db.py db upgrade
+        python migrate_db.py db upgrade
 
     Whenever we change the structure of table we should again "migrate" and "Upgrade" the db.
 
@@ -129,5 +129,3 @@ To start the application, run
       python run.py
 
 The command should be run from the root directory (same as the directory of this readme). If all goes well, when you visit http://localhost:6464 on your browser, you should see the homepage of the application.
-
-

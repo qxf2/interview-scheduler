@@ -106,16 +106,13 @@ __g. Initial db setup__
 
 5. To check if the tables have been added:
 
-   open your terminal go to the interview scheduler directory and  Move in to the data folder and follow the commands.
+   *prerequistie*: SQlite3 should be installed in your PC
 
-      ** sqlite3 should be installed in your PC
+   Open your Bash terminal go to the interview scheduler directory and  move in to the data folder and open the SQlite DB file.
 
-      .open <filename with extension>
+            .open <filename with extension>
 
-      To check the table names: .table
-
-      To check the structure of table: .schema
-
+    You can use SQlite queries to view tables, schema and insert and delete data into tables.
     NOTE: DATA cannot be migrated. You should add your own data to db and proceed.
 
 6. Run python qxf2_scheduler/setup_db.py for initalizing the candidatestatus table with default values

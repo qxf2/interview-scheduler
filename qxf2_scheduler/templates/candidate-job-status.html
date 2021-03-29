@@ -229,6 +229,15 @@
                             <label class="labelbold col-md-2" for="Candidate Status">Candidate Status:</label>
                             <label class="col-md-10" for="inviteSent">Waiting for new opening</label>
                         </div>
+                        <div class="col-md-12 form-display">
+                            <label class="labelbold col-md-2" for="Reopen job">Do you want to repoen it:</label>
+                            <input class="btn btn-info" type="button" id="sendEmail" data-generated-url="{{result.url}}"
+                                data-candidate-name="{{result.candidate_name}}"
+                                data-candidate-email="{{result.candidate_email}}"
+                                data-candidate-id="{{result.candidate_id}}" data-job-id="{{result.job_id}}"
+                                value="Thumbs up">
+
+                        </div>
                         {% elif result.candidate_status == 'Reject' %}
                         <div class="col-md-12 form-display">
                             <label class="col-md-2 labelbold" for="Action">Action:</label>

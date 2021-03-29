@@ -254,8 +254,13 @@
                         <div class="container col-md-12">
                             {% if (result.candidate_status == 'Waiting on Qxf2') and (result.interviewer_email_id ==
                             None) %}
-                            <input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
+                            <input type="button" data-target="#nopeningmodal"
+                                data-candidatename="{{ result.candidate_name }}"
+                                data-candidateid="{{ result.candidate_id }}" data-jobid="{{ result.job_id }}"
+                                data-candidateemail="{{result.candidate_email}}" data-toggle="modal"
                                 value="No opening">
+                            <!----<input class="btn btn-info" type="button" id="hideButton" onclick="noOpening()"
+                                value="No opening">----->
 
                             {% elif result.candidate_status == 'No response' or result.candidate_status == 'Reject' %}
 
@@ -293,6 +298,21 @@
                         <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
                         <button class="btn btn-danger" id="remove-button" data-dismiss="modal" data-backdrop="false"
                             type="submit">Reject</button>
+                    </div>
+                </div><!-- end modal-content -->
+            </div><!-- end modal-dialog -->
+        </div>
+        <div class="modal modal-megamenu" id="nopeningmodal">
+            <div class="modal-dialog modal-megamenu">
+                <div class="modal-content modal-megamenu">
+                    <div class="modal-header modal-megamenu">
+                        <h4 class="modal-title">Are you sure you want to send the no opening email to the candidate?</h4>
+                    </div>
+
+                    <div class="modal-footer modal-megamenu">
+                        <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                        <button class="btn btn-danger" id="no-opening" data-dismiss="modal" data-backdrop="false"
+                            type="submit">No opening</button>
                     </div>
                 </div><!-- end modal-content -->
             </div><!-- end modal-dialog -->
@@ -467,7 +487,8 @@
         });
     </script>
     <script>
-        function noOpening() {
+        $(document).ready(function () {
+            $("#no-opening").on('click', function (e) {
             var candidateName = document.getElementById("candidateName").value;
             var candidateEmail = document.getElementById("candidateEmail").value;
             var candidateId = document.getElementById("candidateId").value;
@@ -496,7 +517,8 @@
                 }
             })
             $("#hideButton").attr("disabled", true);
-        }
+        })
+    })
     </script>
     <script>
         $(document).ready(function () {

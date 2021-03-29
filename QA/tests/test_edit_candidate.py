@@ -34,6 +34,7 @@ def test_edit_candidate(test_obj):
         #Turn on the highlighting feature
         test_obj.turn_on_highlight
 
+
         #2. Get the test details from conf file
         username= conf.user_name
         password= conf.password

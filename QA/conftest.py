@@ -26,25 +26,9 @@ def app_fixture():
     with app.app_context():
         yield
 
-@pytest.fixture(scope="session")
-def rp_logger(request):
-    import logging
-    from pytest_reportportal import RPLogger, RPLogHandler
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    # Setting up a logging.
-    logging.setLoggerClass(RPLogger)
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    # Create handler for Report Portal.
-    rp_handler = RPLogHandler(request.node.config.py_test_service)
-    # Set INFO level for Report Portal handler.
-    rp_handler.setLevel(logging.INFO)
-    return logger
-
 
 @pytest.fixture
-def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,remote_flag,testrail_flag,tesults_flag,test_run_id,remote_project_name,remote_build_name,testname):
+def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,remote_flag,testrail_flag,tesults_flag,test_run_id,remote_project_name,remote_build_name,testname,reportportal_service):
     "Return an instance of Base Page that knows about the third party integrations"
     db_file = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/interviewscheduler.db')))
     migrations_directory = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'migrations/')))
@@ -65,6 +49,12 @@ def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,rem
     test_obj.set_calling_module(testname)
     #Setup and register a driver
     test_obj.register_driver(setup_db,remote_flag,os_name,os_version,browser,browser_version,remote_project_name,remote_build_name)
+
+    #Check are we using the reportportal service or not
+    print(reportportal_service,"hi")
+    if reportportal_service:
+        print("I am inside test object")
+        test_obj.set_rp_logger(reportportal_service)
 
     #Setup TestRail reporting
     if testrail_flag.lower()=='y':
@@ -282,6 +272,20 @@ def app_path(request):
     return request.config.getoption("-N")
 
 
+@pytest.fixture
+def reportportal_service(request):
+    "pytest service fixture for reportportal"
+    reportportal_pytest_service = None
+    try:
+       if request.config.getoption("--reportportal"):
+           reportportal_pytest_service = request.node.config.py_test_service
+    except Exception as e:
+        print("Exception when trying to run test: %s"%__file__)
+        print("Python says:%s"%str(e))
+
+    return reportportal_pytest_service
+
+
 @pytest.hookimpl()
 def pytest_configure(config):
     "Sets the launch name based on the marker selected."
@@ -289,7 +293,7 @@ def pytest_configure(config):
     if_reportportal =config.getoption('--reportportal')
 
     try:
-        config._inicache["rp_uuid"]="3d28cf28-4ddd-4677-8c12-b501eead235f"
+        config._inicache["rp_uuid"]="019988d9-44ff-421b-8a3e-d338a97819bd"
         config._inicache["rp_endpoint"]="https://demo.reportportal.io"
         config._inicache["rp_project"]="annapooraniqxf2_personal"
         config._inicache["rp_launch"]="annapooraniqxf2_TEST_EXAMPLE"

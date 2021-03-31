@@ -93,14 +93,14 @@
                             <label class="col-md-10">
                                 <span class="more">
                                     <img src="/static/img/thumbs-up.png" width="50" height="30"></img>
-                                    {{ each_round_name['candidate_feedback']['candidate_feedback'] }}
+                                    {{each_round_name['candidate_feedback']['candidate_feedback']|markdown}}
                                 </span>
                             </label>
                             {% else %}
                             <label class="col-md-10">
                                 <span class="more">
                                     <img src="/static/img/thumbs-down.png" width="50" height="30"></img>
-                                    {{ each_round_name['candidate_feedback']['candidate_feedback'] }}
+                                    {{each_round_name['candidate_feedback']['candidate_feedback']|markdown}}
                                 </span>
                             </label>
                             {% endif %}

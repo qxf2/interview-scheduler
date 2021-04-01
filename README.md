@@ -39,15 +39,15 @@ __b. Setup your virtualenv__
 
 4. Now it's time to activate your virtualenv. To do that type the below command in the terminal
 
-            (Unix) source name of your virtualenv/bin/activate
+            (Unix) source (name of your virtualenv/bin/activate)
 
-            (Windows)source name of your virtualenv/scripts/activate
+            (Windows)source (name of your virtualenv/scripts/activate)
 
 5. You can see your virtualenv name in the terminal. Once you have finished your work you can do the deactivation by typing the below command in the terminal
 
             deactivate
 
-6. From next time onwards you can don't need to repeat steps 1 to 4.You can directly goto step 4 and work on your project and to stop you can do step 5
+6. From next time onwards you don't need to repeat steps 1 to 4.You can directly goto step 4 and work on your project and to stop you can do step 5
 
 
 __c. Install the required Python modules:__
@@ -88,7 +88,7 @@ __g. Initial db setup__
 
 1. Open the interview-scheduler folder and create another folder named "data"(This folder is Database folder)
 
-2. The above created "data" folder will be empty initially. For the first time While creating the db run the following command
+2. The above created "data" folder will be empty initially. For the first time while creating the db run the following command
 
         python migrate_db.py db init
 
@@ -102,7 +102,7 @@ __g. Initial db setup__
 
         python migrate_db.py db upgrade
 
-    Whenever we change the structure of table we should again "migrate" and "Upgrade" the db.
+    Whenever we change the structure of table we should again "Migrate" and "Upgrade" the db.
 
 5. To check if the tables have been added:
 

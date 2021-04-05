@@ -39,9 +39,9 @@ __b. Setup your virtualenv__
 
 4. Now it's time to activate your virtualenv. To do that type the below command in the terminal
 
-            (Unix) source (name of your virtualenv/bin/activate)
+            (Unix) source (name of your virtualenv)/bin/activate
 
-            (Windows)source (name of your virtualenv/scripts/activate)
+            (Windows)source (name of your virtualenv)/scripts/activate
 
 5. You can see your virtualenv name in the terminal. Once you have finished your work you can do the deactivation by typing the below command in the terminal
 

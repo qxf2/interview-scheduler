@@ -73,11 +73,16 @@
                                 {% else %}
                                 <label class="col-md-10" for="eachRound">
                                     {{ each_round_name['round_status']}}&nbsp;&nbsp;
+
+
+                                    {% if each_round_name['candidate_feedback']['candidate_feedback'] == None %}
                                     <a
                                         href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/add_feedback">Add
-                                        feedback</a>&nbsp;&nbsp;<a
-                                        href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/edit_feedback">Edit
+                                        feedback</a>&nbsp;&nbsp;
+                                    {% else %}
+                                        <a href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/edit_feedback">Edit
                                         feedback</a> </label>
+                                {% endif %}
                                 {% endif %}
 
                         </div>
@@ -693,7 +698,7 @@
 
                     var c = content.substr(0, showChar);
                     var h = content.substr(showChar, content.length - showChar);
-                    var textFeed = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent">' + h + '</span><span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+                    var textFeed = c + '<span class="moreellipses"></span><span class="morecontent">' + h + '</span><span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
                     $(this).html(textFeed);
                 }
 

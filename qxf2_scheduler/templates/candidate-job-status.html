@@ -73,11 +73,17 @@
                                 {% else %}
                                 <label class="col-md-10" for="eachRound">
                                     {{ each_round_name['round_status']}}&nbsp;&nbsp;
+
+
+                                    {% if each_round_name['candidate_feedback']['candidate_feedback'] == None %}
                                     <a
                                         href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/add_feedback">Add
-                                        feedback</a>&nbsp;&nbsp;<a
-                                        href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/edit_feedback">Edit
+                                        feedback</a>&nbsp;&nbsp;
+                                    {% else %}
+                                    {{"hi"}}
+                                        <a href="/candidate/{{result.candidate_id}}/round/{{each_round_name.round_id}}/edit_feedback">Edit
                                         feedback</a> </label>
+                                {% endif %}
                                 {% endif %}
 
                         </div>

@@ -12,6 +12,7 @@ from qxf2_scheduler.__init__ import app
 from flask_migrate import Migrate,MigrateCommand
 from flask_script import Manager
 from qxf2_scheduler import db
+from conf import report_portal_conf
 import subprocess, shutil
 
 migrate=Migrate(app, db,render_as_batch=True)
@@ -33,11 +34,9 @@ def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,rem
     db_file = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/interviewscheduler.db')))
     migrations_directory = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'migrations/')))
 
-    #print(migrations_directory,"hello")
     if db_file.exists():
         os.remove(db_file)
         shutil.rmtree('migrations')
-        print("file exists delete it")
     else:
         print("no file")
     flask_migrate.init()
@@ -51,9 +50,7 @@ def test_obj(app_fixture,base_url,browser,browser_version,os_version,os_name,rem
     test_obj.register_driver(setup_db,remote_flag,os_name,os_version,browser,browser_version,remote_project_name,remote_build_name)
 
     #Check are we using the reportportal service or not
-    print(reportportal_service,"hi")
     if reportportal_service:
-        print("I am inside test object")
         test_obj.set_rp_logger(reportportal_service)
 
     #Setup TestRail reporting
@@ -105,7 +102,6 @@ def test_mobile_obj(mobile_os_name, mobile_os_version, device_name, app_package,
 def setup_db(request):
     "pytest fixtur for setup db"
     db_file = Path(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/interviewscheduler.db')))
-    print(db_file,"hello")
 
 @pytest.fixture
 def testname(request):
@@ -293,10 +289,10 @@ def pytest_configure(config):
     if_reportportal =config.getoption('--reportportal')
 
     try:
-        config._inicache["rp_uuid"]="019988d9-44ff-421b-8a3e-d338a97819bd"
-        config._inicache["rp_endpoint"]="https://demo.reportportal.io"
-        config._inicache["rp_project"]="annapooraniqxf2_personal"
-        config._inicache["rp_launch"]="annapooraniqxf2_TEST_EXAMPLE"
+        config._inicache["rp_uuid"] = report_portal_conf.report_portal_uuid
+        config._inicache["rp_endpoint"]= report_portal_conf.report_portal_endpoint
+        config._inicache["rp_project"]=report_portal_conf.report_portal_project
+        config._inicache["rp_launch"]=report_portal_conf.report_portal_launch
 
     except Exception as e:
         print (str(e))

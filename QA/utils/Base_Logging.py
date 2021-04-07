@@ -17,8 +17,8 @@ class Base_Logging():
         self.log_file_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','log'))
         self.level=level
         self.format=format
-        self.rp_logger = None
         self.log = self.set_log(self.log_file_name,self.level,self.format)
+        self.rp_logger = None
 
 
     def set_log(self,log_file_name,level,format,test_module_name=None):
@@ -57,7 +57,6 @@ class Base_Logging():
         "Setup reportportal logging"
         try:
             # Setting up a logging.
-            self.write(" i came here to do the setup")
             logging.setLoggerClass(RPLogger)
             rp_logger = logging.getLogger(__name__)
             rp_logger.setLevel(logging.INFO)
@@ -65,7 +64,6 @@ class Base_Logging():
             rp_handler = RPLogHandler(rp_pytest_service)
             # Set INFO level for Report Portal handler.
             rp_handler.setLevel(logging.INFO)
-            self.write("I did it")
             return rp_logger
         except Exception as e:
             self.write("Exception when trying to set rplogger")
@@ -84,17 +82,17 @@ class Base_Logging():
         d = {'caller_func': fname}
         if self.rp_logger:
             if level.lower()== 'debug':
-                rp_logger.debug(msg=msg)
+                self.rp_logger.debug(msg=msg)
             elif level.lower()== 'info':
-                rp_logger.info(msg)
+                self.rp_logger.info(msg)
             elif level.lower()== 'warn' or level.lower()=='warning':
-                rp_logger.warning(msg)
+                self.rp_logger.warning(msg)
             elif level.lower()== 'error':
-                rp_logger.error(msg)
+                self.rp_logger.error(msg)
             elif level.lower()== 'critical':
-                rp_logger.critical(msg)
+                self.rp_logger.critical(msg)
             else:
-                rp_logger.critical(msg)
+                self.rp_logger.critical(msg)
             return
 
         if level.lower()== 'debug':

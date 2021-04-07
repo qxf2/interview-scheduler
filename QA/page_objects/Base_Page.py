@@ -220,11 +220,10 @@ class Base_Page(Borg,unittest.TestCase):
         self.log_name = self.testname + '.log'
         self.log_obj = Base_Logging(log_file_name=self.log_name,level=logging.DEBUG)
 
+
     def set_rp_logger(self,rp_pytest_service):
         "Set the reportportal logger"
-        self.write("i set up the rp_logger")
         self.rp_logger = self.log_obj.setup_rp_logging(rp_pytest_service)
-        self.write(self.rp_logger)
 
 
     def append_latest_image(self,screenshot_name):
@@ -243,7 +242,6 @@ class Base_Page(Borg,unittest.TestCase):
                 image = fh.read()
 
             screenshot_name = os.path.basename(image_name)
-            self.write(screenshot_name)
             self.rp_logger.info(
                 screenshot_name,
                 attachment={
@@ -252,7 +250,6 @@ class Base_Page(Borg,unittest.TestCase):
                     "mime": "image/png"
                 },
             )
-            self.write("i attached the image")
         except Exception as e:
             self.write("Exception when trying to get rplogger")
             self.write(str(e))

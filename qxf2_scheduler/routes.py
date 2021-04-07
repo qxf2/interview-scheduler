@@ -340,34 +340,39 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         data = {'username':username}
+        exists = db.session.query(Login).filter_by(username=username).first()
         #fetch the email id of the user whose logged in
-        user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on,Login.password)
-        for logged_user in user_email_id:
-            logged_email_id = logged_user.email
-            logged_email_confirmation = logged_user.email_confirmed
-            logged_email_sent_on = logged_user.email_confirmation_sent_on
-            hashed = logged_user.password
-        session['logged_user'] = logged_email_id
-        if logged_email_confirmation or not logged_email_sent_on:
-            completion = validate(username)
-            app.logger.critical(completion,exc_info=True)
-            if completion ==False:
-                error = 'error.'
-            else:
+        if exists != None:
+            user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on,Login.password)
+            for logged_user in user_email_id:
+                logged_email_id = logged_user.email
+                logged_email_confirmation = logged_user.email_confirmed
+                logged_email_sent_on = logged_user.email_confirmation_sent_on
+                hashed = logged_user.password
+            session['logged_user'] = logged_email_id
+
+            if logged_email_confirmation or not logged_email_sent_on:
+                completion = validate(username)
+                app.logger.critical(completion,exc_info=True)
                 password_check = check_encrypted_password(password,hashed)
-                if password_check ==False:
-                    error = 'error.'
-                else:
+                if (completion and password_check):
                     user = Login()
                     user.name=username
                     user.password=password
                     login_user(user)
                     error = 'Success'
                     app.logger.critical(error,exc_info=True)
-            api_response = {'data':data,'error':error}
+                    api_response = {'data':data,'error':error}
+                else:
+                    error = 'error'
+                    api_response = {'data':data,'error':error}
+            else:
+                error = 'confirmation error'
+                api_response = {'data':username, 'error':error}
         else:
-            error = 'confirmation error'
-            api_response = {'data':username, 'error':error}
+            error = 'error'
+            api_response = {'data':data,'error':error}
+
 
         return jsonify(api_response)
 

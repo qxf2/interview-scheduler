@@ -323,7 +323,13 @@
                     <div class="modal-header modal-megamenu">
                         <h4 class="modal-title">Are you sure you want to send the no opening email to the candidate?</h4>
                     </div>
-
+                    <div class="modal-body modal-megamenu">
+                        <div class="form-display">
+                            <input type="checkbox" name="noopeningCheckbox" id="noopeningcheckbox">
+                            &nbsp
+                            <label>Check the box if you want to send a no opening email.</label>
+                        </div>
+                    </div>
                     <div class="modal-footer modal-megamenu">
                         <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
                         <button class="btn btn-danger" id="no-opening" data-dismiss="modal" data-backdrop="false"
@@ -508,6 +514,7 @@
             var candidateEmail = document.getElementById("candidateEmail").value;
             var candidateId = document.getElementById("candidateId").value;
             var jobId = document.getElementById("jobId").value;
+            if($('#noopeningcheckbox').prop('checked')){
             $.ajax({
                 type: 'POST',
                 url: "/noopening/email",
@@ -531,6 +538,34 @@
 
                 }
             })
+        }
+        else {
+            $.ajax({
+                        type: 'POST',
+                        url: '/noopening/noemail',
+                        data: {
+
+                            'candidatename': candidateName,
+                            'candidateid': candidateId,
+                            'candidateemail': candidateEmail,
+                            'candidatejob': jobId
+                        },
+                        success: function (result) {
+                            if (result.error == "Success") {
+                                alert("The candidate status has been changed to No opening");
+                                document.location.href = "/candidates";
+
+                            }
+                            else {
+                                alert("The candidate status cannot be changed");
+                                document.location.href = "/candidates";
+                            }
+
+                        }
+
+                    })
+
+        }
             $("#hideButton").attr("disabled", true);
         })
     })

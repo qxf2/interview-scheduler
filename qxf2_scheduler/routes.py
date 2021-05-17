@@ -564,19 +564,30 @@ def delete_interviewer(interviewer_id):
     return jsonify(data)
 
 
+def fetch_all_interviewers():
+    "Fetch all the interviewers for adding rounds"
+    my_interviewers_list = []
+    display_interviewers = Interviewers.query.all()
+    for each_interviewer in display_interviewers:
+        my_interviewers_list.append({'interviewer_id':each_interviewer.interviewer_id,'interviewer_list':each_interviewer.interviewer_name})
+
+    return my_interviewers_list
+
+
 @app.route("/jobs")
 @login_required
 def jobs_page():
     "Displays the jobs page for the interview"
     display_jobs = Jobs.query.all()
     my_job_list = []
+    interviewers_list = fetch_all_interviewers()
     for each_job in display_jobs:
         if each_job.job_status == None:
             job_status = check_job_status(each_job.job_id)
         my_job_list.append(
             {'job_id': each_job.job_id, 'job_role': each_job.job_role, 'job_status':each_job.job_status})
 
-    return render_template("list-jobs.html", result=my_job_list)
+    return render_template("list-jobs.html", result=my_job_list,interviewers=interviewers_list)
 
 
 def fetch_candidate_list(candidate_list_object,job_id):

@@ -16,6 +16,8 @@
     <title>Add Rounds</title>
 
     <link href="/static/css/qxf2_scheduler.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
     <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
         id="bootstrap-css">
@@ -24,6 +26,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
     <style>
         .bs-example {
             margin: 20px;
@@ -38,6 +42,7 @@
 <body>
     <div>
         {% include "logout.html" %}
+        {{interviewers}}
         <h2 class="grey_text text-justify">Add Rounds</h2>
         <form class="needs-validation">
             <label class="col-md-4 control-label" for="rname"><span style="color:red">*</span>Round name</label>
@@ -87,6 +92,16 @@
                 <div class="invalid-feedback">Please fill out this field</div>
 
             </div>
+            <label class="col-md-4 control-label" for="addinterviewers"><span style="color:red">*</span>Add interviewers</label>
+            <div class="col-md-4">
+                <select id="multiSelect" class="js-select2" multiple="multiple">
+                    {% for each_interviewer in interviewers %}
+                    <option value="{{each_interviewer.interviewer_id}}">
+                        {{each_interviewer.interviewer_name}}</option>
+                    {% endfor %}
+                </select>
+
+            </div>
             <input type="hidden" id="jobId" value="{{job_id}}">
             <div class="col-md-8">
                 <button class="btn btn-info" id="addRound" type="submit">Add</button>
@@ -118,6 +133,9 @@
                             var roundTime = dropdownValue.options[dropdownValue.selectedIndex].value;
                             var jobId = document.getElementById("jobId").value;
                             $("#addRound").attr("disabled", true);
+
+                            var addedInterviewers = $("#multiSelect").val();
+                            console.log(addedInterviewers);
                             $.ajax({
                                 type: 'POST',
                                 url: '/jobs/' + jobId + '/round/add',
@@ -126,6 +144,7 @@
                                     'roundTime': roundTime,
                                     'roundDescription': roundDescription,
                                     'roundRequirements': roundRequirements,
+                                    'addedInterviewers': addedInterviewers,
                                 },
                                 success: function (result) {
                                     alert("The round has been added");
@@ -142,6 +161,34 @@
             }, false);
         })();
     </script>
+     <script>
+        $(".js-select2").select2({
+           closeOnSelect : false,
+           placeholder : "Add interviewers",
+           allowHtml: true,
+           allowClear: true,
+           tags: true
+       });
+
+           $('.icons_select2').select2({
+               width: "100%",
+               templateSelection: iformat,
+               templateResult: iformat,
+               allowHtml: true,
+               placeholder: "Add Interviewers",
+               dropdownParent: $( '.select-icon' ),
+               allowClear: true,
+               multiple: false
+           });
+
+
+               function iformat(icon, badge,) {
+                   var originalOption = icon.element;
+                   var originalOptionBadge = $(originalOption).data('badge');
+
+                   return $('<span><i class="fa ' + $(originalOption).data('icon') + '"></i> ' + icon.text + '<span class="badge">' + originalOptionBadge + '</span></span>');
+               }
+     </script>
 
 </body>
 

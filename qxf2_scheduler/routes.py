@@ -22,7 +22,7 @@ from flask import flash
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount,Roundinterviewers
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
 
@@ -178,20 +178,18 @@ def date_picker():
             #Fetch the interviewers email id which have an interview for the picked date
             scheduled_interviewers_id = check_interview_exists(date)
             #Fetch the interviewers for the candidate job
-            job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
+            job_interviewer_id = Roundinterviewers.query.filter(Roundinterviewers.round_id == round_id, Roundinterviewers.job_id == job_id).values(Roundinterviewers.interviewers_id)
             interviewer_id = []
             for each_interviewer_id in job_interviewer_id:
-                if each_interviewer_id.interviewer_id in scheduled_interviewers_id:
+                if each_interviewer_id.interviewers_id in scheduled_interviewers_id:
                     pass
                 else:
-                    interviewer_id.append(each_interviewer_id.interviewer_id)
-
+                    interviewer_id.append(each_interviewer_id.interviewers_id)
             if len(alloted_interviewers_id_list) == 0:
                 pass
             else:
                 #Compare the alloted and fetched interviewers id
                 interviewer_id = list(set(interviewer_id)-set(alloted_interviewers_id_list))
-
             #Fetch the interviewer emails for the candidate job
             interviewer_work_time_slots = []
             for each_id in interviewer_id:

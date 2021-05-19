@@ -71,6 +71,7 @@ class Rounds(db.Model):
     round_description = db.Column(db.String,nullable=False)
     round_requirement = db.Column(db.String,nullable=False)
 
+
     def __repr__(self):
         return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}','{self.round_name}','{self.added_interviewers}')"
 
@@ -78,8 +79,9 @@ class Rounds(db.Model):
 class Roundinterviewers(db.Model):
     "Adding interviewers for rounds"
     combo_id = db.Column(db.Integer,primary_key=True)
-    round_id = db.Column(db.Integer,ForeignKey(Candidates.candidate_id))
+    round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
     interviewers_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
+    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
 
     def __repr__(self):
         return f"Roundinterviewers('{self.round_id}','{self.interviewers_id}')"

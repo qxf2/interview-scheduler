@@ -57,7 +57,7 @@ def add_rounds_details(job_id):
         db.session.commit()
         #Adding the round id and interviewers id to the roundinterviewers table
         for each_added_interviewers in added_interviewers:
-            add_round_interviewers_object = Roundinterviewers(round_id=round_id,interviewers_id=each_added_interviewers)
+            add_round_interviewers_object = Roundinterviewers(round_id=round_id,interviewers_id=each_added_interviewers,job_id=job_id)
             db.session.add(add_round_interviewers_object)
             db.session.commit()
         #Adding the round and job id to the jobround table

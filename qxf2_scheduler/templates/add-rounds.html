@@ -42,7 +42,6 @@
 <body>
     <div>
         {% include "logout.html" %}
-        {{interviewers}}
         <h2 class="grey_text text-justify">Add Rounds</h2>
         <form class="needs-validation">
             <label class="col-md-4 control-label" for="rname"><span style="color:red">*</span>Round name</label>
@@ -135,7 +134,6 @@
                             $("#addRound").attr("disabled", true);
 
                             var addedInterviewers = $("#multiSelect").val();
-                            console.log(addedInterviewers);
                             $.ajax({
                                 type: 'POST',
                                 url: '/jobs/' + jobId + '/round/add',
@@ -185,7 +183,7 @@
                function iformat(icon, badge,) {
                    var originalOption = icon.element;
                    var originalOptionBadge = $(originalOption).data('badge');
-
+                   console.log(originalOption)
                    return $('<span><i class="fa ' + $(originalOption).data('icon') + '"></i> ' + icon.text + '<span class="badge">' + originalOptionBadge + '</span></span>');
                }
      </script>

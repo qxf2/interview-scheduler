@@ -54,6 +54,7 @@
                     <th>Round duration</th>
                     <th>Round Description</th>
                     <th>Round requirements</th>
+                    <th>Round interviewers</th>
                     <th>Actions</th>
                 </thead>
                 {% for each_item in result %}
@@ -62,6 +63,7 @@
                     <td>{{each_item.round_time}}</td>
                     <td>{{each_item.round_description}}</td>
                     <td>{{each_item.round_requirement}}</td>
+                    <td>{% for each_interviewers in each_item.round_interviewers %}{{each_interviewers}}<br>{% endfor %}</td>
                     <td>
                         <input class="btn btn-info" id="editround{{each_item.round_id}}" onclick="editRound(this)"
                             type="button" value="Edit" data-round-id="{{each_item.round_id}}"

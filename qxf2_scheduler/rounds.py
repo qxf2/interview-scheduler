@@ -5,7 +5,29 @@ from qxf2_scheduler import db
 import json,ast,sys,os,datetime
 from flask_login import login_required
 
-from qxf2_scheduler.models import Jobs, Roundinterviewers, Rounds, Jobround, Interviewers
+from qxf2_scheduler.models import Jobs, Roundinterviewers, Rounds, Jobround, Interviewers, Roundinterviewers
+
+
+def fetch_interviewers_for_rounds(round_id,job_id):
+    "Fetch interviewers id for the rounds"
+    # Fetch the interviewers id for the round
+    interviewers_lst_for_rounds = []
+    db_interviewer_list_for_rounds = Roundinterviewers.query.filter(Roundinterviewers.job_id == job_id, Roundinterviewers.round_id == round_id).values(Roundinterviewers.interviewers_id)
+    for each_interviewer in db_interviewer_list_for_rounds:
+        interviewers_lst_for_rounds.append(each_interviewer.interviewers_id)
+
+    return interviewers_lst_for_rounds
+
+
+def fetch_interviewers_names_for_rounds(round_interviewers_id):
+    "Fetch interviewers names from id list"
+    #Fetch the interviewers name from the interviewers id
+    interviewers_name_list = []
+    for each_interviewer_id in round_interviewers_id:
+        interviewer_name = Interviewers.query.filter(Interviewers.interviewer_id == each_interviewer_id).value(Interviewers.interviewer_name)
+        interviewers_name_list.append(interviewer_name)
+
+    return interviewers_name_list
 
 
 @app.route("/job/<job_id>/rounds",methods=["GET","POST"])
@@ -16,17 +38,20 @@ def read_round_details(job_id):
         rounds_list = []
         db_round_list = db.session.query(Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
         Rounds.round_id,Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
+
         for each_round in db_round_list:
+            round_interviewers_id_list =  fetch_interviewers_for_rounds(each_round.round_id,job_id)
+            round_interviewers_names_list =  fetch_interviewers_names_for_rounds(round_interviewers_id_list)
             rounds_list.append(
             {
             'round_id':each_round.round_id,
             'round_name':each_round.round_name,
             'round_time' : each_round.round_time,
             'round_description' : each_round.round_description,
-            'round_requirement' : each_round.round_requirement}
-        )
+            'round_requirement' : each_round.round_requirement,
+            'round_interviewers':round_interviewers_names_list})
 
-        return render_template("rounds.html",result=rounds_list,job_id=job_id)
+    return render_template("rounds.html",result=rounds_list,job_id=job_id)
 
 
 def fetch_all_interviewers():
@@ -89,28 +114,6 @@ def delete_round_details(round_id,job_id):
     db.session.commit()
 
     return jsonify(data="Deleted")
-
-
-def fetch_interviewers_for_rounds(round_id,job_id):
-    "Fetch interviewers id for the rounds"
-    # Fetch the interviewers id for the round
-    interviewers_lst_for_rounds = []
-    db_interviewer_list_for_rounds = Roundinterviewers.query.filter(Roundinterviewers.job_id == job_id, Roundinterviewers.round_id == round_id).values(Roundinterviewers.interviewers_id)
-    for each_interviewer in db_interviewer_list_for_rounds:
-        interviewers_lst_for_rounds.append(each_interviewer.interviewers_id)
-
-    return interviewers_lst_for_rounds
-
-
-def fetch_interviewers_names_for_rounds(round_interviewers_id):
-    "Fetch interviewers names from id list"
-    #Fetch the interviewers name from the interviewers id
-    interviewers_name_list = []
-    for each_interviewer_id in round_interviewers_id:
-        interviewer_name = Interviewers.query.filter(Interviewers.interviewer_id == each_interviewer_id).value(Interviewers.interviewer_name)
-        interviewers_name_list.append(interviewer_name)
-
-    return interviewers_name_list
 
 
 def remove_interviewers_in_common(new_interviewers_list,round_interviewers_id_list):

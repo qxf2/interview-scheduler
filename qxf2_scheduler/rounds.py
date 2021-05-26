@@ -25,7 +25,7 @@ def fetch_interviewers_names_for_rounds(round_interviewers_id):
     interviewers_name_list = []
     for each_interviewer_id in round_interviewers_id:
         interviewer_name = Interviewers.query.filter(Interviewers.interviewer_id == each_interviewer_id).value(Interviewers.interviewer_name)
-        interviewers_name_list.append(interviewer_name)
+        interviewers_name_list.append({'interviewer_name':interviewer_name,'interviewer_id':each_interviewer_id})
 
     return interviewers_name_list
 
@@ -167,6 +167,11 @@ def edit_round_details(round_id,job_id):
         round_interviewers_name_list = fetch_interviewers_names_for_rounds(round_interviewers_id_list)
         # Fetch all interviewers
         interviewers_list = fetch_all_interviewers()
+
+        #Removing selected interviewers
+        for each_interviewer in round_interviewers_name_list:
+            if each_interviewer in interviewers_list:
+                interviewers_list.remove(each_interviewer)
 
         for each_round in db_round_list:
             rounds_list.append(

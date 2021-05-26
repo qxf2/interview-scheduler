@@ -97,9 +97,14 @@
             </div>
             <label class="col-md-4 control-label" for="addinterviewers"><span style="color:red">*</span>Add interviewers</label>
             <div class="col-md-4">
-                <select id="multiSelect" class="js-select2" multiple="multiple">
+                <select id="multiSelect" class="js-select2" multiple="multiple" >
+                    {% for each_interviewer in interviewers_name_list %}
 
+                    <option value="{{each_interviewer.interviewer_id}}" selected="selected" data-badge="">
+                        {{each_interviewer.interviewer_name}}</option>
+                    {% endfor %}
                     {% for each_interviewer in interviewers_list %}
+
                     <option value="{{each_interviewer.interviewer_id}}" data-badge="">
                         {{each_interviewer.interviewer_name}}</option>
                     {% endfor %}
@@ -137,7 +142,6 @@
                             var roundId = document.getElementById("roundId").value;
                             var jobId = document.getElementById("jobId").value;
                             var editedInterviewers = $("#multiSelect").val();
-                            console.log(editedInterviewers);
                             $.ajax({
                                 type: 'POST',
                                 url: '/rounds/' + roundId + '/jobs/' + jobId + '/edit',
@@ -175,24 +179,8 @@
            text:uploadValue,
        }  });
 
-       $('.icons_select2').select2({
-           width: "100%",
-           templateSelection: iformat,
-           templateResult: iformat,
-           allowHtml: true,
-           placeholder: "Add Interviewers",
-           dropdownParent: $( '.select-icon' ),
-           allowClear: true,
-           multiple: false
-       });
+      $(".select2-search_field").val(uploadValue);
 
-
-           function iformat(icon, badge,) {
-               var originalOption = icon.element;
-               var originalOptionBadge = $(originalOption).data('badge');
-
-               return $('<span><i class="fa ' + $(originalOption).data('icon') + '"></i> ' + icon.text + '<span class="badge">' + originalOptionBadge + '</span></span>');
-           }
 
  </script>
 </body>

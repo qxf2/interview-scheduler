@@ -22,7 +22,7 @@ from flask import flash
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount,Roundinterviewers
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
 
@@ -177,8 +177,6 @@ def date_picker():
                 print("The candidate is scheduling an interview for the first time",e)
             #Fetch the interviewers email id which have an interview for the picked date
             scheduled_interviewers_id = check_interview_exists(date)
-            #Fetch the interviewers for the candidate job
-            job_interviewer_id = Roundinterviewers.query.filter(Roundinterviewers.round_id == round_id, Roundinterviewers.job_id == job_id).values(Roundinterviewers.interviewers_id)
             interviewer_id = []
             for each_interviewer_id in job_interviewer_id:
                 if each_interviewer_id.interviewers_id in scheduled_interviewers_id:

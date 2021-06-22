@@ -5,7 +5,7 @@ from qxf2_scheduler import db
 import json,ast,sys,os,datetime
 from flask_login import login_required
 
-from qxf2_scheduler.models import Jobs, Roundinterviewers, Rounds, Jobround, Interviewers
+from qxf2_scheduler.models import Jobs, Rounds, Jobround, Interviewers
 
 
 @app.route("/job/<job_id>/rounds",methods=["GET","POST"])
@@ -33,13 +33,6 @@ def read_round_details(job_id):
 @login_required
 def add_rounds_details(job_id):
     "add rounds details"
-    if request.method == "GET":
-        #Fetch all the interviewers for adding rounds
-        my_interviewers_list = []
-        display_interviewers = Interviewers.query.all()
-        for each_interviewer in display_interviewers:
-            my_interviewers_list.append({'interviewer_id':each_interviewer.interviewer_id,'interviewer_name':each_interviewer.interviewer_name})
-
     if request.method == "POST":
         data = {}
         round_time = request.form.get('roundTime')

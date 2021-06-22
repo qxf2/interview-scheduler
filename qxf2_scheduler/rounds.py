@@ -48,11 +48,6 @@ def add_rounds_details(job_id):
         db.session.flush()
         round_id = add_round_object.round_id
         db.session.commit()
-        #Adding the round id and interviewers id to the roundinterviewers table
-        for each_added_interviewers in added_interviewers:
-            add_round_interviewers_object = Roundinterviewers(round_id=round_id,interviewers_id=each_added_interviewers,job_id=job_id)
-            db.session.add(add_round_interviewers_object)
-            db.session.commit()
         #Adding the round and job id to the jobround table
         add_job_round_object = Jobround(round_id=round_id,job_id=job_id)
         db.session.add(add_job_round_object)
@@ -61,7 +56,7 @@ def add_rounds_details(job_id):
 
         return jsonify(api_response)
 
-    return render_template("add-rounds.html",job_id=job_id,interviewers=my_interviewers_list)
+    return render_template("add-rounds.html",job_id=job_id)
 
 
 @app.route("/rounds/<round_id>/jobs/<job_id>/delete")

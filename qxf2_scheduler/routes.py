@@ -177,6 +177,8 @@ def date_picker():
                 print("The candidate is scheduling an interview for the first time",e)
             #Fetch the interviewers email id which have an interview for the picked date
             scheduled_interviewers_id = check_interview_exists(date)
+            #Fetch the interviewers for the candidate job
+            job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
             interviewer_id = []
             for each_interviewer_id in job_interviewer_id:
                 if each_interviewer_id.interviewers_id in scheduled_interviewers_id:

@@ -402,20 +402,9 @@ def send_email(candidate_id, job_id):
         return jsonify(error="error"), 500
 
 
-@app.route("/noopening/email", methods=["POST"])
-@login_required
-def no_opening():
-    "Send a no opening email to the candidates"
-    candidate_name = request.form.get('candidatename')
-    candidate_email = request.form.get('candidateemail')
-    candidate_job_applied = request.form.get('candidatejob')
-    candidate_id = request.form.get('candidateid')
-    logged_email = session['logged_user']
-
+def change_status_to_noopening(candidate_id,candidate_job_applied):
+    "Change status to no opening"
     try:
-        msg = Message("Career opportunity with Qxf2 Services", sender=("Qxf2 Services", "test@qxf2.com"),  recipients=[candidate_email], cc=[logged_email])
-        msg.body = "Hi %s , \n\nThanks for applying to Qxf2 Services. We have received your application. Currently we don't have openings suitable to your background and experience. We will get back to you once we have an opening that fits you better.\n\nThanks, \nQxf2 Services"%(candidate_name)
-        mail.send(msg)
         #Update the candidate status to 'Waiting for new opening'
         candidate_statuses = Candidatestatus.query.all()
         for each_status in candidate_statuses:
@@ -430,7 +419,39 @@ def no_opening():
         error = "Failed"
         return(str(e))
 
-    data = {'candidate_name': candidate_name,  'error': error}
+    return error
+
+
+@app.route("/noopening/email", methods=["POST"])
+@login_required
+def no_opening():
+    "Send a no opening email to the candidates"
+    candidate_name = request.form.get('candidatename')
+    candidate_email = request.form.get('candidateemail')
+    candidate_job_applied = request.form.get('candidatejob')
+    candidate_id = request.form.get('candidateid')
+    logged_email = session['logged_user']
+
+    msg = Message("Career opportunity with Qxf2 Services", sender=("Qxf2 Services", "test@qxf2.com"),  recipients=[candidate_email], cc=[logged_email])
+    msg.body = "Hi %s , \n\nThanks for applying to Qxf2 Services. We have received your application. Currently we don't have openings suitable to your background and experience. We will get back to you once we have an opening that fits you better.\n\nThanks, \nQxf2 Services"%(candidate_name)
+    mail.send(msg)
+    candidate_status = change_status_to_noopening(candidate_id,candidate_job_applied)
+
+
+    data = {'candidate_name': candidate_name,  'error': candidate_status}
+    return jsonify(data)
+
+
+@app.route("/noopening/noemail",methods=["GET","POST"])
+def noopeining_without_email():
+    "Change the status without no opening  email"
+    candidate_name = request.form.get('candidatename')
+    candidate_email = request.form.get('candidateemail')
+    candidate_job_applied = request.form.get('candidatejob')
+    candidate_id = request.form.get('candidateid')
+    status_change = change_status_to_noopening(candidate_id,candidate_job_applied)
+
+    data = {'candidate_name': candidate_name, 'error': status_change}
     return jsonify(data)
 
 

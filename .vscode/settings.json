@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "venv-interview-scheduler\\Scripts\\python.exe",
+    "python.pythonPath": "venv-gcal\\Scripts\\python.exe",
     //wordwrap
     "editor.wordWrap": "wordWrapColumn",
     "[python]": {},

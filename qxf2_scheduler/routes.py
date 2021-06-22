@@ -181,10 +181,10 @@ def date_picker():
             job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
             interviewer_id = []
             for each_interviewer_id in job_interviewer_id:
-                if each_interviewer_id.interviewers_id in scheduled_interviewers_id:
+                if each_interviewer_id.interviewer_id in scheduled_interviewers_id:
                     pass
                 else:
-                    interviewer_id.append(each_interviewer_id.interviewers_id)
+                    interviewer_id.append(each_interviewer_id.interviewer_id)
             if len(alloted_interviewers_id_list) == 0:
                 pass
             else:

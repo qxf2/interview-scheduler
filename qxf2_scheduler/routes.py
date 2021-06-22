@@ -185,13 +185,11 @@ def date_picker():
                     pass
                 else:
                     interviewer_id.append(each_interviewer_id.interviewer_id)
-
             if len(alloted_interviewers_id_list) == 0:
                 pass
             else:
                 #Compare the alloted and fetched interviewers id
                 interviewer_id = list(set(interviewer_id)-set(alloted_interviewers_id_list))
-
             #Fetch the interviewer emails for the candidate job
             interviewer_work_time_slots = []
             for each_id in interviewer_id:
@@ -564,19 +562,30 @@ def delete_interviewer(interviewer_id):
     return jsonify(data)
 
 
+def fetch_all_interviewers():
+    "Fetch all the interviewers for adding rounds"
+    my_interviewers_list = []
+    display_interviewers = Interviewers.query.all()
+    for each_interviewer in display_interviewers:
+        my_interviewers_list.append({'interviewer_id':each_interviewer.interviewer_id,'interviewer_list':each_interviewer.interviewer_name})
+
+    return my_interviewers_list
+
+
 @app.route("/jobs")
 @login_required
 def jobs_page():
     "Displays the jobs page for the interview"
     display_jobs = Jobs.query.all()
     my_job_list = []
+    interviewers_list = fetch_all_interviewers()
     for each_job in display_jobs:
         if each_job.job_status == None:
             job_status = check_job_status(each_job.job_id)
         my_job_list.append(
             {'job_id': each_job.job_id, 'job_role': each_job.job_role, 'job_status':each_job.job_status})
 
-    return render_template("list-jobs.html", result=my_job_list)
+    return render_template("list-jobs.html", result=my_job_list,interviewers=interviewers_list)
 
 
 def fetch_candidate_list(candidate_list_object,job_id):

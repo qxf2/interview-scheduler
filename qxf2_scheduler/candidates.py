@@ -49,7 +49,6 @@ def url_gen(candidate_id, job_id):
 
 
 @app.route("/regenerate/url", methods=["GET", "POST"])
-@Authentication_Required.requires_auth
 def regenerate_url():
     "Regenerate URL"
     if request.method == 'POST':
@@ -444,7 +443,6 @@ def no_opening():
 
 
 @app.route("/noopening/noemail",methods=["GET","POST"])
-@Authentication_Required.requires_auth
 def noopeining_without_email():
     "Change the status without no opening  email"
     candidate_name = request.form.get('candidatename')
@@ -514,7 +512,6 @@ def send_reject():
 
 
 @app.route("/comments/save", methods=['GET', 'POST'])
-@Authentication_Required.requires_auth
 def save_comments():
     "Save the comments"
     candidate_comments = request.form.get('comments')
@@ -530,7 +527,6 @@ def save_comments():
 
 
 @app.route("/candidatestatus/filter", methods=['GET', 'POST'])
-@Authentication_Required.requires_auth
 def filter_candidate_status():
     "Filter the candidates based on the status"
     filtered_candidates_list = []
@@ -561,7 +557,6 @@ def filter_candidate_status():
 
 
 @app.route("/filter/job", methods=['GET', 'POST'])
-@Authentication_Required.requires_auth
 def job_filter():
     "Filter the job for the candidates"
     filter_job_list = []
@@ -588,7 +583,6 @@ def job_filter():
 
 
 @app.route("/noemail/reject",methods=["GET","POST"])
-@Authentication_Required.requires_auth
 def reject_without_email():
     "Change the status without reject email"
     candidate_name = request.form.get('candidatename')
@@ -602,7 +596,6 @@ def reject_without_email():
 
 
 @app.route('/candidate/noresponse',methods=["GET","POST"])
-@Authentication_Required.requires_auth
 def status_no_response():
     "Change the candidate status to no response if they have not replied"
     if request.method == "POST":
@@ -615,7 +608,6 @@ def status_no_response():
 
 
 @app.route('/candidate/hired',methods=["GET","POST"])
-@Authentication_Required.requires_auth
 def status_to_hired():
     "Change the candidate status to hiried"
     if request.method == "POST":
@@ -628,7 +620,6 @@ def status_to_hired():
 
 
 @app.route("/candidate/<candidate_id>/round/<round_id>/add_feedback",methods=["GET","POST"])
-@Authentication_Required.requires_auth
 def add_feedback(candidate_id, round_id):
     "Adding the feedback for the candidates by interviewers"
     if request.method == "GET":
@@ -647,7 +638,6 @@ def add_feedback(candidate_id, round_id):
 
 
 @app.route("/candidate/<candidate_id>/round/<round_id>/edit_feedback",methods=["GET","POST"])
-@Authentication_Required.requires_auth
 def edit_feedback(candidate_id, round_id):
     "Adding the feedback for the candidates by interviewers"
     if request.method == "GET":

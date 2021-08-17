@@ -18,89 +18,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <title>Signin</title>
 </head>
-
-<body>
-    {% include "messages.html" %}
-    <section class="hero is-primary is-fullheight">
-        <div class="hero-head">
-            <nav class="navbar">
-                <div class="container">
-
-
-                </div>
-            </nav>
+    <body>
+        <center>
+        <div class="logo">
+                <img src="{{ url_for('static', filename='img/qxf2_logo.png') }}" alt="logo" />
         </div>
-        <div class="hero-body">
-            <div class="container has-text-centered">
-                <div class="column is-4 is-offset-4">
-                    <h3 class="title">Login</h3>
 
-                    <div class="box">
-                        <form>
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input is-large" id="username" type="text" name="username"
-                                        placeholder="Your Username" autofocus="">
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input is-large" id="userpassword" type="password" name="password"
-                                        placeholder="Your Password">
-                                </div>
-                            </div>
-
-                            <input type="button" class="btn btn-info" id="loginButton" value="Login">
-                            <input type="button" class="btn btn-info" id="signupButton" value="Signup">
-                            <!---<button class="link-button" type="button" id="edit">Forgot Password?</button>---->
-                            <a class="href-link" href="/reset-password">Forgot password?</a>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script>
-            $("document").ready(function () {
-                $("#signupButton").click(function () {
-                    document.location.href = "/registration"
-                })
-            })
-        </script>
-
-        <script>
-            $("document").ready(function () {
-                $('#loginButton').click(function () {
-                    userName = $("#username").val();
-                    userPassword = $("#userpassword").val();
-                    $.ajax({
-                        type: 'Post',
-                        url: '/login',
-                        data: {
-                            username: userName,
-                            password: userPassword
-                        },
-                        success: function (result) {
-                            if (result.error == 'Success') {
-                                alert("The Credentials are correct and logging in");
-                                document.location.href = "/index";
-
-                            }
-                            else if (result.error == 'error') {
-                                alert("Please check your username and password");
-                                document.location.href = '/login';
-                            }
-                            else if (result.error == 'confirmation error') {
-                                alert("Please confirm your email address")
-                                document.location.href = '/login'
-                            }
-                        }
-                    })
-                })
-            })
-        </script>
-    </section>
-</body>
-
+        <h1><B>Qxf2 Interview Scheduler App</B></h1>
+        <h4>Sign in to continue</h4>
+        <h3><a href="/login" class="btn btn-success" >Sign in</a></h3>
+        </center>
+    </body>
 </html>

@@ -3,11 +3,14 @@ This file contains all the endpoints exposed by the interview scheduler applicat
 """
 
 from flask import render_template, url_for, redirect, jsonify, request, Response, session
+import requests
+import re
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 from qxf2_scheduler.security import encrypt_password,check_encrypted_password
+import qxf2_scheduler.sso_google_oauth as sso
 import json
 import ast,re,uuid
 import sys,datetime
@@ -15,6 +18,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message, Mail
 from flask_login import current_user, login_user,login_required,logout_user
+from qxf2_scheduler.authentication_required import Authentication_Required
 from pytz import timezone
 import flask, random, string
 import flask_login
@@ -25,6 +29,74 @@ mail = Mail(app)
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
+
+@app.route("/")
+def home():
+    "Login page for an app"
+    return render_template('login.html')
+
+
+@app.route('/callback')
+def callback():
+    "Redirect after Google login & consent"
+    try:
+        # Get the code after authenticating from the URL
+        code = request.args.get('code')
+        # Generate URL to generate token
+        token_url, headers, body = sso.CLIENT.prepare_token_request(
+                sso.URL_DICT['token_gen'],
+                authorisation_response=request.url,
+                # request.base_url is same as DATA['redirect_uri']
+                redirect_url=request.base_url,
+                code=code)
+
+        # Generate token to access Google API
+        token_response = requests.post(
+                token_url,
+                headers=headers,
+                data=body,
+                auth=(sso.CLIENT_ID, sso.CLIENT_SECRET))
+        # Parse the token response
+        sso.CLIENT.parse_request_body_response(json.dumps(token_response.json()))
+
+        # Add token to the  Google endpoint to get the user info
+        # oauthlib uses the token parsed in the previous step
+        uri, headers, body = sso.CLIENT.add_token(sso.URL_DICT['get_user_info'])
+
+        # Get the user info
+        response_user_info = requests.get(uri, headers=headers, data=body)
+        info = response_user_info.json()
+        user_info = info['email']
+        user_email_domain = re.search("@[\w.]+",user_info).group()
+    except Exception as e:
+        app.logger.error(e)
+    if user_email_domain == '@qxf2.com':
+        session['logged_user'] = user_info
+        return redirect(url_for('index'))
+    else:
+        return render_template('unauthorized.html')
+
+
+@app.route("/login")
+def login():
+    "Login redirect"
+    return redirect(sso.REQ_URI)
+
+
+@app.route("/logout",methods=["GET","POST"])
+def logout():
+    "Logout the current page"
+    logout_user()
+    return redirect('/')
+
+
+@app.route("/index")
+@app.route("/")
+@app.route("/home")
+@Authentication_Required.requires_auth
+def index():
+    "The index page"
+    return render_template('index.html')
 
 def check_user_exists(user_email):
     "Check the job already exists in the database"
@@ -327,72 +399,8 @@ def gen_random_key():
     return ''.join(random.choices(string.ascii_uppercase + string.digits))
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    error = None
-    if request.method == 'GET':
-        if current_user.is_authenticated:
-            return redirect(url_for('index'))
-        return render_template('login.html', error=error)
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        data = {'username':username}
-        exists = db.session.query(Login).filter_by(username=username).first()
-        #fetch the email id of the user whose logged in
-        if exists != None:
-            user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on,Login.password)
-            for logged_user in user_email_id:
-                logged_email_id = logged_user.email
-                logged_email_confirmation = logged_user.email_confirmed
-                logged_email_sent_on = logged_user.email_confirmation_sent_on
-                hashed = logged_user.password
-            session['logged_user'] = logged_email_id
-
-            if logged_email_confirmation or not logged_email_sent_on:
-                completion = validate(username)
-                app.logger.critical(completion,exc_info=True)
-                password_check = check_encrypted_password(password,hashed)
-                if (completion and password_check):
-                    user = Login()
-                    user.name=username
-                    user.password=password
-                    login_user(user)
-                    error = 'Success'
-                    app.logger.critical(error,exc_info=True)
-                    api_response = {'data':data,'error':error}
-                else:
-                    error = 'error'
-                    api_response = {'data':data,'error':error}
-            else:
-                error = 'confirmation error'
-                api_response = {'data':username, 'error':error}
-        else:
-            error = 'error'
-            api_response = {'data':data,'error':error}
-
-
-        return jsonify(api_response)
-
-
-@app.route("/logout",methods=["GET","POST"])
-@login_required
-def logout():
-    "Logout the current page"
-    logout_user()
-    return redirect(url_for('login'))
-
-
-@app.route("/index")
-@app.route("/")
-@login_required
-def index():
-    "The index page"
-    return render_template('index.html')
-
-
 @app.route("/interviewers")
-@login_required
+@Authentication_Required.requires_auth
 def list_interviewers():
     "List all the interviewer names"
     all_interviewers = Interviewers.query.all()
@@ -447,7 +455,7 @@ def form_interviewer_details(interviewer_details):
 
 
 @app.route("/interviewer/<interviewer_id>")
-@login_required
+@Authentication_Required.requires_auth
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
@@ -489,7 +497,7 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
 
 
 @app.route("/interviewer/<interviewer_id>/edit", methods=['GET', 'POST'])
-@login_required
+@Authentication_Required.requires_auth
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
     # This query fetch the interviewer details by joining the time slots table and interviewers table.
@@ -544,7 +552,7 @@ def edit_interviewer(interviewer_id):
 
 
 @app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def delete_interviewer(interviewer_id):
     "Deletes an interviewer"
     if request.method == 'POST':
@@ -573,7 +581,7 @@ def fetch_all_interviewers():
 
 
 @app.route("/jobs")
-@login_required
+@Authentication_Required.requires_auth
 def jobs_page():
     "Displays the jobs page for the interview"
     display_jobs = Jobs.query.all()
@@ -613,7 +621,7 @@ def check_job_status(job_id):
 
 
 @app.route("/details/job/<job_id>")
-@login_required
+@Authentication_Required.requires_auth
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id"
     interviewers_list = []
@@ -682,7 +690,7 @@ def check_not_existing_interviewers(interviewers,actual_interviewers_list):
 
 
 @app.route("/jobs/add", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def add_job():
     "Add ajob through UI"
     if request.method == 'GET':
@@ -733,7 +741,7 @@ def add_job():
 
 
 @app.route("/jobs/delete", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def delete_job():
     "Deletes a job"
     if request.method == 'POST':
@@ -808,7 +816,7 @@ def update_job_interviewer_in_database(job_id, job_role, interviewers_list):
 
 
 @app.route("/job/<job_id>/edit", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def edit_job(job_id):
     "Editing the already existing job"
     if request.method == 'GET':
@@ -872,7 +880,7 @@ def edit_job(job_id):
 
 
 @app.route("/interviewers/add", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def add_interviewers():
     data = {}
     "Adding the interviewers"
@@ -1059,7 +1067,7 @@ def fetch_interviewer_email(candidate_id, job_id):
 
 
 @app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def send_invite(candidate_id, job_id):
     "Send an invite to schedule an interview"
     if request.method == 'POST':

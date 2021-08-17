@@ -1,10 +1,10 @@
 import datetime
 from flask import render_template, jsonify, request, session
-from flask_login import login_required
 from flask_mail import Message, Mail
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from qxf2_scheduler import app
 import qxf2_scheduler.candidate_status as status
+from qxf2_scheduler.authentication_required import Authentication_Required
 from qxf2_scheduler import db
 from sqlalchemy import or_
 
@@ -49,6 +49,7 @@ def url_gen(candidate_id, job_id):
 
 
 @app.route("/regenerate/url", methods=["GET", "POST"])
+@Authentication_Required.requires_auth
 def regenerate_url():
     "Regenerate URL"
     if request.method == 'POST':
@@ -85,7 +86,7 @@ def fetch_candidate_list(candidate_list_object):
 
 
 @app.route("/candidates", methods=["GET"])
-@login_required
+@Authentication_Required.requires_auth
 def read_candidates():
     "Read the candidates"
     candidates_list = []
@@ -97,7 +98,7 @@ def read_candidates():
 
 
 @app.route("/candidate/<candidate_id>/delete", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def delete_candidate(candidate_id):
     "Deletes a candidate"
     if request.method == 'POST':
@@ -158,7 +159,7 @@ def candidate_diff_job(candidate_name, candidate_email, candidate_job_applied, j
 #Passing the optional parameter through URL
 @app.route('/candidate/<job_role>/add')
 @app.route("/candidate/add", defaults={'job_role': None}, methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def add_candidate(job_role):
     "Add a candidate"
     data, error = [], None
@@ -222,7 +223,7 @@ def add_candidate(job_role):
 
 
 @app.route("/candidate/url", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def generate_unique_url():
     candidate_id = request.form.get('candidateId')
     job_id = request.form.get('jobId')
@@ -302,7 +303,7 @@ def get_round_names_and_status(candidate_id, job_id, all_round_id):
 
 
 @app.route("/candidate/<candidate_id>/job/<job_id>")
-@login_required
+@Authentication_Required.requires_auth
 def show_candidate_job(job_id, candidate_id):
     "Show candidate name and job role"
     round_names_list = []
@@ -342,7 +343,7 @@ def show_candidate_job(job_id, candidate_id):
 
 
 @app.route("/candidate/<candidate_id>/edit", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def edit_candidates(candidate_id):
     "Edit the candidtes"
     #Fetch the candidate details and equal job id
@@ -387,7 +388,7 @@ def edit_candidates(candidate_id):
 
 
 @app.route("/candidates/<candidate_id>/jobs/<job_id>/email")
-@login_required
+@Authentication_Required.requires_auth
 def send_email(candidate_id, job_id):
     # Fetch the id for the candidate status 'Waiting on Candidate'
     #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
@@ -423,7 +424,7 @@ def change_status_to_noopening(candidate_id,candidate_job_applied):
 
 
 @app.route("/noopening/email", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def no_opening():
     "Send a no opening email to the candidates"
     candidate_name = request.form.get('candidatename')
@@ -443,6 +444,7 @@ def no_opening():
 
 
 @app.route("/noopening/noemail",methods=["GET","POST"])
+@Authentication_Required.requires_auth
 def noopeining_without_email():
     "Change the status without no opening  email"
     candidate_name = request.form.get('candidatename')
@@ -486,7 +488,7 @@ def fetch_interviewer_email(candidate_id, job_id):
 
 
 @app.route("/reject", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def send_reject():
     "Send reject email"
     candidate_name = request.form.get('candidatename')
@@ -512,6 +514,7 @@ def send_reject():
 
 
 @app.route("/comments/save", methods=['GET', 'POST'])
+@Authentication_Required.requires_auth
 def save_comments():
     "Save the comments"
     candidate_comments = request.form.get('comments')
@@ -527,6 +530,7 @@ def save_comments():
 
 
 @app.route("/candidatestatus/filter", methods=['GET', 'POST'])
+@Authentication_Required.requires_auth
 def filter_candidate_status():
     "Filter the candidates based on the status"
     filtered_candidates_list = []
@@ -557,6 +561,7 @@ def filter_candidate_status():
 
 
 @app.route("/filter/job", methods=['GET', 'POST'])
+@Authentication_Required.requires_auth
 def job_filter():
     "Filter the job for the candidates"
     filter_job_list = []
@@ -583,6 +588,7 @@ def job_filter():
 
 
 @app.route("/noemail/reject",methods=["GET","POST"])
+@Authentication_Required.requires_auth
 def reject_without_email():
     "Change the status without reject email"
     candidate_name = request.form.get('candidatename')
@@ -596,6 +602,7 @@ def reject_without_email():
 
 
 @app.route('/candidate/noresponse',methods=["GET","POST"])
+@Authentication_Required.requires_auth
 def status_no_response():
     "Change the candidate status to no response if they have not replied"
     if request.method == "POST":
@@ -608,6 +615,7 @@ def status_no_response():
 
 
 @app.route('/candidate/hired',methods=["GET","POST"])
+@Authentication_Required.requires_auth
 def status_to_hired():
     "Change the candidate status to hiried"
     if request.method == "POST":
@@ -620,6 +628,7 @@ def status_to_hired():
 
 
 @app.route("/candidate/<candidate_id>/round/<round_id>/add_feedback",methods=["GET","POST"])
+@Authentication_Required.requires_auth
 def add_feedback(candidate_id, round_id):
     "Adding the feedback for the candidates by interviewers"
     if request.method == "GET":
@@ -638,6 +647,7 @@ def add_feedback(candidate_id, round_id):
 
 
 @app.route("/candidate/<candidate_id>/round/<round_id>/edit_feedback",methods=["GET","POST"])
+@Authentication_Required.requires_auth
 def edit_feedback(candidate_id, round_id):
     "Adding the feedback for the candidates by interviewers"
     if request.method == "GET":
@@ -663,4 +673,3 @@ def edit_feedback(candidate_id, round_id):
         result = {'edited_feedback':edited_feedback, 'thumbs_value':thumbs_value, 'error': error}
 
     return jsonify(result)
-

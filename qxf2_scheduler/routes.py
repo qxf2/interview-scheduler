@@ -4,7 +4,6 @@ This file contains all the endpoints exposed by the interview scheduler applicat
 
 from flask import render_template, url_for, redirect, jsonify, request, Response, session
 import requests
-import re
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
@@ -17,16 +16,14 @@ import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message, Mail
-from flask_login import current_user, login_user,login_required,logout_user
 from qxf2_scheduler.authentication_required import Authentication_Required
 from pytz import timezone
 import flask, random, string
-import flask_login
 from flask import flash
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer, Interviewcount
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
 
@@ -83,10 +80,16 @@ def login():
     return redirect(sso.REQ_URI)
 
 
-@app.route("/logout",methods=["GET","POST"])
+@app.route("/logout",methods=['GET', 'POST'])
 def logout():
     "Logout the current page"
-    logout_user()
+    #logout_user()
+    try:
+        for key in list(session.keys()):
+            session.pop(key)
+    except Exception as e:
+        app.logger.error(e)
+
     return redirect('/')
 
 
@@ -97,104 +100,6 @@ def logout():
 def index():
     "The index page"
     return render_template('index.html')
-
-def check_user_exists(user_email):
-    "Check the job already exists in the database"
-    fetch_existing_user_email = Login.query.all()
-    emails_list = []
-    # Fetch the job role
-    for each_email in fetch_existing_user_email:
-        emails_list.append(each_email.email.lower())
-
-    # Compare the job with database job list
-    if user_email.lower() in emails_list:
-        check_user_exists = True
-    else:
-        check_user_exists = False
-
-    return check_user_exists
-
-
-def send_email(subject, recipients, text_body):
-    "Send the email"
-    msg = Message(subject, recipients=recipients)
-    msg.html = text_body
-    mail.send(msg)
-    user = Login.query.filter_by(email=recipients[0]).first()
-    user.email_confirmation_sent_on = datetime.datetime.now()
-    Login.query.filter(Login.email==recipients[0]).update({'email_confirmation_sent_on':datetime.datetime.now()})
-    db.session.commit()
-
-
-@app.route('/confirm/<token>', methods=['GET', 'POST'])
-def confirm_email(token):
-    "Check the registered user email is confirmed or not"
-    try:
-        confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-        email = confirm_serializer.loads(token, salt='scheduling-app-2000', max_age=86400)
-    except Exception as e:
-        app.logger.info('Info level log',e)
-        app.logger.warning('Warning level log')
-        app.logger.critical(e, exc_info=True)
-        flash('The confirmation link is invalid or has expired.', 'error')
-        return redirect(url_for('login'))
-
-    user = Login.query.filter_by(email=email).first()
-
-    if user.email_confirmed:
-        flash('Account already confirmed. Please login.', 'info')
-    else:
-        user.email_confirmed = True
-        user.email_confirmed_on = datetime.datetime.now()
-        db.session.add(user)
-        db.session.commit()
-        flash('Thank you for confirming your email address!')
-
-    return redirect(url_for('login'))
-
-
-def send_confirmation_email(user_email):
-    "Sends the confirmation email"
-    confirm_serializer = URLSafeTimedSerializer(app.secret_key)
-    token=confirm_serializer.dumps(user_email, salt='scheduling-app-2000')
-    app.logger.critical(f'token:{token}')
-    confirm_url = url_for(
-        'confirm_email',
-        token=token,
-        _external=True)
-    app.logger.critical(f'confirmurl:{confirm_url}')
-    html = render_template(
-        'email_confirmation.html',
-        confirm_url=confirm_url)
-
-    send_email('Confirm Your Email Address', [user_email], html)
-
-
-@app.route("/registration",methods=['GET','POST'])
-def registration():
-    "New registration"
-    if request.method == 'GET':
-        return render_template('signup.html')
-    if request.method == 'POST':
-        user_name = request.form.get('username')
-        user_password = request.form.get('userpassword')
-        user_email = request.form.get('useremail')
-        check_user_exist = check_user_exists(user_email)
-        data = {'user_name':user_name,'user_email':user_email}
-        if check_user_exist == True:
-            error = 'error'
-        else:
-            add_new_user_object = Login(username=user_name,email=user_email,password=encrypt_password(user_password))
-            db.session.add(add_new_user_object)
-            db.session.flush()
-            user_id = add_new_user_object.id
-            db.session.commit()
-            error = 'Success'
-            send_confirmation_email(user_email)
-            flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
-        api_response = {'data':data,'error':error}
-
-    return jsonify(api_response)
 
 
 def get_id_for_emails(email_list):
@@ -372,31 +277,6 @@ def scehdule_and_confirm():
 
 
     return render_template("get-schedule.html")
-
-
-def validate(username):
-    "Validate the username and passowrd"
-    exists = db.session.query(db.exists().where(Login.username == username)).scalar()
-
-    return exists
-
-
-def password_validate(password):
-    "Validate the username and passowrd"
-    exists = db.session.query(db.exists().where(Login.password == check_encrypted_password(password))).scalar()
-
-    return exists
-
-@app.before_request
-def before_request():
-    "Session time out method"
-    session.permanent = True
-    app.permanent_session_lifetime = datetime.timedelta(minutes = 60)
-    flask.session.modified = True
-
-def gen_random_key():
-    "Generate random key for signup"
-    return ''.join(random.choices(string.ascii_uppercase + string.digits))
 
 
 @app.route("/interviewers")

@@ -1,8 +1,6 @@
 from qxf2_scheduler import db
 import datetime
 from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint,DateTime
-from flask_login import UserMixin
-#from qxf2_scheduler import login_manager
 from sqlalchemy.sql import table, column
 from flask_seeder import Seeder, Faker, generator
 

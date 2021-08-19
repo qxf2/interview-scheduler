@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-#from flask_login import LoginManager
 from flask_mail import Mail, Message
 from flaskext.markdown import Markdown
 import qxf2_scheduler.db_config as conf

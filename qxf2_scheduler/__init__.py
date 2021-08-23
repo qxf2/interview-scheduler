@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 from flask_mail import Mail, Message
 from flaskext.markdown import Markdown
 import qxf2_scheduler.db_config as conf
@@ -35,14 +34,7 @@ app.config.update(
 	)
 
 
-login_manager = LoginManager()
-login_manager.login_view = 'login'
-login_manager.init_app(app)
-
-
-
 from qxf2_scheduler import routes
 from qxf2_scheduler import candidates
 from qxf2_scheduler import rounds
 from qxf2_scheduler import status
-from qxf2_scheduler import reset_password

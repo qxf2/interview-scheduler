@@ -1,10 +1,10 @@
 import datetime
 from flask import render_template, jsonify, request, session
-from flask_login import login_required
 from flask_mail import Message, Mail
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from qxf2_scheduler import app
 import qxf2_scheduler.candidate_status as status
+from qxf2_scheduler.authentication_required import Authentication_Required
 from qxf2_scheduler import db
 from sqlalchemy import or_
 
@@ -85,7 +85,7 @@ def fetch_candidate_list(candidate_list_object):
 
 
 @app.route("/candidates", methods=["GET"])
-@login_required
+@Authentication_Required.requires_auth
 def read_candidates():
     "Read the candidates"
     candidates_list = []
@@ -97,7 +97,7 @@ def read_candidates():
 
 
 @app.route("/candidate/<candidate_id>/delete", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def delete_candidate(candidate_id):
     "Deletes a candidate"
     if request.method == 'POST':
@@ -158,7 +158,7 @@ def candidate_diff_job(candidate_name, candidate_email, candidate_job_applied, j
 #Passing the optional parameter through URL
 @app.route('/candidate/<job_role>/add')
 @app.route("/candidate/add", defaults={'job_role': None}, methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def add_candidate(job_role):
     "Add a candidate"
     data, error = [], None
@@ -222,7 +222,7 @@ def add_candidate(job_role):
 
 
 @app.route("/candidate/url", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def generate_unique_url():
     candidate_id = request.form.get('candidateId')
     job_id = request.form.get('jobId')
@@ -302,7 +302,7 @@ def get_round_names_and_status(candidate_id, job_id, all_round_id):
 
 
 @app.route("/candidate/<candidate_id>/job/<job_id>")
-@login_required
+@Authentication_Required.requires_auth
 def show_candidate_job(job_id, candidate_id):
     "Show candidate name and job role"
     round_names_list = []
@@ -342,7 +342,7 @@ def show_candidate_job(job_id, candidate_id):
 
 
 @app.route("/candidate/<candidate_id>/edit", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def edit_candidates(candidate_id):
     "Edit the candidtes"
     #Fetch the candidate details and equal job id
@@ -387,7 +387,7 @@ def edit_candidates(candidate_id):
 
 
 @app.route("/candidates/<candidate_id>/jobs/<job_id>/email")
-@login_required
+@Authentication_Required.requires_auth
 def send_email(candidate_id, job_id):
     # Fetch the id for the candidate status 'Waiting on Candidate'
     #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
@@ -423,7 +423,7 @@ def change_status_to_noopening(candidate_id,candidate_job_applied):
 
 
 @app.route("/noopening/email", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def no_opening():
     "Send a no opening email to the candidates"
     candidate_name = request.form.get('candidatename')
@@ -486,7 +486,7 @@ def fetch_interviewer_email(candidate_id, job_id):
 
 
 @app.route("/reject", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def send_reject():
     "Send reject email"
     candidate_name = request.form.get('candidatename')
@@ -663,4 +663,3 @@ def edit_feedback(candidate_id, round_id):
         result = {'edited_feedback':edited_feedback, 'thumbs_value':thumbs_value, 'error': error}
 
     return jsonify(result)
-

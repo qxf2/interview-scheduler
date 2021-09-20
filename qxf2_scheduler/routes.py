@@ -273,6 +273,9 @@ def scehdule_and_confirm():
         #Add the count for the interviewer in the interviewcount table
         add_interview_count(fetch_interviewer_id_value)
 
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+        db.session.commit()
+
         return redirect(url_for('confirm', value=value))
 
 
@@ -1001,6 +1004,8 @@ def send_invite(candidate_id, job_id):
             db.session.commit()
 
             error = 'Success'
+            last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+            db.session.commit()
 
         except Exception as e:
             error = "Failed"

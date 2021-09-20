@@ -338,7 +338,11 @@ def show_candidate_job(job_id, candidate_id):
         round_detail = db.session.query(Rounds).filter(Rounds.round_id == each_round_id).scalar()
         round_details = {'round_name':round_detail.round_name, 'round_id':round_detail.round_id, 'round_description':round_detail.round_description, 'round_time':round_detail.round_time}
         round_names_list.append(round_details)
-    return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_details=round_name_status_list)
+
+    #Get the last updated date for the candidates from the candidate table
+    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).value(Candidates.last_updated_date)
+
+    return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_details=round_name_status_list,last_updated_date=last_updated_date)
 
 
 @app.route("/candidate/<candidate_id>/edit", methods=["GET", "POST"])
@@ -436,8 +440,8 @@ def no_opening():
     msg.body = "Hi %s , \n\nThanks for applying to Qxf2 Services. We have received your application. Currently we don't have openings suitable to your background and experience. We will get back to you once we have an opening that fits you better.\n\nThanks, \nQxf2 Services"%(candidate_name)
     mail.send(msg)
     candidate_status = change_status_to_noopening(candidate_id,candidate_job_applied)
-
-
+    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+    db.session.commit()
     data = {'candidate_name': candidate_name,  'error': candidate_status}
     return jsonify(data)
 
@@ -452,6 +456,8 @@ def noopeining_without_email():
     status_change = change_status_to_noopening(candidate_id,candidate_job_applied)
 
     data = {'candidate_name': candidate_name, 'error': status_change}
+    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+    db.session.commit()
     return jsonify(data)
 
 
@@ -506,7 +512,8 @@ def send_reject():
     msg.body = "Hi %s , \n\nI appreciate your interest in a career opportunity with Qxf2 Services. It was a pleasure speaking to you about your background and interests. There are many qualified applicants in the current marketplace and we are searching for those who have the most directly applicable experience to our limited number of openings. I regret we will not be moving forward with your interview process. We wish you all the best in your current search and future endeavors.\n\nThanks, \nQxf2 Services"%(candidate_name)
     mail.send(msg)
     candidate_status = change_status_to_reject(candidate_id,candidate_job_applied)
-
+    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+    db.session.commit()
     data = {'candidate_name': candidate_name, 'error': candidate_status}
     return jsonify(data)
 
@@ -603,6 +610,8 @@ def status_no_response():
         #Update the candidate status to no response
         db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id == candidate_id).update({'candidate_status':4})
         db.session.commit()
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+        db.session.commit()
 
     return candidate_id
 
@@ -615,7 +624,8 @@ def status_to_hired():
         job_id = request.form.get("jobid")
         db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':6})
         db.session.commit()
-
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+        db.session.commit()
     return candidate_id
 
 
@@ -633,6 +643,8 @@ def add_feedback(candidate_id, round_id):
         Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':added_feedback,'thumbs_value':thumbs_value})
         db.session.commit()
         result = {'added_feedback':added_feedback, 'thumbs_value':thumbs_value, 'error': error}
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+        db.session.commit()
 
     return jsonify(result)
 
@@ -659,7 +671,9 @@ def edit_feedback(candidate_id, round_id):
         combined_edit_feed = thumbs_value + ',' + edited_feedback
         Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':edited_feedback, 'thumbs_value':thumbs_value})
         db.session.commit()
-
         result = {'edited_feedback':edited_feedback, 'thumbs_value':thumbs_value, 'error': error}
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+        db.session.commit()
+
 
     return jsonify(result)

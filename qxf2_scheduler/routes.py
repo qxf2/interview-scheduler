@@ -871,6 +871,7 @@ def schedule_interview(job_id,url,candidate_id):
     "Validate candidate name and candidate email"
     if request.method == 'POST':
         candidate_unique_code = request.form.get('unique-code')
+        candidate_unique_code = candidate_unique_code.strip()
         candidate_email = request.form.get('candidate-email')
         #url = request.form.get('url')
         candidate_data = Candidates.query.filter(Candidates.candidate_id == candidate_id).values(Candidates.candidate_email,Candidates.candidate_name)

@@ -28,5 +28,8 @@ date_picker = "06/08/2020"
 date_check = "13"
 free_slot = "11:30 - 12:15"
 
+email = "test@qxf2.com"
+password = "Qxf2Services@12"
+
 email_on_link = "test@qxf2.com"
 password_link = "Qxf2Services@12"

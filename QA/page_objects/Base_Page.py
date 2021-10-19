@@ -18,8 +18,8 @@ from .DriverFactory import DriverFactory
 from page_objects import PageFactory
 from utils import Tesults
 from utils.stop_test_exception_util import Stop_Test_Exception
-import conf.remote_credentials
-import conf.base_url_conf
+import QA.conf.remote_credentials
+import QA.conf.base_url_conf
 from utils import Gif_Maker
 
 class Borg:
@@ -38,7 +38,7 @@ class Borg:
         return result_flag
 
 # Get the Base URL from the conf file
-base_url = conf.base_url_conf
+base_url = QA.conf.base_url_conf
 
 class Base_Page(Borg,unittest.TestCase):
     "Page class that all page models can inherit from"
@@ -106,7 +106,7 @@ class Base_Page(Borg,unittest.TestCase):
         self.driver.implicitly_wait(5)
         self.driver.maximize_window()
 
-        if conf.remote_credentials.REMOTE_BROWSER_PLATFORM == 'BS' and remote_flag.lower() == 'y':
+        if QA.conf.remote_credentials.REMOTE_BROWSER_PLATFORM == 'BS' and remote_flag.lower() == 'y':
             self.register_browserstack()
             self.session_url = self.browserstack_obj.get_session_url()
             self.browserstack_msg = 'BrowserStack session URL:'

@@ -14,8 +14,8 @@ from utils.Wrapit import Wrapit
 
 class Login_Page(Base_Page,Form_Object,Index_Object,Interviewers_Object,Jobs_Object):
     "Page Object for the tutorial's main page"
-    
+
     def start(self):
         "Use this method to go to specific URL -- if needed"
-        url = '/login'
+        url = '/'
         self.open(url)

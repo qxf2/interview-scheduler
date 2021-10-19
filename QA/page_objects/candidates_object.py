@@ -4,9 +4,9 @@ The form consists of some input fields, a dropdown, a checkbox and a button to s
 """
 import os
 import sys
-import conf.locators_conf as locators
+import QA.conf.locators_conf as locators
 from utils.Wrapit import Wrapit
-import conf.login_conf as login
+import QA.conf.login_conf as login
 from .Base_Page import Base_Page
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -32,8 +32,6 @@ class Candidates_Object:
     thumbs_down_button = locators.thumbs_down_button
     select_round_level_scroll = locators.select_round_level_scroll
     send_email_button = locators.send_email_button
-    edit_candidate_button = locators.edit_candidate_button
-    edit_candidate_page_save_button = locators.edit_candidate_page_save_button
 
 
     @Wrapit._exceptionHandler
@@ -47,8 +45,6 @@ class Candidates_Object:
                                level='debug')
 
         return result_flag
-
-   
 
     @Wrapit._exceptionHandler
     @Wrapit._screenshot
@@ -109,7 +105,7 @@ class Candidates_Object:
                                positive='Clicked on the Submit button',
                                negative='Failed to click on Submit button',
                                level='debug')
-        result_flag = self.alert_accept()
+        #result_flag = self.alert_accept()
 
         return result_flag
 
@@ -121,7 +117,9 @@ class Candidates_Object:
         result_flag &= self.add_email(email_candidates)
         result_flag &= self.add_job_applied(job_applied_select)
         result_flag &= self.add_comments(comment_candidates)
-        result_flag &= self.submit()
+        self.wait(5)
+        result_flag = self.submit()
+        result_flag = self.alert_accept()
 
         return result_flag
 
@@ -222,6 +220,7 @@ class Candidates_Object:
                                positive='Clicked on the send email button',
                                negative='Failed to click on send email button',
                                level='debug')
+        self.wait(10)
         result_flag = self.alert_accept()
 
         return result_flag
@@ -251,38 +250,4 @@ class Candidates_Object:
                                negative='Failed to click on OK',
                                level='debug')
 
-        return result_flag
- 
-    @Wrapit._exceptionHandler
-    @Wrapit._screenshot
-    def edit_candidates(self):
-        "Click on edit button of Candidates page"
-        result_flag = self.click_element(self.edit_candidate_button)
-        self.conditional_write(result_flag,
-                                positive= 'Clicked on Edit Candidates link',
-                                negative= 'Failed to click on Edit Candidates link',
-                                level='debug')
-        return result_flag
-
-    @Wrapit._exceptionHandler
-    @Wrapit._screenshot
-    def edit_candidate_comment(self, comment_candidates):
-        "Edit the comments of Candidate"
-        result_flag = self.set_text(self.comment_candidates, comment_candidates, clear_flag=False)
-        self.conditional_write(result_flag,
-                               positive='Edit the comments to: %s'%comment_candidates,
-                               negative='Failed to edit comments',
-                               level='debug')
-        return result_flag
-
-    @Wrapit._exceptionHandler
-    @Wrapit._screenshot
-    def save_edited_candidate(self):
-        "Click the Save button to save changes applied for te candidate"
-        result_flag = self.click_element(self.edit_candidate_page_save_button)
-        self.conditional_write(result_flag,
-                                positive= 'Click save button after editing candidate',
-                                negative='Failed to click on save button after editing candidate',
-                                level='debug')
-        result_flag = self.alert_accept()
         return result_flag

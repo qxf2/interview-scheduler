@@ -31,13 +31,13 @@ def test_isapi_example(api_url='http://localhost:6464/'):
         # set authentication details
         username = conf.user_name
         password_details = conf.password
-        userpassword = conf.password
         useremail = conf.useremail
         job_data = conf.job_details
         candidate_data = conf.candidate_details
         interviewer_data = conf.interviewer_details
-
+        '''
         auth_details = test_obj.login_details(username, password_details)
+
         signup_details = test_obj.signup_details(username, useremail, userpassword)
 
 
@@ -80,7 +80,7 @@ def test_isapi_example(api_url='http://localhost:6464/'):
                                 % candidate_data,
                             negative='Could not add the candidate %s' % candidate_data)
 
-
+        '''
         result_flag = test_obj.get_candidates()
         test_obj.log_result(result_flag,
                             positive='Successfully got the list of candidates',
@@ -124,8 +124,10 @@ def test_isapi_example(api_url='http://localhost:6464/'):
 
     except Exception as e:
         print(e)
+        test_api_obj.write("Exception when trying to run test:%s" % __file__)
+        test_api_obj.write("Python says:%s" % str(e))
 
-
+    assert expected_pass == actual_pass,"Test failed: %s"%__file__
 
 
 if __name__ == '__main__':

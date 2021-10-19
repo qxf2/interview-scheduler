@@ -1,8 +1,8 @@
 import os,pytest,sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from page_objects.PageFactory import PageFactory
-from conf import browser_os_name_conf
-from conf import base_url_conf
+from QA.conf import browser_os_name_conf
+from QA.conf import base_url_conf
 from utils import post_test_reports_to_slack
 #from utils.email_pytest_report import Email_Pytest_Report
 from utils import Tesults
@@ -423,7 +423,3 @@ def pytest_addoption(parser):
     parser.addoption("-N","--app_path",
                       dest="app_path",
                       help="Enter app path")
-
-
-
-

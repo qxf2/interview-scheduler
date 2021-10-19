@@ -8,11 +8,11 @@ import email
 import datetime
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
-import conf.locators_conf as locators
+import QA.conf.locators_conf as locators
 from utils.Wrapit import Wrapit
 from utils.email_util import Email_Util
-import conf.email_conf as conf_file
-from conf import login_conf as login
+import QA.conf.email_conf as conf_file
+from QA.conf import login_conf as login
 from .Base_Page import Base_Page
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

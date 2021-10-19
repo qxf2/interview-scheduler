@@ -4,7 +4,7 @@ URL: selenium-tutorial-redirect
 The page consists of a header, footer and some text
 """
 from .Base_Page import Base_Page
-import conf.locators_conf as locators
+import QA.conf.locators_conf as locators
 from utils.Wrapit import Wrapit
 
 
@@ -19,7 +19,7 @@ class Redirect_Index_Page(Base_Page):
         url = 'index'
         self.open(url)
 
-    @Wrapit._exceptionHandler    
+    @Wrapit._exceptionHandler
     def check_heading(self):
         "Check if the heading exists"
         result_flag = self.check_element_present(self.heading)

@@ -1,5 +1,5 @@
 import tesults
-import conf.tesults_conf as conf_file
+import QA.conf.tesults_conf as conf_file
 
 cases = []
 

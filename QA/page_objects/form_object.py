@@ -4,7 +4,7 @@ The form consists of some input fields, a dropdown, a checkbox and a button
 """
 import sys
 import os
-import conf.locators_conf as locators
+import QA.conf.locators_conf as locators
 from utils.Wrapit import Wrapit
 from .Base_Page import Base_Page
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -14,6 +14,11 @@ class Form_Object:
     "Page object for the Form"
 
     #locators
+    sso_sign_in_button = locators.sso_sign_in_button
+    sso_email_field = locators.sso_email_field
+    sso_next_button = locators.sso_next_button
+    sso_password_field = locators.sso_password_field
+
     username_field = locators.username_field
     password_field = locators.password_field
     user_name_field = locators.user_name_field
@@ -65,6 +70,55 @@ class Form_Object:
 
         return result_flag
 
+    @Wrapit._exceptionHandler
+    @Wrapit._screenshot
+    def click_sign_in(self):
+        "Click on 'Sign in' button"
+        result_flag = self.click_element(self.sso_sign_in_button)
+        self.conditional_write(result_flag,
+                               positive='Clicked on the "Login" button',
+                               negative='Failed to click on "Login" button',
+                               level='debug')
+        #result_flag = self.alert_accept()
+
+        return result_flag
+
+    @Wrapit._exceptionHandler
+    @Wrapit._screenshot
+    def set_email_sso(self, email):
+        "Set the email on the form"
+        result_flag = self.set_text(self.sso_email_field, email)
+        self.conditional_write(result_flag,
+                               positive='Set the email to: %s'%email,
+                               negative='Failed to set the email',
+                               level='debug')
+
+        return result_flag
+
+    @Wrapit._exceptionHandler
+    @Wrapit._screenshot
+    def set_password_sso(self, password):
+        "Set the email on the form"
+        result_flag = self.set_text(self.sso_password_field, password)
+        self.conditional_write(result_flag,
+                               positive='Set the password to: %s'%password,
+                               negative='Failed to set the password',
+                               level='debug')
+
+        return result_flag
+
+    @Wrapit._exceptionHandler
+    @Wrapit._screenshot
+    def click_next_sso(self):
+        "Click on 'Next' button"
+        result_flag = self.click_element(self.sso_next_button)
+        self.conditional_write(result_flag,
+                               positive='Clicked on the "Next" button',
+                               negative='Failed to click on "Next" button',
+                               level='debug')
+        #result_flag = self.alert_accept()
+
+        return result_flag
 
     @Wrapit._exceptionHandler
     @Wrapit._screenshot
@@ -79,7 +133,7 @@ class Form_Object:
 
         return result_flag
 
-
+    '''
     @Wrapit._exceptionHandler
     @Wrapit._screenshot
     def login_page(self, username, password):
@@ -89,7 +143,18 @@ class Form_Object:
         result_flag &= self.click_login()
 
         return result_flag
+    '''
+    @Wrapit._exceptionHandler
+    @Wrapit._screenshot
+    def login_page(self, email, password):
+        "Login Wrapper method"
+        result_flag = self.click_sign_in()
+        result_flag &= self.set_email_sso(email)
+        result_flag &= self.click_next_sso()
+        result_flag &= self.set_password_sso(password)
+        result_flag &= self.click_next_sso()
 
+        return result_flag
 
     @Wrapit._exceptionHandler
     @Wrapit._screenshot
@@ -166,7 +231,6 @@ class Form_Object:
                                negative='Failed to click on "Submit" button',
                                level='debug')
 
-        result_flag = self.alert_accept()
 
         return result_flag
 

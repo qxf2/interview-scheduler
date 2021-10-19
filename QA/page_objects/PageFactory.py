@@ -17,12 +17,12 @@ from page_objects.redirect_index_page import Redirect_Index_Page
 from page_objects.jobs_page import Jobs_Page
 from page_objects.candidates_page import Candidates_Page
 from page_objects.interviewers_page import Interviewers_Page
-import conf.base_url_conf
+import QA.conf.base_url_conf
 
 
 class PageFactory():
     "PageFactory uses the factory design pattern."
-    def get_page_object(page_name,base_url=conf.base_url_conf.base_url):
+    def get_page_object(page_name,base_url=QA.conf.base_url_conf.base_url):
         "Return the appropriate page object based on page_name"
         test_obj = None
         page_name = page_name.lower()

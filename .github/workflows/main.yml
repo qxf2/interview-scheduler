@@ -14,31 +14,8 @@ jobs:
         with:
           username:  ${{ secrets.BROWSERSTACK_USERNAME }}
           access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-      - name: Running requirements and server in  background
-        run: |
-              pip install -r QA/requirements.txt
-              touch qxf2_scheduler/email_config.py
-              cat > qxf2_scheduler/email_config.py << EOF
-              MAIL_USERNAME = "${{ secrets.MAIL_USERNAME }}"
-              MAIL_PASSWORD = "${{ secrets.MAIL_PASSWORD }}"
-              EOF
-              mkdir data
-              touch data/candidatestatus.csv
-              cat > data/candidatestatus.csv <<EOF
-              status_id,status_name
-              1,Waiting on Qxf2
-              2,Waiting on Candidate
-              3,Interview Scheduled
-              4,No response
-              5,Reject
-              6,Hired
-              7,Waiting for new opening
-              EOF
-              python migrate_db.py db init
-              python migrate_db.py db migrate
-              python migrate_db.py db upgrade
-              python qxf2_scheduler/setup_db.py
-              python  run.py > /dev/null 2>&1 &
-              cd QA/tests
-              python -m pytest
-              pkill -f run.py
+      - name: 'BrowserStack Local Tunnel Setup'  # Invokes the setup-local action
+      - uses: browserstack/github-actions/setup-local@master
+        with:
+          local-testing: start
+          local-identifier: random

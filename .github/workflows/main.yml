@@ -46,11 +46,11 @@ jobs:
         with:
           username:  ${{ secrets.BROWSERSTACK_USERNAME }}
           access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-        run: |
-              pip install -r QA/requirements.txt
 
-      - name: 'BrowserStack Local Tunnel Setup'  # Invokes the setup-local action
-        uses: browserstack/github-actions/setup-local@master
+    name: 'BrowserStack Local Tunnel Setup'  # Invokes the setup-local action
+    runs-on: ubuntu-latest  # Can be self-hosted runner also
+    steps:
+      - uses: browserstack/github-actions/setup-local@master
         with:
           local-testing: start
           local-identifier: random

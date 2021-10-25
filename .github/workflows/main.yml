@@ -4,25 +4,43 @@ on:
     branches:
       - '**'
 jobs:
-  deploy:
+  test:
+    name: Run CI tests
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
     steps:
-    - name: SSH to EC2 instance
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.PROD_KEY }}
-        port: ${{ secrets.port }}
-        script:  |
-          cd qxf2/interview-scheduler
-          source venv-interview-scheduler/bin/activate
-          git pull origin master
-          mv maintenance_off.html maintenance_on.html
-          pip install -r requirements.txt
-          python migrate_db.py db migrate
-          python migrate_db.py db upgrade
-          sudo service gunicorn restart
-          mv maintenance_on.html maintenance_off.html
-          deactivate
+      - uses: actions/checkout@v2
+      - name: 'BrowserStack Env Setup'
+      - uses: 'browserstack/github-actions/setup-env@master'
+        with:
+          username:  ${{ secrets.BROWSERSTACK_USERNAME }}
+          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          print(username)
+          print(access-key)
+      - name: Running requirements and server in  background
+        run: |
+              pip install -r QA/requirements.txt
+              touch qxf2_scheduler/email_config.py
+              cat > qxf2_scheduler/email_config.py << EOF
+              MAIL_USERNAME = "${{ secrets.MAIL_USERNAME }}"
+              MAIL_PASSWORD = "${{ secrets.MAIL_PASSWORD }}"
+              EOF
+              mkdir data
+              touch data/candidatestatus.csv
+              cat > data/candidatestatus.csv <<EOF
+              status_id,status_name
+              1,Waiting on Qxf2
+              2,Waiting on Candidate
+              3,Interview Scheduled
+              4,No response
+              5,Reject
+              6,Hired
+              7,Waiting for new opening
+              EOF
+              python migrate_db.py db init
+              python migrate_db.py db migrate
+              python migrate_db.py db upgrade
+              python qxf2_scheduler/setup_db.py
+              python  run.py > /dev/null 2>&1 &
+              cd QA/tests
+              python -m pytest
+              pkill -f run.py

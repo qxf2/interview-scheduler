@@ -3,7 +3,25 @@ on:
   push:
     branches:
       - '**'
+name: 'BrowserStack Test'
 jobs:
+  ubuntu-job:
+    name: 'BrowserStack Test on Ubuntu'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'BrowserStack Env Setup'
+        uses: 'browserstack/github-actions/setup-env@master'
+        with:
+          username:  ${{ secrets.BROWSERSTACK_USERNAME }}
+          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          build-name: BUILD_INFO
+          project-name: REPO_NAME
+      - name: 'BrowserStackLocal Setup'
+        uses: 'browserstack/github-actions/setup-local@master'
+        with:
+          local-testing: start
+          local-identifier: random
+
   test:
     name: Run CI tests
     runs-on: ubuntu-latest
@@ -12,69 +30,8 @@ jobs:
       - name: Running requirements and server in  background
         run: |
               pip install -r QA/requirements.txt
-              touch qxf2_scheduler/email_config.py
-              cat > qxf2_scheduler/email_config.py << EOF
-              MAIL_USERNAME = "${{ secrets.MAIL_USERNAME }}"
-              MAIL_PASSWORD = "${{ secrets.MAIL_PASSWORD }}"
-              EOF
-              mkdir data
-              touch data/candidatestatus.csv
-              cat > data/candidatestatus.csv <<EOF
-              status_id,status_name
-              1,Waiting on Qxf2
-              2,Waiting on Candidate
-              3,Interview Scheduled
-              4,No response
-              5,Reject
-              6,Hired
-              7,Waiting for new opening
-              EOF
-              python migrate_db.py db init
-              python migrate_db.py db migrate
-              python migrate_db.py db upgrade
-              python qxf2_scheduler/setup_db.py
-              python  run.py > /dev/null 2>&1 &
-              cd QA/tests
-              python -m pytest --ignore=test_isapp_api.py --ignore=test_login_user.py
-              pkill -f run.py
 
-    name: 'BrowserStack Test on Ubuntu'
-    runs-on: ubuntu-latest  # Can be self-hosted runner also
-    steps:
-      - uses: browserstack/github-actions/setup-env@master
-      - name: 'BrowserStack Env Setup'  # Invokes the setup-env action
+      - name: 'BrowserStackLocal Stop'
+        uses: 'browserstack/github-actions/setup-local@master'
         with:
-          username:  ${{ secrets.BROWSERSTACK_USERNAME }}
-          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-
-    name: 'BrowserStack Local Tunnel Setup'  # Invokes the setup-local action
-    runs-on: ubuntu-latest  # Can be self-hosted runner also
-    steps:
-      - uses: browserstack/github-actions/setup-local@master
-        with:
-          local-testing: start
-          local-identifier: random
-        run: |
-              pip install -r QA/requirements.txt
-              touch qxf2_scheduler/email_config.py
-              cat > qxf2_scheduler/email_config.py << EOF
-              MAIL_USERNAME = "${{ secrets.MAIL_USERNAME }}"
-              MAIL_PASSWORD = "${{ secrets.MAIL_PASSWORD }}"
-              EOF
-              mkdir data
-              touch data/candidatestatus.csv
-              cat > data/candidatestatus.csv <<EOF
-              status_id,status_name
-              1,Waiting on Qxf2
-              2,Waiting on Candidate
-              3,Interview Scheduled
-              4,No response
-              5,Reject
-              6,Hired
-              7,Waiting for new opening
-              EOF
-              python migrate_db.py db init
-              python migrate_db.py db migrate
-              python migrate_db.py db upgrade
-              python qxf2_scheduler/setup_db.py
-              python  run.py > /dev/null 2>&1 &
+          local-testing: stop

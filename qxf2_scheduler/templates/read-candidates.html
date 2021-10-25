@@ -70,12 +70,9 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Job</th>
-
-
                             <th>Status</th>
-
-
                             <th>Actions</th>
+                            <th>Date Modified</th>
 
                         </tr>
                     </thead>
@@ -100,6 +97,7 @@
                                     data-candidateid="{{ each_candidate.candidate_id }}"
                                     data-jobid="{{ each_candidate.job_id }}" data-toggle="modal">Delete</button>
                             </td>
+                            <td>{{each_candidate.last_updated_date}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

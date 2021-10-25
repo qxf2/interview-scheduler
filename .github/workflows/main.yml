@@ -14,8 +14,6 @@ jobs:
         with:
           username:  ${{ secrets.BROWSERSTACK_USERNAME }}
           access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          print(username)
-          print(access-key)
       - name: Running requirements and server in  background
         run: |
               pip install -r QA/requirements.txt

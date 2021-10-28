@@ -20,3 +20,7 @@ jobs:
         with:
           local-testing: start
           local-identifier: random
+      - name: 'BrowserStackLocal Stop'
+        uses: 'browserstack/github-actions/setup-local@master'
+        with:
+          local-testing: stop

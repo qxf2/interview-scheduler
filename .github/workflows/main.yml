@@ -21,8 +21,8 @@ jobs:
           local-testing: start
           local-identifier: random
       - name: Running requirements and server in  background
-        uses: actions/checkout@v2
         run: |
+              cd QA
               pip install -r QA/requirements.txt
               touch qxf2_scheduler/email_config.py
               cat > qxf2_scheduler/email_config.py << EOF

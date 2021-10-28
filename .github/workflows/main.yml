@@ -16,7 +16,7 @@ jobs:
           build-name: BUILD_INFO
           project-name: REPO_NAME
       - name: 'BrowserStackLocal Setup'
-        uses: 'browserstack/github-actions/setup-local@master'
+        uses: 'actions/checkout@v2'
         with:
           local-testing: start
           local-identifier: random

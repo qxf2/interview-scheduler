@@ -3,11 +3,6 @@ on:
   push:
     branches:
       - '**'
-name: Interview-Scheduler
-on:
-  push:
-    branches:
-      - '**'
 jobs:
   ubuntu-job:
     name: 'BrowserStack Test on Ubuntu'

@@ -22,6 +22,7 @@ jobs:
           local-identifier: random
       - name: Running requirements and server in  background
         run: |
+          working-directory: ./QA
               pwd
               pip install -r QA/requirements.txt
               touch qxf2_scheduler/email_config.py

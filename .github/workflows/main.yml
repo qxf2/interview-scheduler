@@ -49,7 +49,7 @@ jobs:
               python  run.py > /dev/null 2>&1 &
               cd QA/tests
               python -m pytest --ignore=test_isapp_api.py --ignore=test_login_user.py
-              python - pytest test_login_user.py --remote_flag Y
+              python -m pytest test_login_user.py --remote_flag Y
               pkill -f run.py
       - name: 'BrowserStackLocal Stop'
         uses: 'browserstack/github-actions/setup-local@master'

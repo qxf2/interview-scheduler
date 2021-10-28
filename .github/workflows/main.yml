@@ -16,11 +16,12 @@ jobs:
           build-name: BUILD_INFO
           project-name: REPO_NAME
       - name: 'BrowserStackLocal Setup'
-        uses: 'browserstack/github-actions/checkout@v2'
+        uses: 'browserstack/github-actions/setup-local@master'
         with:
           local-testing: start
           local-identifier: random
       - name: Running requirements and server in  background
+        uses: actions/checkout@v2
         run: |
               pip install -r QA/requirements.txt
               touch qxf2_scheduler/email_config.py

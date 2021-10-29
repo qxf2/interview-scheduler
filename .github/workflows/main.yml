@@ -5,7 +5,7 @@ on:
       - '**'
 jobs:
   ubuntu-job:
-    name: 'BrowserStack Test'
+    name: 'BrowserStack Test Login Page'
     runs-on: ubuntu-latest
     steps:
       - name: 'BrowserStack Env Setup'

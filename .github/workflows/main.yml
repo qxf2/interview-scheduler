@@ -56,6 +56,8 @@ jobs:
               USERNAME = "${{ secrets.BROWSERSTACK_USERNAME }}"
               ACCESS_KEY = "${{ secrets.BROWSERSTACK_ACCESS_KEY }}"
               EOF
+              cd ..
+              cd tests
               python -m pytest test_login_user.py --remote_flag Y
               pkill -f run.py
       - name: 'BrowserStackLocal Stop'

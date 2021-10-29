@@ -5,5 +5,5 @@ REMOTE_BROWSER_PLATFORM = "BS"
 USERNAME = "Add your BrowserStack/Sauce Labs username"
 ACCESS_KEY = "Add your BrowserStack/Sauce Labs accesskey"
 '''
-USERNAME = username
-ACCESS_KEY = access-key
+USERNAME = "${{ secrets.BROWSERSTACK_USERNAME }}"
+ACCESS_KEY = "${{ secrets.BROWSERSTACK_ACCESS_KEY }}"

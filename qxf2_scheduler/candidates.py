@@ -79,7 +79,8 @@ def fetch_candidate_list(candidate_list_object):
         for candidate_status in candidate_status_object:
             candidate_status = candidate_status.status_name
 
-        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':each_candidate.job_id, 'job_role':each_candidate.job_role, 'candidate_status':candidate_status})
+        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':each_candidate.job_id, 'job_role':each_candidate.job_role, 'candidate_status':candidate_status,'last_updated_date':each_candidate.last_updated_date})
+
 
     return my_candidates_list
 
@@ -89,7 +90,7 @@ def fetch_candidate_list(candidate_list_object):
 def read_candidates():
     "Read the candidates"
     candidates_list = []
-    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id, Jobs.job_status != 'Close').values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id, Jobs.job_status != 'Close').values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status,Candidates.last_updated_date)
 
     candidates_list = fetch_candidate_list(display_candidates)
 
@@ -309,7 +310,7 @@ def show_candidate_job(job_id, candidate_id):
     round_details = {}
     candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id, Jobs.job_id == job_id, Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).values(Candidates.candidate_name,  Candidates.candidate_email, Candidates.date_applied, Jobs.job_role, Jobs.job_id, Candidates.candidate_id, Jobcandidate.url, Jobcandidate.candidate_status, Jobcandidate.interviewer_email, Jobcandidate.url, Candidates.comments, Jobcandidate.interview_start_time, Jobcandidate.interview_date)
     for each_data in candidate_job_data:
-        if each_data.url == '':
+        if each_data.url=='None' or each_data.url == '':
             url = None
         else:
             url = base_url + each_data.url + '/welcome'
@@ -339,10 +340,7 @@ def show_candidate_job(job_id, candidate_id):
         round_details = {'round_name':round_detail.round_name, 'round_id':round_detail.round_id, 'round_description':round_detail.round_description, 'round_time':round_detail.round_time}
         round_names_list.append(round_details)
 
-    #Get the last updated date for the candidates from the candidate table
-    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).value(Candidates.last_updated_date)
-
-    return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_details=round_name_status_list,last_updated_date=last_updated_date)
+    return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_details=round_name_status_list)
 
 
 @app.route("/candidate/<candidate_id>/edit", methods=["GET", "POST"])
@@ -597,7 +595,8 @@ def reject_without_email():
     candidate_job_applied = request.form.get('candidatejob')
     candidate_id = request.form.get('candidateid')
     status_change = change_status_to_reject(candidate_id,candidate_job_applied)
-
+    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+    db.session.commit()
     data = {'candidate_name': candidate_name, 'error': status_change}
     return jsonify(data)
 

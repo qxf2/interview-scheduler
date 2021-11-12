@@ -589,7 +589,7 @@ def job_filter():
 
 @app.route("/noemail/reject",methods=["GET","POST"])
 def reject_without_email():
-    "Change the status without reject email"
+    "Change the status of the candidate without reject email"
     candidate_name = request.form.get('candidatename')
     candidate_email = request.form.get('candidateemail')
     candidate_job_applied = request.form.get('candidatejob')

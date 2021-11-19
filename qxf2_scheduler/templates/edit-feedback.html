@@ -51,16 +51,17 @@
         <div class="col-md-4">
             {% if candidate_feedback['thumbs_value'] == 'Thumbs Up' %}
             <select id="thumbsUp" style="width:200px; height:30px;">
-                <option value="{{candidate_feedback['thumbs_value']}}">{{candidate_feedback['thumbs_value']}}</option>
+                <option value="thumbsup" selected>{{candidate_feedback['thumbs_value']}}</option>
                 <option value="thumbsdown">Thumbs Down</option>
             </select>
             {% elif candidate_feedback['thumbs_value'] == 'Thumbs Down' %}
             <select id="thumbsUp" style="width:200px; height:30px;">
-                <option value="{{candidate_feedback['thumbs_value']}}">{{candidate_feedback['thumbs_value']}}</option>
+                <option value="thumbsdown" selected>{{candidate_feedback['thumbs_value']}}</option>
                 <option value="thumbsup">Thumbs Up</option>
             </select>
             {% else %}
             <select id="thumbsUp" style="width:200px; height:30px;">
+                <option value="Select thumbs up or down">Select</option>
                 <option value="thumbsdown">Thumbs Down</option>
                 <option value="thumbsup">Thumbs Up</option>
             </select>
@@ -111,6 +112,7 @@
                             var editedFeedback = document.getElementById("comments").value
                             var candidateId = document.getElementById("candidateId").value
                             var roundId = document.getElementById("roundId").value
+                            console.log(thumbsValue);
                             $.ajax({
                                 type: 'POST',
                                 url: '/candidate/' + candidateId + '/round/' + roundId + '/edit_feedback',

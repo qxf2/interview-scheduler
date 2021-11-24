@@ -6,7 +6,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
     steps:
     - name: SSH to EC2 instance
       uses: appleboy/ssh-action@master
@@ -18,7 +17,7 @@ jobs:
         script:  |
           cd qxf2/interview-scheduler
           source venv-interview-scheduler/bin/activate
-          git pull origin master
+          git pull origin staging-new
           pip install -r requirements.txt
           python migrate_db.py db migrate
           python migrate_db.py db upgrade

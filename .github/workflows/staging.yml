@@ -12,9 +12,9 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.STAGING_HOST }}
-        username: ${{ secrets.STAGING_USERNAME }}
+        username: ${{ secrets.USERNAME }}
         key: ${{ secrets.STAGING_PROD_KEY }}
-        port: ${{ secrets.STAGING_port }}
+        port: ${{ secrets.port }}
         script:  |
           cd qxf2/interview-scheduler
           source venv-interview-scheduler/bin/activate

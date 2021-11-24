@@ -12,7 +12,7 @@ jobs:
       with:
         host: ${{ secrets.STAGING_HOST }}
         username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.STAGING_PROD_KEY }}
+        key: ${{ secrets.STAGING_KEY }}
         port: ${{ secrets.port }}
         script:  |
           cd qxf2/interview-scheduler

@@ -1,4 +1,4 @@
-name: Staging-Interview-Scheduler
+name: Staging-Interview-Scheduler-CD
 on:
   push:
     branches:

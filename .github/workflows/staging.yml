@@ -2,7 +2,7 @@ name: Staging-Interview-Scheduler-CD
 on:
   push:
     branches:
-      - 'staging-new'
+      - staging-new
 jobs:
   deploy:
     runs-on: ubuntu-latest

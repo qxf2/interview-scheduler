@@ -5,7 +5,7 @@ from qxf2_scheduler import db
 import json,ast,sys,os,datetime
 from flask_login import login_required
 
-from qxf2_scheduler.models import Jobs, Roundinterviewers, Rounds, Jobround, Interviewers, Roundinterviewers
+from qxf2_scheduler.models import Jobs, Rounds, Jobround, Interviewers, Roundinterviewers
 
 
 def fetch_interviewers_for_rounds(round_id,job_id):
@@ -80,7 +80,7 @@ def add_rounds_details(job_id):
         round_description = request.form.get('roundDescription')
         round_requirements = request.form.get('roundRequirements')
         round_name = request.form.get('roundName')
-        added_interviewers = request.form.getlist('addedInterviewers[]')
+        added_interviewers_list = request.form.getlist('addedInterviewers[]')
         data={'round_name':round_name,'job_id':job_id}
         #Adding the round details into the database
         add_round_object = Rounds(round_name=round_name,round_time=round_time,round_description=round_description,round_requirement=round_requirements)
@@ -92,6 +92,10 @@ def add_rounds_details(job_id):
         add_job_round_object = Jobround(round_id=round_id,job_id=job_id)
         db.session.add(add_job_round_object)
         db.session.commit()
+        for each_interviewer in added_interviewers_list:
+            add_round_interviewers = Roundinterviewers(round_id=round_id,job_id=job_id,interviewers_id=each_interviewer)
+            db.session.add(add_round_interviewers)
+            db.session.commit()
         api_response = {'data':data}
 
         return jsonify(api_response)

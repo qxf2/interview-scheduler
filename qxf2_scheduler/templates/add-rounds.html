@@ -91,6 +91,23 @@
                 <div class="invalid-feedback">Please fill out this field</div>
 
             </div>
+            </div>
+            <label class="col-md-4 control-label" for="addinterviewers"><span style="color:red">*</span>Add interviewers</label>
+            <div class="col-md-4">
+                <select id="multiSelect" class="js-select2" multiple="multiple" >
+                    {% for each_interviewer in interviewers %}
+
+                    <option value="{{each_interviewer.interviewer_id}}" selected="selected" data-badge="">
+                        {{each_interviewer.interviewer_name}}</option>
+                    {% endfor %}
+                    {% for each_interviewer in interviewers_list %}
+
+                    <option value="{{each_interviewer.interviewer_id}}" data-badge="">
+                        {{each_interviewer.interviewer_name}}</option>
+                    {% endfor %}
+                </select>
+
+            </div>
 
             <input type="hidden" id="jobId" value="{{job_id}}">
             <div class="col-md-8">
@@ -132,7 +149,8 @@
                                     'roundName': roundName,
                                     'roundTime': roundTime,
                                     'roundDescription': roundDescription,
-                                    'roundRequirements': roundRequirements
+                                    'roundRequirements': roundRequirements,
+                                    'addedInterviewers':addedInterviewers
                                 },
                                 success: function (result) {
                                     alert("The round has been added");

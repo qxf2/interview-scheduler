@@ -42,7 +42,6 @@
 <body>
     <div>
         {% include "logout.html" %}
-        {{interviewers}}
         <h2 class="grey_text text-justify">Add Rounds</h2>
         <form class="needs-validation">
             <label class="col-md-4 control-label" for="rname"><span style="color:red">*</span>Round name</label>
@@ -92,6 +91,23 @@
                 <div class="invalid-feedback">Please fill out this field</div>
 
             </div>
+            </div>
+            <label class="col-md-4 control-label" for="addinterviewers"><span style="color:red">*</span>Add interviewers</label>
+            <div class="col-md-4">
+                <select id="multiSelect" class="js-select2" multiple="multiple" >
+                    {% for each_interviewer in interviewers %}
+
+                    <option value="{{each_interviewer.interviewer_id}}" selected="selected" data-badge="">
+                        {{each_interviewer.interviewer_name}}</option>
+                    {% endfor %}
+                    {% for each_interviewer in interviewers_list %}
+
+                    <option value="{{each_interviewer.interviewer_id}}" data-badge="">
+                        {{each_interviewer.interviewer_name}}</option>
+                    {% endfor %}
+                </select>
+
+            </div>
 
             <input type="hidden" id="jobId" value="{{job_id}}">
             <div class="col-md-8">
@@ -125,7 +141,7 @@
                             var jobId = document.getElementById("jobId").value;
                             $("#addRound").attr("disabled", true);
 
-
+                            var addedInterviewers = $("#multiSelect").val();
                             $.ajax({
                                 type: 'POST',
                                 url: '/jobs/' + jobId + '/round/add',
@@ -133,7 +149,8 @@
                                     'roundName': roundName,
                                     'roundTime': roundTime,
                                     'roundDescription': roundDescription,
-                                    'roundRequirements': roundRequirements
+                                    'roundRequirements': roundRequirements,
+                                    'addedInterviewers':addedInterviewers
                                 },
                                 success: function (result) {
                                     alert("The round has been added");
@@ -174,7 +191,7 @@
                function iformat(icon, badge,) {
                    var originalOption = icon.element;
                    var originalOptionBadge = $(originalOption).data('badge');
-
+                   console.log(originalOption)
                    return $('<span><i class="fa ' + $(originalOption).data('icon') + '"></i> ' + icon.text + '<span class="badge">' + originalOptionBadge + '</span></span>');
                }
      </script>

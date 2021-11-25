@@ -3,126 +3,103 @@ This file contains all the endpoints exposed by the interview scheduler applicat
 """
 
 from flask import render_template, url_for, redirect, jsonify, request, Response, session
+import requests
 from qxf2_scheduler import app
 import qxf2_scheduler.qxf2_scheduler as my_scheduler
 import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler import db
 from qxf2_scheduler.security import encrypt_password,check_encrypted_password
+import qxf2_scheduler.sso_google_oauth as sso
 import json
 import ast,re,uuid
 import sys,datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message, Mail
-from flask_login import current_user, login_user,login_required,logout_user
+from qxf2_scheduler.authentication_required import Authentication_Required
 from pytz import timezone
 import flask, random, string
-import flask_login
 from flask import flash
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer,Login, Interviewcount,Roundinterviewers
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer, Interviewcount
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
 
-def check_user_exists(user_email):
-    "Check the job already exists in the database"
-    fetch_existing_user_email = Login.query.all()
-    emails_list = []
-    # Fetch the job role
-    for each_email in fetch_existing_user_email:
-        emails_list.append(each_email.email.lower())
-
-    # Compare the job with database job list
-    if user_email.lower() in emails_list:
-        check_user_exists = True
-    else:
-        check_user_exists = False
-
-    return check_user_exists
+@app.route("/")
+def home():
+    "Login page for an app"
+    return render_template('login.html')
 
 
-def send_email(subject, recipients, text_body):
-    "Send the email"
-    msg = Message(subject, recipients=recipients)
-    msg.html = text_body
-    mail.send(msg)
-    user = Login.query.filter_by(email=recipients[0]).first()
-    user.email_confirmation_sent_on = datetime.datetime.now()
-    Login.query.filter(Login.email==recipients[0]).update({'email_confirmation_sent_on':datetime.datetime.now()})
-    db.session.commit()
-
-
-@app.route('/confirm/<token>', methods=['GET', 'POST'])
-def confirm_email(token):
-    "Check the registered user email is confirmed or not"
+@app.route('/callback')
+def callback():
+    "Redirect after Google login & consent"
     try:
-        confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-        email = confirm_serializer.loads(token, salt='scheduling-app-2000', max_age=86400)
+        # Get the code after authenticating from the URL
+        code = request.args.get('code')
+        # Generate URL to generate token
+        token_url, headers, body = sso.CLIENT.prepare_token_request(
+                sso.URL_DICT['token_gen'],
+                authorisation_response=request.url,
+                # request.base_url is same as DATA['redirect_uri']
+                redirect_url=request.base_url,
+                code=code)
+
+        # Generate token to access Google API
+        token_response = requests.post(
+                token_url,
+                headers=headers,
+                data=body,
+                auth=(sso.CLIENT_ID, sso.CLIENT_SECRET))
+        # Parse the token response
+        sso.CLIENT.parse_request_body_response(json.dumps(token_response.json()))
+
+        # Add token to the  Google endpoint to get the user info
+        # oauthlib uses the token parsed in the previous step
+        uri, headers, body = sso.CLIENT.add_token(sso.URL_DICT['get_user_info'])
+
+        # Get the user info
+        response_user_info = requests.get(uri, headers=headers, data=body)
+        info = response_user_info.json()
+        user_info = info['email']
+        user_email_domain = re.search("@[\w.]+",user_info).group()
     except Exception as e:
-        app.logger.info('Info level log',e)
-        app.logger.warning('Warning level log')
-        app.logger.critical(e, exc_info=True)
-        flash('The confirmation link is invalid or has expired.', 'error')
-        return redirect(url_for('login'))
-
-    user = Login.query.filter_by(email=email).first()
-
-    if user.email_confirmed:
-        flash('Account already confirmed. Please login.', 'info')
+        app.logger.error(e)
+    if user_email_domain == '@qxf2.com':
+        session['logged_user'] = user_info
+        return redirect(url_for('index'))
     else:
-        user.email_confirmed = True
-        user.email_confirmed_on = datetime.datetime.now()
-        db.session.add(user)
-        db.session.commit()
-        flash('Thank you for confirming your email address!')
-
-    return redirect(url_for('login'))
+        return render_template('unauthorized.html')
 
 
-def send_confirmation_email(user_email):
-    "Sends the confirmation email"
-    confirm_serializer = URLSafeTimedSerializer(app.secret_key)
-    token=confirm_serializer.dumps(user_email, salt='scheduling-app-2000')
-    app.logger.critical(f'token:{token}')
-    confirm_url = url_for(
-        'confirm_email',
-        token=token,
-        _external=True)
-    app.logger.critical(f'confirmurl:{confirm_url}')
-    html = render_template(
-        'email_confirmation.html',
-        confirm_url=confirm_url)
-
-    send_email('Confirm Your Email Address', [user_email], html)
+@app.route("/login")
+def login():
+    "Login redirect"
+    return redirect(sso.REQ_URI)
 
 
-@app.route("/registration",methods=['GET','POST'])
-def registration():
-    "New registration"
-    if request.method == 'GET':
-        return render_template('signup.html')
-    if request.method == 'POST':
-        user_name = request.form.get('username')
-        user_password = request.form.get('userpassword')
-        user_email = request.form.get('useremail')
-        check_user_exist = check_user_exists(user_email)
-        data = {'user_name':user_name,'user_email':user_email}
-        if check_user_exist == True:
-            error = 'error'
-        else:
-            add_new_user_object = Login(username=user_name,email=user_email,password=encrypt_password(user_password))
-            db.session.add(add_new_user_object)
-            db.session.flush()
-            user_id = add_new_user_object.id
-            db.session.commit()
-            error = 'Success'
-            send_confirmation_email(user_email)
-            flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
-        api_response = {'data':data,'error':error}
+@app.route("/logout",methods=['GET', 'POST'])
+def logout():
+    "Logout the current page"
+    #logout_user()
+    try:
+        for key in list(session.keys()):
+            session.pop(key)
+    except Exception as e:
+        app.logger.error(e)
 
-    return jsonify(api_response)
+    return redirect('/')
+
+
+@app.route("/index")
+@app.route("/")
+@app.route("/home")
+@Authentication_Required.requires_auth
+def index():
+    "The index page"
+    return render_template('index.html')
 
 
 def get_id_for_emails(email_list):
@@ -315,103 +292,17 @@ def scehdule_and_confirm():
         #Add the count for the interviewer in the interviewcount table
         add_interview_count(fetch_interviewer_id_value)
 
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+        db.session.commit()
+
         return redirect(url_for('confirm', value=value))
 
 
     return render_template("get-schedule.html")
 
 
-def validate(username):
-    "Validate the username and passowrd"
-    exists = db.session.query(db.exists().where(Login.username == username)).scalar()
-
-    return exists
-
-
-def password_validate(password):
-    "Validate the username and passowrd"
-    exists = db.session.query(db.exists().where(Login.password == check_encrypted_password(password))).scalar()
-
-    return exists
-
-@app.before_request
-def before_request():
-    "Session time out method"
-    session.permanent = True
-    app.permanent_session_lifetime = datetime.timedelta(minutes = 60)
-    flask.session.modified = True
-
-def gen_random_key():
-    "Generate random key for signup"
-    return ''.join(random.choices(string.ascii_uppercase + string.digits))
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    error = None
-    if request.method == 'GET':
-        if current_user.is_authenticated:
-            return redirect(url_for('index'))
-        return render_template('login.html', error=error)
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        data = {'username':username}
-        exists = db.session.query(Login).filter_by(username=username).first()
-        #fetch the email id of the user whose logged in
-        if exists != None:
-            user_email_id = Login.query.filter(Login.username==username).values(Login.email,Login.email_confirmed, Login.email_confirmation_sent_on,Login.password)
-            for logged_user in user_email_id:
-                logged_email_id = logged_user.email
-                logged_email_confirmation = logged_user.email_confirmed
-                logged_email_sent_on = logged_user.email_confirmation_sent_on
-                hashed = logged_user.password
-            session['logged_user'] = logged_email_id
-
-            if logged_email_confirmation or not logged_email_sent_on:
-                completion = validate(username)
-                app.logger.critical(completion,exc_info=True)
-                password_check = check_encrypted_password(password,hashed)
-                if (completion and password_check):
-                    user = Login()
-                    user.name=username
-                    user.password=password
-                    login_user(user)
-                    error = 'Success'
-                    app.logger.critical(error,exc_info=True)
-                    api_response = {'data':data,'error':error}
-                else:
-                    error = 'error'
-                    api_response = {'data':data,'error':error}
-            else:
-                error = 'confirmation error'
-                api_response = {'data':username, 'error':error}
-        else:
-            error = 'error'
-            api_response = {'data':data,'error':error}
-
-
-        return jsonify(api_response)
-
-
-@app.route("/logout",methods=["GET","POST"])
-@login_required
-def logout():
-    "Logout the current page"
-    logout_user()
-    return redirect(url_for('login'))
-
-
-@app.route("/index")
-@app.route("/")
-@login_required
-def index():
-    "The index page"
-    return render_template('index.html')
-
-
 @app.route("/interviewers")
-@login_required
+@Authentication_Required.requires_auth
 def list_interviewers():
     "List all the interviewer names"
     all_interviewers = Interviewers.query.all()
@@ -466,7 +357,7 @@ def form_interviewer_details(interviewer_details):
 
 
 @app.route("/interviewer/<interviewer_id>")
-@login_required
+@Authentication_Required.requires_auth
 def read_interviewer_details(interviewer_id):
     "Displays all the interviewer details"
     # Fetching the Interviewer detail by joining the Interviewertimeslots tables and Interviewer tables
@@ -508,7 +399,7 @@ def add_edit_interviewers_in_time_slot_table(interviewer_name):
 
 
 @app.route("/interviewer/<interviewer_id>/edit", methods=['GET', 'POST'])
-@login_required
+@Authentication_Required.requires_auth
 def edit_interviewer(interviewer_id):
     "Edit the interviewers"
     # This query fetch the interviewer details by joining the time slots table and interviewers table.
@@ -563,7 +454,7 @@ def edit_interviewer(interviewer_id):
 
 
 @app.route("/interviewer/<interviewer_id>/delete", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def delete_interviewer(interviewer_id):
     "Deletes an interviewer"
     if request.method == 'POST':
@@ -592,7 +483,7 @@ def fetch_all_interviewers():
 
 
 @app.route("/jobs")
-@login_required
+@Authentication_Required.requires_auth
 def jobs_page():
     "Displays the jobs page for the interview"
     display_jobs = Jobs.query.all()
@@ -632,7 +523,7 @@ def check_job_status(job_id):
 
 
 @app.route("/details/job/<job_id>")
-@login_required
+@Authentication_Required.requires_auth
 def interviewers_for_roles(job_id):
     "Display the interviewers based on the job id"
     interviewers_list = []
@@ -701,7 +592,7 @@ def check_not_existing_interviewers(interviewers,actual_interviewers_list):
 
 
 @app.route("/jobs/add", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def add_job():
     "Add ajob through UI"
     if request.method == 'GET':
@@ -752,7 +643,7 @@ def add_job():
 
 
 @app.route("/jobs/delete", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def delete_job():
     "Deletes a job"
     if request.method == 'POST':
@@ -827,7 +718,7 @@ def update_job_interviewer_in_database(job_id, job_role, interviewers_list):
 
 
 @app.route("/job/<job_id>/edit", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def edit_job(job_id):
     "Editing the already existing job"
     if request.method == 'GET':
@@ -891,7 +782,7 @@ def edit_job(job_id):
 
 
 @app.route("/interviewers/add", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def add_interviewers():
     data = {}
     "Adding the interviewers"
@@ -999,6 +890,7 @@ def schedule_interview(job_id,url,candidate_id):
     "Validate candidate name and candidate email"
     if request.method == 'POST':
         candidate_unique_code = request.form.get('unique-code')
+        candidate_unique_code = candidate_unique_code.strip()
         candidate_email = request.form.get('candidate-email')
         #url = request.form.get('url')
         candidate_data = Candidates.query.filter(Candidates.candidate_id == candidate_id).values(Candidates.candidate_email,Candidates.candidate_name)
@@ -1078,7 +970,7 @@ def fetch_interviewer_email(candidate_id, job_id):
 
 
 @app.route("/candidate/<candidate_id>/job/<job_id>/invite", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def send_invite(candidate_id, job_id):
     "Send an invite to schedule an interview"
     if request.method == 'POST':
@@ -1132,6 +1024,8 @@ def send_invite(candidate_id, job_id):
             db.session.commit()
 
             error = 'Success'
+            last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+            db.session.commit()
 
         except Exception as e:
             error = "Failed"

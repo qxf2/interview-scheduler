@@ -1,8 +1,6 @@
 from qxf2_scheduler import db
 import datetime
 from sqlalchemy import Integer, ForeignKey, String, Column,CheckConstraint,DateTime
-from flask_login import UserMixin
-from qxf2_scheduler import login_manager
 from sqlalchemy.sql import table, column
 from flask_seeder import Seeder, Faker, generator
 
@@ -58,6 +56,7 @@ class Candidates(db.Model):
     date_applied = db.Column(DateTime, default=datetime.datetime.utcnow)
     job_applied = db.Column(db.String,nullable=False)
     comments = db.Column(db.String)
+    last_updated_date = db.Column(db.String)
 
     def __repr__(self):
         return f"Candidates('{self.candidate_name}','{self.candidate_email}')"
@@ -74,17 +73,6 @@ class Rounds(db.Model):
 
     def __repr__(self):
         return f"Rounds('{self.round_time}','{self.round_description}','{self.round_requirement}','{self.round_name}','{self.added_interviewers}')"
-
-
-class Roundinterviewers(db.Model):
-    "Adding interviewers for rounds"
-    combo_id = db.Column(db.Integer,primary_key=True)
-    round_id = db.Column(db.Integer,ForeignKey(Rounds.round_id))
-    interviewers_id = db.Column(db.Integer,ForeignKey(Interviewers.interviewer_id))
-    job_id = db.Column(db.Integer,ForeignKey(Jobs.job_id))
-
-    def __repr__(self):
-        return f"Roundinterviewers('{self.round_id}','{self.interviewers_id}')"
 
 
 class Jobcandidate(db.Model):
@@ -147,20 +135,6 @@ class Candidateinterviewer(db.Model):
         return f"Candidateinterviewer('{self.job_id}','{self.candidate_id}','{self.interviewer_id}')"
 
 
-class Login(db.Model,UserMixin):
-    "Creates username and password"
-    id = db.Column(db.Integer,primary_key=True,nullable=False)
-    username = db.Column(db.String,nullable=False)
-    password = db.Column(db.String,nullable=False)
-    email = db.Column(db.String,nullable=False)
-    email_confirmation_sent_on = db.Column(db.DateTime, nullable=True)
-    email_confirmed = db.Column(db.Boolean, nullable=True, default=False)
-    email_confirmed_on = db.Column(db.DateTime, nullable=True)
-
-    def __repr__(self):
-        return f"Login('{self.id}','{self.username}','{self.password}','{self.email}','{self.email_confirmation_sent_on}','{self.email_confirmed}','{self.email_confirmed_on}')"
-
-
 class Interviewcount(db.Model):
     "Keep the number of interview count for interviewers"
     id = db.Column(db.Integer, primary_key=True)
@@ -169,12 +143,3 @@ class Interviewcount(db.Model):
 
     def __repr__(self):
         return f"Interviewcount('{self.interviewer_id}','{self.interview_count}')"
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    user = Login()
-    user.id = Login.id
-    user.username = Login.username
-    user.password = Login.password
-    return user

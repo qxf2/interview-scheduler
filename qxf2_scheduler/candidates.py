@@ -1,10 +1,10 @@
 import datetime
 from flask import render_template, jsonify, request, session
-from flask_login import login_required
 from flask_mail import Message, Mail
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from qxf2_scheduler import app
 import qxf2_scheduler.candidate_status as status
+from qxf2_scheduler.authentication_required import Authentication_Required
 from qxf2_scheduler import db
 from sqlalchemy import or_
 
@@ -79,17 +79,18 @@ def fetch_candidate_list(candidate_list_object):
         for candidate_status in candidate_status_object:
             candidate_status = candidate_status.status_name
 
-        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':each_candidate.job_id, 'job_role':each_candidate.job_role, 'candidate_status':candidate_status})
+        my_candidates_list.append({'candidate_id':each_candidate.candidate_id, 'candidate_name':each_candidate.candidate_name, 'candidate_email':each_candidate.candidate_email, 'job_id':each_candidate.job_id, 'job_role':each_candidate.job_role, 'candidate_status':candidate_status,'last_updated_date':each_candidate.last_updated_date})
+
 
     return my_candidates_list
 
 
 @app.route("/candidates", methods=["GET"])
-@login_required
+@Authentication_Required.requires_auth
 def read_candidates():
     "Read the candidates"
     candidates_list = []
-    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id, Jobs.job_status != 'Close').values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status)
+    display_candidates = db.session.query(Candidates, Jobs, Jobcandidate).filter(Jobcandidate.job_id == Jobs.job_id, Jobcandidate.candidate_id == Candidates.candidate_id, Jobs.job_status != 'Close').values(Candidates.candidate_id, Candidates.candidate_name, Candidates.candidate_email, Jobs.job_id, Jobs.job_role, Jobcandidate.candidate_status,Candidates.last_updated_date)
 
     candidates_list = fetch_candidate_list(display_candidates)
 
@@ -97,7 +98,7 @@ def read_candidates():
 
 
 @app.route("/candidate/<candidate_id>/delete", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def delete_candidate(candidate_id):
     "Deletes a candidate"
     if request.method == 'POST':
@@ -158,7 +159,7 @@ def candidate_diff_job(candidate_name, candidate_email, candidate_job_applied, j
 #Passing the optional parameter through URL
 @app.route('/candidate/<job_role>/add')
 @app.route("/candidate/add", defaults={'job_role': None}, methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def add_candidate(job_role):
     "Add a candidate"
     data, error = [], None
@@ -222,7 +223,7 @@ def add_candidate(job_role):
 
 
 @app.route("/candidate/url", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def generate_unique_url():
     candidate_id = request.form.get('candidateId')
     job_id = request.form.get('jobId')
@@ -302,14 +303,14 @@ def get_round_names_and_status(candidate_id, job_id, all_round_id):
 
 
 @app.route("/candidate/<candidate_id>/job/<job_id>")
-@login_required
+@Authentication_Required.requires_auth
 def show_candidate_job(job_id, candidate_id):
     "Show candidate name and job role"
     round_names_list = []
     round_details = {}
     candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id, Jobs.job_id == job_id, Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).values(Candidates.candidate_name,  Candidates.candidate_email, Candidates.date_applied, Jobs.job_role, Jobs.job_id, Candidates.candidate_id, Jobcandidate.url, Jobcandidate.candidate_status, Jobcandidate.interviewer_email, Jobcandidate.url, Candidates.comments, Jobcandidate.interview_start_time, Jobcandidate.interview_date)
     for each_data in candidate_job_data:
-        if each_data.url == '':
+        if each_data.url=='None' or each_data.url == '':
             url = None
         else:
             url = base_url + each_data.url + '/welcome'
@@ -338,11 +339,12 @@ def show_candidate_job(job_id, candidate_id):
         round_detail = db.session.query(Rounds).filter(Rounds.round_id == each_round_id).scalar()
         round_details = {'round_name':round_detail.round_name, 'round_id':round_detail.round_id, 'round_description':round_detail.round_description, 'round_time':round_detail.round_time}
         round_names_list.append(round_details)
+
     return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_details=round_name_status_list)
 
 
 @app.route("/candidate/<candidate_id>/edit", methods=["GET", "POST"])
-@login_required
+@Authentication_Required.requires_auth
 def edit_candidates(candidate_id):
     "Edit the candidtes"
     #Fetch the candidate details and equal job id
@@ -387,7 +389,7 @@ def edit_candidates(candidate_id):
 
 
 @app.route("/candidates/<candidate_id>/jobs/<job_id>/email")
-@login_required
+@Authentication_Required.requires_auth
 def send_email(candidate_id, job_id):
     # Fetch the id for the candidate status 'Waiting on Candidate'
     #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
@@ -402,20 +404,9 @@ def send_email(candidate_id, job_id):
         return jsonify(error="error"), 500
 
 
-@app.route("/noopening/email", methods=["POST"])
-@login_required
-def no_opening():
-    "Send a no opening email to the candidates"
-    candidate_name = request.form.get('candidatename')
-    candidate_email = request.form.get('candidateemail')
-    candidate_job_applied = request.form.get('candidatejob')
-    candidate_id = request.form.get('candidateid')
-    logged_email = session['logged_user']
-
+def change_status_to_noopening(candidate_id,candidate_job_applied):
+    "Change status to no opening"
     try:
-        msg = Message("Career opportunity with Qxf2 Services", sender=("Qxf2 Services", "test@qxf2.com"),  recipients=[candidate_email], cc=[logged_email])
-        msg.body = "Hi %s , \n\nThanks for applying to Qxf2 Services. We have received your application. Currently we don't have openings suitable to your background and experience. We will get back to you once we have an opening that fits you better.\n\nThanks, \nQxf2 Services"%(candidate_name)
-        mail.send(msg)
         #Update the candidate status to 'Waiting for new opening'
         candidate_statuses = Candidatestatus.query.all()
         for each_status in candidate_statuses:
@@ -430,7 +421,41 @@ def no_opening():
         error = "Failed"
         return(str(e))
 
-    data = {'candidate_name': candidate_name,  'error': error}
+    return error
+
+
+@app.route("/noopening/email", methods=["POST"])
+@Authentication_Required.requires_auth
+def no_opening():
+    "Send a no opening email to the candidates"
+    candidate_name = request.form.get('candidatename')
+    candidate_email = request.form.get('candidateemail')
+    candidate_job_applied = request.form.get('candidatejob')
+    candidate_id = request.form.get('candidateid')
+    logged_email = session['logged_user']
+
+    msg = Message("Career opportunity with Qxf2 Services", sender=("Qxf2 Services", "test@qxf2.com"),  recipients=[candidate_email], cc=[logged_email])
+    msg.body = "Hi %s , \n\nThanks for applying to Qxf2 Services. We have received your application. Currently we don't have openings suitable to your background and experience. We will get back to you once we have an opening that fits you better.\n\nThanks, \nQxf2 Services"%(candidate_name)
+    mail.send(msg)
+    candidate_status = change_status_to_noopening(candidate_id,candidate_job_applied)
+    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+    db.session.commit()
+    data = {'candidate_name': candidate_name,  'error': candidate_status}
+    return jsonify(data)
+
+
+@app.route("/noopening/noemail",methods=["GET","POST"])
+def noopeining_without_email():
+    "Change the status without no opening  email"
+    candidate_name = request.form.get('candidatename')
+    candidate_email = request.form.get('candidateemail')
+    candidate_job_applied = request.form.get('candidatejob')
+    candidate_id = request.form.get('candidateid')
+    status_change = change_status_to_noopening(candidate_id,candidate_job_applied)
+
+    data = {'candidate_name': candidate_name, 'error': status_change}
+    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+    db.session.commit()
     return jsonify(data)
 
 
@@ -465,7 +490,7 @@ def fetch_interviewer_email(candidate_id, job_id):
 
 
 @app.route("/reject", methods=["POST"])
-@login_required
+@Authentication_Required.requires_auth
 def send_reject():
     "Send reject email"
     candidate_name = request.form.get('candidatename')
@@ -485,7 +510,8 @@ def send_reject():
     msg.body = "Hi %s , \n\nI appreciate your interest in a career opportunity with Qxf2 Services. It was a pleasure speaking to you about your background and interests. There are many qualified applicants in the current marketplace and we are searching for those who have the most directly applicable experience to our limited number of openings. I regret we will not be moving forward with your interview process. We wish you all the best in your current search and future endeavors.\n\nThanks, \nQxf2 Services"%(candidate_name)
     mail.send(msg)
     candidate_status = change_status_to_reject(candidate_id,candidate_job_applied)
-
+    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+    db.session.commit()
     data = {'candidate_name': candidate_name, 'error': candidate_status}
     return jsonify(data)
 
@@ -563,13 +589,14 @@ def job_filter():
 
 @app.route("/noemail/reject",methods=["GET","POST"])
 def reject_without_email():
-    "Change the status without reject email"
+    "Change the status of the candidate without reject email"
     candidate_name = request.form.get('candidatename')
     candidate_email = request.form.get('candidateemail')
     candidate_job_applied = request.form.get('candidatejob')
     candidate_id = request.form.get('candidateid')
     status_change = change_status_to_reject(candidate_id,candidate_job_applied)
-
+    last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+    db.session.commit()
     data = {'candidate_name': candidate_name, 'error': status_change}
     return jsonify(data)
 
@@ -581,6 +608,8 @@ def status_no_response():
         candidate_id = request.form.get("candidateid")
         #Update the candidate status to no response
         db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id == candidate_id).update({'candidate_status':4})
+        db.session.commit()
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
         db.session.commit()
 
     return candidate_id
@@ -594,7 +623,8 @@ def status_to_hired():
         job_id = request.form.get("jobid")
         db.session.query(Jobcandidate).filter(Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).update({'candidate_status':6})
         db.session.commit()
-
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+        db.session.commit()
     return candidate_id
 
 
@@ -612,6 +642,8 @@ def add_feedback(candidate_id, round_id):
         Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':added_feedback,'thumbs_value':thumbs_value})
         db.session.commit()
         result = {'added_feedback':added_feedback, 'thumbs_value':thumbs_value, 'error': error}
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+        db.session.commit()
 
     return jsonify(result)
 
@@ -638,8 +670,9 @@ def edit_feedback(candidate_id, round_id):
         combined_edit_feed = thumbs_value + ',' + edited_feedback
         Candidateround.query.filter(Candidateround.candidate_id==candidate_id,Candidateround.round_id==round_id).update({'candidate_feedback':edited_feedback, 'thumbs_value':thumbs_value})
         db.session.commit()
-
         result = {'edited_feedback':edited_feedback, 'thumbs_value':thumbs_value, 'error': error}
+        last_updated_date = Candidates.query.filter(Candidates.candidate_id==candidate_id).update({'last_updated_date':datetime.date.today()})
+        db.session.commit()
+
 
     return jsonify(result)
-

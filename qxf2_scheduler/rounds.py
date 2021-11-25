@@ -28,10 +28,12 @@ def fetch_interviewers_names_for_rounds(round_interviewers_id):
         interviewers_name_list.append({'interviewer_name':interviewer_name,'interviewer_id':each_interviewer_id})
 
     return interviewers_name_list
+from qxf2_scheduler.authentication_required import Authentication_Required
+from qxf2_scheduler.models import Jobs, Rounds, Jobround, Interviewers
 
 
 @app.route("/job/<job_id>/rounds",methods=["GET","POST"])
-@login_required
+@Authentication_Required.requires_auth
 def read_round_details(job_id):
     "read round details"
     if request.method == 'GET':
@@ -64,7 +66,7 @@ def fetch_all_interviewers():
     return my_interviewers_list
 
 @app.route("/jobs/<job_id>/round/add",methods=["GET","POST"])
-@login_required
+@Authentication_Required.requires_auth
 def add_rounds_details(job_id):
     "add rounds details"
     if request.method == "GET":
@@ -86,11 +88,6 @@ def add_rounds_details(job_id):
         db.session.flush()
         round_id = add_round_object.round_id
         db.session.commit()
-        #Adding the round id and interviewers id to the roundinterviewers table
-        for each_added_interviewers in added_interviewers:
-            add_round_interviewers_object = Roundinterviewers(round_id=round_id,interviewers_id=each_added_interviewers,job_id=job_id)
-            db.session.add(add_round_interviewers_object)
-            db.session.commit()
         #Adding the round and job id to the jobround table
         add_job_round_object = Jobround(round_id=round_id,job_id=job_id)
         db.session.add(add_job_round_object)
@@ -103,7 +100,7 @@ def add_rounds_details(job_id):
 
 
 @app.route("/rounds/<round_id>/jobs/<job_id>/delete")
-@login_required
+@Authentication_Required.requires_auth
 def delete_round_details(round_id,job_id):
     "delete round details"
     delete_round = Rounds.query.filter(Rounds.round_id == round_id).first()
@@ -156,7 +153,7 @@ def check_round_interviewers(round_id,job_id,new_interviewers_list,round_intervi
 
 
 @app.route("/rounds/<round_id>/jobs/<job_id>/edit",methods=["GET","POST"])
-@login_required
+@Authentication_Required.requires_auth
 def edit_round_details(round_id,job_id):
     "Edit the round details"
     if request.method == "GET":
@@ -204,7 +201,7 @@ def edit_round_details(round_id,job_id):
 
 
 @app.route("/roundname/get-description",methods=["GET","POST"])
-@login_required
+@Authentication_Required.requires_auth
 def get_round_description():
     "Get the round description"
     round_details = ast.literal_eval(request.form.get("round_name"))

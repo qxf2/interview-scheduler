@@ -37,21 +37,24 @@ from qxf2_scheduler.models import Jobs, Rounds, Jobround, Interviewers
 def read_round_details(job_id):
     "read round details"
     if request.method == 'GET':
-        rounds_list = []
-        db_round_list = db.session.query(Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
-        Rounds.round_id,Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
+        try:
+            rounds_list = []
+            db_round_list = db.session.query(Jobround, Rounds).filter(Jobround.job_id == job_id, Rounds.round_id == Jobround.round_id).group_by(Rounds.round_id).values(
+            Rounds.round_id,Rounds.round_name,Rounds.round_time,Rounds.round_description,Rounds.round_requirement)
 
-        for each_round in db_round_list:
-            round_interviewers_id_list =  fetch_interviewers_for_rounds(each_round.round_id,job_id)
-            round_interviewers_names_list =  fetch_interviewers_names_for_rounds(round_interviewers_id_list)
-            rounds_list.append(
-            {
-            'round_id':each_round.round_id,
-            'round_name':each_round.round_name,
-            'round_time' : each_round.round_time,
-            'round_description' : each_round.round_description,
-            'round_requirement' : each_round.round_requirement,
-            'round_interviewers':round_interviewers_names_list})
+            for each_round in db_round_list:
+                round_interviewers_id_list =  fetch_interviewers_for_rounds(each_round.round_id,job_id)
+                round_interviewers_names_list =  fetch_interviewers_names_for_rounds(round_interviewers_id_list)
+                rounds_list.append(
+                {
+                'round_id':each_round.round_id,
+                'round_name':each_round.round_name,
+                'round_time' : each_round.round_time,
+                'round_description' : each_round.round_description,
+                'round_requirement' : each_round.round_requirement,
+                'round_interviewers':round_interviewers_names_list})
+        except Exception as e:
+            print(e)
 
     return render_template("rounds.html",result=rounds_list,job_id=job_id)
 

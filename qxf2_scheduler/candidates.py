@@ -7,12 +7,13 @@ import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler.authentication_required import Authentication_Required
 from qxf2_scheduler import db
 from sqlalchemy import or_
+import os
 
 mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates, Jobs, Jobcandidate, Jobround, Rounds, Candidateround, Candidatestatus, Candidateinterviewer
 DOMAIN = 'qxf2.com'
-base_url = 'https://interview-scheduler.qxf2.com/'
+base_url = os.getenv("BASE_URL")
 
 
 def get_end_business_day(add_days, from_date):

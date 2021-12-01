@@ -61,7 +61,7 @@ def test_isapi_example(api_url='http://localhost:6464/'):
                             positive='Successfully logged in app %s' % username,
                             negative='Could not login to app %s' % username)
 
-
+        '''
         result_flag = test_obj.add_jobs(job_data)
         test_obj.log_result(result_flag,
                             positive='Successfully added new job with details %s' % job_data,
@@ -80,7 +80,7 @@ def test_isapi_example(api_url='http://localhost:6464/'):
                                 % candidate_data,
                             negative='Could not add the candidate %s' % candidate_data)
 
-        '''
+
         result_flag = test_obj.get_candidates()
         test_obj.log_result(result_flag,
                             positive='Successfully got the list of candidates',
@@ -124,8 +124,8 @@ def test_isapi_example(api_url='http://localhost:6464/'):
 
     except Exception as e:
         print(e)
-        test_api_obj.write("Exception when trying to run test:%s" % __file__)
-        test_api_obj.write("Python says:%s" % str(e))
+        test_obj.write("Exception when trying to run test:%s" % __file__)
+        test_obj.write("Python says:%s" % str(e))
 
     assert expected_pass == actual_pass,"Test failed: %s"%__file__
 

@@ -165,8 +165,11 @@ class API_Player(Results):
         "delete job"
         response = self.api_obj.get_jobs()
         new_id = self.get_id(response)
+        print(new_id)
+        print("JOB ID")
         self.new_job_id = new_id
         response = self.api_obj.delete_jobs(data={'job-id': self.new_job_id})
+        print(response)
         result_flag = bool(response['response'] == 200)
 
         return result_flag
@@ -182,6 +185,7 @@ class API_Player(Results):
         self.new_job_id = new_id
         response = self.api_obj.delete_candidates(candidate_id=self.new_candidate_id, \
             data={'candidateId':self.new_candidate_id, 'jobId':self.new_job_id})
+        print(response)
         result_flag = bool(response['response'] == 200)
 
         return result_flag
@@ -194,6 +198,7 @@ class API_Player(Results):
         self.new_interviewer_id = new_id
         response = self.api_obj.delete_interviewers(interviewer_id=self.new_interviewer_id,\
             data={'interviewer-id':self.new_interviewer_id})
+        print(response)
         result_flag = bool(response['response'] == 200)
 
         return result_flag

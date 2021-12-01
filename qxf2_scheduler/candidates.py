@@ -306,39 +306,42 @@ def get_round_names_and_status(candidate_id, job_id, all_round_id):
 @Authentication_Required.requires_auth
 def show_candidate_job(job_id, candidate_id):
     "Show candidate name and job role"
-    round_names_list = []
-    round_details = {}
-    candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id, Jobs.job_id == job_id, Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).values(Candidates.candidate_name,  Candidates.candidate_email, Candidates.date_applied, Jobs.job_role, Jobs.job_id, Candidates.candidate_id, Jobcandidate.url, Jobcandidate.candidate_status, Jobcandidate.interviewer_email, Jobcandidate.url, Candidates.comments, Jobcandidate.interview_start_time, Jobcandidate.interview_date)
-    for each_data in candidate_job_data:
-        if each_data.url=='None' or each_data.url == '':
-            url = None
-        else:
-            url = base_url + each_data.url + '/welcome'
-        if (each_data.interview_date == None):
-            interview_date = None
-            interview_start_time = None
-        else:
-            interview_date = each_data.interview_date
-            interview_start_time = each_data.interview_start_time
-            interview_start_time = datetime.datetime.strptime(interview_start_time, '%Y-%m-%dT%H:%M:%S+05:30')
-            interview_start_time = interview_start_time.time()
+    try:
+        round_names_list = []
+        round_details = {}
+        candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id, Jobs.job_id == job_id, Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).values(Candidates.candidate_name,  Candidates.candidate_email, Candidates.date_applied, Jobs.job_role, Jobs.job_id, Candidates.candidate_id, Jobcandidate.url, Jobcandidate.candidate_status, Jobcandidate.interviewer_email, Jobcandidate.url, Candidates.comments, Jobcandidate.interview_start_time, Jobcandidate.interview_date)
+        for each_data in candidate_job_data:
+            if each_data.url== None or each_data.url == '':
+                url = None
+            else:
+                url = base_url + each_data.url + '/welcome'
+            if (each_data.interview_date == None or each_data.interview_date == ''):
+                interview_date = None
+                interview_start_time = None
+            else:
+                interview_date = each_data.interview_date
+                interview_start_time = each_data.interview_start_time
+                interview_start_time = datetime.datetime.strptime(interview_start_time, '%Y-%m-%dT%H:%M:%S+05:30')
+                interview_start_time = interview_start_time.time()
 
-        data = {'candidate_name':each_data.candidate_name, 'job_applied':each_data.job_role, 'candidate_id':candidate_id, 'job_id':job_id, 'url': each_data.url, 'candidate_email':each_data.candidate_email, 'interviewer_email_id':each_data.interviewer_email, 'date_applied':each_data.date_applied.date(), 'url':url, 'comments':each_data.comments, 'interview_date':interview_date, 'interview_start_time':interview_start_time}
-        candidate_status_id = each_data.candidate_status
-    #fetch the candidate status name for the status id
-    candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id == candidate_status_id).scalar()
-    data['candidate_status']=candidate_status_name.status_name
-    pending_round_ids = get_pending_round_id(job_id, candidate_id)
-    #Get all rounds id for the job the candidate applied
-    all_round_id = get_round_id(candidate_id, job_id)
-    #Get the roundstatus, feedback of the candidate job
-    round_name_status_list = get_round_names_and_status(candidate_id, job_id, all_round_id)
+            data = {'candidate_name':each_data.candidate_name, 'job_applied':each_data.job_role, 'candidate_id':candidate_id, 'job_id':job_id, 'url': each_data.url, 'candidate_email':each_data.candidate_email, 'interviewer_email_id':each_data.interviewer_email, 'date_applied':each_data.date_applied.date(), 'url':url, 'comments':each_data.comments, 'interview_date':interview_date, 'interview_start_time':interview_start_time}
+            candidate_status_id = each_data.candidate_status
+        #fetch the candidate status name for the status id
+        candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id == candidate_status_id).scalar()
+        data['candidate_status']=candidate_status_name.status_name
+        pending_round_ids = get_pending_round_id(job_id, candidate_id)
+        #Get all rounds id for the job the candidate applied
+        all_round_id = get_round_id(candidate_id, job_id)
+        #Get the roundstatus, feedback of the candidate job
+        round_name_status_list = get_round_names_and_status(candidate_id, job_id, all_round_id)
 
-    #Get the pending round id details from the table
-    for each_round_id in pending_round_ids:
-        round_detail = db.session.query(Rounds).filter(Rounds.round_id == each_round_id).scalar()
-        round_details = {'round_name':round_detail.round_name, 'round_id':round_detail.round_id, 'round_description':round_detail.round_description, 'round_time':round_detail.round_time}
-        round_names_list.append(round_details)
+        #Get the pending round id details from the table
+        for each_round_id in pending_round_ids:
+            round_detail = db.session.query(Rounds).filter(Rounds.round_id == each_round_id).scalar()
+            round_details = {'round_name':round_detail.round_name, 'round_id':round_detail.round_id, 'round_description':round_detail.round_description, 'round_time':round_detail.round_time}
+            round_names_list.append(round_details)
+    except Exception as e:
+        print(e)
 
     return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_details=round_name_status_list)
 

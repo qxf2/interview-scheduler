@@ -95,7 +95,7 @@
 
 
             </div>
-            <label class="col-md-4 control-label" for="addinterviewers"><span style="color:red">*</span>Add interviewers</label>
+            <label class="col-md-4 control-label" for="addinterviewers"><span style="color:red">*</span>Edit Interviewers</label>
             <div class="col-md-4">
                 <select id="multiSelect" class="js-select2" multiple="multiple" >
                     {% for each_interviewer in interviewers_name_list %}
@@ -176,7 +176,7 @@
        allowClear: true,
        tags: false,
        placeholder:{
-           text:uploadValue,
+           text:"Select the interviewer",
        }  });
 
       $(".select2-search_field").val(uploadValue);

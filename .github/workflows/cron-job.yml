@@ -7,12 +7,12 @@ jobs:
     runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@master
-    - name: copy file via ssh password
+    - name: copy file via ssh key
     - uses: appleboy/scp-action@master
     with:
       host: ${{ secrets.HOST }}
       username: ${{ secrets.USERNAME }}
-      password: ${{ secrets.PASSWORD }}
+      key: ${{ secrets.PROD_KEY }}
       port: ${{ secrets.PORT }}
       source: "/home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
 
@@ -22,9 +22,11 @@ jobs:
     with:
       args: --acl public-read --follow-symlinks --delete
       env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }} #interview-scheduler-db
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: 'us-west-1'   # optional: defaults to us-east-1
-        SOURCE_DIR: 'public'      # optional: defaults to entire repository
-        DEST_DIR: {{source}}
+        AWS_REGION: 'Asia Pacific (Mumbai) ap-south-1' # optional: defaults to us-east-1
+        SOURCE_DIR: ${{source}}      # optional: defaults to entire repository
+        DEST_DIR: 'interviewscheduler'
+
+

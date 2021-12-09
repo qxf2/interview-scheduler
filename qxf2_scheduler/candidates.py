@@ -342,7 +342,7 @@ def show_candidate_job(job_id, candidate_id):
             round_details = {'round_name':round_detail.round_name, 'round_id':round_detail.round_id, 'round_description':round_detail.round_description, 'round_time':round_detail.round_time}
             round_names_list.append(round_details)
     except Exception as e:
-        with open('/tmp/error.log','a') as fp:
+        with open('/qxf2/interview-scheduler/tmp/error.log','a') as fp:
             fp.write(e)
         print(e)
 

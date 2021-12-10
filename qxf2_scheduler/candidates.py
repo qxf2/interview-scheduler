@@ -304,7 +304,6 @@ def get_round_names_and_status(candidate_id, job_id, all_round_id):
 
 
 @app.route("/candidate/<candidate_id>/job/<job_id>")
-@Authentication_Required.requires_auth
 def show_candidate_job(job_id, candidate_id):
     "Show candidate name and job role"
     try:

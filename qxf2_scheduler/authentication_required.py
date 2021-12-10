@@ -16,8 +16,6 @@ class Authentication_Required:
                 if current_user:
                     return func(*args, **kwargs)
             except Exception as e:
-                with open('/home/ubuntu/qxf2/interview-scheduler/tmp/error.txt','a') as fp:
-                   fp.write(e)
                 return render_template("unauthorized.html")
 
         return decorated

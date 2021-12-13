@@ -326,9 +326,9 @@ def show_candidate_job(job_id, candidate_id):
 
             data = {'candidate_name':each_data.candidate_name, 'job_applied':each_data.job_role, 'candidate_id':candidate_id, 'job_id':job_id, 'url': each_data.url, 'candidate_email':each_data.candidate_email, 'interviewer_email_id':each_data.interviewer_email, 'date_applied':each_data.date_applied.date(), 'url':url, 'comments':each_data.comments, 'interview_date':interview_date, 'interview_start_time':interview_start_time}
             candidate_status_id = each_data.candidate_status
-        with open('info_error.log','a') as fp:
-            fp.write("I am coming to line 330")
-            fp.write(data,candidate_status_id)
+            with open('info_error.log','a') as fp:
+                fp.write("I am coming to line 330")
+                fp.write(data)
         #fetch the candidate status name for the status id
         candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id == candidate_status_id).scalar()
         data['candidate_status']=candidate_status_name.status_name

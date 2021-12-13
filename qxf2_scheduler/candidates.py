@@ -326,20 +326,38 @@ def show_candidate_job(job_id, candidate_id):
 
             data = {'candidate_name':each_data.candidate_name, 'job_applied':each_data.job_role, 'candidate_id':candidate_id, 'job_id':job_id, 'url': each_data.url, 'candidate_email':each_data.candidate_email, 'interviewer_email_id':each_data.interviewer_email, 'date_applied':each_data.date_applied.date(), 'url':url, 'comments':each_data.comments, 'interview_date':interview_date, 'interview_start_time':interview_start_time}
             candidate_status_id = each_data.candidate_status
+        with open('info_error.log','a') as fp:
+            fp.write("I am coming to line 330")
+            fp.write(data,candidate_status_id)
         #fetch the candidate status name for the status id
         candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id == candidate_status_id).scalar()
         data['candidate_status']=candidate_status_name.status_name
+        with open('info_error.log','a') as fp:
+            fp.write("I am coming to line 336")
+            fp.write(data['candidate_status'])
         pending_round_ids = get_pending_round_id(job_id, candidate_id)
+        with open('info_error.log','a') as fp:
+            fp.write("I am coming to line 340")
+            fp.write(pending_round_ids)
         #Get all rounds id for the job the candidate applied
         all_round_id = get_round_id(candidate_id, job_id)
+        with open('info_error.log','a') as fp:
+            fp.write("I am coming to line 345")
+            fp.write(all_round_id)
         #Get the roundstatus, feedback of the candidate job
         round_name_status_list = get_round_names_and_status(candidate_id, job_id, all_round_id)
+        with open('info_error.log','a') as fp:
+            fp.write("I am coming to line 350")
+            fp.write(round_name_status_list)
 
         #Get the pending round id details from the table
         for each_round_id in pending_round_ids:
             round_detail = db.session.query(Rounds).filter(Rounds.round_id == each_round_id).scalar()
             round_details = {'round_name':round_detail.round_name, 'round_id':round_detail.round_id, 'round_description':round_detail.round_description, 'round_time':round_detail.round_time}
             round_names_list.append(round_details)
+        with open('info_error.log','a') as fp:
+            fp.write("I am coming to line 359")
+            fp.write(round_names_list)
     except Exception as e:
         app.logger.error(e)
         with open('info_error.log','a') as fp:

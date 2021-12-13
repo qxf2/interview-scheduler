@@ -13,7 +13,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates, Jobs, Jobcandidate, Jobround, Rounds, Candidateround, Candidatestatus, Candidateinterviewer
 DOMAIN = 'qxf2.com'
-base_url = os.getenv("BASE_URL")
+base_url = 'https://staging-interview-scheduler.qxf2.com'
 
 
 def get_end_business_day(add_days, from_date):

@@ -328,7 +328,7 @@ def show_candidate_job(job_id, candidate_id):
             candidate_status_id = each_data.candidate_status
             with open('info_error.log','a') as fp:
                 fp.write("I am coming to line 330")
-                fp.write(data)
+                fp.write(repr(data))
         #fetch the candidate status name for the status id
         candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id == candidate_status_id).scalar()
         data['candidate_status']=candidate_status_name.status_name

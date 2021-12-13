@@ -338,17 +338,17 @@ def show_candidate_job(job_id, candidate_id):
         pending_round_ids = get_pending_round_id(job_id, candidate_id)
         with open('info_error.log','a') as fp:
             fp.write("I am coming to line 340")
-            fp.write(pending_round_ids)
+            fp.write(repr(pending_round_ids))
         #Get all rounds id for the job the candidate applied
         all_round_id = get_round_id(candidate_id, job_id)
         with open('info_error.log','a') as fp:
             fp.write("I am coming to line 345")
-            fp.write(all_round_id)
+            fp.write(repr(all_round_id))
         #Get the roundstatus, feedback of the candidate job
         round_name_status_list = get_round_names_and_status(candidate_id, job_id, all_round_id)
         with open('info_error.log','a') as fp:
             fp.write("I am coming to line 350")
-            fp.write(round_name_status_list)
+            fp.write(repr(round_name_status_list))
 
         #Get the pending round id details from the table
         for each_round_id in pending_round_ids:
@@ -357,11 +357,12 @@ def show_candidate_job(job_id, candidate_id):
             round_names_list.append(round_details)
         with open('info_error.log','a') as fp:
             fp.write("I am coming to line 359")
-            fp.write(round_names_list)
+            fp.write(repr(round_names_list))
     except Exception as e:
         app.logger.error(e)
         with open('info_error.log','a') as fp:
-            fp.write(e)
+            fp.write("Comming to 364")
+            fp.write(repr(e))
 
 
     return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_details=round_name_status_list)

@@ -1,7 +1,7 @@
 name: Interview-Scheduler-Db-Backup
 on:
   push:
-  pull:
+  pull_request:
   schedule:
     - cron: "* * * * *"
 jobs:

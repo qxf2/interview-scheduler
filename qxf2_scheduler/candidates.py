@@ -15,7 +15,6 @@ from qxf2_scheduler.models import Candidates, Jobs, Jobcandidate, Jobround, Roun
 DOMAIN = 'qxf2.com'
 base_url = 'https://staging-interview-scheduler.qxf2.com'
 
-
 def get_end_business_day(add_days, from_date):
     "calcuate the five business days"
     business_days_to_add = add_days

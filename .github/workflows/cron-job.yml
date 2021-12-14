@@ -5,7 +5,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
     steps:
     - name: Copy file from server to ec2 instance
       uses: appleboy/scp-action@master

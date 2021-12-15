@@ -8,10 +8,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    steps:
       - name: Check out repository
         uses: actions/checkout@master
-
       - name: Download file via SSH
         uses: nicklasfrahm/scp-action@main
         with:

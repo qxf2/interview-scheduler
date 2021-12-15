@@ -11,9 +11,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run a multi-line script
       run: |
-        mkdir /home/ubuntu/qxf2/tmp
-        cp -TR /home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db /home/ubuntu/qxf2/tmp
-        tar -cvf deploy.tar qxf2/tmp
+        mkdir ../tmp
+        cp -TR /home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db ../tmp
+        tar -cvf deploy.tar ../tmp
 
     - name: Copy file from server to ec2 instance
       uses: appleboy/scp-action@master

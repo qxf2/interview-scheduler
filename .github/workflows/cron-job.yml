@@ -8,21 +8,19 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Run a multi-line script
-      run: |
-        mkdir ../tmp
-        cp -TR /home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db ../tmp
-        tar -cvf deploy.tar ../tmp
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@master
 
-    - name: Copy file from server to ec2 instance
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.PROD_KEY }}
-        port: ${{ secrets.port }}
-        source: "deploy.tar"
-        target: "tmp"
-
-
+      - name: Download file via SSH
+        uses: nicklasfrahm/scp-action@main
+        with:
+          direction: download
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PROD_KEY }}
+          port: ${{ secrets.port }}
+          source: "/home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
+          target: "/tmp"
+          run:
+            ls -al /tmp

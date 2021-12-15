@@ -20,5 +20,5 @@ jobs:
           port: ${{ secrets.port }}
           source: "/home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
           target: "/tmp"
-          run:
+          run: |
             ls -al /tmp

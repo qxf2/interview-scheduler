@@ -324,7 +324,7 @@ def show_candidate_job(job_id, candidate_id):
                 interview_start_time = datetime.datetime.strptime(interview_start_time, '%Y-%m-%dT%H:%M:%S+05:30')
                 interview_start_time = interview_start_time.time()
 
-            data = {'candidate_name':each_data.candidate_name, 'job_applied':each_data.job_role, 'candidate_id':candidate_id, 'job_id':job_id, 'url': each_data.url, 'candidate_email':each_data.candidate_email, 'interviewer_email_id':each_data.interviewer_email, 'date_applied':each_data.date_applied.date(), 'comments':each_data.comments, 'interview_date':interview_date, 'interview_start_time':interview_start_time}
+            data = {'candidate_name':each_data.candidate_name, 'job_applied':each_data.job_role, 'candidate_id':candidate_id, 'job_id':job_id, 'url': each_data.url, 'candidate_email':each_data.candidate_email, 'interviewer_email_id':each_data.interviewer_email, 'date_applied':each_data.date_applied.date(), 'url':url,'comments':each_data.comments, 'interview_date':interview_date, 'interview_start_time':interview_start_time}
             candidate_status_id = each_data.candidate_status
         #fetch the candidate status name for the status id
         candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id == candidate_status_id).scalar()

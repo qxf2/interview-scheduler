@@ -15,7 +15,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.PROD_KEY }}
         port: ${{ secrets.port }}
-        source: "~/qxf2/interview-scheduler/data/interviewscheduler.db"
+        source: "home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
         target: "/tmp"
 
 

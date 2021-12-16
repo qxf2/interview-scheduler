@@ -11,7 +11,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@master
       - name: Create a new directory
-        run: mkdir scheduler
+        run: mkdir -p /tmp/scheduler
       - name: Download file via SSH
         uses: nicklasfrahm/scp-action@main
         with:
@@ -22,7 +22,7 @@ jobs:
           port: ${{ secrets.port }}
           insecure_ignore_fingerprint: true
           source: "/home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
-          target: "/scheduler/interviewscheduler.db"
+          target: "/tmp/scheduler/interviewscheduler.db"
       - name: list the tmp directory
         run: ls -al /scheduler
       - name: Connect s3 bucket
@@ -34,5 +34,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-east-2'   # optional: defaults to us-east-1
-          SOURCE_DIR: '/scheduler'
+          SOURCE_DIR: 'tmp/scheduler'
           DEST_DIR: '/'

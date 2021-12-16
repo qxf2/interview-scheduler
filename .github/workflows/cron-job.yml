@@ -11,7 +11,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@master
       - name: Create a new directory
-        run: mkdir -p /tmp/scheduler
+        run: mkdir -p tmp/scheduler
       - name: Download file via SSH
         uses: nicklasfrahm/scp-action@main
         with:

@@ -10,10 +10,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@master
-      - name: Download file via SSH
-        uses: nicklasfrahm/scp-action@main
       - name: Create a new directory
         run: mkdir scheduler
+      - name: Download file via SSH
+        uses: nicklasfrahm/scp-action@main
         with:
           direction: download
           host: ${{ secrets.HOST }}

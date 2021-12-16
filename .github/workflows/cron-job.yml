@@ -18,5 +18,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PROD_KEY }}
           port: ${{ secrets.port }}
+          insecure_ignore_fingerprint: true
           source: "/home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
           target: "/tmp"

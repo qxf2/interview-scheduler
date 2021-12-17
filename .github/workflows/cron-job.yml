@@ -25,8 +25,10 @@ jobs:
           insecure_ignore_fingerprint: true
           source: "/home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
           target: "/tmp/newscheduler.db"
+      - name: Move the new db to schedule directory
+        run: mv /tmp/newscheduler.db /schedule
       - name: list the tmp directory
-        run: ls -al /tmp
+        run: ls -al /tmp/scheudle
       - name: Connect s3 bucket
         uses: jakejarvis/s3-sync-action@master
         with:

@@ -22,4 +22,7 @@ jobs:
           source: "/home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
           target: "/tmp/interviewscheduler.db"
       - name: list the tmp directory
-        run: ls -al /tmp
+        run: |
+          pwd
+          ls -al
+          find /tmp/ -name interviewscheduler.db

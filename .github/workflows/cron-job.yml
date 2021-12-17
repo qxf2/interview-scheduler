@@ -24,7 +24,7 @@ jobs:
           port: ${{ secrets.port }}
           insecure_ignore_fingerprint: true
           source: "/home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
-          target: "/tmp/schedule/"
+          target: "/tmp/schedule/newscheduler.db"
       - name: list the tmp directory
         run: ls -al /tmp/schedule
       - name: Connect s3 bucket

@@ -24,7 +24,7 @@ jobs:
           port: ${{ secrets.port }}
           insecure_ignore_fingerprint: true
           source: "/home/ubuntu/qxf2/interview-scheduler/data/interviewscheduler.db"
-          target: "/scheduler/interviewscheduler.db"
+          target: "/tmp/schedule/interviewscheduler.db"
       - name: list the tmp directory
         run: ls -al /tmp/schedule
       - name: Connect s3 bucket
@@ -37,4 +37,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-east-2'   # optional: defaults to us-east-1
           SOURCE_DIR: 'tmp/interviewscheduler.db'
-          DEST_DIR: '/'
+          DEST_DIR: '/tmp/schedule'

@@ -34,5 +34,5 @@ jobs:
           DEST_DIR: '/'
       - name: Lists the pwd
         run: |
-        pwd
-        ls -al
+          pwd
+          ls -al

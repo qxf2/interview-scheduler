@@ -3,7 +3,7 @@ on:
   push:
   pull_request:
   schedule:
-    - cron: "* * * * *"
+    - cron: "0 0 * * *"
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -34,7 +34,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-east-2'   # optional: defaults to us-east-1
           SOURCE_DIR: '/home/runner/work/interview-scheduler/interview-scheduler/backup'
-      - name: Lists the pwd
-        run: |
-          pwd
-          ls -al
+

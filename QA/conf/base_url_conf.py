@@ -1,4 +1,4 @@
 """
 Conf file for base_url
 """
-base_url = "https://interview-scheduler.qxf2.com/"
+base_url = "http://localhost:6464/"

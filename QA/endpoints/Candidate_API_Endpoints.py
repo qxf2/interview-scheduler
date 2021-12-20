@@ -31,6 +31,7 @@ class Candidate_API_Endpoints(Base_API):
         "Adds a new candidate"
         url = self.candidates_url('/add')
         response = self.post(url, data=data)
+        print(response)
         return {
             'url':url,
             'response':response['response'],

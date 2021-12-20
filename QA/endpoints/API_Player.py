@@ -8,6 +8,7 @@ import logging
 from bs4 import BeautifulSoup
 from QA.utils.results import Results
 from .API_Interface import API_Interface
+import time
 
 
 class API_Player(Results):
@@ -97,6 +98,18 @@ class API_Player(Results):
 
         return self.new_id
 
+    def get_new_item(self, response):
+        "to extract list from response"
+        ses = response['response_content']
+        soup = BeautifulSoup(ses, "html.parser")
+        table = soup.find('table', {'class':'table table-striped'})
+        table_rows = table.find_all('tr')
+        for t_rows in table_rows:
+            cols = t_rows.find_all('td')
+            row = [element.text for element in cols]
+        self.new_item = row[1]
+
+        return self.new_item
 
     def get_jobs(self):
         "get available jobs"
@@ -114,15 +127,35 @@ class API_Player(Results):
 
     def add_jobs(self, job_data):
         "add new job"
+        print(job_data)
+        new_job_added = job_data.get("role")
+        print(new_job_added)
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        print (timestr)
+        new_job_added = new_job_added+''.join(timestr)
+        print(new_job_added)
+        new_job_data = {'role':new_job_added}
+        job_data.update(new_job_data)
+        print(job_data)
+        print("after update dict")
         response = self.api_obj.add_jobs(data=job_data)
+        print("inside add jobs")
         result_flag = bool(response['response'] == 200)
+        print(job_data)
+        new_job_added = job_data.get("role")
+        print(new_job_added)
+        print("under add jobs")
+
         return result_flag
 
 
     def add_candidates(self, candidate_data):
         "add new candidate"
         response = self.api_obj.add_candidates(data=candidate_data)
+        print(response)
+        print("under add cand")
         result_flag = bool(response['response'] == 200)
+
         return result_flag
 
 
@@ -138,6 +171,7 @@ class API_Player(Results):
                                negative="Could not fetch candidates")
 
         return result_flag
+
 
     def add_interviewers(self, interviewer_data):
         "add new interviewer"
@@ -165,40 +199,64 @@ class API_Player(Results):
         "delete job"
         response = self.api_obj.get_jobs()
         new_id = self.get_id(response)
-        print(new_id)
-        print("JOB ID")
+        new_item = self.get_new_item(response)
         self.new_job_id = new_id
-        response = self.api_obj.delete_jobs(data={'job-id': self.new_job_id})
-        print(response)
-        result_flag = bool(response['response'] == 200)
+        self.new_job = new_item
+        print("inside delete jobs")
+        print(self.new_job)
+        print(self.new_job_added)
+        print("inside delete jobs")
+        self.new_job = self.new_job_added
+        self.new_job_id = new_id
+        self.new_item = str(self.new_item).strip()
+        self.new_job = str(self.new_job).strip()
+        return_flag = 'True'
+        if (self.new_job == self.new_item):
+            response = self.api_obj.delete_jobs(data={'job-id': self.new_job_id})
+            result_flag = bool(response['response'] == 200)
+            return result_flag
+        else:
+            print("new job is not matching to added job, so not deleting the job")
+            result_flag = 'False'
 
         return result_flag
-
 
     def delete_candidates(self):
         "delete candidate"
         response = self.api_obj.get_candidates()
         new_id = self.get_id(response)
+        new_item = self.get_new_item(response)
         self.new_candidate_id = new_id
+        self.new_candidate = 'test+125'
         response = self.api_obj.get_jobs()
         new_id = self.get_id(response)
         self.new_job_id = new_id
-        response = self.api_obj.delete_candidates(candidate_id=self.new_candidate_id, \
+        self.new_item = str(self.new_item).strip()
+        self.new_candidate = str(self.new_candidate).strip()
+        if (self.new_candidate == self.new_item):
+            response = self.api_obj.delete_candidates(candidate_id=self.new_candidate_id, \
             data={'candidateId':self.new_candidate_id, 'jobId':self.new_job_id})
-        print(response)
-        result_flag = bool(response['response'] == 200)
-
-        return result_flag
+            result_flag = bool(response['response'] == 200)
+            return result_flag
+        else:
+            print("latest candidate is not matching to added candidate so not deleting")
+            result_flag = 'False'
+            return result_flag
 
 
     def delete_interviewers(self):
         "delete interviewers"
         response = self.api_obj.get_interviewer()
         new_id = self.get_id(response)
+        new_item = self.get_new_item(response)
+        self.new_interviewer = 'nilaya19'
         self.new_interviewer_id = new_id
-        response = self.api_obj.delete_interviewers(interviewer_id=self.new_interviewer_id,\
+        self.new_item = str(self.new_item).strip()
+        self.new_interviewer = str(self.new_interviewer).strip()
+        if (self.new_interviewer == self.new_item):
+            response = self.api_obj.delete_interviewers(interviewer_id=self.new_interviewer_id,\
             data={'interviewer-id':self.new_interviewer_id})
-        print(response)
-        result_flag = bool(response['response'] == 200)
-
-        return result_flag
+            result_flag = bool(response['response'] == 200)
+            return result_flag
+        else:
+            print("Not Matching")

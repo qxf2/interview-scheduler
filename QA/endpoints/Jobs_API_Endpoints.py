@@ -45,6 +45,7 @@ class Jobs_API_Endpoints(Base_API):
         "Adds a new job"
         url = self.jobs_url('/add')
         response = self.post(url,data=data)
+        print(response)
         return {
             'url':url,
             'response':response['response'],
@@ -64,7 +65,7 @@ class Jobs_API_Endpoints(Base_API):
 
 
     def delete_jobs(self,data):
-        "Adds a new job"
+        "Deletes a new job"
         url = self.jobs_url('/delete')
         response = self.post(url,data=data)
         return {

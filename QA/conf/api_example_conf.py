@@ -1,12 +1,12 @@
 #Conf for api example
 #get_job_details
-job_details = {'role':'technical_QA8','interviewerlist':'["nilaya"]'}
+job_details = {'role':'technical_QA325','interviewerlist':'["nilaya"]'}
 
 #get_candidate_details
-candidate_details = {'candidateName':'test_api_new123456','candidateEmail':'test_api_new+5678909@gmail.com','jobApplied':'technical_QA8','addedcomments':'N/A'}
+candidate_details = {'candidateName':'test+125','candidateEmail':'test_api_new+3@gmail.com','jobApplied':'technical_QA323','addedcomments':'N/A'}
 
 #get_interviewer_details
-interviewer_details = {'name':'test_nilaya_new','email':'nilaya+123456@qxf2.com','designation':'Senior QA','timeObject':'{"starttime":["10:00"],"endtime":["19:00"]}'}
+interviewer_details = {'name':'nilaya19','email':'nilaya+1590@qxf2.com','designation':'Senior QA','timeObject':'{"starttime":["10:00"],"endtime":["19:00"]}'}
 
 #authentication details
 user_name = 'nilaya123'

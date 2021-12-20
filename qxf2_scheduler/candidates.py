@@ -7,13 +7,13 @@ import qxf2_scheduler.candidate_status as status
 from qxf2_scheduler.authentication_required import Authentication_Required
 from qxf2_scheduler import db
 from sqlalchemy import or_
+import os
 
 mail = Mail(app)
 
 from qxf2_scheduler.models import Candidates, Jobs, Jobcandidate, Jobround, Rounds, Candidateround, Candidatestatus, Candidateinterviewer
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
-
 
 def get_end_business_day(add_days, from_date):
     "calcuate the five business days"
@@ -203,6 +203,8 @@ def add_candidate(job_role):
             candidate_id = add_candidate_object.candidate_id
             db.session.commit()
 
+            data['candidate_id'] = candidate_id
+
             # Fetch the id for the candidate status 'Waiting on Qxf2'
             #Fetch the candidate status from status.py file also. Here we have to do the comparison so fetching from the status file
             candidate_status_id = Candidatestatus.query.filter(Candidatestatus.status_name == status.CANDIDTATE_STATUS[0]).values(Candidatestatus.status_id)
@@ -218,6 +220,7 @@ def add_candidate(job_role):
             error = "Success"
 
         api_response = {'data':data, 'error':error}
+        print(api_response)
 
         return jsonify(api_response)
 
@@ -309,7 +312,7 @@ def show_candidate_job(job_id, candidate_id):
     try:
         round_names_list = []
         round_details = {}
-        candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id, Jobs.job_id == job_id, Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).values(Candidates.candidate_name,  Candidates.candidate_email, Candidates.date_applied, Jobs.job_role, Jobs.job_id, Candidates.candidate_id, Jobcandidate.url, Jobcandidate.candidate_status, Jobcandidate.interviewer_email, Jobcandidate.url, Candidates.comments, Jobcandidate.interview_start_time, Jobcandidate.interview_date)
+        candidate_job_data = db.session.query(Jobs, Candidates, Jobcandidate).filter(Candidates.candidate_id == candidate_id, Jobs.job_id == job_id, Jobcandidate.candidate_id == candidate_id, Jobcandidate.job_id == job_id).values(Candidates.candidate_name,  Candidates.candidate_email, Candidates.date_applied, Jobs.job_role, Jobs.job_id, Candidates.candidate_id, Jobcandidate.url, Jobcandidate.candidate_status, Jobcandidate.interviewer_email, Candidates.comments, Jobcandidate.interview_start_time, Jobcandidate.interview_date)
         for each_data in candidate_job_data:
             if each_data.url== None or each_data.url == '':
                 url = None
@@ -324,7 +327,7 @@ def show_candidate_job(job_id, candidate_id):
                 interview_start_time = datetime.datetime.strptime(interview_start_time, '%Y-%m-%dT%H:%M:%S+05:30')
                 interview_start_time = interview_start_time.time()
 
-            data = {'candidate_name':each_data.candidate_name, 'job_applied':each_data.job_role, 'candidate_id':candidate_id, 'job_id':job_id, 'url': each_data.url, 'candidate_email':each_data.candidate_email, 'interviewer_email_id':each_data.interviewer_email, 'date_applied':each_data.date_applied.date(), 'url':url, 'comments':each_data.comments, 'interview_date':interview_date, 'interview_start_time':interview_start_time}
+            data = {'candidate_name':each_data.candidate_name, 'job_applied':each_data.job_role, 'candidate_id':candidate_id, 'job_id':job_id, 'url': each_data.url, 'candidate_email':each_data.candidate_email, 'interviewer_email_id':each_data.interviewer_email, 'date_applied':each_data.date_applied.date(), 'url':url,'comments':each_data.comments, 'interview_date':interview_date, 'interview_start_time':interview_start_time}
             candidate_status_id = each_data.candidate_status
         #fetch the candidate status name for the status id
         candidate_status_name = db.session.query(Candidatestatus).filter(Candidatestatus.status_id == candidate_status_id).scalar()
@@ -334,14 +337,17 @@ def show_candidate_job(job_id, candidate_id):
         all_round_id = get_round_id(candidate_id, job_id)
         #Get the roundstatus, feedback of the candidate job
         round_name_status_list = get_round_names_and_status(candidate_id, job_id, all_round_id)
-
         #Get the pending round id details from the table
         for each_round_id in pending_round_ids:
             round_detail = db.session.query(Rounds).filter(Rounds.round_id == each_round_id).scalar()
             round_details = {'round_name':round_detail.round_name, 'round_id':round_detail.round_id, 'round_description':round_detail.round_description, 'round_time':round_detail.round_time}
             round_names_list.append(round_details)
+
     except Exception as e:
-        print(e)
+        app.logger.error(e)
+        with open('info_error.log','a') as fp:
+            fp.write(repr(e))
+
 
     return render_template("candidate-job-status.html", result=data, round_names=round_names_list,all_round_details=round_name_status_list)
 

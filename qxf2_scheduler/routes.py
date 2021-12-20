@@ -23,7 +23,7 @@ from flask import flash
 
 mail = Mail(app)
 
-from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer, Interviewcount
+from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer, Interviewcount, Roundinterviewers
 DOMAIN = 'qxf2.com'
 base_url = 'https://interview-scheduler.qxf2.com/'
 
@@ -124,6 +124,18 @@ def check_interview_exists(date):
     return interviewers_id_list
 
 
+def fetch_interviewers_from_rounds(round_id,job_id,scheduled_interviewers_id):
+    "Fetch interviewers from round interviewer table"
+    job_interviewer_id = Roundinterviewers.query.filter(Roundinterviewers.round_id == round_id, Roundinterviewers.job_id == job_id).values(Roundinterviewers.interviewers_id)
+    interviewer_id_list = []
+    for each_interviewer_id in job_interviewer_id:
+        if each_interviewer_id.interviewers_id in scheduled_interviewers_id:
+            pass
+        else:
+            interviewer_id_list.append(each_interviewer_id.interviewers_id)
+
+    return interviewer_id_list
+
 @app.route("/get-schedule", methods=['GET', 'POST'])
 def date_picker():
     "Dummy page to let you see a schedule"
@@ -155,13 +167,20 @@ def date_picker():
             #Fetch the interviewers email id which have an interview for the picked date
             scheduled_interviewers_id = check_interview_exists(date)
             #Fetch the interviewers for the candidate job
-            job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
-            interviewer_id = []
-            for each_interviewer_id in job_interviewer_id:
-                if each_interviewer_id.interviewer_id in scheduled_interviewers_id:
-                    pass
-                else:
-                    interviewer_id.append(each_interviewer_id.interviewer_id)
+            interviewer_id = fetch_interviewers_from_rounds(round_id,job_id,scheduled_interviewers_id)
+
+            if len(interviewer_id):
+                interviewer_id = interviewer_id
+            else:
+                #Fetch the intervieweres from the job
+                job_interviewer_id = db.session.query(Jobinterviewer).filter(Jobinterviewer.job_id==job_id).values(Jobinterviewer.interviewer_id)
+                interviewer_id = []
+                for each_interviewer_id in job_interviewer_id:
+                    if each_interviewer_id.interviewer_id in scheduled_interviewers_id:
+                        pass
+                    else:
+                        interviewer_id.append(each_interviewer_id.interviewer_id)
+
             if len(alloted_interviewers_id_list) == 0:
                 pass
             else:
@@ -608,6 +627,7 @@ def add_job():
             db.session.add(job_object)
             db.session.commit()
             job_id = job_object.job_id
+            data['job_id'] = job_id
             # Get the id of the user from the interviewers table
             for each_interviewer in interviewers:
                 interviewer_id = db.session.query(Interviewers.interviewer_id).filter(
@@ -781,8 +801,11 @@ def add_interviewers():
             interviewer_object = Interviewers(
                 interviewer_name=interviewer_name, interviewer_email=interviewer_email, interviewer_designation=interviewer_designation)
             db.session.add(interviewer_object)
+            db.session.flush()
+            interviewer_id = interviewer_object.interviewer_id
             db.session.commit()
             add_edit_interviewers_in_time_slot_table(interviewer_name)
+            data['interviewer_id']=interviewer_id
             return jsonify(data=data)
         else:
             return jsonify(error='Interviewer already exists'), 500

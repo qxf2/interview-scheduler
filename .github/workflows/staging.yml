@@ -1,0 +1,25 @@
+name: Staging-Interview-Scheduler-CD
+on:
+  push:
+    branches:
+      - staging-new
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: SSH to EC2 instance
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.STAGING_HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.STAGING_KEY }}
+        port: ${{ secrets.port }}
+        script:  |
+          cd qxf2/interview-scheduler
+          source venv-interview-scheduler/bin/activate
+          git pull origin staging-new
+          pip install -r requirements.txt
+          python migrate_db.py db migrate
+          python migrate_db.py db upgrade
+          sudo service gunicorn restart
+          deactivate

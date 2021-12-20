@@ -25,7 +25,7 @@ mail = Mail(app)
 
 from qxf2_scheduler.models import Interviewers, Interviewertimeslots, Jobs, Jobinterviewer, Rounds, Jobround,Candidates,Jobcandidate,Candidatestatus,Candidateround,Candidateinterviewer, Interviewcount, Roundinterviewers
 DOMAIN = 'qxf2.com'
-base_url = 'https://staging-interview-scheduler.qxf2.com/'
+base_url = 'https://interview-scheduler.qxf2.com/'
 
 @app.route("/")
 def home():

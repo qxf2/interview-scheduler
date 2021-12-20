@@ -627,7 +627,6 @@ def add_job():
             db.session.add(job_object)
             db.session.commit()
             job_id = job_object.job_id
-            data['job_id'] = job_id
             # Get the id of the user from the interviewers table
             for each_interviewer in interviewers:
                 interviewer_id = db.session.query(Interviewers.interviewer_id).filter(
@@ -639,7 +638,7 @@ def add_job():
 
         else:
             return jsonify(message='The job already exists'), 500
-        data = {'jobrole': job_role, 'interviewers': list(interviewers)}
+        data = {'jobrole': job_role, 'interviewers': list(interviewers),'job_id':job_id}
         return jsonify(data)
 
 

@@ -608,6 +608,7 @@ def add_job():
             db.session.add(job_object)
             db.session.commit()
             job_id = job_object.job_id
+            data['job_id'] = job_id
             # Get the id of the user from the interviewers table
             for each_interviewer in interviewers:
                 interviewer_id = db.session.query(Interviewers.interviewer_id).filter(
@@ -619,7 +620,7 @@ def add_job():
 
         else:
             return jsonify(message='The job already exists'), 500
-        data = {'jobrole': job_role, 'interviewers': list(interviewers)}
+        data = {'jobrole': job_role, 'interviewers': list(interviewers),'job_id':job_id}
         return jsonify(data)
 
 
@@ -781,9 +782,13 @@ def add_interviewers():
             interviewer_object = Interviewers(
                 interviewer_name=interviewer_name, interviewer_email=interviewer_email, interviewer_designation=interviewer_designation)
             db.session.add(interviewer_object)
+            db.session.flush()
+            interviewer_id = interviewer_object.interviewer_id
             db.session.commit()
             add_edit_interviewers_in_time_slot_table(interviewer_name)
+            data['interviewer_id']=interviewer_id
             return jsonify(data=data)
+            print (data)
         else:
             return jsonify(error='Interviewer already exists'), 500
 

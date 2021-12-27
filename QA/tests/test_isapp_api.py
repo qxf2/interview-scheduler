@@ -25,47 +25,18 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 @pytest.mark.API
 def test_isapi_example(api_url='http://localhost:6464/'):
     "Run api test"
-    if True:
+    try:
         # Create test object
         test_obj = API_Player(url=api_url)
         test_email = Confirm_Email_Object()
 
-        # set authentication details
-        username = conf.user_name
-        password_details = conf.password
-        useremail = conf.useremail
+        # set details
         job_data = conf.job_details
         candidate_data = conf.candidate_details
         interviewer_data = conf.interviewer_details
 
-
         expected_pass = 0
         actual_pass = -1
-        '''
-        auth_details = test_obj.login_details(username, password_details)
-
-        signup_details = test_obj.signup_details(username, useremail, userpassword)
-
-
-        result_flag = test_obj.signup_app(signup_details)
-        test_obj.log_result(result_flag,
-                            positive='Successfully signed up in app %s' % username,
-                            negative='Could not sign in to app %s' % username)
-
-
-        result_flag = test_email.fetch_email_invite()
-
-
-        result_flag = test_obj.accept_signup(test_email.fetch_email_invite())
-        test_obj.log_result(result_flag,
-                            positive='Successfully activated account %s' % username,
-                            negative='Could not activate account with  %s' % username)
-
-
-        result_flag = test_obj.login_app(auth_details)
-        test_obj.log_result(result_flag,
-                            positive='Successfully logged in app %s' % username,
-                            negative='Could not login to app %s' % username)
 
 
         result_flag = test_obj.add_jobs(job_data)
@@ -79,13 +50,13 @@ def test_isapi_example(api_url='http://localhost:6464/'):
                             positive='Successfully got the list of jobs',
                             negative='Could not get the list of jobs')
 
-        '''
+
         result_flag = test_obj.add_candidates(candidate_data)
         test_obj.log_result(result_flag,
                             positive='Successfully added a new candidate with all details %s'\
                                 % candidate_data,
                             negative='Could not add the candidate %s' % candidate_data)
-        '''
+
 
         result_flag = test_obj.get_candidates()
         test_obj.log_result(result_flag,
@@ -122,16 +93,17 @@ def test_isapi_example(api_url='http://localhost:6464/'):
         test_obj.log_result(result_flag,
                             positive='Successfully deleted the interviewer',
                             negative='Could not delete the interviewer')
-        '''
+
+
         # write out test summary
         expected_pass = test_obj.total
         actual_pass = test_obj.passed
         test_obj.write_test_summary()
 
-    #except Exception as e:
-    #print(e)
-    #test_obj.write("Exception when trying to run test:%s" % __file__)
-    #test_obj.write("Python says:%s" % str(e))
+    except Exception as e:
+        print(e)
+        test_obj.write("Exception when trying to run test:%s" % __file__)
+        test_obj.write("Python says:%s" % str(e))
 
     assert expected_pass == actual_pass,"Test failed: %s"%__file__
 

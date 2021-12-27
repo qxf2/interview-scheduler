@@ -28,6 +28,7 @@ class Interviewer_API_Endpoints(Base_API):
         response = self.post(url,data=data)
         return {
             'url':url,
+            'text': response['text'],
             'response':response['response']
         }
 

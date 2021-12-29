@@ -37,7 +37,7 @@ jobs:
               python qxf2_scheduler/setup_db.py
               python  run.py > /dev/null 2>&1 &
               cd QA/tests
-              python -m pytest --ignore=test_login_user
+              python -m pytest --ignore=./tests/test_login_user
               pkill -f run.py
   deploy:
     runs-on: ubuntu-latest

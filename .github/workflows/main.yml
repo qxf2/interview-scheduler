@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ui_test_addition
       - name: Running requirements and server in  background
         run: |
               pip install -r QA/requirements.txt
@@ -35,7 +37,7 @@ jobs:
               python qxf2_scheduler/setup_db.py
               python  run.py > /dev/null 2>&1 &
               cd QA/tests
-              python -m pytest
+              python -m pytest --ignore=test_login_user
               pkill -f run.py
   deploy:
     runs-on: ubuntu-latest

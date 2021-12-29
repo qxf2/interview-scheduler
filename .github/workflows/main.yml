@@ -38,7 +38,7 @@ jobs:
               python  run.py > /dev/null 2>&1 &
               cd QA/tests
               pwd
-              python -m pytest --ignore=/test_login_user.py
+              python -m pytest test_get_free_slots.py test_select_interviewer.py test_mock_base_gcal.py test_isapp_api.py
               pkill -f run.py
   deploy:
     runs-on: ubuntu-latest

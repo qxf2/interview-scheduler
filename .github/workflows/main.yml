@@ -40,6 +40,64 @@ jobs:
               pwd
               python -m pytest test_get_free_slots.py test_select_interviewer.py test_mock_base_gcal.py test_isapp_api.py
               pkill -f run.py
+jobs:
+  ubuntu-job:
+    name: 'BrowserStack Test to run SSO Login'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'BrowserStack Env Setup'
+        uses: 'browserstack/github-actions/setup-env@master'
+        with:
+          username:  ${{ secrets.BROWSERSTACK_USERNAME }}
+          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          build-name: BUILD_INFO
+          project-name: REPO_NAME
+      - name: 'BrowserStackLocal Setup'
+        uses: 'browserstack/github-actions/setup-local@master'
+        with:
+          local-testing: start
+          local-identifier: random
+      - name: Running requirements and server in  background
+        uses: 'actions/checkout@v2'
+      - name: Setup to run test
+        run: |
+              pip install -r QA/requirements.txt
+              touch qxf2_scheduler/email_config.py
+              cat > qxf2_scheduler/email_config.py << EOF
+              MAIL_USERNAME = "${{ secrets.MAIL_USERNAME }}"
+              MAIL_PASSWORD = "${{ secrets.MAIL_PASSWORD }}"
+              EOF
+              mkdir data
+              touch data/candidatestatus.csv
+              cat > data/candidatestatus.csv <<EOF
+              status_id,status_name
+              1,Waiting on Qxf2
+              2,Waiting on Candidate
+              3,Interview Scheduled
+              4,No response
+              5,Reject
+              6,Hired
+              7,Waiting for new opening
+              EOF
+              python migrate_db.py db init
+              python migrate_db.py db migrate
+              python migrate_db.py db upgrade
+              python qxf2_scheduler/setup_db.py
+              python  run.py > /dev/null 2>&1 &
+              cd QA/conf
+              cat > remote_credentials.py <<EOF
+              REMOTE_BROWSER_PLATFORM = "BS"
+              USERNAME = "${{ secrets.BROWSERSTACK_USERNAME }}"
+              ACCESS_KEY = "${{ secrets.BROWSERSTACK_ACCESS_KEY }}"
+              EOF
+              cd ..
+              cd tests
+              python -m pytest test_login_user.py --remote_flag Y
+              pkill -f run.py
+      - name: 'BrowserStackLocal Stop'
+        uses: 'browserstack/github-actions/setup-local@master'
+        with:
+          local-testing: stop
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'

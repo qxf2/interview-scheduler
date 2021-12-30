@@ -40,7 +40,6 @@ jobs:
               pwd
               python -m pytest test_get_free_slots.py test_select_interviewer.py test_mock_base_gcal.py test_isapp_api.py
               pkill -f run.py
-jobs:
   ubuntu-job:
     name: 'BrowserStack Test to run SSO Login'
     runs-on: ubuntu-latest

@@ -47,10 +47,7 @@ jobs:
               python migrate_db.py db upgrade
               python qxf2_scheduler/setup_db.py
               python  run.py > /dev/null 2>&1 &
-              cd QA/tests
-              python -m pytest --ignore=test_isapp_api.py --ignore=test_login_user.py
-              cd ..
-              cd conf
+              cd QA/conf
               cat > remote_credentials.py <<EOF
               REMOTE_BROWSER_PLATFORM = "BS"
               USERNAME = "${{ secrets.BROWSERSTACK_USERNAME }}"

@@ -4,7 +4,7 @@ on:
     branches:
       - '**'
 jobs:
-  test:
+  test_1:
     name: Run CI tests
     runs-on: ubuntu-latest
     steps:
@@ -41,7 +41,7 @@ jobs:
               python -m pytest test_get_free_slots.py test_select_interviewer.py test_mock_base_gcal.py test_isapp_api.py
               pkill -f run.py
   
-  test:
+  test_2:
     name: 'BrowserStack Test to run SSO Login'
     runs-on: ubuntu-latest
     steps:
@@ -98,6 +98,7 @@ jobs:
         uses: 'browserstack/github-actions/setup-local@master'
         with:
           local-testing: stop
+
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'

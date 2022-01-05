@@ -42,7 +42,7 @@ def test_login_user(test_obj):
                                 test_obj.get_current_url(),
                             level="debug")
 
-
+        '''
         #4. Checkout for Page Heading
         result_flag = test_obj.check_heading()
         test_obj.log_result(result_flag,
@@ -57,7 +57,7 @@ def test_login_user(test_obj):
                             negative="Failed to logout from the page \nOn url: %s" \
                                 % test_obj.get_current_url(),
                             level="debug")
-
+        '''
 
         #6.Turn off the highlighting feature
         test_obj.turn_off_highlight()

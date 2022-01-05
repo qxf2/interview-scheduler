@@ -101,7 +101,7 @@ class Form_Object:
         "Set the email on the form"
         result_flag = self.set_text(self.sso_password_field, password)
         self.conditional_write(result_flag,
-                               positive='Set the password to: %s'%password,
+                               positive='Set the password',
                                negative='Failed to set the password',
                                level='debug')
 
@@ -201,7 +201,7 @@ class Form_Object:
         "Set the password on the registration form"
         result_flag = self.set_text(self.password_field, password)
         self.conditional_write(result_flag,
-                               positive='Set the password to: %s'% password,
+                               positive='Set the password',
                                negative='Failed to set the password in the form',
                                level='debug')
 

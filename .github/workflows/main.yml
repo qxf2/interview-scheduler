@@ -4,8 +4,8 @@ on:
     branches:
       - '**'
 jobs:
-  test_2:
-    name: 'BrowserStack Test to run SSO Login'
+  ubuntu-job:
+    name: 'BrowserStack Test to run SSO Login'
     runs-on: ubuntu-latest
     steps:
       - name: 'BrowserStack Env Setup'

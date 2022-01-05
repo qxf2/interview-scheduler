@@ -42,7 +42,6 @@ jobs:
               pkill -f run.py
   
   test_2:
-    name: 'BrowserStack Test to run SSO Login'
     runs-on: ubuntu-latest
     steps:
       - name: 'BrowserStack Env Setup'

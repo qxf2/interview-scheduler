@@ -46,7 +46,6 @@ jobs:
               python migrate_db.py db migrate
               python migrate_db.py db upgrade
               python qxf2_scheduler/setup_db.py
-              python  run.py > /dev/null 2>&1 &
               cd QA/conf
               cat > remote_credentials.py <<EOF
               REMOTE_BROWSER_PLATFORM = "BS"
@@ -56,7 +55,6 @@ jobs:
               cd ..
               cd tests
               python -m pytest test_login_user.py --remote_flag Y
-              pkill -f run.py
       - name: 'BrowserStackLocal Stop'
         uses: 'browserstack/github-actions/setup-local@master'
         with:

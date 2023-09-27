@@ -96,7 +96,7 @@ def is_past_date(date):
 
 def is_qxf2_holiday(date):
     "Is this date a Qxf2 holiday?"
-    holidays = ['2021-01-01', '2021-01-14', '2021-01-26', '2021-04-13','2021-05-14', '2021-09-10', '2021-10-15', '2021-11-01', '2021-11-05'];
+    holidays = ['2023-01-26', '2023-05-01', '2023-08-15', '2023-09-19', '2023-10-02','2023-10-24', '2023-11-01', '2023-11-13', '2023-12-25'];
     #Holiday date format is different to keep it consistent with the JavaScript
     #That way, you can copy paste the same array between the html and here
     holiday_format = '%Y-%m-%d'
